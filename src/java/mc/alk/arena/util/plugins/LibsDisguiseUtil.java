@@ -1,5 +1,8 @@
 package mc.alk.arena.util.plugins;
 
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.util.DisguiseUtil;
 import mc.alk.arena.util.Log;
 import me.libraryaddict.disguise.DisguiseAPI;
@@ -8,8 +11,6 @@ import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 public class LibsDisguiseUtil implements DisguiseUtil{
     static boolean enabled = false;
@@ -17,10 +18,6 @@ public class LibsDisguiseUtil implements DisguiseUtil{
     public static DisguiseUtil setPlugin(Plugin plugin){
 		enabled = plugin != null && plugin instanceof LibsDisguises;
         return enabled ? new LibsDisguiseUtil() : null;
-    }
-
-    public static boolean enabled(){
-        return enabled;
     }
 
     @Override

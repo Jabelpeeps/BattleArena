@@ -1,5 +1,15 @@
 package mc.alk.arena.objects.arenas;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.competition.match.Match;
@@ -19,7 +29,6 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.regions.PylamoRegion;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.spawns.TimedSpawn;
@@ -27,15 +36,6 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.Persist;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.Util;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class Arena extends AreaContainer {
 
@@ -57,8 +57,8 @@ public class Arena extends AreaContainer {
     @Persist
     protected WorldGuardRegion wgRegion;
 
-    @Persist
-    protected PylamoRegion pylamoRegion;
+//    @Persist
+//    protected PylamoRegion pylamoRegion;
 
     /**
      * Arena constructor
@@ -727,13 +727,13 @@ public class Arena extends AreaContainer {
         return spawnController;
     }
 
-    public void setPylamoRegion(PylamoRegion region) {
-        this.pylamoRegion = region;
-    }
-
-    public PylamoRegion getPylamoRegion() {
-        return pylamoRegion;
-    }
+//    public void setPylamoRegion(PylamoRegion region) {
+//        this.pylamoRegion = region;
+//    }
+//
+//    public PylamoRegion getPylamoRegion() {
+//        return pylamoRegion;
+//    }
 
     public void setWaitRoom(RoomContainer waitroom) {
         this.waitroom = waitroom;

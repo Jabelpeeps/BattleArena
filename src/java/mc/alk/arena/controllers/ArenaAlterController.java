@@ -1,11 +1,20 @@
 package mc.alk.arena.controllers;
 
+import java.util.Set;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.containers.RoomContainer;
-import mc.alk.arena.controllers.plugins.PylamoController;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
@@ -16,7 +25,6 @@ import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.AlterParamOption;
 import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.regions.PylamoRegion;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnIndex;
@@ -27,14 +35,6 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.Util;
 import mc.alk.arena.util.plugins.WorldEditUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
-import java.util.Set;
 
 public class ArenaAlterController {
 
@@ -49,8 +49,8 @@ public class ArenaAlterController {
         SPAWNLOC(true,true),
         VLOC(true,true),
         TYPE(true,false),
-        ADDREGION(false,true),
-        ADDPYLAMOREGION(false,true);
+        ADDREGION(false,true);
+//        ADDPYLAMOREGION(false,true);
 
         final boolean needsValue; /// whether the transition needs a value
 
@@ -137,7 +137,7 @@ public class ArenaAlterController {
                 case TYPE:
                     return ArenaType.getType(value);
                 case ADDREGION:
-                case ADDPYLAMOREGION:
+//                case ADDPYLAMOREGION:
                     return value;
             }
             return null;
@@ -184,7 +184,7 @@ public class ArenaAlterController {
             case SPECTATE: success = changeSpectateSpawn(player,arena,ac,(SpawnIndex)value); break;
             case LOBBY: success = changeLobbySpawn(player, params,(SpawnIndex)value); break;
             case ADDREGION: success = addWorldGuardRegion(player,arena); break;
-            case ADDPYLAMOREGION: success = addPylamoRegion(player,arena); break;
+//            case ADDPYLAMOREGION: success = addPylamoRegion(player,arena); break;
             default:
                 sendMessage(sender,ChatColor.RED+ "Option: &6" + ct+"&c does not exist. \n&cValid options are &6"+ChangeType.getValidList());
                 break;
@@ -206,26 +206,26 @@ public class ArenaAlterController {
         return true;
     }
 
-    private static boolean addPylamoRegion(Player sender, Arena arena) {
-        if (!WorldGuardController.hasWorldEdit()){
-            sendMessage(sender,"&cYou need world edit to use this command");
-            return false;}
-        if (!PylamoController.enabled()){
-            sendMessage(sender,"&cYou need PylamoRestorationSystem to use this command");
-            return false;}
-        WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
-        Selection sel = wep.getSelection(sender);
-        if (sel == null){
-            sendMessage(sender,"&cYou need to select a region to use this command.");
-            return false;
-        }
-        String id = makeRegionName(arena);
-        PylamoController.createRegion(id, sel.getMinimumPoint(), sel.getMaximumPoint());
-        PylamoRegion region = new PylamoRegion(id);
-        region.setID(id);
-        arena.setPylamoRegion(region);
-        return true;
-    }
+//    private static boolean addPylamoRegion(Player sender, Arena arena) {
+//        if (!WorldGuardController.hasWorldEdit()){
+//            sendMessage(sender,"&cYou need world edit to use this command");
+//            return false;}
+//        if (!PylamoController.enabled()){
+//            sendMessage(sender,"&cYou need PylamoRestorationSystem to use this command");
+//            return false;}
+//        WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
+//        Selection sel = wep.getSelection(sender);
+//        if (sel == null){
+//            sendMessage(sender,"&cYou need to select a region to use this command.");
+//            return false;
+//        }
+//        String id = makeRegionName(arena);
+//        PylamoController.createRegion(id, sel.getMinimumPoint(), sel.getMaximumPoint());
+//        PylamoRegion region = new PylamoRegion(id);
+//        region.setID(id);
+//        arena.setPylamoRegion(region);
+//        return true;
+//    }
 
     private static boolean addWorldGuardRegion(Player sender, Arena arena) {
         if (!checkWorldGuard(sender)){

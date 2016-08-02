@@ -167,12 +167,6 @@
         </dependency>
         <dependency>
             <groupId>unknown.plugins</groupId>
-            <artifactId>DisguiseCraft</artifactId>
-            <version>4.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>unknown.plugins</groupId>
             <artifactId>Essentials</artifactId>
             <version>2.1.0</version>
             <scope>provided</scope>
@@ -213,12 +207,12 @@
             <version>2.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+ <!--        <dependency>
             <groupId>unknown.plugins</groupId>
             <artifactId>PylamoRestorationSystem</artifactId>
             <version>0.4</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>

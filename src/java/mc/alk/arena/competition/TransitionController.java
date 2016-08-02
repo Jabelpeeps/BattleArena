@@ -1,5 +1,16 @@
 package mc.alk.arena.competition;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.Match;
@@ -10,15 +21,14 @@ import mc.alk.arena.controllers.PlayerStoreController;
 import mc.alk.arena.controllers.TeleportLocationController;
 import mc.alk.arena.controllers.plugins.DisguiseInterface;
 import mc.alk.arena.controllers.plugins.HeroesController;
-import mc.alk.arena.controllers.plugins.PylamoController;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
+import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
@@ -30,16 +40,6 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.TeamUtil;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.potion.PotionEffect;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 
 public class TransitionController {
@@ -81,16 +81,11 @@ public class TransitionController {
             if (WorldGuardController.hasWorldGuard() && ac.getArena() != null && ac.getArena().hasRegion()){
                 WorldGuardRegion region = ac.getArena().getWorldGuardRegion();
                 /// Clear the area
-                if (mo.shouldClearRegion()){
-                    WorldGuardController.clearRegion(region);}
+                if ( mo.shouldClearRegion() ) 
+                    WorldGuardController.clearRegion(region);
 
-                if (mo.hasOption(TransitionOption.WGRESETREGION)){
-                    if (PylamoController.enabled() && ac.getArena().getPylamoRegion() != null){
-                        PylamoController.resetRegion(ac.getArena().getPylamoRegion());
-                    } else {
-                        WorldGuardController.pasteSchematic(region);
-                    }
-                }
+                if ( mo.hasOption(TransitionOption.WGRESETREGION) ) 
+                    WorldGuardController.pasteSchematic(region);
             }
         }
         for (ArenaPlayer p : team.getPlayers()){

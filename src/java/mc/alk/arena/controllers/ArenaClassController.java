@@ -1,5 +1,19 @@
 package mc.alk.arena.controllers;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.plugins.DisguiseInterface;
@@ -21,19 +35,6 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.TimeUtil;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ArenaClassController {
     final static HashMap<String,ArenaClass> classes = new HashMap<String,ArenaClass>();
@@ -69,8 +70,10 @@ public class ArenaClassController {
             InventoryUtil.addItemsToInventory(player.getPlayer(), ac.getItems(),true, color);}
         catch (Exception e){/* do nothing, error would be reported inside InventoryUtil */}
         giveClassEnchants(player.getPlayer(),ac);
+        
         if (ac.getDisguiseName()!=null && DisguiseInterface.enabled())
             DisguiseInterface.disguisePlayer(player.getPlayer(), ac.getDisguiseName());
+        
         if (ac.getMobs() != null){
             try {
                 List<SpawnInstance> mobs = ac.getMobsClone();

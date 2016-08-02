@@ -16,7 +16,6 @@ import mc.alk.arena.controllers.plugins.FactionsController;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.controllers.plugins.McMMOController;
 import mc.alk.arena.controllers.plugins.MobArenaInterface;
-import mc.alk.arena.controllers.plugins.PylamoController;
 import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.controllers.plugins.VanishNoPacketInterface;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
@@ -40,8 +39,6 @@ public class BAPluginListener implements Listener {
             loadBattleTracker();
         } else if (event.getPlugin().getName().equalsIgnoreCase("CombatTag")) {
             loadCombatTag();
-        } else if (event.getPlugin().getName().equalsIgnoreCase("DisguiseCraft")) {
-            loadDisguiseCraft();
         } else if (event.getPlugin().getName().equalsIgnoreCase("Essentials")) {
             loadEssentials();
         } else if (event.getPlugin().getName().equalsIgnoreCase("Factions")) {
@@ -62,8 +59,6 @@ public class BAPluginListener implements Listener {
             loadMultiverseCore();
         } else if (event.getPlugin().getName().equalsIgnoreCase("Multiverse-Inventories")) {
             loadMultiverseInventory();
-        } else if (event.getPlugin().getName().equalsIgnoreCase("PylamoRestorationSystem")) {
-            loadPylamoRestoration();
         } else if (event.getPlugin().getName().equalsIgnoreCase("WorldEdit")) {
             loadWorldEdit();
         } else if (event.getPlugin().getName().equalsIgnoreCase("WorldGuard")) {
@@ -80,7 +75,6 @@ public class BAPluginListener implements Listener {
     public void loadAll() {
         loadBattleTracker();
         loadCombatTag();
-        loadDisguiseCraft();
         loadEssentials();
         loadFactions();
         loadHeroChat();
@@ -91,7 +85,6 @@ public class BAPluginListener implements Listener {
         loadMultiInv();
         loadMultiverseCore();
         loadMultiverseInventory();
-        loadPylamoRestoration();
         loadWorldEdit();
         loadWorldGuard();
         loadVanishNoPacket();
@@ -117,16 +110,6 @@ public class BAPluginListener implements Listener {
             // so there's no need to do anything here
             // except alert server admins that CombatTag was detected.
             Log.info("[BattleArena] CombatTag detected, enabling limited tag support");
-        }
-    }
-
-    public void loadDisguiseCraft() {
-        if (!DisguiseInterface.hasDC()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("DisguiseCraft");
-            if (plugin != null) {
-                DisguiseInterface.setDisguiseCraft(plugin);
-                Log.info("[BattleArena] DisguiseCraft detected, enabling disguises");
-            }
         }
     }
 
@@ -177,7 +160,7 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadLibsDisguise() {
-        if (!DisguiseInterface.hasLibs()) {
+        if (!DisguiseInterface.enabled()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("LibsDisguises");
             if (plugin != null) {
                 DisguiseInterface.setLibsDisguise(plugin);
@@ -236,15 +219,15 @@ public class BAPluginListener implements Listener {
         }
     }
 
-    public void loadPylamoRestoration() {
-        if (!PylamoController.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("PylamoRestorationSystem");
-            if (plugin != null) {
-                PylamoController.setPlugin(plugin);
-                Log.info(BattleArena.getPluginName() + " found PylamoRestorationSystem");
-            }
-        }
-    }
+//    public void loadPylamoRestoration() {
+//        if (!PylamoController.enabled()) {
+//            Plugin plugin = Bukkit.getPluginManager().getPlugin("PylamoRestorationSystem");
+//            if (plugin != null) {
+//                PylamoController.setPlugin(plugin);
+//                Log.info(BattleArena.getPluginName() + " found PylamoRestorationSystem");
+//            }
+//        }
+//    }
 
     public void loadWorldEdit() {
         if (!WorldGuardController.hasWorldEdit()) {
