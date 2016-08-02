@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
@@ -46,13 +51,7 @@ import mc.alk.arena.util.Countdown.CountdownCallback;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.TimeUtil;
 import mc.euro.bukkit.BukkitInterface;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 
 
 public abstract class Event extends Competition implements CountdownCallback, ArenaListener {
@@ -99,7 +98,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
 
     public void autoEvent(){
         openEvent();
-        TimeUtil.testClock();
+//        TimeUtil.testClock();
         mc.sendCountdownTillEvent(eventParams.getSecondsTillStart());
         timer = new Countdown(BattleArena.getSelf(),(long)eventParams.getSecondsTillStart(),
                 (long)eventParams.getAnnouncementInterval(), this);

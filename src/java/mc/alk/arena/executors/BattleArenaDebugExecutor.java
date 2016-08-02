@@ -1,5 +1,27 @@
 package mc.alk.arena.executors;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.Match;
@@ -26,33 +48,10 @@ import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.NotifierUtil;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.SerializerUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.TimingUtil;
 import mc.alk.arena.util.TimingUtil.TimingStat;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 public class BattleArenaDebugExecutor extends CustomCommandExecutor{
 
@@ -66,8 +65,8 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             Defaults.DEBUG_TRACKING = on;
         } else if(section.equalsIgnoreCase("storage")){
             Defaults.DEBUG_STORAGE = on;
-        } else if(section.equalsIgnoreCase("damage")){
-            //			Defaults.DEBUG_DAMAGE = on;
+//        } else if(section.equalsIgnoreCase("damage")){
+//            			Defaults.DEBUG_DAMAGE = on;
             //		} else if(section.equalsIgnoreCase("q")){
             //						Defaults.DEBUGQ = on;
         } else if(section.equalsIgnoreCase("commands")){
@@ -197,22 +196,22 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 if (field.getName().equalsIgnoreCase(param)){
                     field.setAccessible(true);
                     try {
-                        if (sb){
+                        if (sb) {
                             return sendMessage(sender, "&2Parameter " + param +" = <"+field.get(m) +">" );
-                        } else {
-                            ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(field.get(m), ToStringStyle.MULTI_LINE_STYLE);
-                            return sendMessage(sender, rtsb.toString());
                         }
+                        ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(field.get(m), ToStringStyle.MULTI_LINE_STYLE);
+                        return sendMessage(sender, rtsb.toString());
+                        
                     } catch (Exception e) {
                         return sendMessage(sender, "&cError getting param "+param+" : msg=" + e.getMessage());
                     }
                 }
             }
             return sendMessage(sender, "&cThe param &6"+param+ "&c does not exist in &6" + m.getClass().getSimpleName());
-        } else {
-            ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(m, ToStringStyle.MULTI_LINE_STYLE);
-            return sendMessage(sender, rtsb.toString());
         }
+        
+        ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(m, ToStringStyle.MULTI_LINE_STYLE);
+        return sendMessage(sender, rtsb.toString());
     }
 
     @MCCommand(cmds={"showLobbyVars"}, admin=true)
@@ -419,39 +418,40 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
     public boolean addNotifyListener(CommandSender sender, Player player, String type, Boolean enable) {
         if (enable){
             NotifierUtil.addListener(player, type);
-            if (!sender.getName().equals(player.getName()))sendMessage(player,"&2 "+
-                    player.getDisplayName()+" &6now listening &2to " + type+" debugging messages");
+            if (!sender.getName().equals(player.getName()))
+                return sendMessage(player,"&2 "+ player.getDisplayName()+" &6now listening &2to " + type+" debugging messages");
+            
             return sendMessage(sender,"&2 "+player.getName()+" &6now listening &2to " + type+" debugging messages");
-        } else {
-            NotifierUtil.removeListener(player, type);
-            if (!sender.getName().equals(player.getName()))sendMessage(player,"&2 "+
-                    player.getDisplayName()+" &cstopped listening&2 to " + type+" debugging messages");
-            return sendMessage(sender,"&2 "+player.getDisplayName()+
-                    " &cstopped listening&2 to " + type+" debugging messages");
         }
+        
+        NotifierUtil.removeListener(player, type);
+        if (!sender.getName().equals(player.getName()))
+            return sendMessage(player,"&2 "+ player.getDisplayName()+" &cstopped listening&2 to " + type+" debugging messages");
+        
+        return sendMessage(sender,"&2 "+player.getDisplayName()+ " &cstopped listening&2 to " + type+" debugging messages");
     }
 
-    @MCCommand(cmds={"giveArenaAdminPerms"}, op=true)
-    public boolean giveArenaAdminPerms(CommandSender sender, Player player, Boolean enable) {
-        if (!PermissionsUtil.giveAdminPerms(player,enable)){
-            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
-        if (enable){
-            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 admin perms");
-        } else {
-            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 admin perms");
-        }
-    }
+//    @MCCommand(cmds={"giveArenaAdminPerms"}, op=true)
+//    public boolean giveArenaAdminPerms(CommandSender sender, Player player, Boolean enable) {
+//        if (!PermissionsUtil.giveAdminPerms(player,enable)){
+//            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
+//        if (enable){
+//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 admin perms");
+//        } else {
+//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 admin perms");
+//        }
+//    }
 
-    @MCCommand(cmds={"giveWGPerms"}, op=true)
-    public boolean giveWorldGuardPerms(CommandSender sender, Player player, Boolean enable) {
-        if (!PermissionsUtil.giveWGPerms(player,enable)){
-            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
-        if (enable){
-            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 wg perms");
-        } else {
-            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 wg perms");
-        }
-    }
+//    @MCCommand(cmds={"giveWGPerms"}, op=true)
+//    public boolean giveWorldGuardPerms(CommandSender sender, Player player, Boolean enable) {
+//        if (!PermissionsUtil.giveWGPerms(player,enable)){
+//            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
+//        if (enable){
+//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 wg perms");
+//        } else {
+//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 wg perms");
+//        }
+//    }
 
     @MCCommand(cmds={"showContainers"}, admin=true)
     public boolean showContainers(CommandSender sender, String args[]) {
@@ -528,14 +528,11 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         if (rc == null) {
             return sendMessage(sender, "&cNo config file found for " + paramName);
         }
-        String pasteTitle;
         File f;
         if (args.length > 2 && args[2].equalsIgnoreCase("arenas")){
             f = rc.getArenaSerializer().getFile();
-            pasteTitle = mp.getName() + " " + f.getName();
         } else {
             f = rc.getConfigSerializer().getFile();
-            pasteTitle = f.getName();
         }
         if (!f.exists()){
             return sendMessage(sender, "&cNo config file found for " + paramName);}

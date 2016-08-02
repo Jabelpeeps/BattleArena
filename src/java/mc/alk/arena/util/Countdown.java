@@ -1,7 +1,8 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.controllers.Scheduler;
 import org.bukkit.plugin.Plugin;
+
+import mc.alk.arena.controllers.Scheduler;
 
 public class Countdown implements Runnable{
     static int count = 0;
@@ -31,7 +32,7 @@ public class Countdown implements Runnable{
 
     public Countdown(final Plugin plugin, long seconds, long intervalSeconds, CountdownCallback callback){
         if (seconds > Integer.MAX_VALUE)
-            seconds = (long) Integer.MAX_VALUE;
+            seconds = Integer.MAX_VALUE;
         this.interval = intervalSeconds <= 0 ? seconds : intervalSeconds;
         this.callback = callback;
         this.plugin = plugin;
@@ -61,7 +62,7 @@ public class Countdown implements Runnable{
         timerId = null;
         if (!continueOn)
             return;
-        TimeUtil.testClock();
+//        TimeUtil.testClock();
         if (!stop && (seconds > 0 || !cancelOnExpire)){
             timerId  = Scheduler.scheduleSynchronousTask(plugin, this,
                     interval * 20L);

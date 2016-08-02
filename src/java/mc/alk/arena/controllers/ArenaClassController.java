@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffect;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.DisguiseInterface;
+import mc.alk.arena.controllers.plugins.DisguiseController;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.events.players.ArenaPlayerClassSelectedEvent;
 import mc.alk.arena.listeners.PlayerHolder;
@@ -71,8 +71,8 @@ public class ArenaClassController {
         catch (Exception e){/* do nothing, error would be reported inside InventoryUtil */}
         giveClassEnchants(player.getPlayer(),ac);
         
-        if (ac.getDisguiseName()!=null && DisguiseInterface.enabled())
-            DisguiseInterface.disguisePlayer(player.getPlayer(), ac.getDisguiseName());
+        if (ac.getDisguiseName()!=null && DisguiseController.enabled())
+            DisguiseController.disguisePlayer(player.getPlayer(), ac.getDisguiseName());
         
         if (ac.getMobs() != null){
             try {

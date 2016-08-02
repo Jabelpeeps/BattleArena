@@ -1,5 +1,18 @@
 package mc.alk.arena.controllers.containers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
@@ -25,20 +38,9 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamHandler;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.TeamUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler{
+public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler {
+    
     public static final AbstractAreaContainer HOMECONTAINER = new AbstractAreaContainer("home"){
         @Override
         public LocationType getLocationType() {return LocationType.HOME;}
@@ -179,10 +181,10 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
         this.params= mp;
     }
 
-    @Override
-    public MatchState getMatchState() {
-        return MatchState.INLOBBY;
-    }
+//    @Override
+//    public MatchState getMatchState() {
+//        return MatchState.INLOBBY;
+//    }
 
     @Override
     public boolean isHandled(ArenaPlayer player) {
@@ -191,7 +193,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @Override
     public CompetitionState getState() {
-        return MatchState.NONE;
+        return MatchState.INLOBBY;
     }
 
     @Override

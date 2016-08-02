@@ -1,38 +1,39 @@
 package mc.alk.arena.util;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 
-import mc.alk.arena.util.plugins.VaultPermUtil;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 public class PermissionsUtil {
 	static final int ticks = 0;
-	static boolean hasVaultPerms = false;
-
-	public static void setPermission(Plugin plugin){
-		hasVaultPerms = VaultPermUtil.setPermission(plugin);
-	}
+//	static boolean hasVaultPerms = false;
+//
+//	public static void setPermission(Plugin plugin){
+//		hasVaultPerms = VaultPermUtil.setPermission(plugin);
+//	}
 
 	public static void givePlayerInventoryPerms(ArenaPlayer p){
 		givePlayerInventoryPerms(p.getPlayer());
 	}
 
 	public static void givePlayerInventoryPerms(Player p){
-		if (BattleArena.getSelf().isEnabled()){
+		if (BattleArena.getSelf().isEnabled()) {
 			if (Defaults.DEBUG_TRACE) Log.info("Giving inventory perms=" + p.getName());
 
-			if (Defaults.PLUGIN_MULTI_INV){ /// Give the multiinv permission node to ignore this player
-				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTI_INV_IGNORE_NODE, true, ticks);}
-			if (Defaults.PLUGIN_MULITVERSE_CORE){ /// Give the multiverse-core permission node to ignore this player
-				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTIVERSE_CORE_IGNORE_NODE, true, ticks);}
-			if (Defaults.PLUGIN_MULITVERSE_INV){ /// Give the multiverse-inventories permission node to ignore this player
-				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTIVERSE_INV_IGNORE_NODE, true, ticks);}
+			if (Defaults.PLUGIN_MULTI_INV) /// Give the multiinv permission node to ignore this player
+				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTI_INV_IGNORE_NODE, true, ticks);
+			
+			if (Defaults.PLUGIN_MULITVERSE_CORE) /// Give the multiverse-core permission node to ignore this player
+				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTIVERSE_CORE_IGNORE_NODE, true, ticks);
+			
+			if (Defaults.PLUGIN_MULITVERSE_INV) /// Give the multiverse-inventories permission node to ignore this player
+				p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTIVERSE_INV_IGNORE_NODE, true, ticks);
+			
 			if (Defaults.DEBUG_TRACE) Log.info("End giving inventory perms=" + p.getName());
 		}
 	}
@@ -50,13 +51,13 @@ public class PermissionsUtil {
 		return sender.isOp() || sender.hasPermission(Permissions.ADMIN_NODE);
 	}
 
-	public static boolean giveAdminPerms(Player player, Boolean enable) {
-		return hasVaultPerms && VaultPermUtil.giveAdminPerms(player, enable);
-	}
+//	public static boolean giveAdminPerms(Player player, Boolean enable) {
+//		return hasVaultPerms && VaultPermUtil.giveAdminPerms(player, enable);
+//	}
 
-	public static boolean giveWGPerms(Player player, Boolean enable) {
-		return hasVaultPerms && VaultPermUtil.giveWorldGuardPerms(player, enable);
-	}
+//	public static boolean giveWGPerms(Player player, Boolean enable) {
+//		return hasVaultPerms && VaultPermUtil.giveWorldGuardPerms(player, enable);
+//	}
 
 	public static boolean hasTeamPerm(CommandSender sender, MatchParams mp, Integer teamIndex) {
 		return sender.hasPermission("arena.join.team.all") ||

@@ -461,16 +461,16 @@ public class Arena extends AreaContainer {
         match.setVictor(player);
     }
 
-    /**
-     * Use the more generic getState instead
-     * Get the current state of the match
-     * @return current match state
-     */
-    @Override
-    @Deprecated
-    public MatchState getMatchState(){
-        return match.getMatchState();
-    }
+//    /**
+//     * Use the more generic getState instead
+//     * Get the current state of the match
+//     * @return current match state
+//     */
+//    @Override
+//    @Deprecated
+//    public MatchState getMatchState(){
+//        return match.getMatchState();
+//    }
 
     @Override
     /**
@@ -577,8 +577,6 @@ public class Arena extends AreaContainer {
         return true;
     }
 
-
-    @SuppressWarnings("SimplifiableIfStatement")
     public boolean matches(Arena arena) {
         if (arena == null)
             return false;
@@ -591,16 +589,16 @@ public class Arena extends AreaContainer {
 
     /**
      * Checks to see whether this arena has paramaters that match the given matchparams
-     * @param params params
+     * @param _params1 params
      * @return true if arena matches the params
      */
-    @SuppressWarnings("RedundantIfStatement")
-    public boolean matches(MatchParams params) {
-        if (!getParams().matches(params)) {
+ 
+    public boolean matches(MatchParams _params1) {
+        if (!getParams().matches(_params1)) {
             return false;}
-        if ((waitroom == null || !waitroom.hasSpawns()) && params.needsWaitroom())
+        if ((waitroom == null || !waitroom.hasSpawns()) && _params1.needsWaitroom())
             return false;
-        if ((spectate == null || !spectate.hasSpawns()) && params.needsSpectate())
+        if ((spectate == null || !spectate.hasSpawns()) && _params1.needsSpectate())
             return false;
         return true;
     }

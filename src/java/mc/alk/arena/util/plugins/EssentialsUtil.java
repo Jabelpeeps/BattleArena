@@ -1,6 +1,5 @@
 package mc.alk.arena.util.plugins;
 
-import mc.alk.arena.util.Log;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
@@ -8,11 +7,13 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.UserMap;
 
+import mc.alk.arena.util.Log;
+
 public class EssentialsUtil {
 	static Essentials essentials;
 
 	public static boolean enableEssentials(Plugin plugin) {
-		try{
+		try {
 			essentials = (Essentials) plugin;
 		} catch(Exception e){
 			Log.printStackTrace(e);

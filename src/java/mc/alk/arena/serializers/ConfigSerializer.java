@@ -12,6 +12,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
@@ -19,7 +25,6 @@ import mc.alk.arena.controllers.Modules;
 import mc.alk.arena.controllers.OptionSetController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.StateController;
-import mc.alk.arena.controllers.plugins.DisguiseInterface;
 import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaParams;
@@ -50,12 +55,6 @@ import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.SerializerUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
 
 /**
  *
@@ -657,7 +656,7 @@ public class ConfigSerializer extends BaseConfig{
             int team;
             final String disguiseName = cs.getString(whichTeam);
             if (whichTeam.equalsIgnoreCase("default")){
-                team = DisguiseInterface.DEFAULT;
+                team = Integer.MAX_VALUE;
             } else {
                 try {
                     team = Integer.valueOf(whichTeam.replaceAll("team", "")) - 1;

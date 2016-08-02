@@ -10,7 +10,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.MoneyController;
-import mc.alk.arena.controllers.plugins.DisguiseInterface;
+import mc.alk.arena.controllers.plugins.DisguiseController;
 import mc.alk.arena.controllers.plugins.EssentialsController;
 import mc.alk.arena.controllers.plugins.FactionsController;
 import mc.alk.arena.controllers.plugins.HeroesController;
@@ -22,7 +22,6 @@ import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.messaging.plugins.HerochatPlugin;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PermissionsUtil;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 
@@ -160,10 +159,10 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadLibsDisguise() {
-        if (!DisguiseInterface.enabled()) {
+        if (!DisguiseController.enabled()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("LibsDisguises");
             if (plugin != null) {
-                DisguiseInterface.setLibsDisguise(plugin);
+                DisguiseController.setLibsDisguise(plugin);
                 Log.info("[BattleArena] LibsDisguises detected. Implementing disguises");
             }
         }
@@ -287,7 +286,7 @@ public class BAPluginListener implements Listener {
                 }
             }
             /// Load Vault Permissions
-            PermissionsUtil.setPermission(plugin);
+//            PermissionsUtil.setPermission(plugin);
         }
     }
 

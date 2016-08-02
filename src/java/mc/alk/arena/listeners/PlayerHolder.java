@@ -1,18 +1,18 @@
 package mc.alk.arena.listeners;
 
+import org.bukkit.event.Listener;
+
 import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import org.bukkit.event.Listener;
 
 
 public interface PlayerHolder extends Listener, ArenaListener{
@@ -32,13 +32,6 @@ public interface PlayerHolder extends Listener, ArenaListener{
 	public MatchParams getParams();
 
 	public CompetitionState getState();
-
-    /**
-     * Use getState instead
-     * @return MatchState
-     */
-    @Deprecated
-	public MatchState getMatchState();
 
 	public boolean isHandled(ArenaPlayer player);
 

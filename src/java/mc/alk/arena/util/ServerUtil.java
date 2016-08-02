@@ -5,15 +5,13 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-import mc.alk.arena.Defaults;
-import mc.alk.plugin.updater.Version;
-import mc.alk.virtualPlayer.VirtualPlayers;
-import mc.euro.bukkit.BukkitInterface;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
+import mc.alk.arena.Defaults;
+import mc.alk.virtualPlayer.VirtualPlayers;
 
 
 public class ServerUtil {
@@ -66,7 +64,7 @@ public class ServerUtil {
         if (Defaults.DEBUG_VIRTUAL){foundPlayer = VirtualPlayers.getPlayer(name);}
         if (foundPlayer != null) {
             return foundPlayer;}
-        Collection<? extends Player> online = BukkitInterface.getOnlinePlayers();
+        Collection<? extends Player> online = Bukkit.getOnlinePlayers();
 		// if (Defaults.DEBUG_VIRTUAL){online = VirtualPlayers.getOnlinePlayers();}
 
 		for (Player player : online) {
@@ -92,24 +90,22 @@ public class ServerUtil {
 		OfflinePlayer p = findPlayer(name);
 		if (p != null){
 			return p;
-		} else{
-			/// Iterate over the worlds to see if a player.dat file exists
-			for (World w : Bukkit.getWorlds()){
-				File f = new File(w.getName()+"/players/"+name+".dat");
-				if (f.exists()){
-					return Bukkit.getOfflinePlayer(name);
-				}
-			}
-			return null;
 		}
+        /// Iterate over the worlds to see if a player.dat file exists
+        for (World w : Bukkit.getWorlds()){
+        	File f = new File(w.getName()+"/players/"+name+".dat");
+        	if (f.exists()){
+        		return Bukkit.getOfflinePlayer(name);
+        	}
+        }
+        return null;
 	}
 
 	public static Player[] getOnlinePlayers() {
 		if (Defaults.DEBUG_VIRTUAL){
 			return VirtualPlayers.getOnlinePlayers();
-		} else {
-			return BukkitInterface.getOnlinePlayers().toArray(new Player[BukkitInterface.getOnlinePlayers().size()]);
 		}
+        return Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 	}
 
 	public static void findOnlinePlayers(Set<String> names, Set<Player> foundplayers, Set<String> unfoundplayers) {
@@ -138,16 +134,4 @@ public class ServerUtil {
 			}
 		}
 	}
-
-	public static Version getBukkitVersion(){
-		final String pkg = Bukkit.getServer().getClass().getPackage().getName();
-		String version = pkg.substring(pkg.lastIndexOf('.') + 1);
-		if (version.equalsIgnoreCase("craftbukkit")){
-			return new Version("v1_4_5-");
-		} else{
-			return new Version(version);
-		}
-	}
-
-
 }

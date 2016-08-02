@@ -19,7 +19,7 @@ import mc.alk.arena.controllers.ArenaController;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.controllers.PlayerStoreController;
 import mc.alk.arena.controllers.TeleportLocationController;
-import mc.alk.arena.controllers.plugins.DisguiseInterface;
+import mc.alk.arena.controllers.plugins.DisguiseController;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.listeners.PlayerHolder;
@@ -179,8 +179,8 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.FLIGHTSPEED)) { PlayerUtil.setFlightSpeed(p,mo.getFlightSpeed()); }
             if (mo.hasOption(TransitionOption.DOCOMMANDS)) { PlayerUtil.doCommands(p,mo.getDoCommands()); }
             if (mo.deEnchant()) { psc.deEnchant(p);}
-            if (mo.undisguise() != null && mo.undisguise()) {DisguiseInterface.undisguise(p);}
-            if (mo.getDisguiseAllAs() != null) {DisguiseInterface.disguisePlayer(p, mo.getDisguiseAllAs());}
+            if (mo.undisguise() != null && mo.undisguise()) {DisguiseController.undisguise(p);}
+            if (mo.getDisguiseAllAs() != null) {DisguiseController.disguisePlayer(p, mo.getDisguiseAllAs());}
             if (mo.getMoney() != null) {MoneyController.add(player.getName(), mo.getMoney());}
             if (mo.hasOption(TransitionOption.POOLMONEY) && am instanceof Match) {
                 prizeMoney = ((Match)am).getPrizePoolMoney() * mo.getDouble(TransitionOption.POOLMONEY) /
@@ -210,10 +210,10 @@ public class TransitionController {
                 if (ac != null){
                     ArenaClassController.giveClassEnchants(p, ac);}
             }
-            if (mo.hasOption(TransitionOption.GIVEDISGUISE) && DisguiseInterface.enabled()){
+            if (mo.hasOption(TransitionOption.GIVEDISGUISE) && DisguiseController.enabled()){
                 final String disguise = getDisguise(mo,teamIndex);
                 if (disguise != null){ /// Give class items and effects
-                    DisguiseInterface.disguisePlayer(p, disguise);}
+                    DisguiseController.disguisePlayer(p, disguise);}
             }
             if (mo.hasOption(TransitionOption.GIVEITEMS)){
                 Color color = armorTeams ? TeamUtil.getTeamColor(teamIndex) : null;
@@ -321,8 +321,8 @@ public class TransitionController {
             return null;
         if (disguises.containsKey(teamIndex)){
             return disguises.get(teamIndex);
-        } else if (disguises.containsKey(DisguiseInterface.DEFAULT)){
-            return disguises.get(DisguiseInterface.DEFAULT);
+        } else if (disguises.containsKey(Integer.MAX_VALUE)){
+            return disguises.get(Integer.MAX_VALUE);
         }
         return null;
     }

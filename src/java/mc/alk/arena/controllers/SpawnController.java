@@ -1,17 +1,17 @@
 package mc.alk.arena.controllers;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.PriorityQueue;
+
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.util.CaseInsensitiveMap;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.TimeUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
-import java.util.Comparator;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 public class SpawnController {
 
@@ -99,7 +99,7 @@ public class SpawnController {
             if (DEBUG_SPAWNS) {
                 Log.info("SpawnNextEvent::run " + nextTimeToSpawn);
             }
-            TimeUtil.testClock();
+//            TimeUtil.testClock();
 
             /// Subtract the time passed from each element
             for (NextSpawn next : spawnQ) { /// we dont need to resort after this as we are subtracting a constant from all

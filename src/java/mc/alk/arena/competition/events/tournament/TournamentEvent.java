@@ -1,5 +1,25 @@
 package mc.alk.arena.competition.events.tournament;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Server;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.util.ChatPaginator;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
@@ -35,26 +55,6 @@ import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.TimeUtil;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.util.ChatPaginator;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
 
 public class TournamentEvent extends Event implements Listener, ArenaListener {
     public long timeBetweenRounds;
@@ -206,7 +206,7 @@ public class TournamentEvent extends Event implements Listener, ArenaListener {
         aliveTeams.removeAll(nmr.getLosers());
 
         if (incompleteMatchups.isEmpty()){
-            TimeUtil.testClock();
+//            TimeUtil.testClock();
             if (Defaults.DEBUG) Log.info("ROUND FINISHED !!!!!   " + aliveTeams);
 
             if (curRound +1 == nrounds || isFinished()){
@@ -498,7 +498,7 @@ public class TournamentEvent extends Event implements Listener, ArenaListener {
     }
 
     @Override
-    public MatchState getMatchState() {
+    public EventState getState() {
         return null;
     }
 

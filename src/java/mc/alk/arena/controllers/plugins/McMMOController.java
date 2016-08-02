@@ -1,10 +1,10 @@
 package mc.alk.arena.controllers.plugins;
 
+import java.util.List;
+
 import mc.alk.arena.listeners.competition.plugins.McMMOListener;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.util.Log;
-
-import java.util.List;
 
 
 public class McMMOController {
@@ -19,7 +19,11 @@ public class McMMOController {
 	}
 
     public static void setDisabledSkills(List<String> disabled) {
-        try{McMMOListener.setDisabledSkills(disabled);}catch(Exception e){Log.printStackTrace(e);}
+        try { 
+            McMMOListener.setDisabledSkills(disabled);
+        }catch( Exception e ) {
+            Log.printStackTrace(e);    
+        }
     }
 
     public static boolean hasDisabledSkills() {

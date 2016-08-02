@@ -1,5 +1,14 @@
 package mc.alk.arena.controllers.containers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
@@ -29,14 +38,6 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PlayerUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class GameManager implements PlayerHolder{
 	static final HashMap<ArenaType, GameManager> map = new HashMap<ArenaType, GameManager>();
@@ -108,11 +109,6 @@ public class GameManager implements PlayerHolder{
 
 	@Override
 	public CompetitionState getState() {
-		return MatchState.NONE;
-	}
-
-	@Override
-	public MatchState getMatchState() {
 		return MatchState.NONE;
 	}
 

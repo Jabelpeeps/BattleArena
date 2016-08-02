@@ -1,9 +1,9 @@
 package mc.alk.arena.controllers.plugins;
 
-import mc.alk.arena.util.plugins.VanishNoPacketUtil;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import mc.alk.arena.util.plugins.VanishNoPacketUtil;
 
 public class VanishNoPacketInterface {
 	private static boolean enabled = false;

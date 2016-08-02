@@ -1,5 +1,10 @@
 package mc.alk.arena.controllers.messaging;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.events.matches.MatchMessageEvent;
@@ -18,12 +23,6 @@ import mc.alk.arena.objects.victoryconditions.interfaces.DefinesLeaderRanking;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
-import mc.alk.arena.util.TimeUtil;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -122,7 +121,8 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 				typedot+nTeamPath+".server_draw");
 	}
 
-	public void sendYourTeamNotReadyMsg(ArenaTeam t1) {
+	@Override
+    public void sendYourTeamNotReadyMsg(ArenaTeam t1) {
 		Message message = getNodeMessage("match"+typeName+".your_team_not_ready");
 		Set<MessageOption> ops = message.getOptions();
 
@@ -131,7 +131,8 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 		t1.sendMessage(msgf.getFormattedMessage(message));
 	}
 
-	public void sendOtherTeamNotReadyMsg(ArenaTeam t1) {
+	@Override
+    public void sendOtherTeamNotReadyMsg(ArenaTeam t1) {
 		Message message = getNodeMessage(typedot+typeName+".other_team_not_ready");
 		Set<MessageOption> ops = message.getOptions();
 
@@ -150,8 +151,9 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 		team.sendToOtherMembers(player,msgf.getFormattedMessage(message));
 	}
 
-	public void sendOnIntervalMsg(Channel serverChannel, Collection<ArenaTeam> currentLeaders, int remaining) {
-		TimeUtil.testClock();
+	@Override
+    public void sendOnIntervalMsg(Channel serverChannel, Collection<ArenaTeam> currentLeaders, int remaining) {
+//		TimeUtil.testClock();
 		String msg;
 		Message message = getNodeMessage("match.interval_update");
 		Set<MessageOption> ops = message.getOptions();
@@ -194,7 +196,8 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 			event.getServerChannel().broadcast(emessage);
 	}
 
-	public void sendTimeExpired(Channel serverChannel) {
+	@Override
+    public void sendTimeExpired(Channel serverChannel) {
 		MatchMessageEvent event = new MatchTimeExpiredMessageEvent(match,MatchState.ONMATCHTIMEEXPIRED,serverChannel,"", "");
 		match.callEvent(event);
 		String message = event.getMatchMessage();

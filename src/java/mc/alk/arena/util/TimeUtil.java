@@ -1,39 +1,39 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.controllers.messaging.MessageHandler;
-import org.bukkit.Bukkit;
-
 import java.text.SimpleDateFormat;
+
+import mc.alk.arena.controllers.messaging.MessageHandler;
 
 
 public class TimeUtil {
 	static long lastCheck = 0;
 
-	public static void testClock() {
-        final long start = System.currentTimeMillis();
-		if (start - lastCheck < 10000)
-			return;
-		lastCheck = start;
-        final int seconds = 2;
-
-        final double millis = seconds * 1000;
-        final int nTicks = 20 * seconds;
-        Runnable task = new Runnable() {
-            public void run() {
-                long now = System.currentTimeMillis();
-
-                long elapsedTime = now - start;
-                double mult = millis/elapsedTime;
-                if (mult < 0.2){
-                	mult = 0.2;}
-//                Defaults.TICK_MULT = Math.min(mult,1);
-//                MatchMessageImpl.sendMessage(null, ChatColor.GRAY + "[BattleArena] multiplier: " + mult + "x");
-            }
-        };
-
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), task, nTicks);
-    }
+//	public static void testClock() {
+//        final long start = System.currentTimeMillis();
+//		if (start - lastCheck < 10000)
+//			return;
+//		lastCheck = start;
+//        final int seconds = 2;
+//
+//        final double millis = seconds * 1000;
+//        final int nTicks = 20 * seconds;
+//        
+//        Runnable task = new Runnable() {
+//            @Override
+//            public void run() {
+//                long now = System.currentTimeMillis();
+//
+//                long elapsedTime = now - start;
+//                double mult = millis/elapsedTime;
+//                if (mult < 0.2){
+//                	mult = 0.2;}
+////                Defaults.TICK_MULT = Math.min(mult,1);
+////                MatchMessageImpl.sendMessage(null, ChatColor.GRAY + "[BattleArena] multiplier: " + mult + "x");
+//            }
+//        };
+//
+//        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), task, nTicks);
+//    }
 
 	public static String convertMillisToString(long t){
 		return convertSecondsToString(t/1000);
