@@ -16,7 +16,6 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
-import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
@@ -50,7 +49,6 @@ public class ArenaAlterController {
         VLOC(true,true),
         TYPE(true,false),
         ADDREGION(false,true);
-//        ADDPYLAMOREGION(false,true);
 
         final boolean needsValue; /// whether the transition needs a value
 
@@ -60,28 +58,32 @@ public class ArenaAlterController {
             this.needsValue = hasValue;
             this.needsPlayer = needsPlayer;
         }
+        
         public boolean needsPlayer() {return needsPlayer;}
         public boolean hasValue(){return needsValue;}
 
-        public static ChangeType fromName(String str){
+        public static ChangeType fromName(String str) {
             str = str.toUpperCase();
             ChangeType ct = null;
-            try {ct = ChangeType.valueOf(str);} catch (Exception e){/* say nothing */}
-            if (ct != null)
-                return ct;
+            try {
+                ct = ChangeType.valueOf(str);
+            } catch (Exception e) {/* say nothing */}
+            
+            if (ct != null) return ct;
             if (str.equalsIgnoreCase("wr")) return WAITROOM;
             if (str.equalsIgnoreCase("s")) return SPECTATE;
             if (str.equalsIgnoreCase("l")) return LOBBY;
             if (str.equalsIgnoreCase("v") || str.equalsIgnoreCase("visitor")) return VLOC;
             if (str.equalsIgnoreCase("spawn") || str.equalsIgnoreCase("teamSpawn")) return SPAWNLOC;
+            
             try{
                 if (Integer.valueOf(str) != null)
                     return SPAWNLOC;
-            } catch (Exception e){/* say nothing */}
-            if (str.equalsIgnoreCase("main"))
-                return SPAWNLOC;
-            if (TeamUtil.getFromHumanTeamIndex(str) != null){
-                return SPAWNLOC;}
+            } catch (Exception e) {/* say nothing */}
+            
+            if (str.equalsIgnoreCase("main")) return SPAWNLOC;
+            if (TeamUtil.getFromHumanTeamIndex(str) != null) return SPAWNLOC;
+            
             return null;
         }
 
@@ -132,12 +134,11 @@ public class ArenaAlterController {
                         }
                         return new SpawnIndex(locindex,spawnindex);
                     }
-
                     return new SpawnIndex(locindex);
+                    
                 case TYPE:
                     return ArenaType.getType(value);
                 case ADDREGION:
-//                case ADDPYLAMOREGION:
                     return value;
             }
             return null;
@@ -164,8 +165,7 @@ public class ArenaAlterController {
 
 
     public static boolean setArenaOption(CommandSender sender, Arena arena, ChangeType ct, Object value)
-            throws IllegalStateException
-    {
+            throws IllegalStateException {
         BattleArenaController ac = BattleArena.getBAController();
         MatchParams params = arena.getParams();
 
@@ -184,9 +184,8 @@ public class ArenaAlterController {
             case SPECTATE: success = changeSpectateSpawn(player,arena,ac,(SpawnIndex)value); break;
             case LOBBY: success = changeLobbySpawn(player, params,(SpawnIndex)value); break;
             case ADDREGION: success = addWorldGuardRegion(player,arena); break;
-//            case ADDPYLAMOREGION: success = addPylamoRegion(player,arena); break;
             default:
-                sendMessage(sender,ChatColor.RED+ "Option: &6" + ct+"&c does not exist. \n&cValid options are &6"+ChangeType.getValidList());
+                MessageUtil.sendMessage(sender,ChatColor.RED+ "Option: &6" + ct+"&c does not exist. \n&cValid options are &6"+ChangeType.getValidList());
                 break;
         }
         if (success)
@@ -196,36 +195,15 @@ public class ArenaAlterController {
 
     private static boolean checkWorldGuard(CommandSender sender){
         if (!WorldGuardController.hasWorldGuard()){
-            sendMessage(sender,"&cWorldGuard is not enabled");
+            MessageUtil.sendMessage(sender,"&cWorldGuard is not enabled");
             return false;
         }
         if (!(sender instanceof Player)){
-            sendMessage(sender,"&cYou need to be in game to use this command");
+            MessageUtil.sendMessage(sender,"&cYou need to be in game to use this command");
             return false;
         }
         return true;
     }
-
-//    private static boolean addPylamoRegion(Player sender, Arena arena) {
-//        if (!WorldGuardController.hasWorldEdit()){
-//            sendMessage(sender,"&cYou need world edit to use this command");
-//            return false;}
-//        if (!PylamoController.enabled()){
-//            sendMessage(sender,"&cYou need PylamoRestorationSystem to use this command");
-//            return false;}
-//        WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
-//        Selection sel = wep.getSelection(sender);
-//        if (sel == null){
-//            sendMessage(sender,"&cYou need to select a region to use this command.");
-//            return false;
-//        }
-//        String id = makeRegionName(arena);
-//        PylamoController.createRegion(id, sel.getMinimumPoint(), sel.getMaximumPoint());
-//        PylamoRegion region = new PylamoRegion(id);
-//        region.setID(id);
-//        arena.setPylamoRegion(region);
-//        return true;
-//    }
 
     private static boolean addWorldGuardRegion(Player sender, Arena arena) {
         if (!checkWorldGuard(sender)){
@@ -233,7 +211,7 @@ public class ArenaAlterController {
         WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
         Selection sel = wep.getSelection(sender);
         if (sel == null){
-            sendMessage(sender,"&cYou need to select a region to use this command.");
+            MessageUtil.sendMessage(sender,"&cYou need to select a region to use this command.");
             return false;
         }
 
@@ -243,13 +221,13 @@ public class ArenaAlterController {
             String id = makeRegionName(arena);
             if (region != null){
                 WorldGuardController.updateProtectedRegion(sender,id);
-                sendMessage(sender,"&2Region updated! ");
+                MessageUtil.sendMessage(sender,"&2Region updated! ");
             } else {
                 region = WorldGuardController.createProtectedRegion(sender, id);
                 if (region != null) {
-                    sendMessage(sender,"&2Region "+region.getID()+" added! ");
+                    MessageUtil.sendMessage(sender,"&2Region "+region.getID()+" added! ");
                 } else {
-                    sendMessage(sender,"&cRegion addition failed! ");
+                    MessageUtil.sendMessage(sender,"&cRegion addition failed! ");
                     return false;
                 }
             }
@@ -277,8 +255,8 @@ public class ArenaAlterController {
                 WorldGuardController.setFlag(region, "exit", false);
             }
         } catch (Exception e) {
-            sendMessage(sender,"&cAdding WorldGuard region failed!");
-            sendMessage(sender, "&c" + e.getMessage());
+            MessageUtil.sendMessage(sender,"&cAdding WorldGuard region failed!");
+            MessageUtil.sendMessage(sender, "&c" + e.getMessage());
             Log.printStackTrace(e);
         }
         return true;
@@ -288,13 +266,12 @@ public class ArenaAlterController {
         return "ba-"+arena.getName().toLowerCase();
     }
 
-
     private static boolean changeSpawn(Player sender, Arena arena, BattleArenaController ac,
                                        SpawnIndex index) {
         Location loc = sender.getLocation();
         arena.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return sendMessage(sender,"&2 "+(getSpawnName(index.teamIndex)+" &2team spawn #&6"+(index.spawnIndex+1)+
+        return MessageUtil.sendMessage(sender,"&2 "+(getSpawnName(index.teamIndex)+" &2team spawn #&6"+(index.spawnIndex+1)+
                 "&2 set to location=&6" + Util.getLocString(loc)));
     }
 
@@ -308,7 +285,7 @@ public class ArenaAlterController {
         PlayerContainerSerializer pcs = new PlayerContainerSerializer();
         pcs.setConfig(BattleArena.getSelf().getDataFolder().getPath()+"/watchers/containers.yml");
         pcs.save();
-        return sendMessage(sender,"&2Lobby for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
+        return MessageUtil.sendMessage(sender,"&2Lobby for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
                 "&2 set to location=&6" + Util.getLocString(loc)));
     }
 
@@ -318,7 +295,7 @@ public class ArenaAlterController {
         RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.WAITROOM);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return sendMessage(sender,"&2waitroom for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
+        return MessageUtil.sendMessage(sender,"&2waitroom for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
                 "&2 set to location=&6" + Util.getLocString(loc)));
     }
 
@@ -328,7 +305,7 @@ public class ArenaAlterController {
         RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.SPECTATE);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return sendMessage(sender,"&2spectator room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
+        return MessageUtil.sendMessage(sender,"&2spectator room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
                 "&2 set to location=&6" + Util.getLocString(loc));
     }
 
@@ -338,19 +315,19 @@ public class ArenaAlterController {
         RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.VISITOR);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return sendMessage(sender,"&2Visitor room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
+        return MessageUtil.sendMessage(sender,"&2Visitor room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
                 "&2 set to location=&6" + Util.getLocString(loc));
     }
 
     private static boolean changeType(CommandSender sender, Arena arena, BattleArenaController ac, String value) {
         ArenaType t = ArenaType.fromString(value);
         if (t == null){
-            sendMessage(sender,"&ctype &6"+ value + "&c not found. valid types=&6"+ArenaType.getValidList());
+            MessageUtil.sendMessage(sender,"&ctype &6"+ value + "&c not found. valid types=&6"+ArenaType.getValidList());
             return false;
         }
         arena.getParams().setType(t);
         ac.updateArena(arena);
-        return sendMessage(sender,"&2Altered arena type to &6" + value);
+        return MessageUtil.sendMessage(sender,"&2Altered arena type to &6" + value);
     }
 
     public static boolean restoreDefaultArenaOptions(Arena arena, boolean save) {
@@ -375,13 +352,4 @@ public class ArenaAlterController {
         BattleArena.saveArenas(params.getType().getPlugin());
         return true;
     }
-
-    public static boolean sendMessage(CommandSender sender, String msg){
-        return MessageUtil.sendMessage(sender, msg);
-    }
-
-    public static boolean sendMessage(ArenaPlayer player, String msg){
-        return MessageUtil.sendMessage(player, msg);
-    }
-
 }

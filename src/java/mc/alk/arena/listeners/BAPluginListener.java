@@ -219,16 +219,6 @@ public class BAPluginListener implements Listener {
         }
     }
 
-//    public void loadPylamoRestoration() {
-//        if (!PylamoController.enabled()) {
-//            Plugin plugin = Bukkit.getPluginManager().getPlugin("PylamoRestorationSystem");
-//            if (plugin != null) {
-//                PylamoController.setPlugin(plugin);
-//                Log.info(BattleArena.getPluginName() + " found PylamoRestorationSystem");
-//            }
-//        }
-//    }
-
     public void loadWorldEdit() {
         if (!WorldGuardController.hasWorldEdit()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");

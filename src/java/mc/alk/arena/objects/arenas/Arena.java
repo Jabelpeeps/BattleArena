@@ -57,9 +57,6 @@ public class Arena extends AreaContainer {
     @Persist
     protected WorldGuardRegion wgRegion;
 
-//    @Persist
-//    protected PylamoRegion pylamoRegion;
-
     /**
      * Arena constructor
      */
@@ -727,14 +724,6 @@ public class Arena extends AreaContainer {
         return spawnController;
     }
 
-//    public void setPylamoRegion(PylamoRegion region) {
-//        this.pylamoRegion = region;
-//    }
-//
-//    public PylamoRegion getPylamoRegion() {
-//        return pylamoRegion;
-//    }
-
     public void setWaitRoom(RoomContainer waitroom) {
         this.waitroom = waitroom;
     }
@@ -746,7 +735,6 @@ public class Arena extends AreaContainer {
     public RoomContainer getWaitroom() {
         return waitroom;
     }
-
 
     public RoomContainer getVisitorRoom() {
         return visitorRoom;
@@ -867,6 +855,4 @@ public class Arena extends AreaContainer {
     protected void performTransition(CompetitionTransition transition, ArenaTeam team) {
         TransitionController.transition((match != null ? match : this), transition, team, false);
     }
-
-
 }
