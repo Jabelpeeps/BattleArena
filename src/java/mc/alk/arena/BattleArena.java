@@ -6,6 +6,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import mc.alk.arena.controllers.APIRegistrationController;
 import mc.alk.arena.controllers.ArenaEditor;
 import mc.alk.arena.controllers.BAEventController;
@@ -75,12 +83,6 @@ import mc.alk.plugin.updater.FileUpdater;
 import mc.alk.plugin.updater.PluginUpdater;
 import mc.battleplugins.api.BattlePluginsAPI;
 import mc.euro.bukkit.BukkitInterface;
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class BattleArena extends JavaPlugin {
 
@@ -245,6 +247,7 @@ public class BattleArena extends JavaPlugin {
         /// Lets hold off on loading the scheduled events until those plugins have registered
         Scheduler.scheduleSynchronousTask(this, new Runnable() {
             @Override
+            @SuppressWarnings( "synthetic-access" )
             public void run() {
                 baConfigSerializer.loadVictoryConditions();
                 baConfigSerializer.loadCompetitions(); /// Load our competitions, has to happen after classes and teams

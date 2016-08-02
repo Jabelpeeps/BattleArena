@@ -1,9 +1,15 @@
 package mc.alk.arena.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.MoneyController;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.controllers.plugins.DisguiseInterface;
 import mc.alk.arena.controllers.plugins.EssentialsController;
 import mc.alk.arena.controllers.plugins.FactionsController;
@@ -11,7 +17,7 @@ import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.controllers.plugins.McMMOController;
 import mc.alk.arena.controllers.plugins.MobArenaInterface;
 import mc.alk.arena.controllers.plugins.PylamoController;
-import mc.alk.arena.controllers.plugins.TagAPIController;
+import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.controllers.plugins.VanishNoPacketInterface;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
@@ -20,13 +26,6 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PermissionsUtil;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  *
@@ -65,8 +64,6 @@ public class BAPluginListener implements Listener {
             loadMultiverseInventory();
         } else if (event.getPlugin().getName().equalsIgnoreCase("PylamoRestorationSystem")) {
             loadPylamoRestoration();
-        } else if (event.getPlugin().getName().equalsIgnoreCase("TagAPI")) {
-            loadTagAPI();
         } else if (event.getPlugin().getName().equalsIgnoreCase("WorldEdit")) {
             loadWorldEdit();
         } else if (event.getPlugin().getName().equalsIgnoreCase("WorldGuard")) {
@@ -95,7 +92,6 @@ public class BAPluginListener implements Listener {
         loadMultiverseCore();
         loadMultiverseInventory();
         loadPylamoRestoration();
-        loadTagAPI();
         loadWorldEdit();
         loadWorldGuard();
         loadVanishNoPacket();
@@ -272,16 +268,6 @@ public class BAPluginListener implements Listener {
         }
     }
 
-    public void loadTagAPI() {
-        if (!TagAPIController.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("TagAPI");
-            if (plugin != null) {
-                TagAPIController.setEnable(true);
-                Log.info("[BattleArena] TagAPI detected. Implementing Team colored player names");
-            }
-        }
-    }
-
     public void loadVanishNoPacket() {
         if (!VanishNoPacketInterface.enabled()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
@@ -303,10 +289,10 @@ public class BAPluginListener implements Listener {
                     if (provider == null || provider.getProvider() == null) {
                         Log.warn(BattleArena.getPluginName() + " found no economy plugin. Attempts to use money in arenas might result in errors.");
                         return;
-                    } else {
-                        MoneyController.setEconomy(provider.getProvider());
-                        Log.info(BattleArena.getPluginName() + " found economy plugin Vault. [Default]");
                     }
+                    MoneyController.setEconomy(provider.getProvider());
+                    Log.info(BattleArena.getPluginName() + " found economy plugin Vault. [Default]");
+                    
                 } catch (Error e) {
                     Log.err(BattleArena.getPluginName() + " exception loading economy through Vault");
                     Log.printStackTrace(e);

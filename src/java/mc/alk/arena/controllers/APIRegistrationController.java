@@ -8,13 +8,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import mc.alk.arena.objects.arenas.ArenaFactory;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.BattleArena.AnnounceUpdateOption;
 import mc.alk.arena.BattleArena.UpdateOption;
@@ -24,6 +31,7 @@ import mc.alk.arena.executors.DuelExecutor;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.RegisteredCompetition;
 import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.ConfigSerializer;
@@ -32,13 +40,6 @@ import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.plugin.updater.FileUpdater;
 import mc.alk.plugin.updater.PluginUpdater;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class APIRegistrationController {
 
@@ -291,7 +292,7 @@ public class APIRegistrationController {
     }
 
     public void update(Plugin plugin, int bukkitId, File file,
-            UpdateOption updateOption, AnnounceUpdateOption announceOption) {
+            BattleArena.UpdateOption updateOption, BattleArena.AnnounceUpdateOption announceOption) {
         if (updateOption == null) {
             updateOption = UpdateOption.NONE;
         }

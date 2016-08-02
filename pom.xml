@@ -8,16 +8,16 @@
     <name>BattleArena</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <url>http://maven.apache.org</url>
     <!-- Locations for jar repositories -->
     <repositories>
-        <repository>
+<!--         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
+        </repository> -->
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -26,6 +26,14 @@
             <id>rainbowcraft-repo</id>
             <url>http://rainbowcraft.sytes.net/maven/repository/</url>
         </repository>
+        <repository>
+            <id>battleplugins-repo</id>
+            <url>http://server.battleplugins.com/maven/repository</url>
+        </repository>
+        <repository>
+  			<id>md_5-public</id>
+  			<url>http://repo.md-5.net/content/groups/public/</url>
+		</repository>
         <repository>
             <id>md_5-snapshots</id>
             <url>http://repo.md-5.net/content/repositories/snapshots/</url>
@@ -46,18 +54,17 @@
     <!-- Dependencies -->
     <dependencies>
         <!-- Dependencies that have maven repos -->
-        <!--    
-        <dependency>
+          
+<!--         <dependency>
             <groupId>mc.alk</groupId>
             <artifactId>BattleProfiler</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
-        </dependency>
-        -->
+        </dependency> -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.10.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- Libraries that are shaded in -->
@@ -113,7 +120,7 @@
         <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
-            <version>7.9.8-SNAPSHOT</version>
+            <version>9.0.9</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -122,12 +129,12 @@
             <version>1.4.08-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>org.kitteh</groupId>
             <artifactId>tagapi</artifactId>
             <version>3.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.kitteh</groupId>
             <artifactId>VanishNoPacket</artifactId>
@@ -136,8 +143,8 @@
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.2.31</version>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -220,12 +227,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <distributionManagement>
+<!--     <distributionManagement>
         <repository>
             <id>rainbowcraft-repo</id>
             <url>scp://rainbowcraft.sytes.net/var/www/maven/repository</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement> -->
     <!-- How we will compile the plugin -->
     <build>
         <finalName>${project.name}</finalName>
