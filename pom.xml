@@ -10,6 +10,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <build.number>${env.BUILD_NUMBER}</build.number>
+		<craftbukkit.version>1.10-R0.1-SNAPSHOT</craftbukkit.version>
     </properties>
     <url>http://maven.apache.org</url>
     <!-- Locations for jar repositories -->
@@ -38,7 +40,7 @@
         <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
-        </repository>        
+        </repository>
         <repository>
             <id>kitteh-repo</id>
             <url>http://repo.kitteh.org/content/repositories/public/</url>
@@ -62,7 +64,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10-R0.1-SNAPSHOT</version>
+            <version>${craftbukkit.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- Libraries that are shaded in -->
@@ -127,12 +129,7 @@
             <version>1.4.08-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-<!--         <dependency>
-            <groupId>org.kitteh</groupId>
-            <artifactId>tagapi</artifactId>
-            <version>3.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency> -->
+
         <dependency>
             <groupId>org.kitteh</groupId>
             <artifactId>VanishNoPacket</artifactId>
@@ -205,12 +202,7 @@
             <version>2.2</version>
             <scope>provided</scope>
         </dependency>
- <!--        <dependency>
-            <groupId>unknown.plugins</groupId>
-            <artifactId>PylamoRestorationSystem</artifactId>
-            <version>0.4</version>
-            <scope>provided</scope>
-        </dependency> -->
+
         <!-- test dependencies -->
 <!--         <dependency>
             <groupId>junit</groupId>
@@ -227,14 +219,14 @@
     </distributionManagement> -->
     <!-- How we will compile the plugin -->
     <build>
-        <finalName>${project.name}</finalName>
-        <extensions>
+        <finalName>${project.name}.${project.version}-#${build.number}</finalName>
+<!--         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
                 <version>2.10</version>
             </extension>
-        </extensions>
+        </extensions> -->
         <defaultGoal>install</defaultGoal>
         <!-- Where our source directory is -->
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
@@ -351,7 +343,7 @@
                     </links>
                 </configuration>
             </plugin> -->
-            <plugin>
+            <!-- <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <configuration>
                     <tasks>
@@ -369,7 +361,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
 </project>
