@@ -159,9 +159,9 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadLibsDisguise() {
-        if (!DisguiseController.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("LibsDisguises");
-            if (plugin != null) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("LibsDisguises");
+        if (plugin != null) {
+            if (!DisguiseController.enabled()) {
                 DisguiseController.setLibsDisguise(plugin);
                 Log.info("[BattleArena] LibsDisguises detected. Implementing disguises");
             }
