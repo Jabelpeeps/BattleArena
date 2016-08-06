@@ -69,7 +69,7 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
         EventOpenOptions eoo;
         MatchParams sgp;
         try {
-            HashSet<Integer> ignoreArgs = new HashSet<Integer>(Arrays.asList(1)); /// ignore the matchType argument
+            HashSet<Integer> ignoreArgs = new HashSet<>(Arrays.asList(1)); /// ignore the matchType argument
             eoo = EventOpenOptions.parseOptions(args,ignoreArgs, mp);
             sgp = eoo.getParams(); /// single game params
             event = new TournamentEvent(eventParams,eoo);
@@ -86,11 +86,11 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
                 MessageUtil.sendMessage(sender, "&c/tourney auto <type> teamSize=1");
                 return null;
             }
-            if (sgp.getMaxTeams().equals(ArenaSize.MAX) || !sgp.getMinTeams().equals(sgp.getMaxTeams())){
+            if (ArenaSize.MAX == sgp.getMaxTeams() || sgp.getMinTeams() != sgp.getMaxTeams() ){
                 MessageUtil.sendMessage(sender, "&cNumber of tournament teams must not be a range. Setting to &6nTeam="+sgp.getMinTeams());
                 sgp.setMaxTeams(sgp.getMinTeams());
             }
-            if (sgp.getMaxTeamSize().equals(ArenaSize.MAX) || !sgp.getMaxTeamSize().equals(sgp.getMinTeamSize())){
+            if (sgp.getMaxTeamSize() == ArenaSize.MAX || sgp.getMaxTeamSize() != sgp.getMinTeamSize()){
                 MessageUtil.sendMessage(sender, "&cTournament teams must have a finite size. &eSetting to &6teamSize=" + sgp.getMinTeamSize());
                 sgp.setMaxTeamSize(sgp.getMinTeamSize());
             }

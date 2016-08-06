@@ -11,11 +11,6 @@ import mc.alk.arena.objects.MatchParams;
 
 public class PermissionsUtil {
 	static final int ticks = 0;
-//	static boolean hasVaultPerms = false;
-//
-//	public static void setPermission(Plugin plugin){
-//		hasVaultPerms = VaultPermUtil.setPermission(plugin);
-//	}
 
 	public static void givePlayerInventoryPerms(ArenaPlayer p){
 		givePlayerInventoryPerms(p.getPlayer());
@@ -50,14 +45,6 @@ public class PermissionsUtil {
 	public static boolean isAdmin(CommandSender sender){
 		return sender.isOp() || sender.hasPermission(Permissions.ADMIN_NODE);
 	}
-
-//	public static boolean giveAdminPerms(Player player, Boolean enable) {
-//		return hasVaultPerms && VaultPermUtil.giveAdminPerms(player, enable);
-//	}
-
-//	public static boolean giveWGPerms(Player player, Boolean enable) {
-//		return hasVaultPerms && VaultPermUtil.giveWorldGuardPerms(player, enable);
-//	}
 
 	public static boolean hasTeamPerm(CommandSender sender, MatchParams mp, Integer teamIndex) {
 		return sender.hasPermission("arena.join.team.all") ||

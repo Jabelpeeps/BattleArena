@@ -1,21 +1,20 @@
 package mc.alk.arena.events.entity;
 
-import mc.alk.arena.events.ExtendedBukkitEvent;
-import mc.alk.arena.objects.ArenaPlayer;
-
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class MobDeathEvent extends ExtendedBukkitEvent {
-	final ArenaPlayer killer;
+import mc.alk.arena.objects.ArenaPlayer;
 
-	public MobDeathEvent(EntityDeathEvent event, ArenaPlayer killer){
-		this.event = event;
-		this.killer = killer;
+public class MobDeathEvent {
+	final ArenaPlayer killer;
+	protected EntityDeathEvent event;
+	
+	public MobDeathEvent(EntityDeathEvent _event, ArenaPlayer _killer){
+		event = _event;
+		killer = _killer;
 	}
 
-	@Override
 	public EntityDeathEvent getBukkitEvent() {
-		return (EntityDeathEvent) event;
+		return event;
 	}
 
 	public ArenaPlayer getPlayer(){

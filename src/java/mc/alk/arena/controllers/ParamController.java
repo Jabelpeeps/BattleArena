@@ -1,5 +1,11 @@
 package mc.alk.arena.controllers;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaParams;
@@ -10,17 +16,11 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.util.CaseInsensitiveMap;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 public class ParamController {
-    static final CaseInsensitiveMap<MatchParams> types = new CaseInsensitiveMap<MatchParams>();
-    static final Map<String, StateGraph> transitions = new ConcurrentHashMap<String, StateGraph>();
-    static final CaseInsensitiveMap<Set<String>> aliases = new CaseInsensitiveMap<Set<String>>();
+    static final CaseInsensitiveMap<MatchParams> types = new CaseInsensitiveMap<>();
+    static final Map<String, StateGraph> transitions = new ConcurrentHashMap<>();
+    static final CaseInsensitiveMap<Set<String>> aliases = new CaseInsensitiveMap<>();
 
     public static void addMatchParams(MatchParams matchParams) {
         if (matchParams.getType() == null)
@@ -46,7 +46,7 @@ public class ParamController {
     public static void addAlias(String alias, MatchParams matchParams) {
         Set<String> set = aliases.get(matchParams.getType().getName());
         if (set == null){
-            set = new HashSet<String>();
+            set = new HashSet<>();
             aliases.put(matchParams.getType().getName(), set);
         }
         types.put(alias, matchParams);
@@ -128,7 +128,7 @@ public class ParamController {
     public static String getAvaibleTypes(Set<String> disabled) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        HashSet<MatchParams> params = new HashSet<MatchParams>();
+        HashSet<MatchParams> params = new HashSet<>();
         params.addAll(types.values());
         for (MatchParams mp: params){
             if (disabled != null && disabled.contains(mp.getName()))
@@ -157,9 +157,8 @@ public class ParamController {
     public static MatchParams copyParams(MatchParams params) {
         if (params instanceof EventParams){
             return new EventParams(params);
-        } else {
-            return new MatchParams(params);
         }
+        return new MatchParams(params);
     }
 
     public static EventParams copyParams(EventParams params) {

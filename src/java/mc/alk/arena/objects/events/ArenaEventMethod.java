@@ -11,19 +11,19 @@ public class ArenaEventMethod {
 	final Class<? extends Event> bukkitEvent;
 	final Method getPlayerMethod;
 	final MatchState beginState, endState;
-	final EventPriority priority;
+	final ArenaEventPriority priority;
 	final org.bukkit.event.EventPriority bukkitPriority;
 	final boolean specificArenaPlayer;
     final boolean isBAEvent; /// Whether this is a BAevent or a normal bukkit event
 
 	public ArenaEventMethod(Method callMethod, Class<? extends Event> event,
-			MatchState begin, MatchState end, MatchState cancel, EventPriority priority,
+			MatchState begin, MatchState end, MatchState cancel, ArenaEventPriority priority,
 			org.bukkit.event.EventPriority bukkitPriority, boolean isBAEvent) {
 		this(callMethod,event,null,begin,end,cancel,priority, bukkitPriority,isBAEvent);
 	}
 
 	public ArenaEventMethod(Method callMethod, Class<? extends Event> event,Method getPlayerMethod,
-			MatchState begin, MatchState end, MatchState cancel, EventPriority priority,
+			MatchState begin, MatchState end, MatchState cancel, ArenaEventPriority priority,
 			org.bukkit.event.EventPriority bukkitPriority, boolean isBAEvent) {
 		this.callMethod = callMethod;
 		this.bukkitEvent = event;
@@ -45,7 +45,7 @@ public class ArenaEventMethod {
 		return this.specificArenaPlayer;
 	}
 
-	public EventPriority getPriority(){
+	public ArenaEventPriority getPriority(){
 		return priority;
 	}
 

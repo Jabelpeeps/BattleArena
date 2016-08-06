@@ -1,5 +1,18 @@
 package mc.alk.arena.listeners.custom;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.UUID;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.listeners.custom.RListener.RListenerPriorityComparator;
@@ -8,17 +21,6 @@ import mc.alk.arena.util.DmgDeathUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MapOfTreeSet;
 import mc.alk.arena.util.PlayerUtil;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.UUID;
 
 
 /**
@@ -29,7 +31,7 @@ import java.util.UUID;
 class SpecificPlayerEventListener extends BaseEventListener {
     /** map of player to listeners listening for that player */
     final protected MapOfTreeSet<UUID,RListener> listeners =
-            new MapOfTreeSet<UUID,RListener>(RListener.class,
+            new MapOfTreeSet<>(RListener.class,
                     new RListenerPriorityComparator());
 
     /** The method which will return a Player if invoked */
@@ -41,7 +43,7 @@ class SpecificPlayerEventListener extends BaseEventListener {
      * @param getPlayerMethod : a method which when not null and invoked will return a Player
      */
     public SpecificPlayerEventListener(final Class<? extends Event> bukkitEvent,
-                                       org.bukkit.event.EventPriority bukkitPriority, Method getPlayerMethod) {
+                                       EventPriority bukkitPriority, Method getPlayerMethod) {
         super(bukkitEvent, bukkitPriority);
         if (Defaults.DEBUG_EVENTS) Log.info("Registering GenericPlayerEventListener for type " + bukkitEvent +" pm="+getPlayerMethod);
         this.getPlayerMethod = getPlayerMethod;

@@ -431,28 +431,6 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return MessageUtil.sendMessage(sender,"&2 "+player.getDisplayName()+ " &cstopped listening&2 to " + type+" debugging messages");
     }
 
-//    @MCCommand(cmds={"giveArenaAdminPerms"}, op=true)
-//    public boolean giveArenaAdminPerms(CommandSender sender, Player player, Boolean enable) {
-//        if (!PermissionsUtil.giveAdminPerms(player,enable)){
-//            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
-//        if (enable){
-//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 admin perms");
-//        } else {
-//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 admin perms");
-//        }
-//    }
-
-//    @MCCommand(cmds={"giveWGPerms"}, op=true)
-//    public boolean giveWorldGuardPerms(CommandSender sender, Player player, Boolean enable) {
-//        if (!PermissionsUtil.giveWGPerms(player,enable)){
-//            return sendMessage(sender,"&cCouldn't change the admin perms of &6"+player.getDisplayName());}
-//        if (enable){
-//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &6now has&2 wg perms");
-//        } else {
-//            return sendMessage(sender,"&2 "+player.getDisplayName()+" &4no longer has&2 wg perms");
-//        }
-//    }
-
     @MCCommand(cmds={"showContainers"}, admin=true)
     public boolean showContainers(CommandSender sender, String args[]) {
         MatchParams p = null;
@@ -551,7 +529,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         Collection<OfflinePlayer> ops = sc.getPlayers();
         Collection<String> names;
         for (Team t : sc.getTeams()) {
-            names = new ArrayList<String>();
+            names = new ArrayList<>();
             for (OfflinePlayer p: t.getPlayers()) {
                 names.add(p.getName());
             }
@@ -560,7 +538,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         }
         for (Objective o : sc.getObjectives()){
             MessageUtil.sendMessage(sender, "&2 -- Objective &e"+o.getName() +" - "+o.getDisplayName());
-            TreeMap<Integer, List<String>> m = new TreeMap<Integer, List<String>>(Collections.reverseOrder());
+            TreeMap<Integer, List<String>> m = new TreeMap<>(Collections.reverseOrder());
 
             for (OfflinePlayer op: ops) {
                 Score score = o.getScore(op);
@@ -569,7 +547,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 Team t = sc.getPlayerTeam(op);
                 List<String> l = m.get(score.getScore());
                 if (l == null) {
-                    l = new ArrayList<String>();
+                    l = new ArrayList<>();
                     m.put(score.getScore(), l);
                 }
                 String displayName;
@@ -590,6 +568,4 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         }
         return true;
     }
-
-
 }

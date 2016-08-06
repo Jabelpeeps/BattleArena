@@ -4,7 +4,7 @@ import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -40,7 +40,7 @@ public class MobKills extends VictoryCondition implements ScoreTracker{
 		return mkills.getTeamRanks();
 	}
 
-	@ArenaEventHandler(priority=EventPriority.LOW)
+	@ArenaEventHandler(priority=ArenaEventPriority.LOW)
 	public void mobDeathEvent(EntityDeathEvent event) {
 		switch(event.getEntityType()){
 //		case BAT:
@@ -112,7 +112,7 @@ public class MobKills extends VictoryCondition implements ScoreTracker{
 		mkills.addPoints(killer, 1);
 	}
 
-	@ArenaEventHandler(priority = EventPriority.LOW)
+	@ArenaEventHandler(priority = ArenaEventPriority.LOW)
 	public void onFindCurrentLeader(MatchFindCurrentLeaderEvent event) {
         event.setResult(mkills.getMatchResult(match));
 	}

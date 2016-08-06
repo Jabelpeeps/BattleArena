@@ -1,13 +1,15 @@
 package mc.alk.arena.listeners.custom;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.util.Log;
-import org.bukkit.event.Event;
-
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+
+import mc.alk.arena.Defaults;
+import mc.alk.arena.util.Log;
 
 
 /**
@@ -21,14 +23,14 @@ class BukkitEventListener extends GeneralEventListener {
 
 	/**
 	 * Construct a listener to listen for the given bukkit event
-	 * @param bukkitEvent : which event we will listen for
+	 * @param _bukkitEvent : which event we will listen for
 	 * @param getPlayerMethod : a method which when not null and invoked will return a Player
 	 */
-	public BukkitEventListener(final Class<? extends Event> bukkitEvent,
-                               org.bukkit.event.EventPriority bukkitPriority, Method getPlayerMethod) {
-		super(bukkitEvent, bukkitPriority);
+	public BukkitEventListener(final Class<? extends Event> _bukkitEvent,
+                                            EventPriority _bukkitPriority, Method getPlayerMethod) {
+		super(_bukkitEvent, _bukkitPriority);
 		if (Defaults.DEBUG_EVENTS) Log.info("Registering GenericPlayerEventListener for type " +
-                bukkitEvent.getSimpleName() +" pm="+(getPlayerMethod == null ? "null" : getPlayerMethod.getName()));
+                _bukkitEvent.getSimpleName() +" pm="+(getPlayerMethod == null ? "null" : getPlayerMethod.getName()));
 	}
 
     /**
@@ -42,7 +44,7 @@ class BukkitEventListener extends GeneralEventListener {
 
         Map<RListener,Integer> l = listeners.get(rl.getPriority());
         if (l == null){
-            l = new TreeMap<RListener,Integer>(new Comparator<RListener>(){
+            l = new TreeMap<>(new Comparator<RListener>(){
                 @Override
                 public int compare(RListener o1, RListener o2) {
                     return o1.getListener().equals(o2.getListener()) ? 0 :
@@ -52,13 +54,13 @@ class BukkitEventListener extends GeneralEventListener {
             listeners.put(rl.getPriority(), l);
         }
 
-        Integer count = l.get(rl);
-        if (count == null){
+        Integer lcount = l.get(rl);
+        if (lcount == null){
             l.put(rl,1);
             handlers = null;
             bake();
         } else {
-            l.put(rl,count+1);
+            l.put(rl,lcount+1);
         }
     }
 

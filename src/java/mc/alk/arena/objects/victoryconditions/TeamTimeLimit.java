@@ -7,7 +7,7 @@ import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
@@ -38,7 +38,7 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
     }
 
     @SuppressWarnings("UnusedParameters")
-    @ArenaEventHandler(priority=EventPriority.LOW)
+    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onFinished(MatchFinishedEvent event){
         cancelTimers();
     }

@@ -6,7 +6,7 @@ import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.events.matches.MatchResultEvent;
 import mc.alk.arena.events.matches.MatchStartEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;
@@ -21,21 +21,21 @@ public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, Cou
     }
 
     @SuppressWarnings("UnusedParameters")
-    @ArenaEventHandler(priority=EventPriority.LOW)
+    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onStart(MatchStartEvent event){
         cancelTimers();
         announceInterval =match.getParams().getIntervalTime();
         timer = new Countdown(BattleArena.getSelf(),match.getParams().getMatchTime(), announceInterval, this);
     }
 
-    @ArenaEventHandler(priority=EventPriority.LOW)
+    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onVictory(MatchResultEvent event){
         if (event.isMatchEnding())
             cancelTimers();
     }
 
     @SuppressWarnings("UnusedParameters")
-    @ArenaEventHandler(priority=EventPriority.LOW)
+    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onFinished(MatchFinishedEvent event){
         cancelTimers();
     }

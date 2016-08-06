@@ -1,5 +1,7 @@
 package mc.alk.arena.objects.joining;
 
+import java.util.Collection;
+
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -10,8 +12,6 @@ import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.TransitionOption;
-
-import java.util.Collection;
 
 public class WaitingObject {
     protected boolean joinable = true;
@@ -33,13 +33,8 @@ public class WaitingObject {
         }
     }
 
-//    public boolean matches(QueueObject qo) {
-//        return joinable &&
-//                (arena != null ?
-//                        arena.matches(qo.getMatchParams(), qo.getJoinOptions()) :
-//                        params.matchesIgnoreNTeams(qo.getMatchParams()));
-//    }
-public boolean matches(QueueObject qo) {
+
+    public boolean matches(QueueObject qo) {
         return joinable && (arena != null ?
                         arena.matches(qo.getJoinOptions()) :
                         params.matches(qo.getJoinOptions()));
@@ -80,6 +75,7 @@ public boolean matches(QueueObject qo) {
         return originalQueuedObject;
     }
 
+    @Override
     public String toString() {
         return "[WO " + (arena != null ? arena.getName() : "") + " " + params.getDisplayName() + "]";
     }

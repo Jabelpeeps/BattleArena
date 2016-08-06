@@ -19,7 +19,7 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
@@ -172,7 +172,7 @@ public class ArenaMatch extends Match {
 
 
 
-    //	@MatchEventHandler(suppressCastWarnings=true,priority=EventPriority.HIGHER)
+    //	@MatchEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.HIGHER)
     //	public void onCheckEmulateDeath(EntityDamageEvent event) {
     //		//		Log.debug("############## checking emulate   " + event.getEntity() +"    " + event.isCancelled() +"    " + event.getDamage());
     //		if (event.isCancelled() || event.getDamage() <= 0 || !(event.getEntity() instanceof Player))
@@ -221,7 +221,7 @@ public class ArenaMatch extends Match {
     //		}
     //	}
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         final ArenaPlayer p = BattleArena.toArenaPlayer(event.getPlayer());
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
@@ -343,12 +343,12 @@ public class ArenaMatch extends Match {
      * so we need to act before them
      * @param event PlayerCommandPreprocessEvent
      */
-    @ArenaEventHandler(priority=EventPriority.HIGH, bukkitPriority=org.bukkit.event.EventPriority.LOWEST)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH, bukkitPriority=org.bukkit.event.EventPriority.LOWEST)
     public void onPlayerCommandPreprocess1(PlayerCommandPreprocessEvent event){
         handlePreprocess(event);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerCommandPreprocess2(PlayerCommandPreprocessEvent event){
         if (event.isCancelled()){
             return;}
@@ -364,7 +364,7 @@ public class ArenaMatch extends Match {
         }
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event){
         playerInteract(event);
     }

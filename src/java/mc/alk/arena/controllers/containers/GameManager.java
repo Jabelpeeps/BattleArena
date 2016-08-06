@@ -32,7 +32,7 @@ import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -77,7 +77,7 @@ public class GameManager implements PlayerHolder{
     }
 
 
-    @ArenaEventHandler(priority=EventPriority.HIGHEST)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGHEST)
 	public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
 		if (handled.contains(event.getPlayer()) && !event.isHandledQuit()){
 			ArenaPlayer player = event.getPlayer();

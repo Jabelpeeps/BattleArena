@@ -1,5 +1,12 @@
 package mc.alk.arena.controllers.joining.scoreboard;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
@@ -17,17 +24,10 @@ import mc.alk.scoreboardapi.api.SEntry;
 import mc.alk.scoreboardapi.api.STeam;
 import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 public class FullScoreboard implements WaitingScoreboard {
-    Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<Integer, LinkedList<SEntry>>();
+    Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
 
-    Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<Integer, LinkedList<SEntry>>();
+    Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
     ArenaScoreboard scoreboard;
     ArenaObjective ao;
     final int minTeams;
@@ -42,8 +42,8 @@ public class FullScoreboard implements WaitingScoreboard {
         minTeams = params.getMinTeams();
         int maxTeams = params.getMaxTeams();
 //        HashMap<ArenaTeam, STeam> teamMap = new HashMap<ArenaTeam, STeam>();
-        List<ArenaTeam> ateams = new ArrayList<ArenaTeam>();
-        List<STeam> steams = new ArrayList<STeam>();
+        List<ArenaTeam> ateams = new ArrayList<>();
+        List<STeam> steams = new ArrayList<>();
         for (int i = 0; i < maxTeams; i++) {
             ArenaTeam team = i < teams.size() ? teams.get(i) : TeamFactory.createCompositeTeam(i, params);
 
@@ -54,17 +54,17 @@ public class FullScoreboard implements WaitingScoreboard {
             ateams.add(team);
         }
         addPlaceholders(ateams, steams, minTeams); /// half
-        if (params.getForceStartTime() >0 &&
-                params.getForceStartTime() != ArenaSize.MAX
-                && !params.getMaxPlayers().equals(params.getMinPlayers())
-                ){
+        
+        if (    params.getForceStartTime() >0 
+                && params.getForceStartTime() != ArenaSize.MAX
+                && params.getMaxPlayers() != params.getMinPlayers() ) {
             countdown = new Countdown(BattleArena.getSelf(), params.getForceStartTime(),1,new DisplayCountdown());
         }
     }
 
     private void addPlaceholders(List<ArenaTeam> ateams, List<STeam> steams, int minTeams) {
-        List<SEntry> es = new ArrayList<SEntry>();
-        List<Integer> points = new ArrayList<Integer>();
+        List<SEntry> es = new ArrayList<>();
+        List<Integer> points = new ArrayList<>();
         for (int i=0;i < ateams.size();i++) {
             ArenaTeam at = ateams.get(i);
             STeam st = steams.get(i);
@@ -102,7 +102,7 @@ public class FullScoreboard implements WaitingScoreboard {
         if (!optionalTeam && getReqSize(team.getIndex()) < team.getMinPlayers()) {
             te.r = reqPlaceHolderPlayers.get(team.getIndex());
             if (te.r == null) {
-                te.r = new LinkedList<SEntry>();
+                te.r = new LinkedList<>();
                 reqPlaceHolderPlayers.put(team.getIndex(), te.r);
             }
             name = "needed";
@@ -111,7 +111,7 @@ public class FullScoreboard implements WaitingScoreboard {
         } else {
             te.r = opPlaceHolderPlayers.get(team.getIndex());
             if (te.r == null) {
-                te.r = new LinkedList<SEntry>();
+                te.r = new LinkedList<>();
                 opPlaceHolderPlayers.put(team.getIndex(), te.r);
             }
             name = "open";

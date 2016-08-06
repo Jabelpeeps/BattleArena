@@ -1,5 +1,11 @@
 package mc.alk.arena.controllers.joining.scoreboard;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
@@ -17,16 +23,10 @@ import mc.alk.scoreboardapi.api.SEntry;
 import mc.alk.scoreboardapi.api.STeam;
 import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 public class CutoffScoreboard implements WaitingScoreboard {
-    Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<Integer, LinkedList<SEntry>>();
+    Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
 
-    Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<Integer, LinkedList<SEntry>>();
+    Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
     ArenaScoreboard scoreboard;
     ArenaObjective ao;
     final int minTeams;
@@ -53,10 +53,9 @@ public class CutoffScoreboard implements WaitingScoreboard {
                 addPlaceholder(team, t, i >= minTeams);
             }
         }
-        if (params.getForceStartTime() >0 &&
-                params.getForceStartTime() != ArenaSize.MAX
-                && !params.getMaxPlayers().equals(params.getMinPlayers())
-                ){
+        if (    params.getForceStartTime() >0 
+                && params.getForceStartTime() != ArenaSize.MAX
+                && params.getMaxPlayers() != params.getMinPlayers() ) {
             countdown = new Countdown(BattleArena.getSelf(), params.getForceStartTime(),1,new DisplayCountdown());
         }
     }
@@ -96,7 +95,7 @@ public class CutoffScoreboard implements WaitingScoreboard {
         if (!optionalTeam && getReqSize(team.getIndex()) < team.getMinPlayers()) {
             r = reqPlaceHolderPlayers.get(team.getIndex());
             if (r == null) {
-                r = new LinkedList<SEntry>();
+                r = new LinkedList<>();
                 reqPlaceHolderPlayers.put(team.getIndex(), r);
             }
             name = "needed";
@@ -105,7 +104,7 @@ public class CutoffScoreboard implements WaitingScoreboard {
         } else {
             r = opPlaceHolderPlayers.get(team.getIndex());
             if (r == null) {
-                r = new LinkedList<SEntry>();
+                r = new LinkedList<>();
                 opPlaceHolderPlayers.put(team.getIndex(), r);
             }
             name = "open";

@@ -137,7 +137,7 @@ public class ConfigSerializer extends BaseConfig{
             ConfigurationSection teamcs = cs.getConfigurationSection("teamParams");
             Set<String> teamKeys = teamcs.getKeys(false);
             if (teamKeys != null) {
-                Map<Integer, MatchParams> teamParams = new HashMap<Integer, MatchParams>();
+                Map<Integer, MatchParams> teamParams = new HashMap<>();
                 for (String s : teamKeys) {
                     try {
                         Integer index = Integer.valueOf(s.substring(4)) - 1;
@@ -265,7 +265,7 @@ public class ConfigSerializer extends BaseConfig{
             mp.setNLives(Integer.MAX_VALUE);
         }
         /// start auto setting this option, as really thats what they want
-        if (mp.getNLives() != null && mp.getNLives() > 1){
+        if ( mp.getNLives() > 1 ){
             allTops.addStateOption(MatchState.ONDEATH, TransitionOption.RESPAWN);}
         if (!found && allTops.getAllOptions().isEmpty())
             return null;
@@ -277,7 +277,7 @@ public class ConfigSerializer extends BaseConfig{
                 state == MatchState.ONPRESTART || state == MatchState.ONSTART || state == MatchState.ONVICTORY))
             return;
         MatchState other=null;
-        List<StateOption> add = new ArrayList<StateOption>();
+        List<StateOption> add = new ArrayList<>();
         for (StateOption op : tops.getOptions().keySet()) {
             MatchState o = ((MatchState) state).getCorrectState(op);
             if (!o.equals(state)) {
@@ -312,7 +312,7 @@ public class ConfigSerializer extends BaseConfig{
 
 
     private static List<String> loadModules(ConfigurationSection cs, MatchParams mp) {
-        List<String> modules = new ArrayList<String>();
+        List<String> modules = new ArrayList<>();
 
         if (cs.contains("modules")){
             List<?> keys = cs.getList("modules");
@@ -470,7 +470,7 @@ public class ConfigSerializer extends BaseConfig{
     public static StateOptions getTransitionOptions(ConfigurationSection cs) throws InvalidOptionException, IllegalArgumentException {
         if (cs == null )
             return null;
-        Map<StateOption,Object> options = new HashMap<StateOption,Object>();
+        Map<StateOption,Object> options = new HashMap<>();
         StateOptions tops = new StateOptions();
         if (cs.contains("options")){
             if (!cs.isList("options")) {
@@ -598,7 +598,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static List<CommandLineString> getDoCommands(List<String> list) throws InvalidOptionException {
-        List<CommandLineString> commands = new ArrayList<CommandLineString>();
+        List<CommandLineString> commands = new ArrayList<>();
         for (String line: list){
             CommandLineString cls = CommandLineString.parse(line);
             commands.add(cls);
@@ -610,7 +610,7 @@ public class ConfigSerializer extends BaseConfig{
         if (cs == null || !cs.contains(nodeString))
             return ;
         List<?> olist = cs.getList(nodeString);
-        List<String> permlist = new ArrayList<String>();
+        List<String> permlist = new ArrayList<>();
 
         for (Object perm: olist){
             permlist.add(perm.toString());}
@@ -620,7 +620,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static HashMap<Integer,ArenaClass> getArenaClasses(ConfigurationSection cs){
-        HashMap<Integer,ArenaClass> classes = new HashMap<Integer,ArenaClass>();
+        HashMap<Integer,ArenaClass> classes = new HashMap<>();
         Set<String> keys = cs.getKeys(false);
         for (String whichTeam: keys){
             int team;
@@ -650,7 +650,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static HashMap<Integer,String> getArenaDisguises(ConfigurationSection cs){
-        HashMap<Integer,String> disguises = new HashMap<Integer,String>();
+        HashMap<Integer,String> disguises = new HashMap<>();
         Set<String> keys = cs.getKeys(false);
         for (String whichTeam: keys){
             int team;
@@ -679,7 +679,7 @@ public class ConfigSerializer extends BaseConfig{
             return null;
         final int strengthDefault = 0;
         final int timeDefault = 60;
-        ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
+        ArrayList<PotionEffect> effects = new ArrayList<>();
         try {
             String str;
             for (Object o : cs.getList(nodeString)){
@@ -748,7 +748,7 @@ public class ConfigSerializer extends BaseConfig{
             if (params.getTeamSize() != null) cs.set("teamSize", params.getTeamSize().toString());
         }
 
-        if (params.getNLives() != null) maincs.set("nLives", ArenaSize.toString(params.getNLives()));
+        maincs.set("nLives", ArenaSize.toString(params.getNLives()));
         if (params.getVictoryType()!= null) maincs.set("victoryCondition", params.getVictoryType().getName());
 
         if (params.getSecondsTillMatch() != null || params.getMatchTime() != null || params.getSecondsToLoot() != null ||
@@ -792,9 +792,9 @@ public class ConfigSerializer extends BaseConfig{
 
         if (params.isCancelIfNotEnoughPlayers() != null)  maincs.set("cancelIfNotEnoughPlayers", params.isCancelIfNotEnoughPlayers());
 
-        if (params.getArenaCooldown() != null)  maincs.set("arenaCooldown", params.getArenaCooldown());
+        maincs.set("arenaCooldown", params.getArenaCooldown());
 
-        if (params.getAllowedTeamSizeDifference() != null)  maincs.set("allowedTeamSizeDifference", params.getAllowedTeamSizeDifference());
+        maincs.set("allowedTeamSizeDifference", params.getAllowedTeamSizeDifference());
 
         if (params.getForceStartTime() != null ) maincs.set("forceStartTime", params.getForceStartTime());
 
@@ -808,7 +808,7 @@ public class ConfigSerializer extends BaseConfig{
             if (map != null){
                 ConfigurationSection cs = maincs.createSection("announcements");
                 for (Entry<MatchState, Map<AnnouncementOption, Object>> entry : map.entrySet()){
-                    List<String> ops = new ArrayList<String>();
+                    List<String> ops = new ArrayList<>();
                     for (Entry<AnnouncementOption,Object> entry2 : entry.getValue().entrySet()){
                         Object o = entry2.getValue();
                         ops.add(entry2.getKey() +(o != null ? o.toString() :""));
@@ -820,7 +820,7 @@ public class ConfigSerializer extends BaseConfig{
             map = ao.getEventOptions();
             if (map != null){
                 for (Entry<MatchState, Map<AnnouncementOption, Object>> entry : map.entrySet()){
-                    List<String> ops = new ArrayList<String>();
+                    List<String> ops = new ArrayList<>();
                     for (Entry<AnnouncementOption,Object> entry2 : entry.getValue().entrySet()){
                         Object o = entry2.getValue();
                         ops.add(entry2.getKey() +(o != null ? o.toString() :""));
@@ -836,7 +836,7 @@ public class ConfigSerializer extends BaseConfig{
         StateGraph alltops = params.getThisStateGraph();
         if (alltops != null) {
             Map<CompetitionState, StateOptions> transitions =
-                    new TreeMap<CompetitionState, StateOptions>(new Comparator<CompetitionState>() {
+                    new TreeMap<>(new Comparator<CompetitionState>() {
                         @Override
                         public int compare(CompetitionState o1, CompetitionState o2) {
                             return o1.globalOrdinal() - o2.globalOrdinal();
@@ -853,8 +853,8 @@ public class ConfigSerializer extends BaseConfig{
                     if (tops.getOptions() == null)
                         continue;
                     tops = new StateOptions(tops); // make a copy so we can modify while saving
-                    Map<StateOption, Object> ops = new TreeMap<StateOption, Object>(tops.getOptions());
-                    List<String> list = new ArrayList<String>();
+                    Map<StateOption, Object> ops = new TreeMap<>(tops.getOptions());
+                    List<String> list = new ArrayList<>();
 
                     for (Entry<String, StateOptions> entry : OptionSetController.getOptionSets().entrySet()) {
                         if (tops.containsAll(entry.getValue())) {
@@ -865,8 +865,8 @@ public class ConfigSerializer extends BaseConfig{
                         }
                     }
                     /// transition map
-                    Map<String, Object> tmap = new LinkedHashMap<String, Object>();
-                    ops = new TreeMap<StateOption, Object>(ops); /// try to maintain some ordering
+                    Map<String, Object> tmap = new LinkedHashMap<>();
+                    ops = new TreeMap<>(ops); /// try to maintain some ordering
                     for (StateOption to : ops.keySet()) {
                         try {
                             String s;
@@ -912,7 +912,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static List<String> getModuleList(Collection<ArenaModule> modules) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (modules != null){
             for (ArenaModule m: modules){
                 list.add(m.getName());}
@@ -921,7 +921,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static List<String> getEnchants(List<PotionEffect> effects) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (effects != null){
             for (PotionEffect is: effects){
                 list.add(EffectUtil.getEnchantString(is));}
@@ -930,7 +930,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static List<String> getItems(List<ItemStack> items) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (items != null){
             for (ItemStack is: items){
                 if (is != null)
@@ -941,7 +941,7 @@ public class ConfigSerializer extends BaseConfig{
     }
 
     public static Map<String,Object> getArenaClasses(Map<Integer, ArenaClass> classes) {
-        HashMap<String,Object> map = new HashMap<String, Object>();
+        HashMap<String,Object> map = new HashMap<>();
         for (Integer teamNumber: classes.keySet()){
             String teamName = teamNumber == ArenaClass.DEFAULT.intValue() ? "default" : "team" + (teamNumber + 1);
             map.put(teamName, classes.get(teamNumber).getName());
@@ -949,7 +949,7 @@ public class ConfigSerializer extends BaseConfig{
         return map;
     }
     public static List<String> getDoCommandsStringList(List<CommandLineString> doCommands) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (doCommands != null){
             for (CommandLineString s: doCommands){
                 list.add(s.getRawCommand());}

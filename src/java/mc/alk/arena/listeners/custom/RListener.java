@@ -2,7 +2,7 @@ package mc.alk.arena.listeners.custom;
 
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 
 import java.util.Comparator;
 
@@ -31,7 +31,7 @@ class RListener {
 		return al;
 	}
 
-	public EventPriority getPriority() {
+	public ArenaEventPriority getPriority() {
 		return mem.getPriority();
 	}
 

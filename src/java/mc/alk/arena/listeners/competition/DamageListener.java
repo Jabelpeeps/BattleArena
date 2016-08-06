@@ -13,7 +13,7 @@ import mc.alk.arena.objects.PVPState;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.DmgDeathUtil;
@@ -27,7 +27,7 @@ public class DamageListener implements ArenaListener{
 		this.holder = holder;
 	}
 
-	@ArenaEventHandler(suppressCastWarnings=true,priority=EventPriority.LOW)
+	@ArenaEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.LOW)
 	public void onEntityDamageEvent(EntityDamageEvent event) {
         ArenaPlayer damager = null;
         final ArenaPlayer target = (event.getEntity() instanceof Player) ?

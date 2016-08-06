@@ -3,7 +3,7 @@ package mc.alk.arena.controllers.containers;
 import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.util.InventoryUtil;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -24,38 +24,38 @@ public class RoomContainer extends AreaContainer{
         super(name,params,type);
     }
 
-    @ArenaEventHandler(suppressCastWarnings=true,priority=EventPriority.LOW)
+    @ArenaEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.LOW)
     public void onEntityDamageEvent(EntityDamageEvent event) {
         event.setCancelled(true);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerBlockPlace(BlockPlaceEvent event){
         event.setCancelled(true);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onInventoryOpenEvent(InventoryOpenEvent event){
         if (InventoryUtil.isEnderChest(event.getInventory().getType())){
             event.setCancelled(true);}
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerBlockBreak(BlockBreakEvent event){
         event.setCancelled(true);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerDropItem(PlayerDropItemEvent event){
         event.setCancelled(true);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerTeleport(PlayerTeleportEvent event){
         event.setCancelled(true);
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onFoodLevelChangeEvent(FoodLevelChangeEvent event){
         event.setCancelled(true);
     }

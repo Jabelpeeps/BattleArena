@@ -1,32 +1,5 @@
 package mc.alk.arena.listeners.custom;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.events.BAEvent;
-import mc.alk.arena.listeners.custom.RListener.RListenerPriorityComparator;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.MatchState;
-import mc.alk.arena.objects.arenas.ArenaListener;
-import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MapOfTreeSet;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.TimingUtil;
-import mc.alk.arena.util.TimingUtil.TimingStat;
-import mc.alk.arena.util.Util;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,29 +16,57 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+
+import mc.alk.arena.Defaults;
+import mc.alk.arena.events.BAEvent;
+import mc.alk.arena.listeners.custom.RListener.RListenerPriorityComparator;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.MatchState;
+import mc.alk.arena.objects.arenas.ArenaListener;
+import mc.alk.arena.objects.events.ArenaEventHandler;
+import mc.alk.arena.objects.events.ArenaEventMethod;
+import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MapOfTreeSet;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.TimingUtil;
+import mc.alk.arena.util.TimingUtil.TimingStat;
+import mc.alk.arena.util.Util;
+
 
 public class MethodController {
 
     /** Our Dynamic listeners, listening for bukkit events*/
     final static EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> bukkitListeners =
-            new EnumMap<EventPriority,HashMap<Type, BukkitEventHandler>>(EventPriority.class);
+            new EnumMap<>(EventPriority.class);
 
     /** Our registered bukkit events and the methods to call when they happen*/
     final static HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends Event>,List<ArenaEventMethod>>> bukkitEventMethods =
-            new HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends Event>,List<ArenaEventMethod>>>();
+            new HashMap<>();
 
     /** Our registered match events and the methods to call when they happen*/
     final static HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends BAEvent>,List<ArenaEventMethod>>> matchEventMethods =
-            new HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends BAEvent>,List<ArenaEventMethod>>>();
+            new HashMap<>();
 
-    final private HashMap<Class<? extends Event>,List<RListener>> bukkitMethods = new HashMap<Class<? extends Event>,List<RListener>>();
+    final private HashMap<Class<? extends Event>,List<RListener>> bukkitMethods = new HashMap<>();
 
-    final private HashMap<Class<? extends BAEvent>,List<RListener>> matchMethods = new HashMap<Class<? extends BAEvent>,List<RListener>>();
+    final private HashMap<Class<? extends BAEvent>,List<RListener>> matchMethods = new HashMap<>();
 
-    final static Set<MethodController> controllers = new HashSet<MethodController>();
+    final static Set<MethodController> controllers = new HashSet<>();
     static int controllerCount = 0;
 
-    final Set<ArenaListener> listeners = new HashSet<ArenaListener>();
+    final Set<ArenaListener> listeners = new HashSet<>();
     final Object owner;
     final BAEventCaller baexecutor;
     static TimingUtil timings;
@@ -120,20 +121,20 @@ public class MethodController {
     }
 
     public void updateEvents(MatchState matchState, ArenaPlayer player){
-        List<UUID> players = new ArrayList<UUID>();
+        List<UUID> players = new ArrayList<>();
         players.add(player.getID());
         updateEvents(null, matchState,players);
     }
 
     public void updateEvents(MatchState matchState, Collection<ArenaPlayer> players){
-        List<UUID> strplayers = new ArrayList<UUID>();
+        List<UUID> strplayers = new ArrayList<>();
         for (ArenaPlayer ap: players){
             strplayers.add(ap.getID());}
         updateEvents(null, matchState,strplayers);
     }
 
     public void updateEvents(ArenaListener listener, MatchState matchState, Collection<ArenaPlayer> players){
-        List<UUID> strplayers = new ArrayList<UUID>();
+        List<UUID> strplayers = new ArrayList<>();
         for (ArenaPlayer ap: players){
             strplayers.add(ap.getID());}
         updateEvents(listener, matchState,strplayers);
@@ -170,7 +171,7 @@ public class MethodController {
      */
     public void updateSpecificEvents(MatchState matchState, ArenaPlayer player, Class<? extends Event>... events) {
         try {
-            List<UUID> players = new ArrayList<UUID>();
+            List<UUID> players = new ArrayList<>();
             players.add(player.getID());
 
             for (Class<? extends Event> event: events){
@@ -210,7 +211,7 @@ public class MethodController {
     private BukkitEventHandler getCreateBA(Class<? extends BAEvent> event, ArenaEventMethod mem){
         HashMap<Type,BukkitEventHandler> gels = bukkitListeners.get(mem.getBukkitPriority());
         if (gels == null){
-            gels = new HashMap<Type,BukkitEventHandler>();
+            gels = new HashMap<>();
             bukkitListeners.put(mem.getBukkitPriority(), gels);
         }
         BukkitEventHandler gel = gels.get(event);
@@ -254,7 +255,7 @@ public class MethodController {
     private BukkitEventHandler getCreate(Class<? extends Event> event, ArenaEventMethod mem){
         HashMap<Type,BukkitEventHandler> gels = bukkitListeners.get(mem.getBukkitPriority());
         if (gels == null){
-            gels = new HashMap<Type,BukkitEventHandler>();
+            gels = new HashMap<>();
             bukkitListeners.put(mem.getBukkitPriority(), gels);
         }
         BukkitEventHandler gel = gels.get(event);
@@ -292,12 +293,12 @@ public class MethodController {
     }
 
 
-    @SuppressWarnings({"unchecked", "ConstantConditions", "SuspiciousMethodCalls"})
+    @SuppressWarnings({"unchecked"})
     private static void addMethods(Class<? extends ArenaListener> alClass){
         HashMap<Class<? extends Event>,List<ArenaEventMethod>> bukkitTypeMap =
-                new HashMap<Class<? extends Event>,List<ArenaEventMethod>>();
+                new HashMap<>();
         HashMap<Class<? extends BAEvent>, List<ArenaEventMethod>> matchTypeMap =
-                new HashMap<Class<? extends BAEvent>,List<ArenaEventMethod>>();
+                new HashMap<>();
 
         Method[] methodArray = alClass.getMethods();
 
@@ -307,7 +308,7 @@ public class MethodController {
             final String entityMethod;
             boolean supressCastWarnings;
             boolean suppressWarnings;
-            mc.alk.arena.objects.events.EventPriority priority;
+            mc.alk.arena.objects.events.ArenaEventPriority priority;
             org.bukkit.event.EventPriority bukkitPriority;
 
             ArenaEventHandler aeh = method.getAnnotation(ArenaEventHandler.class);
@@ -340,8 +341,8 @@ public class MethodController {
             Method getEntityMethod = null;
 
             if (needsPlayer){
-                List<Method> playerMethods = new ArrayList<Method>();
-                List<Method> entityMethods = new ArrayList<Method>();
+                List<Method> playerMethods = new ArrayList<>();
+                List<Method> entityMethods = new ArrayList<>();
 
                 /// From our bukkit bukkitEvent. find any methods that return a Player, HumanEntity, or LivingEntity
                 for (Method m : bukkitEvent.getMethods()){
@@ -432,7 +433,7 @@ public class MethodController {
 
             List<ArenaEventMethod> mths = baEvent ? matchTypeMap.get(bukkitEvent) : bukkitTypeMap.get(bukkitEvent);
             if (mths == null){
-                mths = new ArrayList<ArenaEventMethod>();
+                mths = new ArrayList<>();
                 if (baEvent){
                     matchTypeMap.put((Class<? extends BAEvent>) bukkitEvent, mths);
                 } else {
@@ -464,7 +465,6 @@ public class MethodController {
         matchEventMethods.put(alClass, matchTypeMap);
     }
 
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private boolean removeListener(ArenaListener listener, HashMap<?,List<RListener>> methods){
         synchronized(methods){
             for (List<RListener> rls: methods.values()){
@@ -552,7 +552,7 @@ public class MethodController {
 
         List<RListener> rls = bukkitMethods.get(clazz);
         if (rls == null){
-            rls = new ArrayList<RListener>();
+            rls = new ArrayList<>();
             bukkitMethods.put(clazz, rls);
         }
         for (ArenaEventMethod mem: list){
@@ -568,7 +568,7 @@ public class MethodController {
             return;
         List<RListener> rls = matchMethods.get(clazz);
         if (rls == null){
-            rls = new ArrayList<RListener>();
+            rls = new ArrayList<>();
             matchMethods.put(clazz, rls);
         }
         for (ArenaEventMethod mem: list){
@@ -657,8 +657,8 @@ public class MethodController {
                 }
 
                 if (bel.getMatchListener()!=null){
-                    EnumMap<mc.alk.arena.objects.events.EventPriority, Map<RListener,Integer>> lists = bel.getMatchListener().getListeners();
-                    for (mc.alk.arena.objects.events.EventPriority ep: lists.keySet()){
+                    EnumMap<mc.alk.arena.objects.events.ArenaEventPriority, Map<RListener,Integer>> lists = bel.getMatchListener().getListeners();
+                    for (mc.alk.arena.objects.events.ArenaEventPriority ep: lists.keySet()){
                         for (Entry<RListener,Integer> entry : lists.get(ep).entrySet()){
                             MessageUtil.sendMessage(sender, "! " + ep + "  -  " + entry.getKey() + "  count=" + entry.getValue());
                         }

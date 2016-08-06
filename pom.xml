@@ -67,6 +67,12 @@
             <artifactId>spigot-api</artifactId>
             <version>${craftbukkit.version}</version>
             <scope>provided</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>junit</groupId>
+            		<artifactId>junit</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.kitteh</groupId>
@@ -93,9 +99,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>5.5.8</version>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.1.3-SNAPSHOT</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bukkit</groupId>
+            		<artifactId>bukkit</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>junit</groupId>
+            		<artifactId>junit</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         
         <!-- Libraries that will be shaded in -->
@@ -172,6 +188,12 @@
 		    <artifactId>CombatTagPlus</artifactId>
 		    <version>1.3.0-SNAPSHOT</version>
 		    <scope>provided</scope>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>org.mcstats.bukkit</groupId>
+            		<artifactId>metrics-lite</artifactId>
+		    	</exclusion>
+		    </exclusions>
 	    </dependency>
 	    
         <!-- groupId = unknown.plugins -->
@@ -297,6 +319,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
                                 <relocation>
                                     <pattern>mc.alk.util</pattern>

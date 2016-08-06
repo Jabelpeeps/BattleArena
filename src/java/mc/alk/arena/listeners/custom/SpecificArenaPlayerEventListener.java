@@ -1,12 +1,14 @@
 package mc.alk.arena.listeners.custom;
 
+import java.lang.reflect.Method;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.Log;
-import org.bukkit.event.Event;
-
-import java.lang.reflect.Method;
 
 
 /**
@@ -21,7 +23,7 @@ class SpecificArenaPlayerEventListener extends SpecificPlayerEventListener{
 	 * @param getPlayerMethod : a method which when not null and invoked will return a Player
 	 */
 	public SpecificArenaPlayerEventListener(final Class<? extends Event> bukkitEvent,
-			org.bukkit.event.EventPriority bukkitPriority, Method getPlayerMethod) {
+			                                 EventPriority bukkitPriority, Method getPlayerMethod) {
 		super(bukkitEvent, bukkitPriority,getPlayerMethod);
 		if (Defaults.DEBUG_EVENTS) Log.info("Registering SpecificArenaPlayerEventListener for type " + bukkitEvent +" pm="+getPlayerMethod);
 	}

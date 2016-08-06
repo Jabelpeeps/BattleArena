@@ -62,10 +62,10 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     private final MethodController methodController;
 
-    final protected Set<UUID> players = new HashSet<UUID>();
+    final protected Set<UUID> players = new HashSet<>();
 
     /** Spawn points */
-    final protected List<List<SpawnLocation>> spawns = new ArrayList<List<SpawnLocation>>();
+    final protected List<List<SpawnLocation>> spawns = new ArrayList<>();
 
     protected List<SpawnLocation> allSpawns;
 
@@ -76,7 +76,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
     final protected List<ArenaTeam> teams = Collections.synchronizedList(new ArrayList<ArenaTeam>());
 
     /** our values for the team index, only used if the Team.getIndex is null*/
-    final Map<ArenaTeam,Integer> teamIndexes = new ConcurrentHashMap<ArenaTeam,Integer>();
+    final Map<ArenaTeam,Integer> teamIndexes = new ConcurrentHashMap<>();
 
     final static Random r = new Random();
 
@@ -84,9 +84,11 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
         methodController = new MethodController("AAC " + name);
         methodController.addAllEvents(this);
         try{
-            Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());}catch(Exception e){
-            //noinspection PointlessBooleanExpression,ConstantConditions
-            if (!Defaults.TESTSERVER && !Defaults.TESTSERVER_DEBUG) Log.printStackTrace(e);
+            Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
+            
+        }catch(Exception e){
+            if (!Defaults.TESTSERVER && !Defaults.TESTSERVER_DEBUG) 
+                Log.printStackTrace(e);
         }
         this.name = name;
     }
@@ -164,12 +166,12 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @Override
     public void addArenaListener(ArenaListener arenaListener) {
-        this.methodController.addListener(arenaListener);
+        methodController.addListener(arenaListener);
     }
 
     @Override
     public boolean removeArenaListener(ArenaListener arenaListener) {
-        return this.methodController.removeListener(arenaListener);
+        return methodController.removeListener(arenaListener);
     }
 
     @Override
@@ -178,13 +180,8 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
     }
 
     public void setParams(MatchParams mp) {
-        this.params= mp;
+        params = mp;
     }
-
-//    @Override
-//    public MatchState getMatchState() {
-//        return MatchState.INLOBBY;
-//    }
 
     @Override
     public boolean isHandled(ArenaPlayer player) {
@@ -207,13 +204,13 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
             return mainSpawn != null ? mainSpawn :
                     (spawns.size()==1 ? spawns.get(0).get(0) : null);
         if (random){
-            if (allSpawns == null) {
-                buildAllSpawns();}
+            if (allSpawns == null) 
+                buildAllSpawns();
+            
             return allSpawns ==null? null : allSpawns.get(r.nextInt(allSpawns.size()));
-        } else {
-            List<SpawnLocation> l = index >= spawns.size() ? spawns.get(index % spawns.size()) : spawns.get(index);
-            return l.get(r.nextInt(l.size()));
         }
+        List<SpawnLocation> l = index >= spawns.size() ? spawns.get(index % spawns.size()) : spawns.get(index);
+        return l.get(r.nextInt(l.size()));
     }
 
     public SpawnLocation getSpawn(int teamIndex, int spawnIndex) {
@@ -225,7 +222,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
         if (spawns.isEmpty()){
             return;
         }
-        allSpawns = new ArrayList<SpawnLocation>();
+        allSpawns = new ArrayList<>();
         for (List<SpawnLocation> spawn: spawns) {
             allSpawns.addAll(spawn);
         }
@@ -250,7 +247,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
                 throw new IllegalStateException("You must set team spawn " + (list.size()+1) + " first");
             }
         } else if (spawns.size() == teamIndex) {
-            ArrayList<SpawnLocation> list = new ArrayList<SpawnLocation>();
+            ArrayList<SpawnLocation> list = new ArrayList<>();
             if (list.size() < spawnIndex){
                 throw new IllegalStateException("You must set spawn #" + (list.size()+1) +
                         " for the "+ TeamUtil.getTeamName(teamIndex)+" team first");}
@@ -260,34 +257,25 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
             throw new IllegalStateException("You must set spawn " + (spawns.size()+1) + " first");
         }
     }
-    public boolean validIndex(int index){
-        return spawns.size() < index;
-    }
+    
+    public boolean validIndex(int index){ return spawns.size() < index; }
+    public List<List<SpawnLocation>> getSpawns(){ return spawns; }
+    public SpawnLocation getMainSpawn(){ return mainSpawn; }
+    public String getName() { return name; }
+    public void setName(String _name) { name = _name; }
+    public String getDisplayName() { return displayName == null ? name : displayName; }
+    public void setDisplayName(String _displayName) { displayName = _displayName; }
+    public void setContainerState(ContainerState _state) { state = _state; }
+    public ContainerState getContainerState() { return state; }
+    public boolean isOpen() { return state.isOpen(); }
+    public boolean isClosed() { return state.isClosed(); }
+    public String getContainerMessage() { return state.getMsg(); }
 
-    public List<List<SpawnLocation>> getSpawns(){
-        return spawns;
+    @Override
+    public boolean hasOption(StateOption option) {
+        return params.hasOptionAt(getState(),option);
     }
-    public SpawnLocation getMainSpawn(){
-        return mainSpawn;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDisplayName() {
-        return displayName == null ? name : displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-
+    
     @Override
     public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
 
@@ -311,30 +299,4 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @Override
     public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
-    public void setContainerState(ContainerState state) {
-        this.state = state;
-    }
-
-    public ContainerState getContainerState() {
-        return this.state;
-    }
-
-    public boolean isOpen() {
-        return state.isOpen();
-    }
-
-    public boolean isClosed() {
-        return state.isClosed();
-    }
-
-
-    public String getContainerMessage() {
-        return state.getMsg();
-    }
-
-    @Override
-    public boolean hasOption(StateOption option) {
-        return getParams().hasOptionAt(getState(),option);
-    }
 }

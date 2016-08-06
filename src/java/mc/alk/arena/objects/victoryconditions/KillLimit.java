@@ -6,7 +6,7 @@ import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -37,7 +37,7 @@ public class KillLimit extends VictoryCondition implements ScoreTracker{
         sc = (isRated && soloRating) ? new TrackerController(match.getParams()): null;
     }
 
-    @ArenaEventHandler(priority=EventPriority.LOW)
+    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void playerKillEvent(ArenaPlayerKillEvent event) {
         kills.addPoints(event.getPlayer(), playerKillPoints);
         Integer points = kills.addPoints(event.getTeam(), playerKillPoints);
@@ -49,7 +49,7 @@ public class KillLimit extends VictoryCondition implements ScoreTracker{
 
     }
 
-    @ArenaEventHandler(priority = EventPriority.LOW)
+    @ArenaEventHandler(priority = ArenaEventPriority.LOW)
     public void onFindCurrentLeader(MatchFindCurrentLeaderEvent event) {
         if (event.isMatchEnding()){
             event.setResult(kills.getMatchResult(match));

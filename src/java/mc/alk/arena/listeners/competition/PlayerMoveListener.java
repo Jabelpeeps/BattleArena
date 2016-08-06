@@ -4,7 +4,7 @@ import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.EventPriority;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.ArenaRegion;
 import org.bukkit.Bukkit;
@@ -21,7 +21,7 @@ public class PlayerMoveListener implements ArenaListener{
         this.w = Bukkit.getWorld(region.getWorldName());
     }
 
-    @ArenaEventHandler(priority=EventPriority.HIGH)
+    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event){
         if (!event.isCancelled() && w.getUID() == event.getTo().getWorld().getUID() &&
                 holder.hasOption(TransitionOption.WGNOLEAVE) &&

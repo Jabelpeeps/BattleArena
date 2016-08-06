@@ -104,7 +104,7 @@ import mc.alk.arena.util.plugins.CombatTagUtil;
  */
 public class BAExecutor extends CustomCommandExecutor {
 
-    Set<String> disabled = new HashSet<String>();
+    Set<String> disabled = new HashSet<>();
 
     final TeamController teamc;
     final EventController ec;
@@ -123,7 +123,7 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaEnable(CommandSender sender, MatchParams mp,
             String[] args) {
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-            Set<String> set = new HashSet<String>(); // / Since some commands
+            Set<String> set = new HashSet<>(); // / Since some commands
             // have aliases.. we
             // just want the
             // original name
@@ -145,7 +145,7 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaDisable(CommandSender sender, MatchParams mp,
             String[] args) {
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-            Set<String> set = new HashSet<String>(); // / Since some commands
+            Set<String> set = new HashSet<>(); // / Since some commands
             // have aliases.. we
             // just want the
             // original name
@@ -314,7 +314,7 @@ public class BAExecutor extends CustomCommandExecutor {
                 : AnnouncementOptions.getDefaultChannel(true,
                         MatchState.ONENTERQUEUE);
         String neededPlayers = jr.maxPlayers == CompetitionSize.MAX ? "inf" : jr.maxPlayers + "";
-        List<Object> vars = new ArrayList<Object>();
+        List<Object> vars = new ArrayList<>();
         vars.add(mp);
         vars.add(t);
         channel.broadcast(MessageHandler.getSystemMessage(
@@ -375,7 +375,7 @@ public class BAExecutor extends CustomCommandExecutor {
                 } else {
                     msg.append("\n").append(MessageHandler.getSystemMessage("you_start_when_free"));
                 }
-            } else if (mp.getMinPlayers().equals(mp.getMaxPlayers())) {
+            } else if (mp.getMinPlayers() == mp.getMaxPlayers() ) {
                 if (playersInQ < mp.getMinPlayers()) {
                     msg.append("\n").append(MessageHandler.getSystemMessage(
                             "match_starts_immediately",
@@ -832,7 +832,7 @@ public class BAExecutor extends CustomCommandExecutor {
         MessageUtil.sendMessage(sender, arena.toDetailedString());
         Match match = ac.getMatch(arena);
         if (match != null) {
-            List<String> strs = new ArrayList<String>();
+            List<String> strs = new ArrayList<>();
             for (ArenaTeam t : match.getTeams()) {
                 strs.add("&5 -&e" + t.getDisplayName());
             }
@@ -1362,11 +1362,11 @@ public class BAExecutor extends CustomCommandExecutor {
         boolean all = args.length > 1 && (args[1]).equals("all");
 
         Collection<Arena> arenas = ac.getArenas().values();
-        HashMap<ArenaType, Collection<Arena>> arenasbytype = new HashMap<ArenaType, Collection<Arena>>();
+        HashMap<ArenaType, Collection<Arena>> arenasbytype = new HashMap<>();
         for (Arena arena : arenas) {
             Collection<Arena> as = arenasbytype.get(arena.getArenaType());
             if (as == null) {
-                as = new ArrayList<Arena>();
+                as = new ArrayList<>();
                 arenasbytype.put(arena.getArenaType(), as);
             }
             as.add(arena);

@@ -36,7 +36,6 @@ import mc.alk.arena.controllers.messaging.MessageHandler;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
-import mc.alk.arena.events.EventManager;
 import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
@@ -115,7 +114,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     /// When did each transition occur
     final Map<MatchState, Long> times = Collections.synchronizedMap(new EnumMap<MatchState,Long>(MatchState.class));
-    final List<VictoryCondition> vcs = new ArrayList<VictoryCondition>(); /// Under what conditions does a victory occur
+    final List<VictoryCondition> vcs = new ArrayList<>(); /// Under what conditions does a victory occur
     MatchResult matchResult; /// Results for this match
 
     final StateGraph tops; /// Our match options for this arena match
@@ -130,16 +129,16 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     Countdown matchCountdown = null; /// Match Countdown
 
     /** Players that are in this match (waitrooms, arena, etc)*/
-    private final Collection<ArenaPlayer> inGamePlayers = new HashSet<ArenaPlayer>();
+    private final Collection<ArenaPlayer> inGamePlayers = new HashSet<>();
 
     /** who is still inside arena area. (does not include waitrooms, etc). Used for event handling */
-    final Set<UUID> inMatch = new HashSet<UUID>();
+    final Set<UUID> inMatch = new HashSet<>();
     List<UUID> inMatchList; /// threadsafe list for iterating over inMatch and is synced with inMatch
 
-    final Set<ArenaTeam> nonEndingTeams = new HashSet<ArenaTeam>();
-    final Map<ArenaTeam,Integer> individualTeamTimers = new HashMap<ArenaTeam,Integer>();
-    final Map<ArenaTeam,TeamTimeLimit> individualTeamTimeLimits = new HashMap<ArenaTeam,TeamTimeLimit>();
-    final Set<ArenaTeam> deadTeams = new HashSet<ArenaTeam>();
+    final Set<ArenaTeam> nonEndingTeams = new HashSet<>();
+    final Map<ArenaTeam,Integer> individualTeamTimers = new HashMap<>();
+    final Map<ArenaTeam,TeamTimeLimit> individualTeamTimeLimits = new HashMap<>();
+    final Set<ArenaTeam> deadTeams = new HashSet<>();
 
     final AtomicBoolean addedVictoryConditions = new AtomicBoolean(false);
     final GameManager gameManager;
@@ -165,25 +164,30 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     final ArenaObjective defaultObjective;
     ArenaPreviousState oldArenaState;
 
-    @SuppressWarnings("unchecked")
-    public Match(Arena arena, MatchParams matchParams, Collection<ArenaListener> listeners) {
+    public Match(Arena _arena, MatchParams matchParams, Collection<ArenaListener> listeners) {
         transitionTo(MatchState.ONCREATE);
 
-        if (Defaults.DEBUG) System.out.println("ArenaMatch::" + params);
+        if (Defaults.DEBUG) 
+            System.out.println("ArenaMatch::" + params);
+        
         params = ParamController.copyParams(matchParams);
         params.setName(this.getName());
         params.flatten();
-        this.tops = params.getStateGraph();
+        
+        tops = params.getStateGraph();
         /// Assign variables
-        this.gameManager = GameManager.getGameManager(params);
-        this.arena = arena;
-        this.arenaInterface =new ArenaControllerInterface(arena);
+        gameManager = GameManager.getGameManager(params);
+        arena = _arena;
+        arenaInterface = new ArenaControllerInterface(arena);
+        
         addArenaListener(arena);
+        
         if (listeners != null)
             addArenaListeners(listeners);
+        
         scoreboard = ScoreboardFactory.createScoreboard(this,params);
 
-        this.mc = new MatchMessager(this);
+        mc = new MatchMessager(this);
         arena.setMatch(this);
 
         Collection<ArenaModule> modules = params.getModules();
@@ -194,16 +198,19 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             }
         }
         /// placed anywhere options
-        boolean noEnter = tops.hasAnyOption(TransitionOption.WGNOENTER);
         if (arena.hasRegion())
-            WorldGuardController.setFlag(arena.getWorldGuardRegion(), "entry", !noEnter);
+            WorldGuardController.setFlag( arena.getWorldGuardRegion(), 
+                                          "entry", 
+                                          !tops.hasAnyOption(TransitionOption.WGNOENTER) );
 
-        this.woolTeams = tops.hasAnyOption(TransitionOption.WOOLTEAMS) && params.getMaxTeamSize() >1 ||
-                tops.hasAnyOption(TransitionOption.ALWAYSWOOLTEAMS);
-        this.armorTeams = tops.hasAnyOption(TransitionOption.ARMORTEAMS);
-
+        woolTeams = tops.hasAnyOption(TransitionOption.WOOLTEAMS) && params.getMaxTeamSize() >1 
+                    || tops.hasAnyOption(TransitionOption.ALWAYSWOOLTEAMS);
+        
+        armorTeams = tops.hasAnyOption(TransitionOption.ARMORTEAMS);
         tinState = tops.getCompetitionState(TransitionOption.TELEPORTIN);
-        this.spawnsRandom = tinState != null && tops.hasOptionAt(tinState, TransitionOption.RANDOMSPAWN);
+        
+        spawnsRandom = tinState != null && tops.hasOptionAt(tinState, TransitionOption.RANDOMSPAWN);
+        
         this.alwaysTeamNames = tops.hasAnyOption(TransitionOption.ALWAYSTEAMNAMES);
         this.cancelExpLoss = tops.hasAnyOption(TransitionOption.NOEXPERIENCELOSS);
         this.matchResult = new MatchResult();
@@ -228,7 +235,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if (tops.hasAnyOption(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTLOBBY,
                 TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTMAINLOBBY,
                 TransitionOption.TELEPORTCOURTYARD)){
-            waitRoomStates = new HashSet<MatchState>(tops.getMatchStateRange(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTIN));
+            waitRoomStates = new HashSet<>(tops.getMatchStateRange(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTIN));
             waitRoomStates.addAll(tops.getMatchStateRange(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTIN));
             waitRoomStates.addAll(tops.getMatchStateRange(TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTIN));
             waitRoomStates.addAll(tops.getMatchStateRange(TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTIN));
@@ -241,7 +248,10 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         /// Register the events we are listening to
         ListenerAdder.addListeners(this, tops);
         methodController.addAllEvents(this);
-        EventManager.registerEvents(this, BattleArena.getSelf());
+        
+        if (!Defaults.TESTSERVER)
+            Bukkit.getPluginManager().registerEvents( this, BattleArena.getSelf() );
+  
         /// add a default objective
         defaultObjective = scoreboard.createObjective("default",
                 "Player Kills", "&6Still Alive", SAPIDisplaySlot.SIDEBAR, 100);
@@ -344,7 +354,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         inGamePlayers.addAll(joinHandler.getPlayers());
     }
     public List<ArenaTeam> getNonEmptyTeams() {
-        List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> teams = new ArrayList<>();
         for (ArenaTeam at: this.teams) {
             if (at != null && at.size() > 0) {
                 teams.add(at);}
@@ -429,7 +439,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if (!addedVictoryConditions.get()){
             addVictoryConditions();
         }
-        List<ArenaTeam> competingTeams = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> competingTeams = new ArrayList<>();
         /// If we will teleport them into the arena for the first time, check to see they are ready first
         StateOptions ts = params.getStateOptions(state);
         if (ts != null && ts.teleportsIn()){
@@ -495,7 +505,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     private synchronized void nonEndingMatchWinLossOrDraw(MatchResult result){
-        List<ArenaTeam> remove = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> remove = new ArrayList<>();
         for (ArenaTeam t: result.getLosers())
             if (!nonEndingTeams.add(t) || t.size()==0)
                 remove.add(t); /// they are already being handled
@@ -551,7 +561,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
         @Override
         public void run() {
-            List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+            List<ArenaTeam> teams = new ArrayList<>();
             final Set<ArenaTeam> victors = result.getVictors();
             final Set<ArenaTeam> losers = result.getLosers();
             final Set<ArenaTeam> drawers = result.getDrawers();
@@ -818,7 +828,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     private List<UUID> getInMatchList(){
         synchronized (this){
             if (inMatchList==null) {
-                inMatchList = new ArrayList<UUID>(inMatch);
+                inMatchList = new ArrayList<>(inMatch);
             }
             return inMatchList;
         }
@@ -1328,7 +1338,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     @Override
     public List<ArenaTeam> getTeams() {return teams;}
     public List<ArenaTeam> getAliveTeams() {
-        List<ArenaTeam> alive = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> alive = new ArrayList<>();
         for (ArenaTeam t: teams){
             if (t.isDead())
                 continue;
@@ -1338,7 +1348,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     public Set<ArenaPlayer> getAlivePlayers() {
-        HashSet<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+        HashSet<ArenaPlayer> players = new HashSet<>();
         for (ArenaTeam t: teams){
             if (t.isDead())
                 continue;
@@ -1387,7 +1397,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
      * @param team ArenaTeam
      */
     public synchronized void setVictor(final ArenaTeam team){
-        setVictor(new ArrayList<ArenaTeam>(Arrays.asList(team)));
+        setVictor(new ArrayList<>(Arrays.asList(team)));
     }
 
     public synchronized void setVictor(final Collection<ArenaTeam> winningTeams){
@@ -1397,7 +1407,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             endMatchWithResult(result);
         } else {
             matchResult.setVictors(winningTeams);
-            ArrayList<ArenaTeam> losers= new ArrayList<ArenaTeam>(teams);
+            ArrayList<ArenaTeam> losers= new ArrayList<>(teams);
             losers.removeAll(winningTeams);
             matchResult.addLosers(losers);
             matchResult.setResult(WinLossDraw.WIN);
@@ -1440,7 +1450,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
 
     protected Set<ArenaPlayer> checkReady(final ArenaTeam t, StateOptions mo) {
-        Set<ArenaPlayer> alive = new HashSet<ArenaPlayer>();
+        Set<ArenaPlayer> alive = new HashSet<>();
         for (ArenaPlayer p : t.getPlayers()){
             if (checkReady(p,t,mo,true)){
                 alive.add(p);}
@@ -1492,8 +1502,8 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         sb.append("pvp=&6").append(to != null ? to.getPVP() : "on").append("\n");
         //		sb.append("playersInMatch=&6"+inMatch.get(p)+"\n");
         sb.append("result=&e(").append(matchResult).append("&e)\n");
-        List<ArenaTeam> deadTeams = new ArrayList<ArenaTeam>();
-        List<ArenaTeam> aliveTeams = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> deadTeams = new ArrayList<>();
+        List<ArenaTeam> aliveTeams = new ArrayList<>();
         for (ArenaTeam t: teams){
             if (t.size() == 0)
                 continue;
@@ -1636,7 +1646,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     public List<ArenaPlayer> getNonLeftPlayers() {
-        List<ArenaPlayer> players = new ArrayList<ArenaPlayer>();
+        List<ArenaPlayer> players = new ArrayList<>();
         for (ArenaTeam at: this.getTeams()){
             for (ArenaPlayer ap: at.getPlayers()){
                 if (at.hasLeft(ap))

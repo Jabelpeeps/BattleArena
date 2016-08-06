@@ -1,13 +1,15 @@
 package mc.alk.arena.listeners.custom;
 
-import mc.alk.arena.Defaults;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventPriority;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+
+import mc.alk.arena.Defaults;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 
 
 /**
@@ -17,8 +19,8 @@ import java.util.Map;
  */
 abstract class GeneralEventListener extends BaseEventListener  {
     /** Set of arena listeners */
-    final public EnumMap<mc.alk.arena.objects.events.EventPriority, Map<RListener,Integer>> listeners =
-            new EnumMap<mc.alk.arena.objects.events.EventPriority, Map<RListener,Integer>>(mc.alk.arena.objects.events.EventPriority.class);
+    final public EnumMap<ArenaEventPriority, Map<RListener,Integer>> listeners =
+            new EnumMap<>(ArenaEventPriority.class);
 
     protected volatile RListener[] handlers = null;
 
@@ -40,7 +42,7 @@ abstract class GeneralEventListener extends BaseEventListener  {
      * Get the set of arena listeners
      * @return map of listeners
      */
-    public EnumMap<mc.alk.arena.objects.events.EventPriority, Map<RListener,Integer>> getListeners(){
+    public EnumMap<ArenaEventPriority, Map<RListener,Integer>> getListeners(){
         return listeners;
     }
 
@@ -84,8 +86,8 @@ abstract class GeneralEventListener extends BaseEventListener  {
 
     protected synchronized void bake() {
         if (handlers != null) return;
-        List<RListener> entries = new ArrayList<RListener>();
-        for (Map.Entry<mc.alk.arena.objects.events.EventPriority,Map<RListener,Integer>> entry : listeners.entrySet()){
+        List<RListener> entries = new ArrayList<>();
+        for (Map.Entry<ArenaEventPriority,Map<RListener,Integer>> entry : listeners.entrySet()){
             entries.addAll(entry.getValue().keySet());}
         handlers = entries.toArray(new RListener[entries.size()]);
     }
