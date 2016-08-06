@@ -23,7 +23,7 @@ public class ExpUtil {
      * player.getTotalExperience() shows XP that has been spent on enchants.
      */
     public static int getTotalExperience(final Player player) {
-        int exp = (int) Math.round(getExpAtLevel(player.getLevel()) * player.getExp());
+        int exp = Math.round(getExpAtLevel(player.getLevel()) * player.getExp());
         int currentLevel = player.getLevel();
 
         while (currentLevel > 0) {

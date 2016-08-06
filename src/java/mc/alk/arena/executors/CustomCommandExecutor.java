@@ -31,7 +31,6 @@ import mc.alk.arena.objects.pairs.ParamAlterOptionPair;
 import mc.alk.arena.objects.pairs.TransitionOptionTuple;
 import mc.alk.arena.objects.spawns.SpawnIndex;
 import mc.alk.arena.objects.teams.TeamIndex;
-import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TeamUtil;
 
@@ -53,9 +52,8 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         return super.validCommandSenderClass(clazz) || clazz == ArenaPlayer.class;
     }
 
-    @Override
     protected boolean hasAdminPerms(CommandSender sender){
-        return super.hasAdminPerms(sender) || sender.hasPermission(Permissions.ADMIN_NODE);
+        return sender.isOp() || sender.hasPermission(Permissions.ADMIN_NODE);
     }
 
     @Override
@@ -213,9 +211,8 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
                             to.name());}
                 top.value = ((Player) sender).getLocation();
                 return top;
-            } else {
-                throw new IllegalArgumentException(ChatColor.RED + "Option " + to.name()+" needs a value");
             }
+            throw new IllegalArgumentException(ChatColor.RED + "Option " + to.name()+" needs a value");
 
         }
         if (to == TransitionOption.GIVEITEMS && !(sender instanceof Player)){
@@ -309,12 +306,11 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         MatchParams mp = ParamController.getMatchParams(command.getName());
         if (mp != null){
             return mp;
-        } else {
-            for (String alias : command.getAliases()){
-                mp = ParamController.getMatchParams(alias);
-                if (mp != null)
-                    return mp;
-            }
+        }
+        for (String alias : command.getAliases()){
+            mp = ParamController.getMatchParams(alias);
+            if (mp != null)
+                return mp;
         }
 
         throw new IllegalArgumentException(ChatColor.RED + "Match parameters for a &6" + command.getName()+"&c can't be found");
@@ -324,21 +320,14 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         MatchParams mp = ParamController.getEventParamCopy(command.getName());
         if (mp != null){
             return (EventParams)mp;
-        } else {
-            for (String alias : command.getAliases()){
-                mp = ParamController.getEventParamCopy(alias);
-                if (mp != null)
-                    return (EventParams) mp;
-            }
+        }
+        for (String alias : command.getAliases()){
+            mp = ParamController.getEventParamCopy(alias);
+            if (mp != null)
+                return (EventParams) mp;
         }
 
         throw new IllegalArgumentException(ChatColor.RED + "Event parameters for a &6" + command.getName()+"&c can't be found");
     }
-
-    public static boolean sendMessage(ArenaPlayer player, String msg){
-        return MessageUtil.sendMessage(player, msg);
-    }
-
-
 }
 

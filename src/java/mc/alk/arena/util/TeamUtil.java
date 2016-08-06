@@ -1,12 +1,10 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamAppearance;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -14,10 +12,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import mc.alk.arena.Defaults;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.StateGraph;
+import mc.alk.arena.objects.options.TransitionOption;
+import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.teams.TeamAppearance;
 
 public class TeamUtil {
 	static final int NTEAMS = 35;
@@ -66,7 +67,6 @@ public class TeamUtil {
 		setTeamHead(item,player.getPlayer());
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void setTeamHead(ItemStack item, Player p) {
 		if (p.isOnline() && !p.isDead()){
 			ItemStack is = p.getInventory().getHelmet();

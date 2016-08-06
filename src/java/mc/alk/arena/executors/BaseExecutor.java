@@ -241,7 +241,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
 
         if (methodmap == null || methodmap.isEmpty()){
-            return sendMessage(sender, "&cThat command does not exist!&6 /"+command.getLabel()+" help &c for help");}
+            return MessageUtil.sendMessage(sender, "&cThat command does not exist!&6 /"+command.getLabel()+" help &c for help");}
 
         MCCommand mccmd;
         List<CommandException> errs =null;
@@ -251,7 +251,7 @@ public abstract class BaseExecutor implements CommandExecutor{
             mccmd = mwrapper.method.getAnnotation(MCCommand.class);
             final boolean isOp = sender == null || sender.isOp() || sender instanceof ConsoleCommandSender;
 
-            if (mccmd.op() && !isOp || mccmd.admin() && !hasAdminPerms(sender)) /// no op, no pass
+            if (mccmd.op() && !isOp || mccmd.admin() ) /// no op, no pass
                 continue;
             Arguments newArgs = null;
             try {
@@ -262,7 +262,7 @@ public abstract class BaseExecutor implements CommandExecutor{
                     if (!success){
                         String usage = mwrapper.usage;
                         if (usage != null && !usage.isEmpty()){
-                            sendMessage(sender, usage);}
+                            MessageUtil.sendMessage(sender, usage);}
                     }
                 } else {
                     success = true;
@@ -283,7 +283,7 @@ public abstract class BaseExecutor implements CommandExecutor{
                 usages.add(ChatColor.GOLD+command.getLabel() +" " +e.mw.usage+" &c:"+e.err.getMessage());
             }
             for (String msg : usages){
-                sendMessage(sender, msg);}
+                MessageUtil.sendMessage(sender, msg);}
         }
         return true;
     }
@@ -317,7 +317,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         final int paramLength = mwrapper.method.getParameterTypes().length;
 
         /// Check our permissions
-        if (!cmd.perm().isEmpty() && !sender.hasPermission(cmd.perm()) && !(cmd.admin() && hasAdminPerms(sender)))
+        if (!cmd.perm().isEmpty() && !sender.hasPermission(cmd.perm()) && !(cmd.admin() && sender.isOp()))
             throw new IllegalArgumentException("You don't have permission to use this command");
 
         /// Verify min number of arguments
@@ -338,7 +338,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         if (cmd.op() && !isOp)
             throw new IllegalArgumentException("You need to be op to use this command");
 
-        if (cmd.admin() && !isOp && (isPlayer && !hasAdminPerms(sender)))
+        if (cmd.admin() && !isOp && (isPlayer && !sender.isOp()))
             throw new IllegalArgumentException("You need to be an Admin to use this command");
 
         Class<?> types[] = mwrapper.method.getParameterTypes();
@@ -469,10 +469,10 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
 
-    protected boolean hasAdminPerms(CommandSender sender){
-        return sender.isOp();
-    }
-
+//    protected boolean hasAdminPerms(CommandSender sender){
+//        return sender.isOp();
+//    }
+//
 
     static final int LINES_PER_PAGE = 8;
     public void help(CommandSender sender, Command command, String[] args){
@@ -482,7 +482,7 @@ public abstract class BaseExecutor implements CommandExecutor{
             try{
                 page = Integer.valueOf(args[1]);
             } catch (Exception e){
-                sendMessage(sender, ChatColor.RED+" " + args[1] +" is not a number, showing help for page 1.");
+                MessageUtil.sendMessage(sender, ChatColor.RED+" " + args[1] +" is not a number, showing help for page 1.");
             }
         }
 
@@ -497,7 +497,7 @@ public abstract class BaseExecutor implements CommandExecutor{
             final String use = "&6/" + command.getName() +" " + mw.usage;
             if (cmd.op() && !sender.isOp())
                 onlyop.add(use);
-            else if (cmd.admin() && !hasAdminPerms(sender))
+            else if (cmd.admin() && !sender.isOp())
                 continue;
             else if (!cmd.perm().isEmpty() && !sender.hasPermission(cmd.perm()))
                 unavailable.add(use);
@@ -510,50 +510,41 @@ public abstract class BaseExecutor implements CommandExecutor{
         npages = (int) Math.ceil( (float)npages/LINES_PER_PAGE);
         if (page > npages || page <= 0){
             if (npages <= 0){
-                sendMessage(sender, "&4There are no methods for this command");
+                MessageUtil.sendMessage(sender, "&4There are no methods for this command");
             } else {
-                sendMessage(sender, "&4That page doesnt exist, try 1-"+npages);
+                MessageUtil.sendMessage(sender, "&4That page doesnt exist, try 1-"+npages);
             }
             return;
         }
         if (command != null && command.getAliases() != null && !command.getAliases().isEmpty()) {
             String aliases = StringUtils.join(command.getAliases(),", ");
-            sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /"+command.getName()+" help <page number>");
-            sendMessage(sender, "&e    command &6"+command.getName()+"&e has aliases: &6" + aliases);
+            MessageUtil.sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /"+command.getName()+" help <page number>");
+            MessageUtil.sendMessage(sender, "&e    command &6"+command.getName()+"&e has aliases: &6" + aliases);
         } else {
-            sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /cmd help <page number>");
+            MessageUtil.sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /cmd help <page number>");
         }
         int i=0;
         for (String use : available){
             i++;
             if (i < (page-1) *LINES_PER_PAGE || i >= page*LINES_PER_PAGE)
                 continue;
-            sendMessage(sender, use);
+            MessageUtil.sendMessage(sender, use);
         }
         for (String use : unavailable){
             i++;
             if (i < (page-1) *LINES_PER_PAGE || i >= page *LINES_PER_PAGE)
                 continue;
-            sendMessage(sender, ChatColor.RED+"[Insufficient Perms] " + use);
+            MessageUtil.sendMessage(sender, ChatColor.RED+"[Insufficient Perms] " + use);
         }
         if (sender.isOp()){
             for (String use : onlyop){
                 i++;
                 if (i < (page-1) *LINES_PER_PAGE || i >= page *LINES_PER_PAGE)
                     continue;
-                sendMessage(sender, ChatColor.AQUA+"[OP only] &6"+use);
+                MessageUtil.sendMessage(sender, ChatColor.AQUA+"[OP only] &6"+use);
             }
         }
     }
-
-    public static boolean sendMessage(CommandSender p, String message){
-        return MessageUtil.sendMessage(p,message);
-    }
-
-    public static boolean sendMultilineMessage(CommandSender p, String message){
-        return MessageUtil.sendMultilineMessage(p, message);
-    }
-
     public static String colorChat(String msg) { return msg.replace('&', (char) 167); }
 
 }

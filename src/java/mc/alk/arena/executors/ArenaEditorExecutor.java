@@ -5,6 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.ArenaAlterController;
 import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
@@ -20,10 +26,6 @@ import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.SpawnSerializer;
 import mc.alk.arena.util.MessageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class ArenaEditorExecutor extends CustomCommandExecutor {
     public static String idPrefix = "ar_";
@@ -50,9 +52,8 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
             ac.updateArena(a);
             BattleArena.saveArenas();
             return MessageUtil.sendMessage(sender, "&6"+a.getName()+ "&e has deleted index=&4D" + number+"&e that had spawn="+ts);
-        } else {
-            return MessageUtil.sendMessage(sender, "&cThere was no spawn at that index");
         }
+        return MessageUtil.sendMessage(sender, "&cThere was no spawn at that index");
     }
 
     /**
@@ -160,15 +161,15 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         try {
             ArenaAlterController.setArenaOption(sender, arena, top.state, top.op, top.value);
             if (top.value != null) {
-                sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + top.op + "&2 changed to &6" + top.value);
+                MessageUtil.sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + top.op + "&2 changed to &6" + top.value);
             } else {
-                sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + top.op + "&2 changed");
+                MessageUtil.sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + top.op + "&2 changed");
             }
             return true;
         } catch (IllegalStateException e) {
-            return sendMessage(sender, "&c" + e.getMessage());
+            return MessageUtil.sendMessage(sender, "&c" + e.getMessage());
         } catch (InvalidOptionException e) {
-            return sendMessage(sender, "&c" + e.getMessage());
+            return MessageUtil.sendMessage(sender, "&c" + e.getMessage());
         }
     }
 
@@ -178,7 +179,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
             ArenaAlterController.setArenaOption(sender, arena, aop.ao, aop.value);
             return true;
         } catch (IllegalStateException e) {
-            return sendMessage(sender, "&c" + e.getMessage());
+            return MessageUtil.sendMessage(sender, "&c" + e.getMessage());
         }
     }
 
@@ -186,13 +187,13 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         try {
             ArenaAlterController.setArenaOption(sender, arena, gop.alterParamOption, gop.value);
             if (gop.value != null) {
-                sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + gop.alterParamOption.name() + "&2 changed to &6" + gop.value);
+                MessageUtil.sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + gop.alterParamOption.name() + "&2 changed to &6" + gop.value);
             } else {
-                sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + gop.alterParamOption.name() + "&2 changed");
+                MessageUtil.sendMessage(sender, "&2Arena "+arena.getDisplayName()+" options &6" + gop.alterParamOption.name() + "&2 changed");
             }
             return true;
         } catch (IllegalStateException e) {
-            return sendMessage(sender, "&c" + e.getMessage());
+            return MessageUtil.sendMessage(sender, "&c" + e.getMessage());
         }
     }
 
@@ -203,7 +204,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         ArenaDebugger ad = ArenaDebugger.getDebugger(arena);
         ad.hideSpawns(sender);
         ArenaDebugger.removeDebugger(ad);
-        return sendMessage(sender,ChatColor.YELLOW+ "You are hiding spawns for &6" + arena.getName());
+        return MessageUtil.sendMessage(sender,ChatColor.YELLOW+ "You are hiding spawns for &6" + arena.getName());
     }
 
     @MCCommand(cmds={"showspawns"}, admin=true,  usage="showspawns")
@@ -213,20 +214,20 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         ArenaDebugger ad = ArenaDebugger.getDebugger(arena);
         ad.hideSpawns(sender);
         ad.showSpawns(sender);
-        return sendMessage(sender, ChatColor.GREEN + "You are showing spawns for &6" + arena.getName());
+        return MessageUtil.sendMessage(sender, ChatColor.GREEN + "You are showing spawns for &6" + arena.getName());
     }
 
     @MCCommand(cmds={"listspawns"}, admin=true)
     public boolean arenaListSpawns(Player sender,CurrentSelection cs) {
         Arena arena = cs.getArena();
-        sendMessage(sender, ChatColor.GREEN + "You are listing spawns for &6" + arena.getName());
+        MessageUtil.sendMessage(sender, ChatColor.GREEN + "You are listing spawns for &6" + arena.getName());
         Map<Long, TimedSpawn> spawns = arena.getTimedSpawns();
         if (spawns==null) {
-            return sendMessage(sender, ChatColor.RED+ "Arena has no spawns");}
+            return MessageUtil.sendMessage(sender, ChatColor.RED+ "Arena has no spawns");}
         List<Long> keys = new ArrayList<Long>(spawns.keySet());
         Collections.sort(keys);
         for (Long k : keys) {
-            sendMessage(sender, "&5"+k+"&e: "+spawns.get(k).getDisplayName());
+            MessageUtil.sendMessage(sender, "&5"+k+"&e: "+spawns.get(k).getDisplayName());
         }
         return true;
     }
