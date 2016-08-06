@@ -1,9 +1,10 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.Defaults;
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 
-import java.util.logging.Logger;
+import mc.alk.arena.Defaults;
 
 public class Log {
 	private static Logger log;
@@ -33,7 +34,7 @@ public class Log {
                 log.warning(colorChat(msg));
             else
                 System.out.println(colorChat(msg));
-        }
+        } 
         NotifierUtil.notify("warn", msg);
 	}
 

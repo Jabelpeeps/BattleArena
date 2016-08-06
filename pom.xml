@@ -16,9 +16,9 @@
         <build.number>${env.BUILD_NUMBER}</build.number>
 		<craftbukkit.version>1.10.2-R0.1-SNAPSHOT</craftbukkit.version>
     </properties>
+    
     <!-- Locations for jar repositories -->
     <repositories>
-
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -47,13 +47,19 @@
             <id>kitteh-repo</id>
             <url>http://repo.kitteh.org/content/repositories/public/</url>
         </repository>
+		<repository>
+            <id>minelink-snapshots</id>
+            <url>http://repo.minelink.net/content/repositories/snapshots/</url>
+        </repository>
+<!--         <repository>
+			<id>confuser-repo</id>
+			<url>http://ci.frostcast.net/plugin/repository/everything/</url>
+		</repository> -->
         <repository>
             <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+            <url>http://nexus.hc.to/content/repositories/pub_snapshots/</url>
         </repository>
-
     </repositories>
-    <!-- Dependencies -->
     <dependencies>
         <!-- Dependencies that have maven repos -->
         <dependency>
@@ -73,6 +79,12 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.6</version>
             <scope>provided</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bukkit</groupId>
+            		<artifactId>bukkit</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>mc.alk</groupId>
@@ -148,20 +160,27 @@
             <artifactId>mcMMO</artifactId>
             <version>1.4.08-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bukkit</groupId>
+            		<artifactId>bukkit</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
-<!--         <dependency>
-		    <groupId>net.minelink</groupId>
-		    <artifactId>CombatTagPlusParent</artifactId>
-		    <scope>provided</scope>
-		    <version>1.3.0-SNAPSHOT</version>
-	    </dependency> -->
-        <!-- groupId = unknown.plugins -->
         <dependency>
+		    <groupId>net.minelink</groupId>
+		    <artifactId>CombatTagPlus</artifactId>
+		    <version>1.3.0-SNAPSHOT</version>
+		    <scope>provided</scope>
+	    </dependency>
+	    
+        <!-- groupId = unknown.plugins -->
+<!--         <dependency>
             <groupId>unknown.plugins</groupId>
             <artifactId>CombatTag</artifactId>
             <version>6.3.0</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>unknown.plugins</groupId>
             <artifactId>Essentials</artifactId>
@@ -209,10 +228,10 @@
     <!-- How we will compile the plugin -->
     <build>
         <finalName>${project.name}.${project.version}-#${build.number}</finalName>
-        <defaultGoal>install</defaultGoal>
+        <defaultGoal>clean package</defaultGoal>
         <!-- Where our source directory is -->
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
-        <testSourceDirectory>${basedir}/src/test</testSourceDirectory>
+<!--         <testSourceDirectory>${basedir}/src/test</testSourceDirectory> -->
         <!-- Include all the resources we need -->
         <resources>
             <resource>
@@ -239,13 +258,33 @@
                 </includes>
             </resource>
             <!-- Exclude JUnit test directory -->
-            <resource>
+ <!--            <resource>
                 <directory>src/tests</directory>
                 <excludes>
                     <exclude>**/*</exclude>
                 </excludes>
-            </resource>
+            </resource> -->
         </resources>
+        <pluginManagement>
+		    <plugins>
+		        <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+	    	        <version>1.8</version>
+		        </plugin>
+		        <plugin>
+		            <artifactId>maven-assembly-plugin</artifactId>
+		            <version>2.6</version>
+		        </plugin>
+		        <plugin>
+		            <artifactId>maven-dependency-plugin</artifactId>
+		            <version>2.10</version>
+		        </plugin>
+		        <plugin>
+		            <artifactId>maven-release-plugin</artifactId>
+		            <version>2.5.3</version>
+		        </plugin>
+		    </plugins>
+    	</pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -254,7 +293,6 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <!-- Shade (includes these in the final jar) -->
                         <goals>
                             <goal>shade</goal>
                         </goals>
@@ -303,7 +341,38 @@
                     </execution>
                 </executions>
             </plugin>
-
+			<plugin>
+		        <artifactId>maven-clean-plugin</artifactId>
+		        <version>3.0.0</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <version>3.0.1</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <version>3.0.2</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <version>3.5.1</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <version>2.19.1</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-install-plugin</artifactId>
+		        <version>2.5.2</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-deploy-plugin</artifactId>
+		        <version>2.8.2</version>
+		      </plugin>
+		      <plugin>
+		        <artifactId>maven-site-plugin</artifactId>
+		        <version>3.5.1</version>
+		      </plugin>
         </plugins>
     </build>
 </project>

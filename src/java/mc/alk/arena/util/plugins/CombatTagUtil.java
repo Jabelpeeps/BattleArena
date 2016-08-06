@@ -4,32 +4,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.trc202.CombatTag.CombatTag;
-import com.trc202.CombatTagApi.CombatTagApi;
-
-import mc.alk.arena.plugins.combattag.CombatTagInterface;
-import mc.alk.arena.plugins.combattag.TagsOff;
-import mc.alk.arena.plugins.combattag.TagsOn;
+import net.minelink.ctplus.CombatTagPlus;
+import net.minelink.ctplus.TagManager;
 
 public class CombatTagUtil {
     
-    private static final CombatTagInterface tag;
+    private static final TagManager tag;
     
     static {       
         Plugin plugin = Bukkit.getPluginManager().getPlugin("CombatTag");
         
         if (plugin != null) {
-            CombatTagApi api = new CombatTagApi( (CombatTag) plugin );
-            tag = new TagsOn(api);
+            tag = ((CombatTagPlus) plugin).getTagManager();
         }
-        else tag = new TagsOff();
+        else tag = null;
     }
     
     public static boolean isTagged(Player player) {
-        return tag.isInCombat(player);
+        if ( tag != null )
+            return tag.isTagged( player.getUniqueId() );
+        
+        return false;
     }
     
     public static void untag(Player player) {
-        tag.untag(player);
+        if ( tag != null )
+            tag.untag( player.getUniqueId() );
     }
 }

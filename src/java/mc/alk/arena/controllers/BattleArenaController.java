@@ -1,5 +1,24 @@
 package mc.alk.arena.controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.Match;
@@ -33,27 +52,6 @@ import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PlayerUtil;
-import mc.alk.arena.util.ServerUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import mc.euro.bukkit.BukkitInterface;
 
 public class BattleArenaController implements ArenaListener, Listener{
@@ -61,18 +59,18 @@ public class BattleArenaController implements ArenaListener, Listener{
     private boolean stop = false;
 
     final private Set<Match> running_matches = Collections.synchronizedSet(new CopyOnWriteArraySet<Match>());
-    final private Map<ArenaType,List<Match>> unfilled_matches =new HashMap<ArenaType,List<Match>>();
-    private Map<String, Arena> allarenas = new ConcurrentHashMap<String, Arena>();
-    final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<ArenaType,OldLobbyState>();
+    final private Map<ArenaType,List<Match>> unfilled_matches =new HashMap<>();
+    private Map<String, Arena> allarenas = new ConcurrentHashMap<>();
+    final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<>();
     private final ArenaMatchQueue amq = new ArenaMatchQueue();
     final SignUpdateListener signUpdateListener;
 
-    final private Map<ArenaType, Arena> fixedArenas = new HashMap<ArenaType, Arena>();
+    final private Map<ArenaType, Arena> fixedArenas = new HashMap<>();
 
 
     public class OldLobbyState{
         ContainerState pcs;
-        Set<Match> running = new HashSet<Match>();
+        Set<Match> running = new HashSet<>();
         public boolean isEmpty() {return running.isEmpty();}
         public void add(Match am){running.add(am);}
         public boolean remove(Match am) {return running.remove(am);}
@@ -96,7 +94,7 @@ public class BattleArenaController implements ArenaListener, Listener{
         if (match.isJoinablePostCreate()){
             List<Match> matches = unfilled_matches.get(match.getParams().getType());
             if (matches == null) {
-                matches = new CopyOnWriteArrayList<Match>();
+                matches = new CopyOnWriteArrayList<>();
                 unfilled_matches.put(match.getParams().getType(), matches);
             }
             matches.add(0, match);
@@ -141,7 +139,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     private void addAllOnline(MatchParams mp, Arena arena) {
         String cmd = mp.getCommand() +" add "+arena.getName();
         for (Player p: BukkitInterface.getOnlinePlayers()){
-            PlayerUtil.doCommand(p, cmd);
+            Bukkit.dispatchCommand(p, cmd);
         }
     }
 
@@ -412,7 +410,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public List<Arena> getArenas(MatchParams mp) {
-        List<Arena> arenas = new ArrayList<Arena>();
+        List<Arena> arenas = new ArrayList<>();
         for (Arena a : allarenas.values()){
             if (a.valid() && a.matches(mp)){
                 arenas.add(a);}
@@ -440,7 +438,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public Map<Arena,List<String>> getNotMachingArenaReasons(MatchParams mp) {
-        Map<Arena,List<String>> reasons = new HashMap<Arena, List<String>>();
+        Map<Arena,List<String>> reasons = new HashMap<>();
         for (Arena a : allarenas.values()){
             if (a.getArenaType() != mp.getType()){
                 continue;
@@ -460,7 +458,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public Map<Arena,List<String>> getNotMachingArenaReasons(JoinOptions jp) {
-        Map<Arena,List<String>> reasons = new HashMap<Arena, List<String>>();
+        Map<Arena,List<String>> reasons = new HashMap<>();
         MatchParams mp = jp.getMatchParams();
         Arena wantedArena = jp.getArena();
         for (Arena a : allarenas.values()){
@@ -728,7 +726,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
 
     public List<Match> getRunningMatches(MatchParams params){
-        List<Match> list = new ArrayList<Match>();
+        List<Match> list = new ArrayList<>();
         synchronized(running_matches){
             for (Match m: running_matches){
                 if (m.getParams().getType() == params.getType()){

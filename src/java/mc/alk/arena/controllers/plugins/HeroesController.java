@@ -1,14 +1,15 @@
 package mc.alk.arena.controllers.plugins;
 
-import mc.alk.arena.listeners.competition.plugins.HeroesListener;
-import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.plugins.HeroesUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PlayerUtil;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.List;
+import mc.alk.arena.listeners.competition.plugins.HeroesListener;
+import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.PlayerUtil;
+import mc.alk.arena.util.plugins.HeroesUtil;
 
 public class HeroesController {
 	static boolean hasHeroes = false;
@@ -96,17 +97,6 @@ public class HeroesController {
 			return null;
 		try{return HeroesUtil.getMagicLevel(player);}catch(Exception e){Log.printStackTrace(e);}
 		return null;
-	}
-
-	public static double getHealth(Player player) {
-		return hasHeroes ? HeroesUtil.getHealth(player) : player.getHealth();
-	}
-
-	public static void setHealth(Player player, double health) {
-		if (hasHeroes)
-			try{HeroesUtil.setHealth(player,health);}catch(Exception e){Log.printStackTrace(e);}
-		else
-			PlayerUtil.setHealth(player,health,true);
 	}
 
 	public static void setHealthP(Player player, double health) {

@@ -1,5 +1,13 @@
 package mc.alk.arena.util.plugins;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.Hero;
@@ -7,25 +15,17 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.HeroClassManager;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.arena.util.plugins.heroes.Heroes_1_5_2;
-import mc.alk.arena.util.plugins.heroes.Heroes_pre1_5_2;
-import mc.alk.plugin.updater.Version;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import mc.alk.arena.util.PlayerUtil;
 
 public abstract class HeroesUtil {
 	static Heroes heroes = null;
-	static Map<ArenaTeam,HeroParty> parties = Collections.synchronizedMap(new HashMap<ArenaTeam,HeroParty>());
-	static HeroesUtil util = null;
+	static Map<ArenaTeam,HeroParty> parties = 
+	        Collections.synchronizedMap(new HashMap<ArenaTeam,HeroParty>());
 
 	public abstract void setHeroPlayerHealth(Player player, double health);
 	public abstract double getHeroHealth(Player player);
@@ -52,13 +52,7 @@ public abstract class HeroesUtil {
 	}
 
 	public static void setHeroes(Plugin plugin){
-		heroes = (Heroes) plugin;
-		Version v = new Version(heroes.getDescription().getVersion());
-		if (v.compareTo("1.5.2") >= 0){
-			util = new Heroes_1_5_2();
-		} else {
-			util = new Heroes_pre1_5_2();
-		}
+		heroes = (Heroes) plugin;		
 	}
 
 	public static String getHeroClassName(Player player) {
@@ -202,16 +196,8 @@ public abstract class HeroesUtil {
 		hero.setMana((int)val);
 	}
 
-	public static void setHealth(Player player, double health) {
-		util.setHeroPlayerHealth(player, health);
-	}
-
 	public static void setHealthP(Player player, double health) {
-		util.setHeroHealthP(player, health);
+	    double val = player.getMaxHealth() * health/100.0;
+        PlayerUtil.setHealth(player, val);
 	}
-
-	public static double getHealth(Player player) {
-		return util.getHeroHealth(player);
-	}
-
 }

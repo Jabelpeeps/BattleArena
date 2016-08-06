@@ -105,7 +105,6 @@ public class TransitionController {
 
     }
 
-    @SuppressWarnings("ConstantConditions")
     private static boolean transition(final PlayerHolder am, final CompetitionState transition,
                                       final ArenaPlayer player, final ArenaTeam team, final boolean onlyInMatch,
                                       StateGraph tops) {
@@ -130,7 +129,7 @@ public class TransitionController {
         final boolean teleportOut = mo.shouldTeleportOut();
         final boolean wipeInventory = mo.clearInventory();
 
-        List<PotionEffect> effects = mo.getEffects()!=null ? new ArrayList<PotionEffect>(mo.getEffects()) : null;
+        List<PotionEffect> effects = mo.getEffects()!=null ? new ArrayList<>(mo.getEffects()) : null;
         final Integer hunger = mo.getHunger();
 
         final int teamIndex = team == null ? -1 : team.getIndex();

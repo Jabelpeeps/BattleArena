@@ -44,15 +44,7 @@ public class PlayerUtil {
     }
 
     public static void setHealth(final Player player, final Double health) {
-        setHealth(player,health,false);
-    }
-
-    public static void setHealth(final Player player, final Double health, boolean skipHeroes) {
-        if (!skipHeroes && HeroesController.enabled()){
-            HeroesController.setHealth(player,health);
-            return;
-        }
-
+ 
         final double oldHealth = player.getHealth();
         if (oldHealth > health){
             EntityDamageEvent event = new EntityDamageEvent(player,  DamageCause.CUSTOM, oldHealth-health );
@@ -70,15 +62,6 @@ public class PlayerUtil {
                 player.setHealth(regen);
             }
         }
-    }
-
-    public static Double getHealth(Player player) {
-        return getHealth(player,false);
-    }
-
-    public static Double getHealth(Player player, boolean skipHeroes) {
-        return !skipHeroes && HeroesController.enabled() ?
-                HeroesController.getHealth(player) : player.getHealth();
     }
 
     public static void setInvulnerable(Player player, Integer invulnerableTime) {
@@ -99,17 +82,13 @@ public class PlayerUtil {
             try{
                 CommandSender cs = cls.isConsoleSender() ? Bukkit.getConsoleSender() : p;
                 if (Defaults.DEBUG_TRANSITIONS) {Log.info("BattleArena doing command '"+cls.getCommand(name)+"' as "+cs.getName());}
-                doCommand(cs,cls.getCommand(name));
+                Bukkit.dispatchCommand(cs,cls.getCommand(name));
             } catch (Exception e){
                 Log.err("[BattleArena] Error executing command as console or player");
                 Log.printStackTrace(e);
             }
 
         }
-    }
-
-    public static void doCommand(CommandSender cs, String cmd){
-        Bukkit.dispatchCommand(cs, cmd);
     }
 
     public static void setFlight(Player player, boolean enable) {

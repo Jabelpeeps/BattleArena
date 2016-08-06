@@ -7,8 +7,7 @@ import mc.alk.arena.objects.CompetitionTransition;
  * @author alkarin
  */
 enum TournamentTransition implements CompetitionTransition{
-    FIRSTPLACE ("firstPlace"), PARTICIPANTS("participants"),
-    ;
+    FIRSTPLACE ("firstPlace"), PARTICIPANTS("participants");
 
     final String name;
     int globalOrdinal;

@@ -18,7 +18,6 @@ import mc.alk.arena.controllers.APIRegistrationController;
 import mc.alk.arena.controllers.ArenaEditor;
 import mc.alk.arena.controllers.BAEventController;
 import mc.alk.arena.controllers.BattleArenaController;
-import mc.alk.arena.controllers.BukkitServer;
 import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.DuelController;
 import mc.alk.arena.controllers.EventController;
@@ -125,7 +124,6 @@ public class BattleArena extends JavaPlugin {
         ConsoleCommandSender sender = Bukkit.getConsoleSender();
         MessageUtil.sendMessage(sender, "&4[" + pluginname + "] &6v" + version + "&f enabling!");
 
-        BukkitServer.setServer(Bukkit.getServer()); /// Set the server
         arenaController = new BattleArenaController(signUpdateListener);
 
         /// Create our plugin folder if its not there

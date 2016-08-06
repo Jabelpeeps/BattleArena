@@ -1,9 +1,19 @@
 package mc.alk.arena.objects;
 
+import java.util.List;
+import java.util.Stack;
+import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.PlayerInventory;
+
 import mc.alk.arena.competition.Competition;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.controllers.containers.AreaContainer;
 import mc.alk.arena.controllers.plugins.HeroesController;
+import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.meta.PlayerMetaData;
 import mc.alk.arena.objects.spawns.EntitySpawn;
@@ -15,15 +25,6 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.ServerUtil;
-import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
 
 
 public class ArenaPlayer {
@@ -40,7 +41,7 @@ public class ArenaPlayer {
      * where they have the event, and the match
      * The stack order is the order in which they joined, the top being the most recent
      */
-    final Stack<Competition> competitions = new Stack<Competition>();
+    final Stack<Competition> competitions = new Stack<>();
 
     Arena arena;
 
@@ -116,7 +117,7 @@ public class ArenaPlayer {
     }
 
     public double getHealth() {
-        return PlayerUtil.getHealth(player);
+        return player.getHealth();
     }
 
     public void setHealth(double health) {
@@ -284,6 +285,7 @@ public class ArenaPlayer {
         return ServerUtil.findPlayerExact(this.getName());
     }
 
+    @Override
     public String toString() {
         return "[" + this.getName() + "]";
     }

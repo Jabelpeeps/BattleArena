@@ -7,6 +7,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
@@ -20,18 +32,6 @@ import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.plugins.CombatTagUtil;
 import mc.euro.bukkit.BukkitInterface;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 
 public class TeleportController implements Listener {
 
@@ -93,13 +93,12 @@ public class TeleportController implements Listener {
             }
 
             /// Some worlds "regenerate" which means they have the same name, but are different worlds
-            /// To deal with this, reget the world
+            /// To deal with this, reset the world
             World w = Bukkit.getWorld(loc.getWorld().getName());
             Location nl = new Location(w, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
             if (!player.teleport(nl, PlayerTeleportEvent.TeleportCause.PLUGIN)
                     || (Defaults.DEBUG_VIRTUAL && !player.isOnline())) {
                 BAPlayerListener.teleportOnReenter(BattleArena.toArenaPlayer(player), nl, player.getLocation());
-                //noinspection PointlessBooleanExpression,ConstantConditions
                 return false;
             }
             arenaPlayer.spawnMobs();
@@ -195,7 +194,7 @@ public class TeleportController implements Listener {
     }
 
     private List<Player> getPlayersWithinDistance(final Player player, final int distance) {
-        List<Player> res = new ArrayList<Player>();
+        List<Player> res = new ArrayList<>();
         final int d2 = distance * distance;
         final UUID uid = player.getWorld().getUID();
         for (Player p : BukkitInterface.getOnlinePlayers()) {
