@@ -8,7 +8,7 @@ public enum EventState implements CompetitionState{
     int globalOrdinal;
 
     EventState() {
-        globalOrdinal = StateController.register(this);
+        globalOrdinal = StateController.register(this.getClass());
     }
 
     @Override

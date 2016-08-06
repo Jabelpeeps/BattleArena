@@ -12,7 +12,7 @@ enum TournamentTransition implements CompetitionTransition{
     final String name;
     int globalOrdinal;
     TournamentTransition(String name){
-        globalOrdinal = StateController.register(this);
+        globalOrdinal = StateController.register(this.getClass());
         this.name = name;
     }
 
