@@ -82,7 +82,6 @@ import mc.alk.arena.util.PlayerUtil;
 import mc.alk.plugin.updater.FileUpdater;
 import mc.alk.plugin.updater.PluginUpdater;
 import mc.battleplugins.api.BattlePluginsAPI;
-import mc.euro.bukkit.BukkitInterface;
 
 public class BattleArena extends JavaPlugin {
 
@@ -276,8 +275,7 @@ public class BattleArena extends JavaPlugin {
             }
         });
         bpapi = new BattlePluginsAPI();
-        PluginUpdater.update(this, bukkitId, this.getFile(),
-                Defaults.AUTO_UPDATE, Defaults.ANNOUNCE_UPDATE);
+        PluginUpdater.update(this, bukkitId, this.getFile(), Defaults.AUTO_UPDATE, Defaults.ANNOUNCE_UPDATE);
         Log.info("&4[" + pluginname + "] &6v" + BattleArena.version + "&f enabled!");
     }
 
@@ -759,9 +757,5 @@ public class BattleArena extends JavaPlugin {
      */
     public ArenaEditorExecutor getArenaEditorExecutor() {
         return arenaEditorExecutor;
-    }
-    
-    public static Collection<? extends Player> getOnlinePlayers() {
-        return BukkitInterface.getOnlinePlayers();
     }
 }

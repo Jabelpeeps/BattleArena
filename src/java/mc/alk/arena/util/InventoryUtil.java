@@ -1,22 +1,6 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.util.compat.IInventoryHelper;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,37 +13,28 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import mc.alk.arena.Defaults;
+
 @SuppressWarnings("deprecation")
 public class InventoryUtil {
 	static final String version = "BA InventoryUtil 2.1.7";
 	static final boolean DEBUG = false;
-	static IInventoryHelper handler = null;
-
-	static {
-		Class<?>[] args = {};
-		try {
-			final String pkg = Bukkit.getServer().getClass().getPackage().getName();
-			String version = pkg.substring(pkg.lastIndexOf('.') + 1);
-			final Class<?> clazz;
-			if (version.equalsIgnoreCase("craftbukkit")){
-				clazz = Class.forName("mc.alk.arena.util.compat.pre.InventoryHelper");
-			} else{
-				clazz = Class.forName("mc.alk.arena.util.compat.v1_4_5.InventoryHelper");
-			}
-
-			handler = (IInventoryHelper) clazz.getConstructor(args).newInstance((Object[])args);
-		} catch (Exception e) {
-			try{
-				final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.pre.InventoryHelper");
-				handler = (IInventoryHelper) clazz.getConstructor(args).newInstance((Object[])args);
-			} catch (Exception e2){
-                //noinspection PointlessBooleanExpression,ConstantConditions
-                if (!Defaults.TESTSERVER && !Defaults.TESTSERVER_DEBUG) Log.printStackTrace(e2);
-			}
-            //noinspection PointlessBooleanExpression,ConstantConditions
-            if (!Defaults.TESTSERVER && !Defaults.TESTSERVER_DEBUG) Log.printStackTrace(e);
-		}
-	}
 
     public static class Armor{
 		final public ArmorLevel level;
@@ -134,41 +109,42 @@ public class InventoryUtil {
 		if (iname.contains("unbreaking")) return Enchantment.DURABILITY;
 		if (iname.contains("dura")) return Enchantment.DURABILITY;
 		if (iname.contains("strider")) return Enchantment.DEPTH_STRIDER;
-        return handler.getEnchantmentByCommonName(iname);
+		if (iname.contains("thorn")) return Enchantment.THORNS;
+        return null;
 	}
 
 	public static String getCommonNameByEnchantment(Enchantment enc){
-		if (enc.getId() == Enchantment.PROTECTION_ENVIRONMENTAL.getId()){return "Protection";}
-		else if (enc.getId() == Enchantment.PROTECTION_FIRE.getId()){return "Fire Protection";}
-		else if (enc.getId() == Enchantment.PROTECTION_FALL.getId()){return "Fall Protection";}
-		else if (enc.getId() == Enchantment.PROTECTION_EXPLOSIONS.getId()){return "Blast Protection";}
-		else if (enc.getId() == Enchantment.PROTECTION_PROJECTILE.getId()){return "Projectile Protection";}
-		else if (enc.getId() == Enchantment.OXYGEN.getId()){return "Respiration";}
-		else if (enc.getId() == Enchantment.WATER_WORKER.getId()){return "Aqua Affinity";}
-		else if (enc.getId() == Enchantment.DAMAGE_ALL.getId()){return "Sharp";}
-		else if (enc.getId() == Enchantment.DAMAGE_UNDEAD.getId()){return "Smite";}
-		else if (enc.getId() == Enchantment.DAMAGE_ARTHROPODS.getId()){return "Bane of Arthropods";}
-		else if (enc.getId() == Enchantment.KNOCKBACK.getId()){return "Knockback";}
-		else if (enc.getId() == Enchantment.FIRE_ASPECT.getId()){return "Fire Aspect";}
-		else if (enc.getId() == Enchantment.LOOT_BONUS_MOBS.getId()){return "Looting";}
-		else if (enc.getId() == Enchantment.DIG_SPEED.getId()){return "Efficiency";}
-		else if (enc.getId() == Enchantment.SILK_TOUCH.getId()){return "Silk Touch";}
-		else if (enc.getId() == Enchantment.DURABILITY.getId()){return "Unbreaking";}
-		else if (enc.getId() == Enchantment.LOOT_BONUS_BLOCKS.getId()){return "Fortune";}
-		else if (enc.getId() == Enchantment.ARROW_DAMAGE.getId()){return "Power";}
-		else if (enc.getId() == Enchantment.ARROW_KNOCKBACK.getId()){return "Punch";}
-		else if (enc.getId() == Enchantment.ARROW_FIRE.getId()){return "Flame";}
-		else if (enc.getId() == Enchantment.ARROW_INFINITE.getId()){return "Infinity";}
-		else if (enc.getId() == Enchantment.DEPTH_STRIDER.getId()){return "Depth Strider";}
-        else return (handler.getCommonNameByEnchantment(enc));
+		if (      enc == Enchantment.PROTECTION_ENVIRONMENTAL ) return "Protection";
+		else if ( enc == Enchantment.PROTECTION_FIRE ) return "Fire Protection";
+		else if ( enc == Enchantment.PROTECTION_FALL ) return "Fall Protection";
+		else if ( enc == Enchantment.PROTECTION_EXPLOSIONS ) return "Blast Protection";
+		else if ( enc == Enchantment.PROTECTION_PROJECTILE ) return "Projectile Protection";
+		else if ( enc == Enchantment.OXYGEN ) return "Respiration";
+		else if ( enc == Enchantment.WATER_WORKER ) return "Aqua Affinity";
+		else if ( enc == Enchantment.DAMAGE_ALL ) return "Sharp";
+		else if ( enc == Enchantment.DAMAGE_UNDEAD ) return "Smite";
+		else if ( enc == Enchantment.DAMAGE_ARTHROPODS ) return "Bane of Arthropods";
+		else if ( enc == Enchantment.KNOCKBACK ) return "Knockback";
+		else if ( enc == Enchantment.FIRE_ASPECT ) return "Fire Aspect";
+		else if ( enc == Enchantment.LOOT_BONUS_MOBS ) return "Looting";
+		else if ( enc == Enchantment.DIG_SPEED ) return "Efficiency";
+		else if ( enc == Enchantment.SILK_TOUCH ) return "Silk Touch";
+		else if ( enc == Enchantment.DURABILITY ) return "Unbreaking";
+		else if ( enc == Enchantment.LOOT_BONUS_BLOCKS ) return "Fortune";
+		else if ( enc == Enchantment.ARROW_DAMAGE ) return "Power";
+		else if ( enc == Enchantment.ARROW_KNOCKBACK ) return "Punch";
+		else if ( enc == Enchantment.ARROW_FIRE ) return "Flame";
+		else if ( enc == Enchantment.ARROW_INFINITE ) return "Infinity";
+		else if ( enc == Enchantment.DEPTH_STRIDER ) return "Depth Strider"; 
+		else if ( enc == Enchantment.THORNS ) return "Thorns";
+        return enc.getName();
 	}
 
 	static final Map<Material,Armor> armor;
 	static {
 		armor = new EnumMap<Material,Armor>(Material.class);
-		try{armor.put(Material.SKULL_ITEM,new Armor(ArmorType.HELM, ArmorLevel.DISGUISE));} catch(Throwable e){
-            /* no errors as it's just an old bukkit that doesn't have this Material*/
-        }
+
+	    armor.put( Material.SKULL_ITEM, new Armor(ArmorType.HELM, ArmorLevel.DISGUISE));
 		armor.put(Material.WOOL,new Armor(ArmorType.HELM, ArmorLevel.WOOL));
 		armor.put(Material.LEATHER_HELMET,new Armor(ArmorType.HELM, ArmorLevel.LEATHER));
 		armor.put(Material.IRON_HELMET,new Armor(ArmorType.HELM, ArmorLevel.IRON));
@@ -206,7 +182,7 @@ public class InventoryUtil {
      * @return whether its an ender chest
      */
     public static boolean isEnderChest(InventoryType type) {
-        return handler.isEnderChest(type);
+        return type == InventoryType.ENDER_CHEST;
     }
 
 	public static int getItemAmountFromInventory(Inventory inv, ItemStack is) {
@@ -287,39 +263,29 @@ public class InventoryUtil {
 		Material mat = Material.matchMaterial(itemStr);
 		if (DEBUG) Log.info(mat +"   " + itemStr +"   " + dataValue);
 		if (mat != null && mat != Material.AIR) {
-			return new ItemStack(mat.getId(), 1, dataValue);
-		} else {
-			if (itemStr.equalsIgnoreCase("steak")){
-				return new ItemStack(Material.COOKED_BEEF, 1);
-			} else if (itemStr.equalsIgnoreCase("chicken")){
-				return new ItemStack(Material.COOKED_CHICKEN, 1);
-			}
+			return new ItemStack(mat, 1, dataValue);
 		}
+        if (itemStr.equalsIgnoreCase("steak")){
+        	return new ItemStack(Material.COOKED_BEEF, 1);
+        } else if (itemStr.equalsIgnoreCase("chicken")){
+        	return new ItemStack(Material.COOKED_CHICKEN, 1);
+        }
 		itemStr = itemStr.toUpperCase();
 		for (Material m : Material.values()){
 			String itemName = m.name();
 			int index = itemName.indexOf(itemStr,0);
 			if (index != -1 && index == 0){
 				if (DEBUG) Log.info(m +"   " + itemStr +"   " + dataValue);
-				return new ItemStack(m.getId(), 1, dataValue);
+				return new ItemStack(m, 1, dataValue);
 			}
 		}
 		return null;
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-    public static boolean isInt(String i) {try {Integer.parseInt(i);return true;} catch (Exception e) {return false;}}
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-	public static boolean isFloat(String i){try{Float.parseFloat(i);return true;} catch (Exception e){return false;}}
 
-	/// Get the Material
-	public static Material getMat(String name) {
-		Integer id =null;
-		try{ id = Integer.parseInt(name);}catch(Exception e){/* do nothing*/}
-		if (id == null){
-			id = getMaterialID(name);}
-		return id != -1 && id >= 0 ? Material.getMaterial(id) : null;
-	}
+    public static boolean isInt(String i) {try {Integer.parseInt(i);return true;} catch (Exception e) {return false;}}
+
+	public static boolean isFloat(String i){try{Float.parseFloat(i);return true;} catch (Exception e){return false;}}
 
 	/// This allows for abbreviations to work, useful for sign etc
 	public static int getMaterialID(String name) {
@@ -389,7 +355,6 @@ public class InventoryUtil {
 		addItemsToInventory(p,items, ignoreCustomHelmet,null);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void addItemsToInventory(Player p, List<ItemStack> items, boolean ignoreCustomHelmet, Color color) {
 		if (items == null)
 			return;
@@ -407,7 +372,6 @@ public class InventoryUtil {
 		addItemToInventory(player,itemStack,stockAmount,update,ignoreCustomHelmet,null);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void addItemToInventory(Player player, ItemStack itemStack, int stockAmount,
 			boolean update, boolean ignoreCustomHelmet, Color color) {
 		PlayerInventory inv = player.getInventory();
@@ -443,7 +407,7 @@ public class InventoryUtil {
 		boolean better = empty || armorSlotBetter(armor.get(oldArmor.getType()), a);
 
 		if (color != null && a.level == ArmorLevel.LEATHER){
-			handler.setColor(itemStack,color);
+			setColor(itemStack,color);
 		}
 		if (empty || better){
 			switch (armor.get(itemType).type){
@@ -465,6 +429,16 @@ public class InventoryUtil {
 		}
 	}
 
+	public static void setColor(ItemStack itemStack, Color color) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null && itemStack.getItemMeta() instanceof LeatherArmorMeta){
+            org.bukkit.Color bukkitColor = org.bukkit.Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
+            LeatherArmorMeta lam = (LeatherArmorMeta) itemStack.getItemMeta();
+            lam.setColor(bukkitColor);
+            itemStack.setItemMeta(lam);
+        }
+    }
+	
 	public static int first(Inventory inv, ItemStack is1) {
 		if (is1 == null) {
 			return -1;
@@ -473,7 +447,7 @@ public class InventoryUtil {
 		for (int i = 0; i < inventory.length; i++) {
 			ItemStack is2 = inventory[i];
 			if (is2 == null) continue;
-			if (is1.getTypeId() == is2.getTypeId() && is1.getDurability() == is2.getDurability()) {
+			if (is1.getType() == is2.getType() && is1.getDurability() == is2.getDurability()) {
 				return i;
 			}
 		}
@@ -490,22 +464,22 @@ public class InventoryUtil {
 			return leftover;
 		for (ItemStack is1: items){
 			ItemStack is2 = inv.getBoots();
-			if (is2 != null && is1.getTypeId() == is2.getTypeId() && is1.getDurability() == is2.getDurability()){
+			if (is2 != null && is1.getType() == is2.getType() && is1.getDurability() == is2.getDurability()){
 				inv.setBoots(null);
 				continue;
 			}
 			is2 = inv.getLeggings();
-			if (is2 != null && is1.getTypeId() == is2.getTypeId() && is1.getDurability() == is2.getDurability()){
+			if (is2 != null && is1.getType() == is2.getType() && is1.getDurability() == is2.getDurability()){
 				inv.setLeggings(null);
 				continue;
 			}
 			is2 = inv.getChestplate();
-			if (is2 != null && is1.getTypeId() == is2.getTypeId() && is1.getDurability() == is2.getDurability()){
+			if (is2 != null && is1.getType() == is2.getType() && is1.getDurability() == is2.getDurability()){
 				inv.setChestplate(null);
 				continue;
 			}
 			is2 = inv.getHelmet();
-			if (is2 != null && is1.getTypeId() == is2.getTypeId() && is1.getDurability() == is2.getDurability()){
+			if (is2 != null && is1.getType() == is2.getType() && is1.getDurability() == is2.getDurability()){
 				inv.setHelmet(null);
 			}
 		}
@@ -536,21 +510,20 @@ public class InventoryUtil {
 					item.setAmount(toDelete);
 					leftover.put(i, item);
 					break;
-				} else {
-					ItemStack itemStack = inv.getItem(first);
-					int amount = itemStack.getAmount();
-
-					if (amount <= toDelete) {
-						toDelete -= amount;
-						// clear the slot, all used up
-						inv.setItem(first, null);
-					} else {
-						// split the stack and store
-						itemStack.setAmount(amount - toDelete);
-						inv.setItem(first, itemStack);
-						toDelete = 0;
-					}
 				}
+                ItemStack itemStack = inv.getItem(first);
+                int amount = itemStack.getAmount();
+
+                if (amount <= toDelete) {
+                	toDelete -= amount;
+                	// clear the slot, all used up
+                	inv.setItem(first, null);
+                } else {
+                	// split the stack and store
+                	itemStack.setAmount(amount - toDelete);
+                	inv.setItem(first, itemStack);
+                	toDelete = 0;
+                }
 
 				// Bail when done
 				if (toDelete <= 0) {
@@ -596,10 +569,9 @@ public class InventoryUtil {
 					is2.setAmount(left);
 					items.add(is2);
 					return;
-				}else{
-					is2.setAmount(maxStackSize);
-					items.add(is2);
 				}
+                is2.setAmount(maxStackSize);
+                items.add(is2);
 			}
 			Object[] iArray = items.toArray();
 			for(Object o : iArray){
@@ -618,7 +590,6 @@ public class InventoryUtil {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void clearInventory(Player p) {
 		if(Defaults.DEBUG_STORAGE) Log.info("Clearing inventory of " + p.getName() +" o=" +
 				p.isOnline() +", d="+ p.isDead() +"   inv=" + p.getInventory());
@@ -628,7 +599,8 @@ public class InventoryUtil {
 			if (inv != null){
 				inv.clear();
 				inv.setArmorContents(null);
-				inv.setItemInHand(null);
+				inv.setItemInMainHand(null);
+				inv.setItemInOffHand( null );
 			}
 			p.updateInventory();
 		} catch(Exception e){
@@ -636,7 +608,6 @@ public class InventoryUtil {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void clearInventory(Player p, boolean skipHead) {
 		if (!skipHead){
 			clearInventory(p);
@@ -652,7 +623,8 @@ public class InventoryUtil {
 				inv.setBoots(null);
 				inv.setChestplate(null);
 				inv.setLeggings(null);
-				inv.setItemInHand(null);
+                inv.setItemInMainHand(null);
+                inv.setItemInOffHand( null );
 			}
 			p.updateInventory();
 		} catch(Exception e){
@@ -661,12 +633,12 @@ public class InventoryUtil {
 	}
 
 	public static Object getCommonName(ItemStack is) {
-		int id = is.getTypeId();
+		Material mat = is.getType();
 		int datavalue = is.getDurability();
 		if (datavalue > 0){
-			return Material.getMaterial(id).toString() + ":" + datavalue;
+			return mat.toString() + ":" + datavalue;
 		}
-		return Material.getMaterial(id).toString();
+		return mat.toString();
 	}
 
 
@@ -731,13 +703,13 @@ public class InventoryUtil {
 		}
 		is.setAmount(amt);
 		if (lore != null && !lore.isEmpty())
-			handler.setLore(is,lore);
+			setLore(is,lore);
 		if (c!=null)
-			handler.setColor(is, c);
+			setColor(is, c);
 		if (displayName != null)
-			handler.setDisplayName(is,displayName);
+			setDisplayName(is,displayName);
 		if (ownerName != null)
-			handler.setOwnerName(is,ownerName);
+			setOwnerName(is,ownerName);
 
 		for (int i = 1; i < split.length-1;i++){
             if (Defaults.TESTSERVER) continue;
@@ -753,7 +725,28 @@ public class InventoryUtil {
 		}
 		return is;
 	}
-
+	public static void setLore(ItemStack itemStack, List<String> lore) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if(meta != null){
+            meta.setLore(lore);
+            itemStack.setItemMeta(meta);
+        }
+    }
+	public static void setDisplayName(ItemStack itemStack, String displayName) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if(meta != null){
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',displayName));
+            itemStack.setItemMeta(meta);
+        }
+    }
+	public static void setOwnerName(ItemStack itemStack, String ownerName) {
+        ItemMeta im = itemStack.getItemMeta();
+        if (im != null && im instanceof SkullMeta){
+            SkullMeta sm = (SkullMeta) im;
+            sm.setOwner(ownerName);
+            itemStack.setItemMeta(sm);
+        }
+    }
 	public static Integer parsePosition(String str){
 		Matcher m = PATTERN_POSITION.matcher(str);
 		if (!m.find())
@@ -882,21 +875,29 @@ public class InventoryUtil {
 		for (Enchantment enc : encs.keySet()){
 			sb.append(enc.getName()).append(":").append(encs.get(enc)).append(" ");
 		}
-		List<String> lore = handler.getLore(is);
-		if (lore != null && !lore.isEmpty()){
-            sb.append("lore=\"").append(StringUtils.join(lore, "\\n")).append("\" ");
-		}
+		ItemMeta meta = is.getItemMeta();
+		if ( meta != null ) {
+    		List<String> lore = meta.getLore();
+    		if (lore != null && !lore.isEmpty()){
+                sb.append("lore=\"").append(StringUtils.join(lore, "\\n")).append("\" ");
+    		}
+    		if (meta instanceof LeatherArmorMeta){
+                LeatherArmorMeta lam = (LeatherArmorMeta) meta;
+                Color color = new Color(lam.getColor().getRed(), lam.getColor().getGreen(), lam.getColor().getBlue());
+                if (color!=null)
+                    sb.append("color=\"").append(color.getRed()).append(",").append(color.getGreen()).append(",").append(color.getBlue()).append("\" ");
+    		}
 
-		Color color = handler.getColor(is);
-		if (color!=null)
-			sb.append("color=\"").append(color.getRed()).append(",").
-                    append(color.getGreen()).append(",").append(color.getBlue()).append("\" ");
-		String op = handler.getDisplayName(is);
-		if (op != null && !op.isEmpty())
-			sb.append("displayName=\"").append(op).append("\" ");
-		op = handler.getOwnerName(is);
-		if (op != null && !op.isEmpty())
-			sb.append("ownerName=\"").append(op).append("\" ");
+    		String op = meta.getDisplayName();
+    		if (op != null && !op.isEmpty())
+    			sb.append("displayName=\"").append(op).append("\" ");
+    		
+    		if ( meta instanceof SkullMeta ) {
+    	        op = ((SkullMeta)meta).getOwner();
+    	        if (op != null && !op.isEmpty())
+    	            sb.append("ownerName=\"").append(op).append("\" ");
+    		}
+		}
 		sb.append(is.getAmount());
 		return sb.toString();
 	}
@@ -1119,7 +1120,6 @@ public class InventoryUtil {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void addToInventory(Player p, PInv pinv) {
 		try{
 			PlayerInventory inv = p.getPlayer().getInventory();
@@ -1209,4 +1209,5 @@ public class InventoryUtil {
 		}
 		return items;
 	}
+	
 }

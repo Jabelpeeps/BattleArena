@@ -1,5 +1,11 @@
 package mc.alk.arena.listeners.competition;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -11,36 +17,10 @@ import mc.alk.arena.objects.events.EventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.DmgDeathUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.Util;
-import mc.alk.arena.util.compat.IEventHelper;
-import mc.alk.plugin.updater.Version;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageListener implements ArenaListener{
 	StateGraph transitionOptions;
 	PlayerHolder holder;
-    static IEventHelper handler;
-
-    static {
-        Class<?>[] args = {};
-        try {
-            Version version = Util.getCraftBukkitVersion();
-            if (version.compareTo("v1_6_R1") >= 0){
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.v1_6_R1.EventHelper");
-                handler = (IEventHelper) clazz.getConstructor(args).newInstance((Object[])args);
-            } else {
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.pre.EventHelper");
-                handler = (IEventHelper) clazz.getConstructor(args).newInstance((Object[])args);
-            }
-        } catch (Exception e) {
-            Log.printStackTrace(e);
-        }
-    }
 
     public DamageListener(PlayerHolder holder){
 		this.transitionOptions = holder.getParams().getStateGraph();
@@ -90,7 +70,7 @@ public class DamageListener implements ArenaListener{
 		if (pvp == PVPState.INVINCIBLE){
 			/// all damage is cancelled
 			target.setFireTicks(0);
-            handler.setDamage(event,0);
+            event.setDamage( 0 );
 			event.setCancelled(true);
 			return;
 		}
@@ -115,7 +95,7 @@ public class DamageListener implements ArenaListener{
 			break;
 		case OFF:
 			if (damager != null){ /// damage done from a player
-                handler.setDamage(event,0);
+                event.setDamage( 0 );
 				event.setCancelled(true);
 			}
 			break;

@@ -1,5 +1,13 @@
 package mc.alk.arena.executors;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.ArenaAlterController;
@@ -26,13 +34,6 @@ import mc.alk.arena.objects.teams.TeamIndex;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TeamUtil;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class CustomCommandExecutor extends BaseExecutor{
 

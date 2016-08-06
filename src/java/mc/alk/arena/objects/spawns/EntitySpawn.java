@@ -4,11 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.EntityUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.TeamUtil;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.AnimalTamer;
@@ -18,6 +13,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
+
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.TeamUtil;
 
 public class EntitySpawn extends SpawnInstance{
     final private EntityType et;
@@ -68,8 +67,7 @@ public class EntitySpawn extends SpawnInstance{
             try {
                 Entity entity = (Entity) spawnEntityMethod.invoke(loc.getWorld(), loc, et);
                 if (entity instanceof Wolf && owner != null && owner.getTeam()!=null) {
-                    EntityUtil.setCollarColor((Wolf) entity,
-                            TeamUtil.getDyeColor(owner.getTeam().getIndex()));
+                    ((Wolf) entity).setCollarColor( TeamUtil.getDyeColor(owner.getTeam().getIndex() ) );
                 }
                 uids.add(entity);
             } catch (Exception e) {
@@ -103,8 +101,7 @@ public class EntitySpawn extends SpawnInstance{
                 if (le instanceof Wolf){
                     ((Wolf)le).setSitting(false);
                     if (owner != null && owner.getTeam()!=null){
-                        EntityUtil.setCollarColor((Wolf) le,
-                                TeamUtil.getDyeColor(owner.getTeam().getIndex()));
+                        ((Wolf) le).setCollarColor( TeamUtil.getDyeColor(owner.getTeam().getIndex()));
                     }
                 }
             }

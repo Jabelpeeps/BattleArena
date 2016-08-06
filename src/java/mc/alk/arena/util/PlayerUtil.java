@@ -1,54 +1,26 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.HeroesController;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.CommandLineString;
-import mc.alk.arena.util.compat.IPlayerHelper;
-import mc.alk.plugin.updater.Version;
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.scoreboard.Scoreboard;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.UUID;
+import mc.alk.arena.Defaults;
+import mc.alk.arena.controllers.plugins.EssentialsController;
+import mc.alk.arena.controllers.plugins.HeroesController;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.CommandLineString;
 
 public class PlayerUtil {
-    static IPlayerHelper handler = null;
-
-    /**
-     * 1.7.8 -> v1_7_R3
-     */
-    static {
-        Class<?>[] args = {};
-        try {
-            Method m = Player.class.getMethod("getHealth");
-            Version version = Util.getCraftBukkitVersion();
-            if (version.compareTo("v1_7_R3") >= 0) {
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.v1_7_R3.PlayerHelper");
-                handler = (IPlayerHelper) clazz.getConstructor(args).newInstance((Object[]) args);
-            } else if (m.getReturnType() == double.class || version.compareTo("v1_6_R1") >= 0){
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.v1_6_R1.PlayerHelper");
-                handler = (IPlayerHelper) clazz.getConstructor(args).newInstance((Object[])args);
-            } else {
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.pre.PlayerHelper");
-                handler = (IPlayerHelper) clazz.getConstructor(args).newInstance((Object[])args);
-            }
-        } catch (Exception e) {
-            Log.printStackTrace(e);
-            try {
-                final Class<?> clazz = Class.forName("mc.alk.arena.util.compat.pre.PlayerHelper");
-                handler = (IPlayerHelper) clazz.getConstructor(args).newInstance((Object[])args);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        }
-    }
-
 
     public static int getHunger(final Player player) {
         return player.getFoodLevel();
@@ -76,7 +48,28 @@ public class PlayerUtil {
     }
 
     public static void setHealth(final Player player, final Double health, boolean skipHeroes) {
-        handler.setHealth(player,health,skipHeroes);
+        if (!skipHeroes && HeroesController.enabled()){
+            HeroesController.setHealth(player,health);
+            return;
+        }
+
+        final double oldHealth = player.getHealth();
+        if (oldHealth > health){
+            EntityDamageEvent event = new EntityDamageEvent(player,  DamageCause.CUSTOM, oldHealth-health );
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()){
+                player.setLastDamageCause(event);
+                final double dmg = Math.max(0,oldHealth - event.getDamage());
+                player.setHealth(dmg);
+            }
+        } else if (oldHealth < health){
+            EntityRegainHealthEvent event = new EntityRegainHealthEvent(player, health-oldHealth, RegainReason.CUSTOM);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()){
+                final double regen = Math.min(oldHealth + event.getAmount(),player.getMaxHealth());
+                player.setHealth(regen);
+            }
+        }
     }
 
     public static Double getHealth(Player player) {
@@ -85,7 +78,7 @@ public class PlayerUtil {
 
     public static Double getHealth(Player player, boolean skipHeroes) {
         return !skipHeroes && HeroesController.enabled() ?
-                HeroesController.getHealth(player) : handler.getHealth(player);
+                HeroesController.getHealth(player) : player.getHealth();
     }
 
     public static void setInvulnerable(Player player, Integer invulnerableTime) {
@@ -116,15 +109,15 @@ public class PlayerUtil {
     }
 
     public static void doCommand(CommandSender cs, String cmd){
-        Bukkit.getServer().dispatchCommand(cs, cmd);
+        Bukkit.dispatchCommand(cs, cmd);
     }
 
     public static void setFlight(Player player, boolean enable) {
-        if (player.getAllowFlight() != enable){
-            player.setAllowFlight(enable);}
-        if (player.isFlying() != enable){
-            player.setFlying(enable);}
-		/* Essentials (v2.10) fly just goes through bukkit, no need to call Essentials setFlight */
+        if (player.getAllowFlight() != enable)
+            player.setAllowFlight(enable);
+        
+        if (player.isFlying() != enable)
+            player.setFlying(enable);
     }
 
     public static void setFlightSpeed(Player player, Float flightSpeed) {
@@ -133,7 +126,6 @@ public class PlayerUtil {
         } catch (Throwable e){
             /* ignore method not found problems */
         }
-		/* Essentials (v2.10) fly just goes through bukkit, no need to call Essentials setFlySpeed */
     }
 
     public static void setGod(Player player, boolean enable) {
@@ -143,31 +135,30 @@ public class PlayerUtil {
 
 
     public static Object getScoreboard(Player player) {
-        return handler.getScoreboard(player);
+        return player.getScoreboard();
     }
 
     public static void setScoreboard(Player player, Object scoreboard) {
-        handler.setScoreboard(player, scoreboard);
+        player.setScoreboard( (Scoreboard) scoreboard );
     }
 
     public static UUID getID(ArenaPlayer player) {
-        return handler.getID(player.getPlayer());
+        return player.getPlayer().getUniqueId();
     }
 
     public static UUID getID(OfflinePlayer player) {
-        return handler.getID(player);
+        return player.getUniqueId();
     }
 
     public static UUID getID(Player player) {
-        return handler.getID(player);
+        return player.getUniqueId();
     }
 
-    public static UUID getID(CommandSender sender)
-    {
-        if (sender instanceof ArenaPlayer){
-            return handler.getID(((ArenaPlayer)sender).getPlayer());
+    public static UUID getID(CommandSender sender) {
+        if ( sender instanceof ArenaPlayer ) {
+            return ((ArenaPlayer) sender).getPlayer().getUniqueId();
         } else if (sender instanceof Player){
-            return handler.getID((Player) sender);
+            return ((Player) sender).getUniqueId();
         } else {
             return new UUID(0, sender.getName().hashCode());
         }

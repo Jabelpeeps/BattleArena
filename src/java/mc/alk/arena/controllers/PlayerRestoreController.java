@@ -1,5 +1,18 @@
 package mc.alk.arena.controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -12,22 +25,9 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 
 
 public class PlayerRestoreController {
-    final UUID uuid;
     final ArenaPlayer player;
 
     boolean kill;
@@ -54,7 +54,6 @@ public class PlayerRestoreController {
     boolean deEnchant;
 
     public PlayerRestoreController(ArenaPlayer player) {
-        this.uuid = player.getID();
         this.player = player;
     }
 
@@ -74,51 +73,43 @@ public class PlayerRestoreController {
 //			handleEnsureTeleport(p, event);}
 
         /// Teleport players, or set respawn point
-        if (teleportLocation != null){
-            handleTeleport(p, event);}
+        if (teleportLocation != null) handleTeleport(p, event);
 
         /// Do these after teleports
         /// Restore game mode
-        if (gamemode != null){
-            handleGameMode();}
+        if (gamemode != null) handleGameMode();
 
         /// Exp restore
-        if (exp != null){
-            handleExp();}
+        if (exp != null) handleExp();
 
         /// Health restore
-        if (health != null){
-            handleHealth();}
+        if (health != null) handleHealth();
 
         /// Hunger restore
-        if (hunger != null){
-            handleHunger();}
+        if (hunger != null) handleHunger();
 
         /// Magic restore
-        if (magic != null){
-            handleMagic();}
+        if (magic != null) handleMagic();
 
         /// Restore Items
-        if (item != null){
-            handleItems();}
+        if (item != null) handleItems();
 
         /// Restore Match Items
-        if (matchItems !=null){
-            handleMatchItems();}
+        if (matchItems !=null) handleMatchItems();
 
         /// Remove Items
-        if (removeItems != null){
-            handleRemoveItems();}
+        if (removeItems != null) handleRemoveItems();
 
         /// DeEnchant
         if (deEnchant){
-            try{ EffectUtil.deEnchantAll(p);} catch (Exception e){/* do nothing */}
+            try { 
+                EffectUtil.deEnchantAll(p);
+            } catch (Exception e) {/* do nothing */}
+            
             HeroesController.deEnchant(p);
         }
 
-        if (effects !=null){
-            handleEffects();
-        }
+        if (effects !=null) handleEffects();
 
         return stillHandling();
     }
@@ -405,9 +396,6 @@ public class PlayerRestoreController {
     public Location getTeleportLocation() {
         return teleportLocation;
     }
-//    public String getName(){
-//        return player.getName();
-//    }
 
     public boolean getKill() {
         return kill;
