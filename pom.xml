@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <url>http://maven.apache.org</url>
+    
+    <name>BattleArena</name>
     <groupId>mc.alk</groupId>
     <artifactId>BattleArena</artifactId>
     <packaging>jar</packaging>
     <version>3.9.10.15</version>
-    <name>BattleArena</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <build.number>${env.BUILD_NUMBER}</build.number>
-		<craftbukkit.version>1.10-R0.1-SNAPSHOT</craftbukkit.version>
+		<craftbukkit.version>1.10.2-R0.1-SNAPSHOT</craftbukkit.version>
     </properties>
-    <url>http://maven.apache.org</url>
     <!-- Locations for jar repositories -->
     <repositories>
 
@@ -54,20 +56,37 @@
     <!-- Dependencies -->
     <dependencies>
         <!-- Dependencies that have maven repos -->
-          
-<!--         <dependency>
-            <groupId>mc.alk</groupId>
-            <artifactId>BattleProfiler</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency> -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>${craftbukkit.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Libraries that are shaded in -->
+        <dependency>
+            <groupId>org.kitteh</groupId>
+            <artifactId>VanishNoPacket</artifactId>
+            <version>3.18.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mc.alk</groupId>
+            <artifactId>VirtualPlayers</artifactId>
+            <version>1.6.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>5.5.8</version>
+        </dependency>
+        
+        <!-- Libraries that will be shaded in -->
         <dependency>
             <groupId>mc.alk</groupId>
             <artifactId>BattleBukkitLib</artifactId>
@@ -110,6 +129,7 @@
             <version>2.0</version>
             <scope>compile</scope>
         </dependency>
+        
         <!-- Runtime dependencies -->
         <dependency>
             <groupId>mc.alk</groupId>
@@ -129,30 +149,12 @@
             <version>1.4.08-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.kitteh</groupId>
-            <artifactId>VanishNoPacket</artifactId>
-            <version>3.18.10</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>mc.alk</groupId>
-            <artifactId>VirtualPlayers</artifactId>
-            <version>1.6.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>5.5.8</version>
-        </dependency>
+<!--         <dependency>
+		    <groupId>net.minelink</groupId>
+		    <artifactId>CombatTagPlusParent</artifactId>
+		    <scope>provided</scope>
+		    <version>1.3.0-SNAPSHOT</version>
+	    </dependency> -->
         <!-- groupId = unknown.plugins -->
         <dependency>
             <groupId>unknown.plugins</groupId>
@@ -203,30 +205,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- test dependencies -->
-<!--         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency> -->
     </dependencies>
-<!--     <distributionManagement>
-        <repository>
-            <id>rainbowcraft-repo</id>
-            <url>scp://rainbowcraft.sytes.net/var/www/maven/repository</url>
-        </repository>
-    </distributionManagement> -->
     <!-- How we will compile the plugin -->
     <build>
         <finalName>${project.name}.${project.version}-#${build.number}</finalName>
-<!--         <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.10</version>
-            </extension>
-        </extensions> -->
         <defaultGoal>install</defaultGoal>
         <!-- Where our source directory is -->
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
@@ -265,21 +247,10 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Specify how we build the plugin.jar -->
-<!--             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
-                <configuration>
-                    whole bunch of errors that need to be fixed
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <failIfNoTests>false</failIfNoTests>
-                </configuration>
-            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.2</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -319,13 +290,12 @@
                                 </includes>
                             </artifactSet>
                             <!-- Specify to remove all unneeded classes -->
-                            <minimizeJar>false</minimizeJar>
+                            <minimizeJar>true</minimizeJar>
                             <filters>
                                 <filter>
                                     <artifact>mc.alk:BattleScoreboardAPI</artifact>
                                     <includes>
                                         <include>mc/alk/scoreboardapi/**</include>
-                                        <!--<include>mc/alk/profiling/**</include>-->
                                     </includes>
                                 </filter>
                             </filters>
@@ -333,35 +303,7 @@
                     </execution>
                 </executions>
             </plugin>
-<!--             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <configuration>
-                    <links>
-                        <link>https://hub.spigotmc.org/javadocs/bukkit/</link>
-                    </links>
-                </configuration>
-            </plugin> -->
-            <!-- <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <configuration>
-                    <tasks>
-                        <copy file="target/BattleArena.jar" tofile="../server/plugins/BattleArena.jar"/>
-                        <copy file="target/BattleArena.jar" tofile="../server/plugins-1.9/BattleArena.jar"/>
-                        <copy file="target/BattleArena.jar" tofile="../server/plugins-1.8/BattleArena.jar"/>
-                        <copy file="target/BattleArena.jar" tofile="../server/plugins-1.7/BattleArena.jar"/>
-                    </tasks>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> -->
+
         </plugins>
     </build>
 </project>
