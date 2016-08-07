@@ -1,18 +1,16 @@
 package mc.alk.arena.controllers;
 
+import java.util.HashMap;
+
 import mc.alk.arena.competition.events.Event;
 import mc.alk.arena.executors.EventExecutor;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-import java.util.HashMap;
-
 
 public class EventController {
-	static HashMap<String, Event> registeredEvents = new HashMap<String,Event>();
-	static HashMap<String, EventExecutor> registeredExecutors = new HashMap<String,EventExecutor>();
-
-	public EventController(){}
+	static HashMap<String, Event> registeredEvents = new HashMap<>();
+	static HashMap<String, EventExecutor> registeredExecutors = new HashMap<>();
 
 	public static Event insideEvent(ArenaPlayer p) {
 		for (Event evt : registeredEvents.values()){

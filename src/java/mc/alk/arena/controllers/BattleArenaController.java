@@ -76,11 +76,10 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
 
-    public BattleArenaController(SignUpdateListener signUpdateListener){
+    public BattleArenaController( SignUpdateListener _signUpdateListener ){
         MethodController methodController = new MethodController("BAC");
         methodController.addAllEvents(this);
-        try{Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());}catch(Exception e){/* keep on truckin'*/}
-        this.signUpdateListener = signUpdateListener;
+        signUpdateListener = _signUpdateListener;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

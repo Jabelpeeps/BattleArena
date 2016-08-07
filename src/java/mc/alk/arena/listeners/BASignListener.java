@@ -1,14 +1,8 @@
 package mc.alk.arena.listeners;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.PlayerController;
-import mc.alk.arena.objects.ArenaClass;
-import mc.alk.arena.objects.signs.ArenaCommandSign;
-import mc.alk.arena.objects.signs.ArenaStatusSign;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.SignUtil;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,15 +16,22 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import mc.alk.arena.Defaults;
+import mc.alk.arena.controllers.PlayerController;
+import mc.alk.arena.objects.ArenaClass;
+import mc.alk.arena.objects.signs.ArenaCommandSign;
+import mc.alk.arena.objects.signs.ArenaStatusSign;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.arena.util.SignUtil;
 
 public class BASignListener implements Listener{
     SignUpdateListener sul;
-    Map<String, ArenaCommandSign> signLocs = new HashMap<String, ArenaCommandSign>();
+    Map<String, ArenaCommandSign> signLocs = new HashMap<>();
 
-    public BASignListener(SignUpdateListener sul){
-        this.sul = sul;
+    public BASignListener(SignUpdateListener _sul){
+        sul = _sul;
     }
 
     @EventHandler

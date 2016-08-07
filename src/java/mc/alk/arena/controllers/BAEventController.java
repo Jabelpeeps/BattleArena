@@ -1,17 +1,5 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.competition.events.Event;
-import mc.alk.arena.events.events.EventFinishedEvent;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.EventParams;
-import mc.alk.arena.objects.EventState;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.exceptions.InvalidEventException;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -20,15 +8,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.events.events.EventFinishedEvent;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.EventParams;
+import mc.alk.arena.objects.EventState;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.exceptions.InvalidEventException;
+
 
 public class BAEventController implements Listener{
 	/// A map of all of our events
 	private Map<String, Map<EventState,List<Event>>> allEvents =
 			Collections.synchronizedMap(new HashMap<String,Map<EventState,List<Event>>>());
 
-	public BAEventController(){
-		Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
-	}
 	public static class SizeEventPair{
 		public Integer nEvents = 0;
 		public Event event = null;
@@ -158,7 +154,7 @@ public class BAEventController implements Listener{
 	public Map<EventState,List<Event>> getCurrentEvents(EventParams eventParams) {
 		final String key = getKey(eventParams);
 		Map<EventState,List<Event>> events = allEvents.get(key);
-		return events != null ? new EnumMap<EventState,List<Event>>(events) : null;
+		return events != null ? new EnumMap<>(events) : null;
 	}
 
 	public boolean removeEvent(Event event){

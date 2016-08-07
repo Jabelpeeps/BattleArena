@@ -41,8 +41,8 @@ public class BAPlayerListener implements Listener  {
 	static final HashMap<UUID,PlayerRestoreController> restore = new HashMap<>();
 	final BattleArenaController bac;
 
-	public BAPlayerListener(BattleArenaController bac){
-		this.bac = bac;
+	public BAPlayerListener(BattleArenaController _bac){
+		bac = _bac;
 	}
 
 	/**

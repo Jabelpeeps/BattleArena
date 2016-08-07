@@ -18,7 +18,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -99,12 +98,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
     public ArenaMatchQueue(){
         super();
-        try{
-            Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());} catch(Exception e){
-            /* usually only from offline testing, don't need to report */
-            //noinspection PointlessBooleanExpression,ConstantConditions
-            if (!Defaults.TESTSERVER && !Defaults.TESTSERVER_DEBUG) Log.printStackTrace(e);
-        }
         methodController.addAllEvents(this);
     }
 

@@ -167,8 +167,10 @@ public class BattleArena extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new TeleportController(), this);
         Bukkit.getPluginManager().registerEvents(InArenaListener.INSTANCE, this);
         Bukkit.getPluginManager().registerEvents(signUpdateListener, this);
-
-
+        Bukkit.getPluginManager().registerEvents(arenaController, this);
+        Bukkit.getPluginManager().registerEvents(arenaController.getArenaMatchQueue(), this);
+        Bukkit.getPluginManager().registerEvents(eventController, this);
+        
         /// Register our different Victory Types
         VictoryType.register(LastManStanding.class, this);
         VictoryType.register(NLives.class, this);
