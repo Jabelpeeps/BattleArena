@@ -108,7 +108,6 @@ public class BAConfigSerializer extends BaseConfig {
         allTypes.addAll(defaultEventTypes);
         JavaPlugin plugin = BattleArena.getSelf();
 
-        APIRegistrationController api = new APIRegistrationController();
         ArenaType.register("Tourney", Arena.class, plugin);
 
         File dir = plugin.getDataFolder();
@@ -123,11 +122,11 @@ public class BAConfigSerializer extends BaseConfig {
                     "/default_files/competitions/" + comp + "Config.yml");
             String capComp = StringUtils.capitalize(comp);
             CustomCommandExecutor executor = comp.equalsIgnoreCase("duel") ? new DuelExecutor() : null;
-            api.registerCompetition(plugin, capComp, capComp, ArenaFactory.DEFAULT, executor,
-                    new File(compDir + "/" + capComp + "Config.yml"),
-                    new File(compDir + "/" + capComp + "Messages.yml"),
-                    new File("/default_files/competitions/" + capComp + "Config.yml"),
-                    new File(dir.getPath() + "/saves/arenas.yml"));
+            APIRegistrationController.registerCompetition( plugin, capComp, capComp, ArenaFactory.DEFAULT, executor,
+                                                           new File(compDir + "/" + capComp + "Config.yml"),
+                                                           new File(compDir + "/" + capComp + "Messages.yml"),
+                                                           new File("/default_files/competitions/" + capComp + "Config.yml"),
+                                                           new File(dir.getPath() + "/saves/arenas.yml"));
             exclude.add(capComp + "Config.yml");
         }
 

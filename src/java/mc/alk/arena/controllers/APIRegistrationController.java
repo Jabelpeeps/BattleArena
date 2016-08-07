@@ -31,6 +31,8 @@ import mc.alk.arena.objects.RegisteredCompetition;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.arenas.ArenaType;
+import mc.alk.arena.objects.exceptions.ConfigException;
+import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
@@ -167,10 +169,10 @@ public class APIRegistrationController {
         }
     }
     
-    private static boolean _registerCompetition(JavaPlugin plugin, String name, String cmd,
-            ArenaFactory factory, CustomCommandExecutor executor,
-            File configFile, File messageFile, File defaultPluginConfigFile, File defaultArenaFile)
-            throws Exception {
+    private static boolean _registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+                                                 CustomCommandExecutor executor, File configFile, File messageFile, 
+                                                 File defaultPluginConfigFile, File defaultArenaFile ) 
+                                                         throws IOException, ConfigException, InvalidOptionException {
         /// Create our plugin folder if its not there
         File dir = plugin.getDataFolder();
         FileUpdater.makeIfNotExists(dir);
@@ -308,8 +310,9 @@ public class APIRegistrationController {
         final CommandExecutor executor;
         final Plugin plugin;
 
-        public ArenaBukkitCommand(String name, String description, String usageMessage, List<String> aliases, Plugin plugin, CommandExecutor executor) {
-            super(name, description, usageMessage, aliases);
+        public ArenaBukkitCommand( String name, String description, String usageMessage, List<String> aliases, 
+                                                Plugin plugin, CommandExecutor executor) {
+            super( name, description, usageMessage, aliases );
             this.plugin = plugin;
             this.executor = executor;
         }
