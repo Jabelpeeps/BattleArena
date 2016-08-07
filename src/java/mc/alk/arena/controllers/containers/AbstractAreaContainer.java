@@ -138,7 +138,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @EventHandler
     public void _onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
-        if (players.remove(event.getPlayer().getID())){
+        if (players.remove(event.getPlayer().getUniqueId())){
             updateBukkitEvents(MatchState.ONLEAVE, event.getPlayer());
             callEvent(new ArenaPlayerLeaveLobbyEvent(event.getPlayer(),event.getTeam()));
             event.addMessage(MessageHandler.getSystemMessage("you_left_competition", this.params.getName()));
@@ -161,7 +161,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @Override
     public boolean leave(ArenaPlayer p) {
-        return players.remove(p.getID());
+        return players.remove(p.getUniqueId());
     }
 
     @Override
@@ -185,7 +185,7 @@ public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler
 
     @Override
     public boolean isHandled(ArenaPlayer player) {
-        return players.contains(player.getID());
+        return players.contains(player.getUniqueId());
     }
 
     @Override

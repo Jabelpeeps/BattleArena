@@ -169,7 +169,7 @@ public class DuelController implements ArenaListener {
         Duel d = getChallengedDuel(player);
         if (d != null) {
             formingDuels.remove(d);
-            rejectTimers.put(player.getID(), System.currentTimeMillis());
+            rejectTimers.put(player.getUniqueId(), System.currentTimeMillis());
         }
         return d;
     }
@@ -219,12 +219,12 @@ public class DuelController implements ArenaListener {
     }
 
     public Long getLastRejectTime(ArenaPlayer ap) {
-        Long t = rejectTimers.get(ap.getID());
+        Long t = rejectTimers.get(ap.getUniqueId());
         if (t == null) {
             return null;
         }
         if (Defaults.DUEL_CHALLENGE_INTERVAL * 1000 < System.currentTimeMillis() - t) {
-            rejectTimers.remove(ap.getID());
+            rejectTimers.remove(ap.getUniqueId());
         }
         return t;
     }

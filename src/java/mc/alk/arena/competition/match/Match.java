@@ -835,13 +835,13 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     public boolean isInMatch(ArenaPlayer player) {
-        return inMatch.contains(player.getID());
+        return inMatch.contains(player.getUniqueId());
     }
 
     private boolean addInMatch(ArenaPlayer player) {
         boolean added = false;
         synchronized (this) {
-            if(inMatch.add(player.getID())){
+            if(inMatch.add(player.getUniqueId())){
                 inMatchList = null;
                 added = true;
             }
@@ -858,7 +858,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         boolean removed = false;
 
         synchronized (this) {
-            if (inMatch.remove(player.getID())){
+            if (inMatch.remove(player.getUniqueId())){
                 inMatchList = null;
                 removed = true;
             }
@@ -1019,7 +1019,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     private void preFirstJoin(ArenaPlayer player){
         if (Defaults.DEBUG_TRACE) Log.info(player.getName() + " -preFirstJoin  t=" + player.getTeam());
         ArenaTeam team = getTeam(player);
-        leftPlayers.remove(player.getID()); /// remove players from the list as they are now joining again
+        leftPlayers.remove(player.getUniqueId()); /// remove players from the list as they are now joining again
         inGamePlayers.add(player);
         player.addCompetition(this);
         if (params.hasEntranceFee()){
@@ -1065,7 +1065,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     public void onArenaPlayerLeaveEventGlobal(ArenaPlayerLeaveEvent event){
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(event.getPlayer(), " -onArenaPlayerLeaveEventGlobal  t=" + event.getPlayer().getTeam());
 
-        if (leftPlayers.contains(event.getPlayer().getID()) ||
+        if (leftPlayers.contains(event.getPlayer().getUniqueId()) ||
                 (inGamePlayers.contains(event.getPlayer()) && event.getPlayer().getCurLocation().getType() == LocationType.ARENA)||
                 !isHandled(event.getPlayer()))
             return;

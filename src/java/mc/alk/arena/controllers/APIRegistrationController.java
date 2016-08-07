@@ -23,8 +23,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.BattleArena.AnnounceUpdateOption;
-import mc.alk.arena.BattleArena.UpdateOption;
 import mc.alk.arena.executors.BAExecutor;
 import mc.alk.arena.executors.CustomCommandExecutor;
 import mc.alk.arena.executors.DuelExecutor;
@@ -39,31 +37,43 @@ import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.plugin.updater.FileUpdater;
-import mc.alk.plugin.updater.PluginUpdater;
 
 public class APIRegistrationController {
 
     final static Set<String> delayedInits = Collections.synchronizedSet(new HashSet<String>());
 
-    private boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) {
+    private boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
         if (fullFile.exists()) {
             return true;
         }
         InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName));
-        return inputStream != null && createFile(fullFile, name, cmd, inputStream);
+        try {
+            return inputStream != null && createFile(fullFile, name, cmd, inputStream);
+        }
+        finally {
+            inputStream.close();
+        }
     }
 
     private boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
-            String fullFileName, String name, String cmd) {
-        if (pluginFile.exists()) {
-            return true;
+            String fullFileName, String name, String cmd) throws IOException {
+        
+        if ( pluginFile != null && pluginFile.exists() )  return true; 
+        
+        if ( name == null || name.isEmpty() || cmd == null ) return false;
+        
+        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fullFileName)) ) {
+            return createFile(pluginFile, name, cmd, inputStream);  
         }
-        InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fullFileName));
-        if (inputStream == null && defaultFile != null && defaultPluginFile != null) {
-            inputStream = FileUtil.getInputStream(plugin.getClass(), defaultFile, defaultPluginFile);
+        catch ( NullPointerException e ) {
+            if ( defaultFile != null && defaultPluginFile != null ) {
+                try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), defaultFile, defaultPluginFile) ) {
+                    return createFile(pluginFile, name, cmd, inputStream);  
+                }
+            }
         }
-        return inputStream != null && createFile(pluginFile, name, cmd, inputStream);
-
+        return false;
+        
     }
 
     private boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
@@ -102,7 +112,7 @@ public class APIRegistrationController {
     private void setCommandToExecutor(JavaPlugin plugin, String wantedCommand, CommandExecutor executor) {
         if (!setCommandToExecutor(plugin, wantedCommand, executor, false)) {
             Log.info("[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap.");
-            List<String> aliases = new ArrayList<String>();
+            List<String> aliases = new ArrayList<>();
             ArenaBukkitCommand arenaCommand = new ArenaBukkitCommand(wantedCommand, "", "", aliases, BattleArena.getSelf(), executor);
             CommandController.registerCommand(arenaCommand);
         }
@@ -291,17 +301,6 @@ public class APIRegistrationController {
         }
     }
 
-    public void update(Plugin plugin, int bukkitId, File file,
-            BattleArena.UpdateOption updateOption, BattleArena.AnnounceUpdateOption announceOption) {
-        if (updateOption == null) {
-            updateOption = UpdateOption.NONE;
-        }
-        if (announceOption == null) {
-            announceOption = AnnounceUpdateOption.NONE;
-        }
-        PluginUpdater.update(plugin, bukkitId, file, updateOption.toPluginUpdater(), announceOption.toPluginUpdater());
-    }
-
     class ArenaBukkitCommand extends Command implements PluginIdentifiableCommand {
 
         final CommandExecutor executor;
@@ -338,8 +337,7 @@ public class APIRegistrationController {
 
         @Override
         public void run() {
-            if (!plugin.isEnabled()) /// lets not try to register plugins that aren't loaded
-            {
+            if (!plugin.isEnabled()) {
                 return;
             }
             FileFilter fileFilter = new FileFilter() {

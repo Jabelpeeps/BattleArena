@@ -31,11 +31,11 @@ public abstract class BaseExecutor implements CommandExecutor{
     public static final String version = "2.1.0";
     static final boolean DEBUG = false;
     private HashMap<String,TreeMap<Integer,MethodWrapper>> methods =
-            new HashMap<String,TreeMap<Integer,MethodWrapper>>();
+            new HashMap<>();
     private HashMap<String,Map<String,TreeMap<Integer,MethodWrapper>>> subCmdMethods =
-            new HashMap<String,Map<String,TreeMap<Integer,MethodWrapper>>>();
+            new HashMap<>();
 
-    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<MethodWrapper>(2, new Comparator<MethodWrapper>(){
+    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<>(2, new Comparator<MethodWrapper>(){
         @Override
         public int compare(MethodWrapper mw1, MethodWrapper mw2) {
             MCCommand cmd1 = mw1.getCommand();
@@ -122,7 +122,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         if (mc.subCmds().length == 0){
             TreeMap<Integer,MethodWrapper> mthds = methods.get(cmd);
             if (mthds == null){
-                mthds = new TreeMap<Integer,MethodWrapper>();
+                mthds = new TreeMap<>();
             }
             int order = (mc.order() != -1? mc.order()*100000 :Integer.MAX_VALUE) - ml*100 - mthds.size();
             MethodWrapper mw = new MethodWrapper(obj,method);
@@ -132,13 +132,13 @@ public abstract class BaseExecutor implements CommandExecutor{
         } else {
             Map<String,TreeMap<Integer,MethodWrapper>> basemthds = subCmdMethods.get(cmd);
             if (basemthds == null){
-                basemthds = new HashMap<String,TreeMap<Integer,MethodWrapper>>();
+                basemthds = new HashMap<>();
                 subCmdMethods.put(cmd, basemthds);
             }
             for (String subcmd: mc.subCmds()){
                 TreeMap<Integer,MethodWrapper> mthds = basemthds.get(subcmd);
                 if (mthds == null){
-                    mthds = new TreeMap<Integer,MethodWrapper>();
+                    mthds = new TreeMap<>();
                     basemthds.put(subcmd, mthds);
                 }
                 int order = (mc.order() != -1? mc.order()*100000 :Integer.MAX_VALUE) - ml*100-mthds.size();
@@ -270,7 +270,7 @@ public abstract class BaseExecutor implements CommandExecutor{
                 break; /// success on one
             } catch (IllegalArgumentException e){ /// One of the arguments wasn't correct, store the message
                 if (errs == null)
-                    errs = new ArrayList<CommandException>();
+                    errs = new ArrayList<>();
                 errs.add(new CommandException(e,mwrapper));
             } catch (Exception e) { /// Just all around bad
                 logInvocationError(e, mwrapper,newArgs);
@@ -278,7 +278,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
         /// and handle all errors
         if (!success && errs != null && !errs.isEmpty()){
-            HashSet<String> usages = new HashSet<String>();
+            HashSet<String> usages = new HashSet<>();
             for (CommandException e: errs){
                 usages.add(ChatColor.GOLD+command.getLabel() +" " +e.mw.usage+" &c:"+e.err.getMessage());
             }
@@ -469,11 +469,6 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
 
-//    protected boolean hasAdminPerms(CommandSender sender){
-//        return sender.isOp();
-//    }
-//
-
     static final int LINES_PER_PAGE = 8;
     public void help(CommandSender sender, Command command, String[] args){
         Integer page = 1;
@@ -486,10 +481,10 @@ public abstract class BaseExecutor implements CommandExecutor{
             }
         }
 
-        List<String> available = new ArrayList<String>();
-        List<String> unavailable = new ArrayList<String>();
-        List<String> onlyop = new ArrayList<String>();
-        Set<Method> dups = new HashSet<Method>();
+        List<String> available = new ArrayList<>();
+        List<String> unavailable = new ArrayList<>();
+        List<String> onlyop = new ArrayList<>();
+        Set<Method> dups = new HashSet<>();
         for (MethodWrapper mw : usage){
             if (!dups.add(mw.method))
                 continue;

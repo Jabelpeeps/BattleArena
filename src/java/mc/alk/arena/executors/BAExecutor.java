@@ -1424,7 +1424,7 @@ public class BAExecutor extends CustomCommandExecutor {
             return false;
         }
         /// Inside the queue waiting for a match?
-        if (InArenaListener.inQueue(player.getID())) {
+        if (InArenaListener.inQueue(player.getUniqueId())) {
             MessageUtil.sendMessage(player, "&eYou are in the queue.");
             if (showMessages) {
                 MessageUtil.sendMessage(player, "&eType &6/arena leave");

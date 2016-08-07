@@ -29,9 +29,7 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.plugins.CombatTagUtil;
-import mc.euro.bukkit.BukkitInterface;
 
 public class TeleportController implements Listener {
 
@@ -52,7 +50,7 @@ public class TeleportController implements Listener {
             Log.info("BattleArena beginning teleport player=" + player.getDisplayName());
         }
         try {
-            teleporting.add(arenaPlayer.getID());
+            teleporting.add(arenaPlayer.getUniqueId());
             player.setVelocity(new Vector(0, Defaults.TELEPORT_Y_VELOCITY, 0));
             player.setFallDistance(0);
             Location loc = location.clone();
@@ -132,7 +130,7 @@ public class TeleportController implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (teleporting.remove(PlayerUtil.getID(event.getPlayer()))) {
+        if (teleporting.remove( event.getPlayer().getUniqueId() ) ) {
             event.setCancelled(false);
             if (Defaults.ENABLE_TELEPORT_FIX) {
                 invisbleTeleportWorkaround(event.getPlayer());
@@ -197,7 +195,7 @@ public class TeleportController implements Listener {
         List<Player> res = new ArrayList<>();
         final int d2 = distance * distance;
         final UUID uid = player.getWorld().getUID();
-        for (Player p : BukkitInterface.getOnlinePlayers()) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
             try {
                 if (p.getWorld().getUID() == uid
                         && p != player && p.getLocation().distanceSquared(player.getLocation()) <= d2) {

@@ -307,7 +307,7 @@ public class PlayerRestoreController {
     }
 
     private void handleClearInventory(Player p) {
-        Log.warn("[BattleArena] clearing inventory for quitting during a match " + PlayerUtil.getID(p));
+        Log.warn("[BattleArena] clearing inventory for quitting during a match " + p.getName() );
         InventoryUtil.clearInventory(p);
     }
 
@@ -383,13 +383,13 @@ public class PlayerRestoreController {
 
     public void addRemoveItem(ItemStack is) {
         if (removeItems == null){
-            removeItems = new ArrayList<ItemStack>();}
+            removeItems = new ArrayList<>();}
         removeItems.add(is);
     }
 
     public void addRemoveItem(List<ItemStack> itemsToRemove) {
         if (removeItems == null){
-            removeItems = new ArrayList<ItemStack>();}
+            removeItems = new ArrayList<>();}
         removeItems.addAll(itemsToRemove);
     }
 
@@ -466,6 +466,6 @@ public class PlayerRestoreController {
     }
 
     public UUID getUUID() {
-        return player.getID();
+        return player.getUniqueId();
     }
 }

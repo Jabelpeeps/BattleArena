@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -28,12 +29,9 @@ import mc.alk.arena.util.ServerUtil;
 
 
 public class ArenaPlayer {
+    
     static int count = 0;
-
-    final int id=count++;
-
-    /** The bukkit player, refreshed with each new event having the player */
-    Player player;
+    final int id = count++;
 
     /**
      * Which competitions is the player inside
@@ -67,126 +65,59 @@ public class ArenaPlayer {
 
     final PlayerMetaData meta = new PlayerMetaData();
     final UUID uuid;
+    final Player player;
 
     LivingEntity curTarget;
 
-    public ArenaPlayer(Player player) {
-        this.player = player;
-        this.uuid = PlayerUtil.getID(this);
+    public ArenaPlayer( Player _player ) {
+        player = _player;
+        uuid = _player.getUniqueId();
     }
 
-    public ArenaPlayer(UUID id) {
-        this.uuid = id;
+    public ArenaPlayer( UUID _uuid ) {
+        uuid = _uuid;
+        player = Bukkit.getPlayer( _uuid );
     }
 
     public String getName() {
-        return (player != null) ? player.getName() : null;
+        return player.getName();
     }
 
     public void reset() {
-        this.isReady = false;
-        this.currentClass = null;
-        this.preferredClass = null;
-        if (mobs != null) {
+        isReady = false;
+        currentClass = null;
+        preferredClass = null;
+        if ( mobs != null ) {
             despawnMobs();
             mobs.clear();
         }
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ArenaPlayer &&
-                ((ArenaPlayer) obj).id == this.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public boolean isOnline() {
-        return player.isOnline();
-    }
-
-    public double getHealth() {
-        return player.getHealth();
-    }
-
     public void setHealth(double health) {
         PlayerUtil.setHealth(player,health);
     }
+        
+    public Player getPlayer() { return player; }
+    public boolean isOnline() { return player.isOnline(); }
+    public double getHealth() { return player.getHealth(); }
+    public int getFoodLevel() { return player.getFoodLevel(); }
+    public void setFoodLevel(int hunger) { player.setFoodLevel(hunger); }
+    public String getDisplayName() { return player.getDisplayName(); }
+    public void sendMessage(String colorChat) { player.sendMessage(colorChat); }
+    public Location getLocation() { return player.getLocation(); }
+    public EntityDamageEvent getLastDamageCause() { return player.getLastDamageCause(); }
+    public void setFireTicks(int i) { player.setFireTicks(i); }
+    public boolean isDead() { return player.isDead(); }
+    public PlayerInventory getInventory() { return player.getInventory(); }
+    public boolean hasPermission(String perm) { return player.hasPermission(perm); }
 
-    public int getFoodLevel() {
-        return PlayerUtil.getHunger(player);
-    }
-
-    public void setFoodLevel(int hunger) {
-        PlayerUtil.setHunger(player,hunger);
-    }
-
-    public String getDisplayName() {
-        return player.getDisplayName();
-    }
-
-    public void sendMessage(String colorChat) {
-        player.sendMessage(colorChat);
-    }
-
-    public Location getLocation() {
-        return player.getLocation();
-    }
-
-    public EntityDamageEvent getLastDamageCause() {
-        return player.getLastDamageCause();
-    }
-
-    public void setFireTicks(int i) {
-        player.setFireTicks(i);
-    }
-
-    public boolean isDead() {
-        return player.isDead();
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public void setReady(boolean isReady) {
-        this.isReady = isReady;
-    }
-
-    public PlayerInventory getInventory() {
-        return player.getInventory();
-    }
-
-    public boolean hasPermission(String perm) {
-        return player.hasPermission(perm);
-    }
-
-    public ArenaClass getCurrentClass() {
-        return currentClass;
-    }
-
-    public void setCurrentClass(ArenaClass arenaClass) {
-        this.currentClass = arenaClass;
-    }
-
-    public ArenaClass getPreferredClass() {
-        return preferredClass;
-    }
-
-    public void setPreferredClass(ArenaClass arenaClass) {
-        this.preferredClass = arenaClass;
-    }
+    
+    public boolean isReady() { return isReady; }
+    public void setReady(boolean _isReady) { isReady = _isReady; }
+    public ArenaClass getCurrentClass() { return currentClass; }
+    public void setCurrentClass(ArenaClass arenaClass) { currentClass = arenaClass; }
+    public ArenaClass getPreferredClass() { return preferredClass; }
+    public void setPreferredClass(ArenaClass arenaClass) { preferredClass = arenaClass; }
 
     public int getPriority() {
         return PermissionsUtil.getPriority(player);
@@ -221,7 +152,7 @@ public class ArenaPlayer {
     }
 
     public void setTeam(ArenaTeam team) {
-        this.arenaTeam = team;
+        arenaTeam = team;
     }
 
     /**
@@ -276,7 +207,6 @@ public class ArenaPlayer {
         return meta;
     }
 
-
     public ArenaStat getStat(MatchParams type) {
         return TrackerController.loadRecord(type, this);
     }
@@ -290,7 +220,7 @@ public class ArenaPlayer {
         return "[" + this.getName() + "]";
     }
 
-    public UUID getID() {
+    public UUID getUniqueId() {
         return uuid;
     }
 
@@ -308,5 +238,15 @@ public class ArenaPlayer {
 
     public LivingEntity getTarget() {
         return curTarget;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ArenaPlayer &&
+                ((ArenaPlayer) obj).id == this.id;
+    }
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

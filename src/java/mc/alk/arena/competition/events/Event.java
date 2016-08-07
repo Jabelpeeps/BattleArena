@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -51,7 +52,6 @@ import mc.alk.arena.util.Countdown.CountdownCallback;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PermissionsUtil;
-import mc.euro.bukkit.BukkitInterface;
 
 
 public abstract class Event extends Competition implements CountdownCallback, ArenaListener {
@@ -68,7 +68,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
     protected EventState state; /// The current state of this event
 
     /// When did each transition occur
-    final Map<EventState, Long> times = new EnumMap<EventState,Long>(EventState.class);
+    final Map<EventState, Long> times = new EnumMap<>(EventState.class);
 
     /**
      * Create our event from the specified paramaters
@@ -106,7 +106,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
 
     public void addAllOnline() {
 
-        for (Player p: BukkitInterface.getOnlinePlayers()){
+        for (Player p: Bukkit.getOnlinePlayers()){
             if (PermissionsUtil.isAdmin(p)) { /// skip admins (they are doin' importantz thingz)
                 continue;}
             ArenaTeam t = TeamController.createTeam(eventParams, BattleArena.toArenaPlayer(p));
@@ -178,7 +178,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
 
     protected void eventCancelled(){
         stopTimer();
-        List<ArenaTeam> newTeams = new ArrayList<ArenaTeam>(teams);
+        List<ArenaTeam> newTeams = new ArrayList<>(teams);
         callEvent(new EventCancelEvent(this));
         mc.sendEventCancelled(newTeams);
         endEvent();
@@ -422,7 +422,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
      */
     @Override
     public Set<ArenaPlayer> getPlayers() {
-        Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+        Set<ArenaPlayer> players = new HashSet<>();
         for (ArenaTeam t: getTeams()){
             players.addAll(t.getPlayers());}
         if (isOpen() && joinHandler != null){

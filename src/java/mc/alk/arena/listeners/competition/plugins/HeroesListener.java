@@ -1,32 +1,33 @@
 package mc.alk.arena.listeners.competition.plugins;
 
-import com.herocraftonline.heroes.api.events.ExperienceChangeEvent;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
-import mc.alk.arena.listeners.competition.InArenaListener;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PlayerUtil;
-import mc.alk.arena.util.ServerUtil;
-import mc.alk.arena.util.plugins.HeroesUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
+import com.herocraftonline.heroes.api.events.ExperienceChangeEvent;
+import com.herocraftonline.heroes.api.events.SkillUseEvent;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
+import mc.alk.arena.listeners.competition.InArenaListener;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.ServerUtil;
+import mc.alk.arena.util.plugins.HeroesUtil;
+
 public enum HeroesListener implements Listener {
 	INSTANCE;
 
 	final Set<UUID> cancelExpLoss = Collections.synchronizedSet(new HashSet<UUID>());
 
-	static HashSet<String> disabledSkills = new HashSet<String>();
+	static HashSet<String> disabledSkills = new HashSet<>();
 
 	public static void enable() {
 		Bukkit.getPluginManager().registerEvents(INSTANCE, BattleArena.getSelf());
@@ -45,7 +46,7 @@ public enum HeroesListener implements Listener {
 	public void cancelExperienceLoss(ExperienceChangeEvent event) {
 		if (event.isCancelled())
 			return;
-		if (cancelExpLoss.contains(PlayerUtil.getID(event.getHero().getPlayer()))){
+		if (cancelExpLoss.contains( event.getHero().getPlayer().getUniqueId() ) ){
 			event.setCancelled(true);
 		}
 	}
@@ -69,11 +70,11 @@ public enum HeroesListener implements Listener {
 	}
 
 	public static void setCancelExpLoss(Player player) {
-		INSTANCE.cancelExpLoss.add(PlayerUtil.getID(player));
+		INSTANCE.cancelExpLoss.add( player.getUniqueId() );
 	}
 
 	public static void removeCancelExpLoss(Player player) {
-		INSTANCE.cancelExpLoss.remove(PlayerUtil.getID(player));
+		INSTANCE.cancelExpLoss.remove( player.getUniqueId() );
 	}
 
 	public static boolean containsHeroesSkill(String skill) {
@@ -82,7 +83,7 @@ public enum HeroesListener implements Listener {
 
 	public static void addDisabledCommands(Collection<String> disabledCommands) {
 		if (disabledSkills == null){
-			disabledSkills = new HashSet<String>();}
+			disabledSkills = new HashSet<>();}
 		for (String s: disabledCommands){
 			disabledSkills.add(s.toLowerCase());}
 	}

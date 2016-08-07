@@ -122,21 +122,21 @@ public class MethodController {
 
     public void updateEvents(MatchState matchState, ArenaPlayer player){
         List<UUID> players = new ArrayList<>();
-        players.add(player.getID());
+        players.add(player.getUniqueId());
         updateEvents(null, matchState,players);
     }
 
     public void updateEvents(MatchState matchState, Collection<ArenaPlayer> players){
         List<UUID> strplayers = new ArrayList<>();
         for (ArenaPlayer ap: players){
-            strplayers.add(ap.getID());}
+            strplayers.add(ap.getUniqueId());}
         updateEvents(null, matchState,strplayers);
     }
 
     public void updateEvents(ArenaListener listener, MatchState matchState, Collection<ArenaPlayer> players){
         List<UUID> strplayers = new ArrayList<>();
         for (ArenaPlayer ap: players){
-            strplayers.add(ap.getID());}
+            strplayers.add(ap.getUniqueId());}
         updateEvents(listener, matchState,strplayers);
     }
 
@@ -172,7 +172,7 @@ public class MethodController {
     public void updateSpecificEvents(MatchState matchState, ArenaPlayer player, Class<? extends Event>... events) {
         try {
             List<UUID> players = new ArrayList<>();
-            players.add(player.getID());
+            players.add(player.getUniqueId());
 
             for (Class<? extends Event> event: events){
                 updateEvent(null, matchState,players, event);}

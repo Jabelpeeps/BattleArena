@@ -1,5 +1,14 @@
 package mc.alk.arena.objects;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
+
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.controllers.plugins.EssentialsController;
@@ -13,14 +22,6 @@ import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.PlayerUtil;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
 
 /**
  * @author alkarin
@@ -243,7 +244,7 @@ public class PlayerSave {
     public void restoreHunger() {
         if (hunger == null || hunger <= 0)
             return;
-        PlayerUtil.setHunger(player.getPlayer(), hunger);
+        player.getPlayer().setFoodLevel( hunger );
         hunger = null;
     }
     public Integer removeHunger(){
@@ -255,7 +256,7 @@ public class PlayerSave {
     public void storeEffects() {
         if (effects !=null)
             return;
-        effects = new ArrayList<PotionEffect>(player.getPlayer().getActivePotionEffects());
+        effects = new ArrayList<>(player.getPlayer().getActivePotionEffects());
     }
 
     public void restoreEffects() {
@@ -296,7 +297,7 @@ public class PlayerSave {
 //        if (Defaults.DEBUG_STORAGE) Log.info("storing items for = " + name +" contains=" + itemmap.containsKey(name));
         InventoryUtil.closeInventory(player.getPlayer());
         items = new PInv(player.getInventory());
-        InventorySerializer.saveInventory(player.getID(), items);
+        InventorySerializer.saveInventory(player.getUniqueId(), items);
     }
 
     public void restoreItems() {
@@ -314,7 +315,7 @@ public class PlayerSave {
     }
 
     public void storeMatchItems() {
-        final UUID id = player.getID();
+        final UUID id = player.getUniqueId();
 //        if (Defaults.DEBUG_STORAGE) Log.info("storing in match items for = " + name +" contains=" + matchitemmap.containsKey(name));
         InventoryUtil.closeInventory(player.getPlayer());
         final PInv pinv = new PInv(player.getInventory());
@@ -431,6 +432,6 @@ public class PlayerSave {
     }
 
     public UUID getID() {
-        return player.getID();
+        return player.getUniqueId();
     }
 }

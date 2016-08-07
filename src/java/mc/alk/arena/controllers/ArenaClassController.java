@@ -131,8 +131,8 @@ public class ArenaClassController {
             MessageUtil.sendSystemMessage(p, "class_you_are_already", ac.getDisplayName());
             return false;
         }
-        if(userClassSwitchTime.containsKey(ap.getID())) {
-            long t = (Defaults.TIME_BETWEEN_CLASS_CHANGE * 1000) - (System.currentTimeMillis() - userClassSwitchTime.get(ap.getID()));
+        if(userClassSwitchTime.containsKey(ap.getUniqueId())) {
+            long t = (Defaults.TIME_BETWEEN_CLASS_CHANGE * 1000) - (System.currentTimeMillis() - userClassSwitchTime.get(ap.getUniqueId()));
             if (t > 0){
                 MessageUtil.sendSystemMessage(p, "class_wait_time", TimeUtil.convertMillisToString(t));
                 return false;
@@ -140,7 +140,7 @@ public class ArenaClassController {
         }
         MatchParams mp = am != null ? am.getParams() : null;
 
-        userClassSwitchTime.put(ap.getID(), System.currentTimeMillis());
+        userClassSwitchTime.put(ap.getUniqueId(), System.currentTimeMillis());
         /// check to see if they have a team head
         ArenaTeam at = ap.getTeam();
         boolean woolTeams = ((at != null && at.getIndex() != -1) && p.getInventory().getHelmet() != null &&

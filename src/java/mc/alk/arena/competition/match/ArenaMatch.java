@@ -1,5 +1,24 @@
 package mc.alk.arena.competition.match;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Sign;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
@@ -31,36 +50,17 @@ import mc.alk.arena.util.DmgDeathUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.scoreboardapi.api.SEntry;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Sign;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 public class ArenaMatch extends Match {
     static boolean disabledAllCommands;
-    final static HashSet<String> disabledCommands = new HashSet<String>();
-    final static HashSet<String> enabledCommands = new HashSet<String>();
+    final static HashSet<String> disabledCommands = new HashSet<>();
+    final static HashSet<String> enabledCommands = new HashSet<>();
 
-    final Map<UUID, Integer> deathTimer = new HashMap<UUID, Integer>();
-    final Map<UUID, Integer> respawnTimer = new HashMap<UUID, Integer>();
+    final Map<UUID, Integer> deathTimer = new HashMap<>();
+    final Map<UUID, Integer> respawnTimer = new HashMap<>();
 
     public ArenaMatch(Arena arena, MatchParams mp, Collection<ArenaListener> listeners) {
         super(arena, mp,listeners);
@@ -151,7 +151,7 @@ public class ArenaMatch extends Match {
             /// We can't let them just sit on the respawn screen... schedule them to lose
             /// We will cancel this onRespawn
             final ArenaMatch am = this;
-            Integer timer = deathTimer.get(target.getID());
+            Integer timer = deathTimer.get(target.getUniqueId());
             if (timer != null){
                 Bukkit.getScheduler().cancelTask(timer);
             }
@@ -237,7 +237,7 @@ public class ArenaMatch extends Match {
         if (respawns) {
             final boolean randomRespawn = mo.randomRespawn();
             /// Lets cancel our death respawn timer
-            Integer timer = deathTimer.get(p.getID());
+            Integer timer = deathTimer.get(p.getUniqueId());
             if (timer != null) {
                 Bukkit.getScheduler().cancelTask(timer);
             }
@@ -288,14 +288,14 @@ public class ArenaMatch extends Match {
                 int id = Scheduler.scheduleSynchronousTask(new Runnable() {
                     @Override
                     public void run() {
-                        Integer id = respawnTimer.remove(p.getID());
+                        Integer id = respawnTimer.remove(p.getUniqueId());
                         Bukkit.getScheduler().cancelTask(id);
                         SpawnLocation loc = getTeamSpawn(index, tops.hasOptionAt(MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN));
                         TeleportController.teleport(p.getPlayer(), loc.getLocation());
 
                     }
                 }, respawnTime * 20);
-                respawnTimer.put(p.getID(), id);
+                respawnTimer.put(p.getUniqueId(), id);
 
             } else {
                 loc = getTeamSpawn(getTeam(p), randomRespawn);
@@ -383,7 +383,7 @@ public class ArenaMatch extends Match {
                 event.getClickedBlock().getType().equals(Material.WALL_SIGN)){ /// Only checking for signs
             //			signClick(event,this);
         } else { /// its a ready block
-            if (respawnTimer.containsKey(PlayerUtil.getID(event.getPlayer()))){
+            if ( respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ) {
                 respawnClick(event,this,respawnTimer);
             } else {
                 readyClick(event);
@@ -393,7 +393,7 @@ public class ArenaMatch extends Match {
 
     public static void respawnClick(PlayerInteractEvent event, PlayerHolder am, Map<UUID,Integer> respawnTimer) {
         ArenaPlayer ap = BattleArena.toArenaPlayer(event.getPlayer());
-        Integer id = respawnTimer.remove(ap.getID());
+        Integer id = respawnTimer.remove(ap.getUniqueId());
         Bukkit.getScheduler().cancelTask(id);
         SpawnLocation loc = am.getSpawn(am.getTeam(ap).getIndex(),
                 am.getParams().hasOptionAt(MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN));

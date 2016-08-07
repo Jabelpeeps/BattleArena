@@ -26,19 +26,14 @@ public class ServerUtil {
     }
 
     public static Player findPlayer(UUID id) {
-        if (id == null)
-            return null;
-        try {
+        
+        if ( id != null ) {
             Player player = Bukkit.getPlayer(id);
-            if (player != null)
+            if ( player != null )
                 return player;
-            if (Defaults.DEBUG_VIRTUAL) {
+            if ( Defaults.DEBUG_VIRTUAL ) {
                 return VirtualPlayers.getPlayer(id);
             }
-        } catch (Throwable e){
-            /* do nothing, craftbukkit version is not great enough */
-            Log.err("Craftbukkit version does not have find player by UUID yet.");
-            Log.printStackTrace(e);
         }
         return null;
     }

@@ -1,18 +1,11 @@
 package mc.alk.arena.listeners;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.Permissions;
-import mc.alk.arena.controllers.BattleArenaController;
-import mc.alk.arena.controllers.PlayerController;
-import mc.alk.arena.controllers.PlayerRestoreController;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.WorldGuardController;
-import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.regions.WorldGuardRegion;
-import mc.alk.arena.util.InventoryUtil.PInv;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PlayerUtil;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,11 +19,18 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.Permissions;
+import mc.alk.arena.controllers.BattleArenaController;
+import mc.alk.arena.controllers.PlayerController;
+import mc.alk.arena.controllers.PlayerRestoreController;
+import mc.alk.arena.controllers.plugins.EssentialsController;
+import mc.alk.arena.controllers.plugins.WorldGuardController;
+import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.regions.WorldGuardRegion;
+import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.MessageUtil;
 
 
 /**
@@ -39,7 +39,7 @@ import java.util.UUID;
  *
  */
 public class BAPlayerListener implements Listener  {
-	static final HashMap<UUID,PlayerRestoreController> restore = new HashMap<UUID,PlayerRestoreController>();
+	static final HashMap<UUID,PlayerRestoreController> restore = new HashMap<>();
 	final BattleArenaController bac;
 
 	public BAPlayerListener(BattleArenaController bac){
@@ -54,7 +54,7 @@ public class BAPlayerListener implements Listener  {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerRespawn(PlayerRespawnEvent event){
-        UUID id = PlayerUtil.getID(event.getPlayer());
+        UUID id = event.getPlayer().getUniqueId();
         if (restore.containsKey(id)){
 			if (!restore.get(id).handle(event.getPlayer(),event)){
 				restore.remove(id);
@@ -71,7 +71,7 @@ public class BAPlayerListener implements Listener  {
 		if (!EssentialsController.enabled() || !PlayerController.hasArenaPlayer(event.getEntity()))
 			return;
         ArenaPlayer ap = BattleArena.toArenaPlayer(event.getEntity());
-        if (!restore.containsKey(ap.getID()))
+        if (!restore.containsKey(ap.getUniqueId()))
                 return;
 
         PlayerRestoreController prc = getOrCreateRestorer(ap);
@@ -92,7 +92,7 @@ public class BAPlayerListener implements Listener  {
 	}
 
 	private static PlayerRestoreController getOrCreateRestorer(ArenaPlayer player) {
-        final UUID id = player.getID();
+        final UUID id = player.getUniqueId();
         if (restore.containsKey(id)) {
             return restore.get(id);
         }
@@ -206,7 +206,7 @@ public class BAPlayerListener implements Listener  {
 	}
 
 	public static Location getBackLocation(Player player) {
-        UUID id = PlayerUtil.getID(player);
+        UUID id = player.getUniqueId();
         return restore.containsKey(id) ? restore.get(id).getBackLocation() : null;
     }
 

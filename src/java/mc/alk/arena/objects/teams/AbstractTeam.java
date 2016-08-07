@@ -344,7 +344,7 @@ abstract class AbstractTeam implements ArenaTeam{
 			sb.append("&6").append(p.getName());
 			boolean isAlive = hasAliveMember(p);
 			boolean online = p.isOnline();
-			final String inmatch = insideMatch == null? "": ((insideMatch.contains(p.getID())) ? "&e(in)" : "&4(out)");
+			final String inmatch = insideMatch == null? "": ((insideMatch.contains(p.getUniqueId())) ? "&e(in)" : "&4(out)");
 			final int k = kills.containsKey(p) ? kills.get(p) : 0;
 			final int d = deaths.containsKey(p) ? deaths.get(p) : 0;
 			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");

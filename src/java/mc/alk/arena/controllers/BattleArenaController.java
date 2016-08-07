@@ -52,7 +52,6 @@ import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
-import mc.euro.bukkit.BukkitInterface;
 
 public class BattleArenaController implements ArenaListener, Listener{
 
@@ -138,7 +137,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
     private void addAllOnline(MatchParams mp, Arena arena) {
         String cmd = mp.getCommand() +" add "+arena.getName();
-        for (Player p: BukkitInterface.getOnlinePlayers()){
+        for (Player p: Bukkit.getOnlinePlayers()){
             Bukkit.dispatchCommand(p, cmd);
         }
     }

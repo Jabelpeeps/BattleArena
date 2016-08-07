@@ -1,5 +1,14 @@
 package mc.alk.arena.controllers.containers;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Material;
+import org.bukkit.event.player.PlayerInteractEvent;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.ArenaMatch;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
@@ -11,16 +20,7 @@ import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.Util;
-import org.bukkit.Material;
-import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 public class AreaContainer extends AbstractAreaContainer{
@@ -66,8 +66,8 @@ public class AreaContainer extends AbstractAreaContainer{
             ArenaMatch.signClick(event,this);
         } else if (event.getClickedBlock().getType().equals(Defaults.READY_BLOCK)) {
             if (respawnTimer == null)
-                respawnTimer = new HashMap<UUID, Integer>();
-            if (respawnTimer.containsKey(PlayerUtil.getID(event.getPlayer()))){
+                respawnTimer = new HashMap<>();
+            if (respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ){
                 ArenaMatch.respawnClick(event,this, respawnTimer);
             } else {
 //				readyClick(event);
@@ -82,7 +82,7 @@ public class AreaContainer extends AbstractAreaContainer{
     private boolean addPlayer(ArenaPlayer player) {
         boolean added = false;
         synchronized (this) {
-            if(players.add(player.getID())){
+            if(players.add(player.getUniqueId())){
                 added = true;}
         }
         if (Defaults.DEBUG_TRACE) Log.trace(1111, getName()+"  "+player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
@@ -96,7 +96,7 @@ public class AreaContainer extends AbstractAreaContainer{
         boolean removed = false;
 
         synchronized (this) {
-            if (players.remove(player.getID())){
+            if (players.remove(player.getUniqueId())){
                 removed = true;
             }
         }

@@ -20,7 +20,6 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.DmgDeathUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MapOfTreeSet;
-import mc.alk.arena.util.PlayerUtil;
 
 
 /**
@@ -162,7 +161,7 @@ class SpecificPlayerEventListener extends BaseEventListener {
     }
 
     private void doMethods(final Event event, final Player p) {
-        RListener[] lmethods = listeners.getSafe(PlayerUtil.getID(p));
+        RListener[] lmethods = listeners.getSafe( p.getUniqueId() );
         if (lmethods == null){
             return;}
         /// For each of the splisteners methods that deal with this BukkitEvent
@@ -180,26 +179,26 @@ class SpecificPlayerEventListener extends BaseEventListener {
 
     private void doEntityDeathEvent(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player &&
-                listeners.containsKey(PlayerUtil.getID(((Player)event.getEntity()))) ){
+                listeners.containsKey( ( (Player) event.getEntity() ).getUniqueId() ) ){
             doMethods(event, (Player) event.getEntity());
             return;
         }
         ArenaPlayer ap = DmgDeathUtil.getPlayerCause(event.getEntity().getLastDamageCause());
         if (ap == null)
             return;
-        if (listeners.containsKey(ap.getID())){
+        if (listeners.containsKey(ap.getUniqueId())){
             doMethods(event, ap.getPlayer());
         }
     }
 
     private void doEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player &&
-                listeners.containsKey(PlayerUtil.getID(((Player)event.getEntity())) )){
+                listeners.containsKey( ( (Player) event.getEntity() ).getUniqueId() ) ) {
             doMethods(event, (Player) event.getEntity());
             return;
         }
         if (event.getDamager() instanceof Player &&
-                listeners.containsKey(PlayerUtil.getID(((Player)event.getDamager())))){
+                listeners.containsKey( ( (Player) event.getEntity() ).getUniqueId() ) ) {
             doMethods(event, (Player) event.getDamager());
             return;
         }

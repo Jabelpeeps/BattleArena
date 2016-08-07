@@ -30,11 +30,11 @@ public class PlayerStoreController {
     }
 
     private PlayerSave getOrCreateSave(final ArenaPlayer player) {
-        PlayerSave save = saves.get(player.getID());
+        PlayerSave save = saves.get(player.getUniqueId());
         if (save !=null)
             return save;
         save = new PlayerSave(player);
-        saves.put(player.getID(), save);
+        saves.put(player.getUniqueId(), save);
         return save;
     }
 
@@ -72,7 +72,7 @@ public class PlayerStoreController {
     }
 
     private PlayerSave getSave(final ArenaPlayer player) {
-        return saves.get(player.getID());
+        return saves.get(player.getUniqueId());
     }
     private static boolean restoreable(ArenaPlayer p) {
         return (p.isOnline() && !p.isDead());

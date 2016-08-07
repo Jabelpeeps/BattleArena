@@ -77,7 +77,6 @@ import mc.alk.arena.util.FileLogger;
 import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.plugin.updater.FileUpdater;
 import mc.alk.plugin.updater.PluginUpdater;
 import mc.battleplugins.api.BattlePluginsAPI;
@@ -266,9 +265,9 @@ public class BattleArena extends JavaPlugin {
                 signUpdateListener.updateAllSigns();
 
                 eventSchedulerSerializer.loadAll();
-                if (mc.alk.arena.Defaults.START_NEXT)
+                if (Defaults.START_NEXT)
                     es.startNext();
-                else if (mc.alk.arena.Defaults.START_CONTINUOUS)
+                else if (Defaults.START_CONTINUOUS)
                     es.start();
             }
         });
@@ -297,81 +296,11 @@ public class BattleArena extends JavaPlugin {
     }
 
     /**
-     * Check for updates for a given plugin.
-     * If there are updates then it will announce the newer version to the console. It will download the newer
-     * jar if the "update" variable is true.
-     * This happens in an asynchronous manner to not lag the server while checking for the update
-     * @param plugin BattleArena extension plugin
-     * @param bukkitId the bukkit id of this plugin
-     * @param file File from the bukkit plugin, use this.getFile()
-     * @param updateOption whether we should update the plugin or simply announce that there is a newer version
-     * @param announceOption whether we should update the plugin or simply announce that there is a newer version
-     */
-    public static void update(final Plugin plugin, final int bukkitId, final File file,
-                              final UpdateOption updateOption, final AnnounceUpdateOption announceOption) {
-        new APIRegistrationController().update(plugin, bukkitId, file, updateOption, announceOption);
-    }
-
-    /**
-     * Return the BattlePluginsAPI that is used by BattleArena
-     *@return BattlePluginsAPI
-     */
-    public BattlePluginsAPI getBattlePluginsAPI() {
-        return bpapi;
-    }
-
-    /**
      * Return the watch controller
      * @return WatchController
      */
     public WatchController getWatchController() {
         return watchController;
-    }
-
-    /**
-     NONE get no releases,
-     RELEASE get only release updates, ignore beta/alpha,
-     BETA get beta/release updates, but ignore alpha builds,
-     ALL get all updates
-     */
-    public enum UpdateOption{
-        NONE/** get no releases*/,
-        RELEASE/** get only release updates, ignore beta/alpha*/,
-        BETA/** get beta/release updates, but ignore alpha builds*/,
-        ALL/** get all updates*/;
-
-        public static UpdateOption fromString(String name){
-            try {
-                return valueOf(name.toUpperCase());
-            } catch(Exception e) {
-                if (name.equalsIgnoreCase("ALPHA")) return ALL;
-                return null;
-            }
-        }
-        public PluginUpdater.UpdateOption toPluginUpdater() {
-            return PluginUpdater.UpdateOption.fromString(this.name());
-        }
-    }
-
-    /**
-     NONE don't show new versions
-     CONSOLE show only to console log on startup
-     OPS announce to ops on join, will only show this message once per server start
-     */
-    public enum AnnounceUpdateOption {
-        NONE/** don't show new versions*/,
-        CONSOLE/** show only to console log on startup*/,
-        OPS/** announce to ops on join, will only show this message once per server start*/;
-        public static AnnounceUpdateOption fromString(String name){
-            try {
-                return valueOf(name.toUpperCase());
-            } catch(Exception e) {
-                return null;
-            }
-        }
-        public PluginUpdater.AnnounceUpdateOption toPluginUpdater() {
-            return PluginUpdater.AnnounceUpdateOption.fromString(this.name());
-        }
     }
 
     private void createMessageSerializers() {
@@ -499,7 +428,7 @@ public class BattleArena extends JavaPlugin {
      * @return true or false: whether they are in inside an arena
      */
     public static boolean inArena(Player player) {
-        return InArenaListener.inArena(PlayerUtil.getID(player));
+        return InArenaListener.inArena( player.getUniqueId() );
     }
 
     /**
@@ -509,7 +438,7 @@ public class BattleArena extends JavaPlugin {
      * @return true or false: whether they are in inside an arena
      */
     public static boolean inArena(ArenaPlayer player) {
-        return InArenaListener.inArena(player.getID());
+        return InArenaListener.inArena(player.getUniqueId());
     }
 
     /**

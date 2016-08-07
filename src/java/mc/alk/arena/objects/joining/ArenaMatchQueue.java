@@ -345,7 +345,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
             for (ArenaTeam t: qo.getTeams()){
                 for (ArenaPlayer ap: t.getPlayers()) {
-                    inQueue.put(ap.getID(), o);
+                    inQueue.put(ap.getUniqueId(), o);
                     callEvent(new ArenaPlayerEnterQueueEvent(ap,t,qo,jr));
                 }
                 methodController.updateEvents(MatchState.ONENTER, t.getPlayers());
@@ -396,7 +396,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     private WaitingObject removeFromQueue(ArenaPlayer player, boolean leaveJoinHandler) {
-        WaitingObject wo = inQueue.remove(player.getID());
+        WaitingObject wo = inQueue.remove(player.getUniqueId());
         if (wo != null) {
             if (leaveJoinHandler) {
                 wo.jh.leave(player);
@@ -487,7 +487,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
 
     public boolean isInQue(ArenaPlayer p) {
-        return inQueue.containsKey(p.getID());
+        return inQueue.containsKey(p.getUniqueId());
     }
 
     public boolean isInQue(UUID id) {
@@ -496,7 +496,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
 
     public WaitingObject getQueueObject(ArenaPlayer p) {
-        return inQueue.get(p.getID());
+        return inQueue.get(p.getUniqueId());
     }
 
     public void stop() {

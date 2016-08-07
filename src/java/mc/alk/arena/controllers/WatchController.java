@@ -21,10 +21,10 @@ public class WatchController{
         if (rc == null || rc.getSpawns() == null || rc.getSpawn(0,0) == null)
             return false;
         SpawnLocation l = rc.getSpawn(0, 0);
-        PlayerSave ps = watchers.get(player.getID());
+        PlayerSave ps = watchers.get(player.getUniqueId());
         if (ps == null) {
             ps = new PlayerSave(player);
-            watchers.put(player.getID(), ps);
+            watchers.put(player.getUniqueId(), ps);
             ps.setLocation(player.getLocation());
         }
         TeleportController.teleport(player, l.getLocation());
@@ -32,11 +32,11 @@ public class WatchController{
     }
 
     public boolean hasWatcher(ArenaPlayer player) {
-        return watchers.containsKey(player.getID());
+        return watchers.containsKey(player.getUniqueId());
     }
 
     public void leave(ArenaPlayer player) {
-        PlayerSave ps = watchers.remove(player.getID());
+        PlayerSave ps = watchers.remove(player.getUniqueId());
         if (ps != null && ps.getLocation() != null) {
             TeleportController.teleport(player, ps.getLocation());
         }

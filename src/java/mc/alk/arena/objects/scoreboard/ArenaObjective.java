@@ -1,5 +1,12 @@
 package mc.alk.arena.objects.scoreboard;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.TreeMap;
+
+import org.bukkit.OfflinePlayer;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -14,18 +21,12 @@ import mc.alk.scoreboardapi.api.SScoreboard;
 import mc.alk.scoreboardapi.api.STeam;
 import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
 import mc.alk.scoreboardapi.scoreboard.bukkit.BObjective;
-import org.bukkit.OfflinePlayer;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeMap;
 
 
 public class ArenaObjective implements SObjective, ScoreTracker{
 
-    final protected ScoreMap<ArenaTeam> teamPoints = new ScoreMap<ArenaTeam>();
-    final protected ScoreMap<ArenaPlayer> playerPoints = new ScoreMap<ArenaPlayer>();
+    final protected ScoreMap<ArenaTeam> teamPoints = new ScoreMap<>();
+    final protected ScoreMap<ArenaPlayer> playerPoints = new ScoreMap<>();
     final protected SObjective o;
 
 	public ArenaObjective(String name, String criteria) {
@@ -133,7 +134,7 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	public MatchResult getMatchResult(Match match){
 		TreeMap<Integer,Collection<ArenaTeam>> ranks = this.getTeamRanks();
 		/// Deal with teams that haven't scored and possibly aren't inside the ranks
-		HashSet<ArenaTeam> unfoundTeams = new HashSet<ArenaTeam>(match.getAliveTeams());
+		HashSet<ArenaTeam> unfoundTeams = new HashSet<>(match.getAliveTeams());
 		for (Collection<ArenaTeam> t : ranks.values()){
 			unfoundTeams.removeAll(t);
 		}
@@ -354,7 +355,7 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
     public void setDisplayName(String displayNamePrefix, String displayName, String displayNameSuffix, STeam team){
         if (o instanceof BObjective) {
-            ((BObjective) o).setDisplayName(displayNamePrefix, displayName,displayNameSuffix, team);
+            ((BObjective) o).setDisplayName( String.join( "", displayNamePrefix, displayName,displayNameSuffix ) );
         }
     }
 

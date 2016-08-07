@@ -37,7 +37,6 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
         cancelTimers();
     }
 
-    @SuppressWarnings("UnusedParameters")
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onFinished(MatchFinishedEvent event){
         cancelTimers();
@@ -67,9 +66,10 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
             return true;}
         STeam t = as.getTeam(team.getIDString());
         SObjective ao = as.getObjective(SAPIDisplaySlot.SIDEBAR);
+        
         if (t!=null && ao != null && ao instanceof BObjective){
-            ((BObjective)ao).setDisplayName(ao.getDisplayNamePrefix(), ao.getBaseDisplayName(),
-                    MessageUtil.colorChat("&e(" + remaining + ")"), t);
+            ((BObjective)ao).setDisplayName(String.join( "", ao.getDisplayNamePrefix(), ao.getBaseDisplayName(),
+                    MessageUtil.colorChat("&e(" + remaining + ")") ) );
         }
 
         return true;

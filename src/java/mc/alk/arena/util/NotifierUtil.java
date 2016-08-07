@@ -1,8 +1,5 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.objects.MessageListener;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +8,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.bukkit.entity.Player;
+
+import mc.alk.arena.objects.MessageListener;
+
 public class NotifierUtil {
-    public static Map<String,Set<UUID>> listeners = new ConcurrentHashMap<String,Set<UUID>>();
-    public static Map<Integer,List<MessageListener>> compListeners = new ConcurrentHashMap<Integer, List<MessageListener>>();
+    public static Map<String,Set<UUID>> listeners = new ConcurrentHashMap<>();
+    public static Map<Integer,List<MessageListener>> compListeners = new ConcurrentHashMap<>();
 
 	public static void notify(String type, String msg) {
         if (listeners.get(type)== null)
@@ -45,17 +46,17 @@ public class NotifierUtil {
 	public static void addListener(Player player, String type) {
 		Set<UUID> players = listeners.get(type);
 		if (players == null){
-			players = new CopyOnWriteArraySet<UUID>();
+			players = new CopyOnWriteArraySet<>();
 			listeners.put(type, players);
 		}
-		players.add(PlayerUtil.getID(player));
+		players.add( player.getUniqueId() );
 
 	}
 
 	public static void removeListener(Player player, String type) {
 		Set<UUID> players = listeners.get(type);
 		if (players != null){
-			players.remove(PlayerUtil.getID(player));
+			players.remove( player.getUniqueId() );
 			if (players.isEmpty())
 				listeners.remove(type);
 		}
@@ -78,7 +79,7 @@ public class NotifierUtil {
     public static void addMatchListener(int id, MessageListener l ){
         List<MessageListener> list = compListeners.get(id);
         if (list == null) {
-            list = new ArrayList<MessageListener>();
+            list = new ArrayList<>();
             compListeners.put(id, list);
         }
         list.add(l);

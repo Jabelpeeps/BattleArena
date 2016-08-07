@@ -1,15 +1,8 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.options.SpawnOptions;
-import mc.alk.arena.objects.spawns.BlockSpawn;
-import mc.alk.arena.objects.spawns.ChestSpawn;
-import mc.alk.arena.objects.spawns.TimedSpawn;
-import mc.alk.arena.serializers.ArenaSerializer;
-import mc.alk.arena.serializers.SpawnSerializer;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PlayerUtil;
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Chest;
@@ -20,13 +13,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.HashMap;
-import java.util.UUID;
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.options.SpawnOptions;
+import mc.alk.arena.objects.spawns.BlockSpawn;
+import mc.alk.arena.objects.spawns.ChestSpawn;
+import mc.alk.arena.objects.spawns.TimedSpawn;
+import mc.alk.arena.serializers.ArenaSerializer;
+import mc.alk.arena.serializers.SpawnSerializer;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PlayerUtil;
 
 public class ArenaEditor implements Listener{
     int nListening=0;
     Integer timerID;
-    HashMap<UUID, CurrentSelection> selections = new HashMap<UUID,CurrentSelection>();
+    HashMap<UUID, CurrentSelection> selections = new HashMap<>();
 
     public class CurrentSelection  {
         public long lastUsed;
@@ -65,10 +66,10 @@ public class ArenaEditor implements Listener{
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null || !selections.containsKey(PlayerUtil.getID(event.getPlayer()))) {
+        if (event.getClickedBlock() == null || !selections.containsKey( event.getPlayer().getUniqueId() ) ) {
             return;
         }
-        CurrentSelection cs = selections.get(PlayerUtil.getID(event.getPlayer()));
+        CurrentSelection cs = selections.get( event.getPlayer().getUniqueId() );
         if (cs.listeningIndex == null || cs.getArena() == null)
             return;
         if (event.getPlayer().getGameMode()== GameMode.CREATIVE && (

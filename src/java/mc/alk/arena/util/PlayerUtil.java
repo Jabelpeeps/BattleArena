@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -22,14 +21,14 @@ import mc.alk.arena.objects.CommandLineString;
 
 public class PlayerUtil {
 
-    public static int getHunger(final Player player) {
-        return player.getFoodLevel();
-    }
+//    public static int getHunger(final Player player) {
+//        return player.getFoodLevel();
+//    }
 
-    public static void setHunger(final Player player, final Integer hunger) {
-        player.setFoodLevel(hunger);
-    }
-
+//    public static void setHunger(final Player player, final Integer hunger) {
+//        player.setFoodLevel(hunger);
+//    }
+//
     public static void setHealthP(final Player player, final Double health) {
         setHealthP(player,health, false);
     }
@@ -123,14 +122,6 @@ public class PlayerUtil {
 
     public static UUID getID(ArenaPlayer player) {
         return player.getPlayer().getUniqueId();
-    }
-
-    public static UUID getID(OfflinePlayer player) {
-        return player.getUniqueId();
-    }
-
-    public static UUID getID(Player player) {
-        return player.getUniqueId();
     }
 
     public static UUID getID(CommandSender sender) {

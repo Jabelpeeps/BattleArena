@@ -1,10 +1,15 @@
 package mc.alk.arena.objects.scoreboard;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.scoreboardapi.ScoreboardAPI;
 import mc.alk.scoreboardapi.api.SEntry;
@@ -12,12 +17,6 @@ import mc.alk.scoreboardapi.api.SObjective;
 import mc.alk.scoreboardapi.api.SScoreboard;
 import mc.alk.scoreboardapi.api.STeam;
 import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.util.Collection;
-import java.util.List;
 
 public class ArenaScoreboard implements SScoreboard {
     final protected SScoreboard board;
@@ -26,14 +25,6 @@ public class ArenaScoreboard implements SScoreboard {
         this.board = (Defaults.TESTSERVER || !Defaults.USE_SCOREBOARD) ?
                 ScoreboardAPI.createSAPIScoreboard(getPlugin(), scoreboardName) :
                 ScoreboardAPI.createScoreboard(getPlugin(), scoreboardName);
-    }
-
-    @SuppressWarnings({"unused"})
-    @Deprecated
-    public ArenaScoreboard(Match match, MatchParams params) {
-        this.board = (Defaults.TESTSERVER || !Defaults.USE_SCOREBOARD) ?
-                ScoreboardAPI.createSAPIScoreboard(getPlugin(), match.getName()) :
-                ScoreboardAPI.createScoreboard(getPlugin(), match.getName());
     }
 
     public ArenaObjective createObjective(String id, String criteria, String displayName) {

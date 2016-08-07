@@ -81,7 +81,7 @@ public abstract class Competition implements JoinResponseHandler, PlayerHolder, 
 	 * @return whether the player has left or not
 	 */
 	public boolean playerLeft(ArenaPlayer player) {
-		return leftPlayers.contains(player.getID());
+		return leftPlayers.contains(player.getUniqueId());
 	}
 
 	/**

@@ -38,14 +38,14 @@ public enum TeamController implements Listener {
 	 * @return Team
 	 */
 	public static ArenaTeam getTeam(ArenaPlayer player) {
-		ArenaTeam at = INSTANCE.selfFormedTeams.get(player.getID());
+		ArenaTeam at = INSTANCE.selfFormedTeams.get(player.getUniqueId());
         if (at == null && HeroesController.enabled())
             return HeroesController.getTeam(player.getPlayer());
         return at;
     }
 
     public boolean inSelfFormedTeam(ArenaPlayer player){
-        return (INSTANCE.selfFormedTeams.containsKey(player.getID()) ||
+        return (INSTANCE.selfFormedTeams.containsKey(player.getUniqueId()) ||
                 (HeroesController.enabled() && HeroesController.getTeam(player.getPlayer() )!=null));
     }
 
@@ -72,7 +72,7 @@ public enum TeamController implements Listener {
 
 	public void addSelfFormedTeam(ArenaTeam team) {
         for (ArenaPlayer ap: team.getPlayers()){
-            selfFormedTeams.put(ap.getID(), team);
+            selfFormedTeams.put(ap.getUniqueId(), team);
         }
 	}
 
