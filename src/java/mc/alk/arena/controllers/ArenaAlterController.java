@@ -339,7 +339,7 @@ public class ArenaAlterController {
         arena.setParams(p);
         BattleArenaController ac = BattleArena.getBAController();
         if (save)
-            BattleArena.saveArenas(arena.getArenaType().getPlugin());
+            ArenaSerializer.saveArenas(arena.getArenaType().getPlugin());
         ac.updateArena(arena);
         return true;
     }
@@ -349,7 +349,7 @@ public class ArenaAlterController {
         for (Arena a : ac.getArenas(params)){
             restoreDefaultArenaOptions(a, false);
         }
-        BattleArena.saveArenas(params.getType().getPlugin());
+        ArenaSerializer.saveArenas(params.getType().getPlugin());
         return true;
     }
 }

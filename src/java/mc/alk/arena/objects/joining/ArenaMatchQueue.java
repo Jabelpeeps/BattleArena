@@ -1,14 +1,41 @@
 package mc.alk.arena.objects.joining;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.competition.match.ArenaMatch;
 import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.controllers.ParamController;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.PlayerStoreController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
+import mc.alk.arena.controllers.joining.AbstractJoinHandler.TeamJoinResult;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
 import mc.alk.arena.controllers.messaging.MessageHandler;
 import mc.alk.arena.events.BAEvent;
@@ -43,53 +70,27 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.PermissionsUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static java.util.Map.Entry;
-import static mc.alk.arena.controllers.joining.AbstractJoinHandler.TeamJoinResult;
 
 
 public class ArenaMatchQueue implements ArenaListener, Listener {
     static final boolean DEBUG = false;
     static boolean disabledAllCommands;
-    final private static HashSet<String> disabledCommands = new HashSet<String>();
-    final private static HashSet<String> enabledCommands = new HashSet<String>();
+    final private static HashSet<String> disabledCommands = new HashSet<>();
+    final private static HashSet<String> enabledCommands = new HashSet<>();
 
-    final List<WaitingObject> joinHandlers = new LinkedList<WaitingObject>();
+    final List<WaitingObject> joinHandlers = new LinkedList<>();
     final Map<WaitingObject, IdTime> forceTimers = Collections.synchronizedMap(new HashMap<WaitingObject, IdTime>());
-    final protected Map<UUID, WaitingObject> inQueue = new HashMap<UUID, WaitingObject>();
+    final protected Map<UUID, WaitingObject> inQueue = new HashMap<>();
 
     final protected MethodController methodController = new MethodController("QC");
 
-    final private Map<ArenaType, ArenaQueue> arenaqueue = new ConcurrentHashMap<ArenaType, ArenaQueue>();
+    final private Map<ArenaType, ArenaQueue> arenaqueue = new ConcurrentHashMap<>();
 
-    final Map<ArenaType,LinkedList<FoundMatch>> delayedReadyMatches = new HashMap<ArenaType, LinkedList<FoundMatch>>();
+    final Map<ArenaType,LinkedList<FoundMatch>> delayedReadyMatches = new HashMap<>();
     final private Map<ArenaType, Integer> runningMatchTypes = Collections.synchronizedMap(new HashMap<ArenaType, Integer>());
 
-    final static Map<ArenaType, Integer> inQueueForGame = new HashMap<ArenaType, Integer>();
-    final static Map<Arena, Integer> inQueueForArena = new HashMap<Arena, Integer>();
+    final static Map<ArenaType, Integer> inQueueForGame = new HashMap<>();
+    final static Map<Arena, Integer> inQueueForArena = new HashMap<>();
 
     final Lock lock = new ReentrantLock();
     final Condition empty = lock.newCondition();
@@ -194,7 +195,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             synchronized (delayedReadyMatches) {
                 LinkedList<FoundMatch> l = delayedReadyMatches.get(match.params.getType());
                 if (l == null) {
-                    l = new LinkedList<FoundMatch>();
+                    l = new LinkedList<>();
                     delayedReadyMatches.put(match.params.getType(), l);
                 }
 
@@ -460,7 +461,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                 FoundMatch mf = createFoundMatch(null, o, arena);
                 iter.remove();
                 if (finds == null) {
-                    finds = new ArrayList<FoundMatch>();}
+                    finds = new ArrayList<>();}
                 if (resetParams){
                     mf.params = ParamController.copyParams(mf.params);
                     mf.params.setNTeams(new MinMax(0, ArenaSize.MAX));
@@ -508,9 +509,9 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     public  Collection<ArenaTeam> purgeQueue(){
-        List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> teams = new ArrayList<>();
 
-        Map<ArenaPlayer, WaitingObject> players = new HashMap<ArenaPlayer, WaitingObject>();
+        Map<ArenaPlayer, WaitingObject> players = new HashMap<>();
         synchronized(delayedReadyMatches){
             for (List<FoundMatch> list : delayedReadyMatches.values()){
                 for (FoundMatch fm: list) {
@@ -667,7 +668,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     public Collection<ArenaPlayer> getPlayersInQueue(MatchParams params) {
-        List<ArenaPlayer> players = new ArrayList<ArenaPlayer>();
+        List<ArenaPlayer> players = new ArrayList<>();
         synchronized (joinHandlers) {
             for (WaitingObject o : joinHandlers) {
                 if (params.matches(o.getParams())) {
@@ -690,7 +691,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     public Collection<ArenaPlayer> getPlayersInAllQueues() {
-        List<ArenaPlayer> players = new ArrayList<ArenaPlayer>();
+        List<ArenaPlayer> players = new ArrayList<>();
         synchronized (joinHandlers) {
             for (WaitingObject o : joinHandlers) {
                 for (ArenaTeam at : o.jh.getTeams()) {
@@ -709,7 +710,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     public List<String> invalidReason(WaitingObject qo){
-        List<String> reasons = new ArrayList<String>();
+        List<String> reasons = new ArrayList<>();
         MatchParams params = qo.getParams();
         synchronized(arenaqueue) {
             ArenaQueue aq = arenaqueue.get(params.getType());
@@ -785,7 +786,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             return;
         if (event.getFrom().getWorld().getUID() != event.getTo().getWorld().getUID() &&
                 !event.getPlayer().hasPermission(Permissions.TELEPORT_BYPASS_PERM)){
-            ArenaPlayer ap = BattleArena.toArenaPlayer(event.getPlayer());
+            ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
             if (removeFromQueue(ap, true)!=null){
                 MessageUtil.sendMessage(ap, "&cYou have been removed from the queue for changing worlds");
             }
@@ -831,7 +832,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                 @Override
                 public boolean intervalTick(int secondsRemaining) {
                     if (secondsRemaining > 0 || secondsRemaining < 0){
-                        Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+                        Set<ArenaPlayer> players = new HashSet<>();
                         players.addAll(wo.getPlayers());
                         String msg = BAExecutor.constructMessage(wo.getParams(), secondsRemaining * 1000L, players.size(), null);
                         MessageUtil.sendMessage(players, msg);

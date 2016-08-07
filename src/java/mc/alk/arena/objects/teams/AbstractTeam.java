@@ -1,16 +1,5 @@
 package mc.alk.arena.objects.teams;
 
-import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.TrackerController;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.scoreboard.ArenaObjective;
-import mc.alk.arena.objects.stats.ArenaStat;
-import mc.alk.arena.util.MessageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,13 +8,26 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import mc.alk.arena.Defaults;
+import mc.alk.arena.controllers.plugins.TrackerController;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.scoreboard.ArenaObjective;
+import mc.alk.arena.objects.stats.ArenaStat;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
+
 abstract class AbstractTeam implements ArenaTeam{
 	static int count = 0;
 	final int id = count++; /// id
 
-    final protected Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
-    final protected Set<ArenaPlayer> deadplayers = new HashSet<ArenaPlayer>();
-    final protected Set<ArenaPlayer> leftplayers = new HashSet<ArenaPlayer>();
+    final protected Set<ArenaPlayer> players = new HashSet<>();
+    final protected Set<ArenaPlayer> deadplayers = new HashSet<>();
+    final protected Set<ArenaPlayer> leftplayers = new HashSet<>();
 
 	protected boolean nameManuallySet = false;
 	protected boolean nameChanged = true;
@@ -33,8 +35,8 @@ abstract class AbstractTeam implements ArenaTeam{
 	protected String displayName =null; /// Display name
 	protected String scoreboardDisplayName =null; /// Scoreboard name
 
-    final HashMap<ArenaPlayer, Integer> kills = new HashMap<ArenaPlayer,Integer>();
-    final HashMap<ArenaPlayer, Integer> deaths = new HashMap<ArenaPlayer,Integer>();
+    final HashMap<ArenaPlayer, Integer> kills = new HashMap<>();
+    final HashMap<ArenaPlayer, Integer> deaths = new HashMap<>();
 
 	/// Pickup teams are transient in nature, once the match end they disband
 	protected boolean isPickupTeam = false;
@@ -93,7 +95,7 @@ abstract class AbstractTeam implements ArenaTeam{
 		if (nameManuallySet || !nameChanged){ ///
 			return name;}
 		/// Sort the names and then append them together
-		ArrayList<String> list = new ArrayList<String>(players.size());
+		ArrayList<String> list = new ArrayList<>(players.size());
 		for (ArenaPlayer p:players){list.add(p.getName());}
 		for (ArenaPlayer p:leftplayers){list.add(p.getName());}
 		if (list.size() > 1)
@@ -117,7 +119,7 @@ abstract class AbstractTeam implements ArenaTeam{
 
 	@Override
     public Set<Player> getBukkitPlayers() {
-		Set<Player> ps = new HashSet<Player>();
+		Set<Player> ps = new HashSet<>();
 
 		for (ArenaPlayer ap: players){
 			Player p = ap.getPlayer();
@@ -135,7 +137,7 @@ abstract class AbstractTeam implements ArenaTeam{
 
     @Override
 	public Set<ArenaPlayer> getLivingPlayers() {
-		Set<ArenaPlayer> living = new HashSet<ArenaPlayer>();
+		Set<ArenaPlayer> living = new HashSet<>();
 		for (ArenaPlayer p : players){
 			if (hasAliveMember(p)){
 				living.add(p);}
@@ -162,14 +164,21 @@ abstract class AbstractTeam implements ArenaTeam{
 	@Override
     public boolean hasAliveMember(ArenaPlayer p) {return hasMember(p) && !deadplayers.contains(p);}
 	@Override
-    public boolean isPickupTeam() {return isPickupTeam;}
+    public boolean isPickupTeam() { return isPickupTeam; }
 	@Override
-    public void setPickupTeam(boolean isPickupTeam) {this.isPickupTeam = isPickupTeam;}
-	public void setHealth(int health) {for (ArenaPlayer p: players){p.setHealth(health);}}
-	public void setHunger(int hunger) {for (ArenaPlayer p: players){p.setFoodLevel(hunger);}}
+    public void setPickupTeam( boolean _isPickupTeam ) { isPickupTeam = _isPickupTeam; }
+	
+	public void setHealth( int health ) {
+	    for ( ArenaPlayer p: players ) 
+	        p.getPlayer().setHealth(health); 
+    }
+	public void setHunger( int hunger ) {
+	    for ( ArenaPlayer p: players ) 
+	        p.getPlayer().setFoodLevel(hunger);
+	}
 
 	@Override
-    public String getName() {return createName();}
+    public String getName() { return createName(); }
 
 	@Override
     public void setName(String name) {
@@ -388,8 +397,8 @@ abstract class AbstractTeam implements ArenaTeam{
     public int getPriority() {
 		int priority = Integer.MAX_VALUE;
 		for (ArenaPlayer ap: players){
-			if (ap.getPriority() < priority)
-				priority = ap.getPriority();
+			if ( PermissionsUtil.getPriority( ap ) < priority)
+				priority = PermissionsUtil.getPriority( ap );
 		}
 		return priority;
 	}

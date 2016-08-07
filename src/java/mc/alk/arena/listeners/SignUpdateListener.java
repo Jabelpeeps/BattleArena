@@ -1,5 +1,12 @@
 package mc.alk.arena.listeners;
 
+import java.util.Comparator;
+
+import org.bukkit.block.Sign;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.events.matches.MatchStartEvent;
 import mc.alk.arena.events.players.ArenaPlayerEnterQueueEvent;
@@ -9,16 +16,10 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
 import mc.alk.arena.util.MapOfTreeSet;
 import mc.alk.arena.util.MessageUtil;
-import org.bukkit.block.Sign;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-
-import java.util.Comparator;
 
 public class SignUpdateListener implements Listener{
     MapOfTreeSet<String,ArenaCommandSign> arenaSigns =
-            new MapOfTreeSet<String, ArenaCommandSign>(ArenaCommandSign.class, new Comparator<ArenaCommandSign>(){
+            new MapOfTreeSet<>(ArenaCommandSign.class, new Comparator<ArenaCommandSign>(){
                 @Override
                 public int compare(ArenaCommandSign o1, ArenaCommandSign o2) {
                     return o1.hashCode() - o2.hashCode();
@@ -30,18 +31,16 @@ public class SignUpdateListener implements Listener{
         if (str != null && (str.startsWith("\\d") || str.indexOf(' ') > 0 )){
             int index = str.indexOf(' ');
             return index != -1 ? str.substring(0, index) : str;
-        } else {
-            return "Open";
         }
+        return "Open";
     }
 
     private String getQCount(String str){
         if (str != null && (str.startsWith("\\d") || str.indexOf(' ') > 0 )){
             int index = str.indexOf(' ');
             return index != -1 ? str.substring(index+1, str.length()) : str;
-        } else {
-            return "";
         }
+        return "";
     }
 
     private void setPeopleInQueue(Arena arena, int playersInQueue,

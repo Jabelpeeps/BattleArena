@@ -86,6 +86,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.FormingTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamIndex;
+import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.Log;
@@ -790,13 +791,13 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaDelete(CommandSender sender, Arena arena) {
         new ArenaDeleteEvent(arena).callEvent();
         ac.deleteArena(arena);
-        BattleArena.saveArenas(arena.getArenaType().getPlugin());
+        ArenaSerializer.saveArenas(arena.getArenaType().getPlugin());
         return MessageUtil.sendMessage(sender, ChatColor.GREEN + "You have deleted the arena &6" + arena.getName());
     }
 
     @MCCommand(cmds = {"save"}, admin = true, perm = "arena.save")
     public boolean arenaSave(CommandSender sender) {
-        BattleArena.saveArenas(true);
+        ArenaSerializer.saveAllArenas(true);
         return MessageUtil.sendMessage(sender, "&eArenas saved");
     }
 
@@ -915,7 +916,7 @@ public class BAExecutor extends CustomCommandExecutor {
         MessageUtil.sendMessage(sender, "&2A spawn point has been created where you are standing");
         MessageUtil.sendMessage(sender, "&2You can add/change spawn points using &6/arena alter "
                                         + arena.getName() + " <1,2,...,x : which spawn>");
-        BattleArena.saveArenas(arena.getArenaType().getPlugin());
+        ArenaSerializer.saveArenas(arena.getArenaType().getPlugin());
         return BattleArena.getSelf().getArenaEditorExecutor().arenaSelect(sender, arena);
     }
 

@@ -1,6 +1,12 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.BattleArena;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
@@ -12,17 +18,11 @@ import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.Log;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 public class PlayerStoreController {
     static final PlayerStoreController INSTANCE = new PlayerStoreController();
 
-    final HashMap<UUID, PlayerSave> saves = new HashMap<UUID, PlayerSave>();
+    final HashMap<UUID, PlayerSave> saves = new HashMap<>();
     public PlayerStoreController(){}
 
     public PlayerStoreController(PlayerSave save) {
@@ -326,7 +326,7 @@ public class PlayerStoreController {
         try{ EffectUtil.deEnchantAll(p);} catch (Exception e){/* do nothing */}
         HeroesController.deEnchant(p);
         if (!p.isOnline() || p.isDead()){
-            BAPlayerListener.deEnchantOnEnter(BattleArena.toArenaPlayer(p));
+            BAPlayerListener.deEnchantOnEnter(PlayerController.toArenaPlayer(p));
         }
     }
 

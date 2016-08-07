@@ -1,9 +1,17 @@
 package mc.alk.arena.objects.options;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.entity.Player;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.MoneyController;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
@@ -12,12 +20,6 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 public class DuelOptions {
 
@@ -75,8 +77,8 @@ public class DuelOptions {
         }
     }
 
-    final List<ArenaPlayer> challengedPlayers = new ArrayList<ArenaPlayer>();
-    final Map<DuelOption, Object> options = new EnumMap<DuelOption, Object>(DuelOption.class);
+    final List<ArenaPlayer> challengedPlayers = new ArrayList<>();
+    final Map<DuelOption, Object> options = new EnumMap<>(DuelOption.class);
     static DuelOptions defaultOptions = new DuelOptions();
 
     public static DuelOptions parseOptions(String[] args) throws InvalidOptionException {
@@ -101,7 +103,7 @@ public class DuelOptions {
                 if (p.hasPermission(Permissions.DUEL_EXEMPT) && !Defaults.DUEL_CHALLENGE_ADMINS) {
                     throw new InvalidOptionException("&cThis player can not be challenged!");
                 }
-                dop.challengedPlayers.add(BattleArena.toArenaPlayer(p));
+                dop.challengedPlayers.add(PlayerController.toArenaPlayer(p));
                 continue;
             }
             Object obj = null;
@@ -205,7 +207,7 @@ public class DuelOptions {
     }
 
     public String getOtherChallengedString(ArenaPlayer ap) {
-        List<ArenaPlayer> players = new ArrayList<ArenaPlayer>(challengedPlayers);
+        List<ArenaPlayer> players = new ArrayList<>(challengedPlayers);
         players.remove(ap);
         return MessageUtil.joinPlayers(players, ", ");
     }

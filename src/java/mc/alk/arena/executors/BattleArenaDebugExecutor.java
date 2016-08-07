@@ -28,6 +28,7 @@ import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.ParamController;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeleportController;
 import mc.alk.arena.controllers.containers.RoomContainer;
@@ -404,7 +405,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         ArenaClass ac = ArenaClassController.getClass(className);
         if (ac == null)
             return MessageUtil.sendMessage(sender, "&cArena class " + className +" doesn't exist");
-        ArenaClassController.giveClass(BattleArena.toArenaPlayer(player), ac);
+        ArenaClassController.giveClass(PlayerController.toArenaPlayer(player), ac);
         return MessageUtil.sendMessage(sender, "&2Arena class " + ac.getDisplayName() +"&2 given to &6" + player.getName());
     }
 

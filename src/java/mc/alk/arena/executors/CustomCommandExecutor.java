@@ -18,6 +18,7 @@ import mc.alk.arena.controllers.ArenaEditor.CurrentSelection;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.EventController;
 import mc.alk.arena.controllers.ParamController;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.StateController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CommandLineString;
@@ -61,7 +62,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         if (clazz == ArenaPlayer.class){
             if (!(sender instanceof Player))
                 throw new IllegalArgumentException(ONLY_INGAME);
-            return BattleArena.toArenaPlayer((Player)sender);
+            return PlayerController.toArenaPlayer((Player)sender);
         }
         return super.verifySender(sender,clazz);
     }
@@ -290,7 +291,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         Player p = ServerUtil.findPlayer(name);
         if (p == null || !p.isOnline())
             throw new IllegalArgumentException(name+" is not online ");
-        return BattleArena.toArenaPlayer(p);
+        return PlayerController.toArenaPlayer(p);
     }
 
     private Arena verifyArena(Class<?> arenaClass, String name) throws IllegalArgumentException {

@@ -19,6 +19,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.controllers.BAEventController;
+import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaClass;
@@ -99,11 +100,11 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
     public boolean showVersion(CommandSender sender, String[] args) {
         MessageUtil.sendMessage(sender, "&6" + BattleArena.getNameAndVersion());
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-            HashMap<Plugin, List<ArenaType>> map = new HashMap<Plugin, List<ArenaType>>();
+            HashMap<Plugin, List<ArenaType>> map = new HashMap<>();
             for (ArenaType at : ArenaType.getTypes()) {
                 List<ArenaType> l = map.get(at.getPlugin());
                 if (l == null) {
-                    l = new ArrayList<ArenaType>();
+                    l = new ArrayList<>();
                     map.put(at.getPlugin(), l);
                 }
                 l.add(at);
@@ -131,7 +132,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         PlayerController.clearArenaPlayers();
 
         BattleArena.getSelf().reloadConfig();
-        BattleArena.getSelf().reloadCompetitions();
+        CompetitionController.reloadCompetitions();
 
         ac.resume();
         return MessageUtil.sendMessage(sender, "&6BattleArena&e configuration reloaded");

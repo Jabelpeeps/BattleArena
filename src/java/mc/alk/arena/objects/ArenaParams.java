@@ -94,71 +94,71 @@ public class ArenaParams {
     }
 
     public void flatten() {
-        if (parent == null) {
-            return;}
-        if (this.arenaType == null) this.arenaType = parent.getType();
-        if (this.rated == null) this.rated = parent.isRated();
-        if (this.cmd == null) this.cmd = parent.getCommand();
-        if (this.name == null) this.name = parent.getName();
-        if (this.timeBetweenRounds == null) this.timeBetweenRounds = parent.getTimeBetweenRounds();
-        if (this.secondsTillMatch == null) this.secondsTillMatch = parent.getSecondsTillMatch();
-        if (this.matchTime == null) this.matchTime = parent.getMatchTime();
-        if (this.forceStartTime == null) this.forceStartTime = parent.getForceStartTime();
-        if (this.secondsToLoot == null) this.secondsToLoot = parent.getSecondsToLoot();
-        if (this.tableName == null) this.tableName = parent.getDBTableName();
+        if ( parent == null ) return;
+        
+        if ( arenaType == null) arenaType = parent.getType();
+        if ( rated == null) rated = parent.isRated();
+        if ( cmd == null) cmd = parent.getCommand();
+        if ( name == null) name = parent.getName();
+        if ( timeBetweenRounds == null) timeBetweenRounds = parent.getTimeBetweenRounds();
+        if ( secondsTillMatch == null) secondsTillMatch = parent.getSecondsTillMatch();
+        if ( matchTime == null) matchTime = parent.getMatchTime();
+        if ( forceStartTime == null) forceStartTime = parent.getForceStartTime();
+        if ( secondsToLoot == null) secondsToLoot = parent.getSecondsToLoot();
+        if ( tableName == null) tableName = parent.getDBTableName();
         if ( nLives == 0 ) nLives = parent.getNLives();
-        if (this.removePlayersOnLeave == null) this.removePlayersOnLeave = parent.getRemovePlayersOnLeave();
-        if (this.closeWaitroomWhileRunning == null)
-            this.closeWaitroomWhileRunning = parent.isWaitroomClosedWhenRunning();
-        if (this.cancelIfNotEnoughPlayers == null) this.cancelIfNotEnoughPlayers = parent.isCancelIfNotEnoughPlayers();
+        if ( removePlayersOnLeave == null) removePlayersOnLeave = parent.getRemovePlayersOnLeave();
+        if ( closeWaitroomWhileRunning == null)
+             closeWaitroomWhileRunning = parent.isWaitroomClosedWhenRunning();
+        if ( cancelIfNotEnoughPlayers == null) cancelIfNotEnoughPlayers = parent.isCancelIfNotEnoughPlayers();
         
         if ( arenaCooldown == 0 ) arenaCooldown = parent.getArenaCooldown();
         if ( allowedTeamSizeDifference == 0 ) allowedTeamSizeDifference = parent.getAllowedTeamSizeDifference();
         
-        if (this.displayName == null) this.displayName = parent.getDisplayName();
-        this.stateGraph = mergeChildWithParent(this, parent);
-        if (this.nTeams == null && parent.getNTeams() != null) this.nTeams = new MinMax(parent.getNTeams());
-        if (this.teamSize == null && parent.getTeamSize() != null) this.teamSize = new MinMax(parent.getTeamSize());
+        if ( displayName == null)  displayName = parent.getDisplayName();
+        stateGraph = mergeChildWithParent( this, parent );
+        if ( nTeams == null && parent.getNTeams() != null) nTeams = new MinMax(parent.getNTeams());
+        if ( teamSize == null && parent.getTeamSize() != null) teamSize = new MinMax(parent.getTeamSize());
 
-        if (this.teamParams != null && parent.getTeamParams() != null) {
-            HashMap<Integer, MatchParams> tp = new HashMap<>(this.teamParams);
+        if ( teamParams != null && parent.getTeamParams() != null) {
+            HashMap<Integer, MatchParams> tp = new HashMap<>( teamParams);
             tp.putAll(parent.getTeamParams());
-            this.parent = null;
-            this.teamParams = null;
+            parent = null;
+            teamParams = null;
             for (Entry<Integer, MatchParams> e : tp.entrySet()) {
                 MatchParams ap = ParamController.copyParams(e.getValue());
                 ap.setParent(this);
                 ap.flatten();
                 tp.put(e.getKey(), ap);
             }
-            this.teamParams = tp;
+            teamParams = tp;
             
         } else if (parent.getTeamParams() != null) {
             HashMap<Integer, MatchParams> tp = new HashMap<>(parent.getTeamParams());
-            this.parent = null;
-            this.teamParams = null;
+            parent = null;
+            teamParams = null;
             for (Entry<Integer, MatchParams> e : tp.entrySet()) {
                 MatchParams ap = ParamController.copyParams(e.getValue());
                 ap.setParent(this);
                 ap.flatten();
                 tp.put(e.getKey(), ap);
             }
-            this.teamParams = tp;
+            teamParams = tp;
             
-        } else if (this.teamParams != null) {
-            HashMap<Integer, MatchParams> tp = new HashMap<>(this.teamParams);
-            this.parent = null;
-            this.teamParams = null;
+        } else if ( teamParams != null) {
+            HashMap<Integer, MatchParams> tp = new HashMap<>( teamParams);
+            parent = null;
+            teamParams = null;
             for (Entry<Integer, MatchParams> e : tp.entrySet()) {
                 MatchParams ap = ParamController.copyParams(e.getValue());
                 ap.setParent(this);
                 ap.flatten();
                 tp.put(e.getKey(), ap);
             }
-            this.teamParams = tp;
+            teamParams = tp;
         }
-        this.mergedStateGraph = this.stateGraph;
-        this.parent = null;
+        mergedStateGraph = stateGraph;
+        parent = null;
     }
 
     private StateGraph mergeChildWithParent(ArenaParams cap, ArenaParams pap) {
@@ -324,14 +324,14 @@ public class ArenaParams {
     }
 
     public String toSummaryString() {
-        return  "&2&f"+name+"&2:&f"+arenaType+
-                "&2,numTeams="+getColor(nTeams) +getNTeams()+
-                "&2,teamSize="+getColor(teamSize)+ getTeamSize() +"\n"+
-                "&5forceStartTime="+getColor(forceStartTime)+getForceStartTime()+
-                "&5, timeUntilMatch="+getColor(secondsTillMatch)+getSecondsTillMatch() +
-                "&5, matchTime="+getColor(matchTime)+getMatchTime()+
-                "&5, secondsToLoot="+getColor(secondsToLoot)+getSecondsToLoot()+"\n"+
-                "&crated="+getColor(rated)+isRated()+"&c, nLives="+getColor(nLives)+getNLives()+"&e";
+        return  "&2&f" + name + "&2:&f" + arenaType +
+                "&2,numTeams=" + getColor(nTeams) + getNTeams() +
+                "&2,teamSize=" + getColor(teamSize) + getTeamSize() + "\n" +
+                "&5forceStartTime=" + getColor(forceStartTime) + getForceStartTime() +
+                "&5, timeUntilMatch=" + getColor(secondsTillMatch) + getSecondsTillMatch() +
+                "&5, matchTime=" + getColor(matchTime)+getMatchTime() +
+                "&5, secondsToLoot=" + getColor(secondsToLoot) + getSecondsToLoot() + "\n" +
+                "&crated=" + getColor(rated) + isRated() + "&c, nLives=" + getColor(nLives) + getNLives() + "&e";
     }
 
     public String getOptionsSummaryString() {
@@ -340,9 +340,10 @@ public class ArenaParams {
 
     @Override
     public String toString(){
-        return  name+":"+arenaType +",numTeams="+
-                getNTeams()+",teamSize="+ getTeamSize() +" options=\n"+
-                (getThisStateGraph()==null ? "" : getThisStateGraph().getOptionString());
+        return  name + ":" + arenaType + ",numTeams=" + getNTeams() + 
+                ",teamSize=" + getTeamSize() + " options=\n" 
+                                            + (getThisStateGraph() == null ? "" 
+                                                                          : getThisStateGraph().getOptionString());
     }
 
     public boolean isDuelOnly() {

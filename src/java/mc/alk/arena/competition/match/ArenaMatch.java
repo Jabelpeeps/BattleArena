@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.TeleportController;
@@ -69,7 +70,7 @@ public class ArenaMatch extends Match {
 
     @ArenaEventHandler(suppressCastWarnings=true,bukkitPriority=org.bukkit.event.EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        final ArenaPlayer target = BattleArena.toArenaPlayer(event.getEntity());
+        final ArenaPlayer target = PlayerController.toArenaPlayer(event.getEntity());
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
         if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) {
             return;
@@ -223,7 +224,7 @@ public class ArenaMatch extends Match {
 
     @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        final ArenaPlayer p = BattleArena.toArenaPlayer(event.getPlayer());
+        final ArenaPlayer p = PlayerController.toArenaPlayer(event.getPlayer());
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
 
         if (isWon()) {
@@ -373,8 +374,7 @@ public class ArenaMatch extends Match {
         if (event.getClickedBlock() == null ||
                 !(event.getClickedBlock().getType().equals(Material.SIGN) ||
                         event.getClickedBlock().getType().equals(Material.WALL_SIGN) ||
-                        event.getClickedBlock().getType().equals(Defaults.READY_BLOCK)
-                )) {
+                        event.getClickedBlock().getType().equals(Defaults.READY_BLOCK) ) ) {
             return;
         }
 
@@ -392,7 +392,7 @@ public class ArenaMatch extends Match {
     }
 
     public static void respawnClick(PlayerInteractEvent event, PlayerHolder am, Map<UUID,Integer> respawnTimer) {
-        ArenaPlayer ap = BattleArena.toArenaPlayer(event.getPlayer());
+        ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
         Integer id = respawnTimer.remove(ap.getUniqueId());
         Bukkit.getScheduler().cancelTask(id);
         SpawnLocation loc = am.getSpawn(am.getTeam(ap).getIndex(),
@@ -418,12 +418,10 @@ public class ArenaMatch extends Match {
         ArenaClassController.changeClass(event.getPlayer(), am, ac);
     }
 
-
-
     private void readyClick(PlayerInteractEvent event) {
         if (!Defaults.ENABLE_PLAYER_READY_BLOCK)
             return;
-        final ArenaPlayer ap = BattleArena.toArenaPlayer(event.getPlayer());
+        final ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
         if (!isInWaitRoomState()){
             return;}
         final Action action = event.getAction();
@@ -438,7 +436,6 @@ public class ArenaMatch extends Match {
     }
 
     @ArenaEventHandler
-    /// TODO
     @SuppressWarnings("unused")
     public void onPlayerReady(ArenaPlayerReadyEvent event){
         if (!Defaults.ENABLE_PLAYER_READY_BLOCK){
@@ -468,7 +465,6 @@ public class ArenaMatch extends Match {
         }
     }
 
-
     public static void setEnabledCommands(List<String> commands) {
         if (commands == null)
             return;
@@ -476,5 +472,4 @@ public class ArenaMatch extends Match {
         for (String s: commands){
             enabledCommands.add("/" + s.toLowerCase());}
     }
-
 }

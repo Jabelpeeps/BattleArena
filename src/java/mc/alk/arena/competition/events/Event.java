@@ -18,6 +18,7 @@ import org.bukkit.event.HandlerList;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
@@ -109,7 +110,7 @@ public abstract class Event extends Competition implements CountdownCallback, Ar
         for (Player p: Bukkit.getOnlinePlayers()){
             if (PermissionsUtil.isAdmin(p)) { /// skip admins (they are doin' importantz thingz)
                 continue;}
-            ArenaTeam t = TeamController.createTeam(eventParams, BattleArena.toArenaPlayer(p));
+            ArenaTeam t = TeamController.createTeam(eventParams, PlayerController.toArenaPlayer(p));
             TeamJoinObject tqo = new TeamJoinObject(t,eventParams,null);
             this.joining(tqo);
         }

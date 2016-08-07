@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import mc.alk.arena.BattleArena;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.PlayerController;
@@ -70,7 +69,7 @@ public class BAPlayerListener implements Listener  {
 	public void onPlayerDeath(PlayerDeathEvent event){
 		if (!EssentialsController.enabled() || !PlayerController.hasArenaPlayer(event.getEntity()))
 			return;
-        ArenaPlayer ap = BattleArena.toArenaPlayer(event.getEntity());
+        ArenaPlayer ap = PlayerController.toArenaPlayer(event.getEntity());
         if (!restore.containsKey(ap.getUniqueId()))
                 return;
 

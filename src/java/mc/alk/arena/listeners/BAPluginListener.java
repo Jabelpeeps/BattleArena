@@ -259,14 +259,14 @@ public class BAPluginListener implements Listener {
                     RegisteredServiceProvider<Economy> provider = Bukkit.getServer().
                             getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
                     if (provider == null || provider.getProvider() == null) {
-                        Log.warn(BattleArena.getPluginName() + " found no economy plugin. Attempts to use money in arenas might result in errors.");
+                        Log.warn(BattleArena.getNameAndVersion() + " found no economy plugin. Attempts to use money in arenas might result in errors.");
                         return;
                     }
                     MoneyController.setEconomy(provider.getProvider());
-                    Log.info(BattleArena.getPluginName() + " found economy plugin Vault. [Default]");
+                    Log.info(BattleArena.getNameAndVersion() + " found economy plugin Vault. [Default]");
                     
                 } catch (Error e) {
-                    Log.err(BattleArena.getPluginName() + " exception loading economy through Vault");
+                    Log.err(BattleArena.getNameAndVersion() + " exception loading economy through Vault");
                     Log.printStackTrace(e);
                 }
             }
@@ -281,12 +281,10 @@ public class BAPluginListener implements Listener {
                         Log.info("[BattleArena] Vault chat not detected, ignoring channel options");
                     }
                 } catch (Error e) {
-                    Log.err(BattleArena.getPluginName() + " exception loading chat through Vault");
+                    Log.err(BattleArena.getNameAndVersion() + " exception loading chat through Vault");
                     Log.printStackTrace(e);
                 }
             }
-            /// Load Vault Permissions
-//            PermissionsUtil.setPermission(plugin);
         }
     }
 

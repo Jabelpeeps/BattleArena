@@ -25,6 +25,7 @@ import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.plugins.EssentialsController;
 import mc.alk.arena.controllers.plugins.VanishNoPacketInterface;
 import mc.alk.arena.listeners.BAPlayerListener;
+import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
@@ -37,7 +38,7 @@ public class TeleportController implements Listener {
     private static final int TELEPORT_FIX_DELAY = 15; // ticks
 
     public static boolean teleport(final Player player, final Location location) {
-        return teleport(BattleArena.toArenaPlayer(player), location, false);
+        return teleport(PlayerController.toArenaPlayer(player), location, false);
     }
 
     public static boolean teleport(final ArenaPlayer player, final Location location) {
@@ -96,7 +97,7 @@ public class TeleportController implements Listener {
             Location nl = new Location(w, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
             if (!player.teleport(nl, PlayerTeleportEvent.TeleportCause.PLUGIN)
                     || (Defaults.DEBUG_VIRTUAL && !player.isOnline())) {
-                BAPlayerListener.teleportOnReenter(BattleArena.toArenaPlayer(player), nl, player.getLocation());
+                BAPlayerListener.teleportOnReenter(PlayerController.toArenaPlayer(player), nl, player.getLocation());
                 return false;
             }
             arenaPlayer.spawnMobs();
@@ -176,7 +177,7 @@ public class TeleportController implements Listener {
                 continue;
             }
             if (VanishNoPacketInterface.isVanished(player)) {
-                if (!BattleArena.inArena(player)) {
+                if (!InArenaListener.inArena(player)) {
                     continue;
                 }
                 VanishNoPacketInterface.toggleVanish(player);

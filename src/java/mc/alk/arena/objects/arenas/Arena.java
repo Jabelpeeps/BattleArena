@@ -14,6 +14,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.SpawnController;
 import mc.alk.arena.controllers.containers.AreaContainer;
@@ -356,7 +357,7 @@ public class Arena extends AreaContainer {
     }
 
     public List<String> getInvalidReasons() {
-        List<String> reasons = new ArrayList<String>();
+        List<String> reasons = new ArrayList<>();
         if (name == null) reasons.add("Arena name is null");
         if (spawns.size() <1) reasons.add("needs to have at least 1 spawn location");
         if (spawns.get(0) == null) reasons.add("1st spawn is set to a null location");
@@ -411,13 +412,13 @@ public class Arena extends AreaContainer {
      */
     public void putTimedSpawn(Long index, TimedSpawn s) {
         if (timedSpawns == null){
-            timedSpawns = new HashMap<Long,TimedSpawn>();
+            timedSpawns = new HashMap<>();
         }
         timedSpawns.put(index, s);
     }
     
     public long addTimedSpawn(TimedSpawn s) {
-        timedSpawns = (timedSpawns == null) ? new HashMap<Long,TimedSpawn>() : timedSpawns;
+        timedSpawns = (timedSpawns == null) ? new HashMap<>() : timedSpawns;
         long index = timedSpawns.size() + 1L;
         timedSpawns.put(index, s);
         return index;
@@ -510,7 +511,7 @@ public class Arena extends AreaContainer {
      * @return list of alive bukkit players
      */
     public Set<Player> getAliveBukkitPlayers(){
-        return match == null ? null : BattleArena.toPlayerSet(match.getAlivePlayers());
+        return match == null ? null : PlayerController.toPlayerSet(match.getAlivePlayers());
     }
 
     /**
@@ -527,7 +528,7 @@ public class Arena extends AreaContainer {
      * @return the team or null if player isn't in match
      */
     public ArenaTeam getTeam(Player p){
-        return match == null ? null : match.getTeam(BattleArena.toArenaPlayer(p));
+        return match == null ? null : match.getTeam(PlayerController.toArenaPlayer(p));
     }
 
     /**
@@ -606,7 +607,7 @@ public class Arena extends AreaContainer {
 
 
     public List<String> getInvalidMatchReasons(Arena arena) {
-        List<String> reasons = new ArrayList<String>();
+        List<String> reasons = new ArrayList<>();
         if (arena == null){
             reasons.add("Arena is null");
         } else if (this == arena) {
@@ -630,7 +631,7 @@ public class Arena extends AreaContainer {
     }
 
     public List<String> getInvalidMatchReasons(MatchParams matchParams, JoinOptions jp) {
-        List<String> reasons = new ArrayList<String>();
+        List<String> reasons = new ArrayList<>();
         reasons.addAll(getParams().getInvalidMatchReasons(matchParams));
         final StateGraph tops = matchParams.getStateGraph();
         if (tops != null){

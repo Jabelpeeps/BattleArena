@@ -20,7 +20,6 @@ import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveMatchEvent;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.ServerUtil;
 
 public enum InArenaListener implements Listener {
     INSTANCE;
@@ -85,14 +84,14 @@ public enum InArenaListener implements Listener {
     public static boolean inQueue(UUID id) {
         return BattleArena.getBAController().getArenaMatchQueue().isInQue(id);
     }
-    @Deprecated
-    /**
-     * Will be switching over to using UUID
-     */
-    public static boolean inQueue(String name) {
-        Player p = ServerUtil.findOnlinePlayer(name);
-        return p != null && BattleArena.getBAController().getArenaMatchQueue().isInQue( p.getUniqueId() );
-    }
+//    @Deprecated
+//    /**
+//     * Will be switching over to using UUID
+//     */
+//    public static boolean inQueue(String name) {
+//        Player p = ServerUtil.findOnlinePlayer(name);
+//        return p != null && BattleArena.getBAController().getArenaMatchQueue().isInQue( p.getUniqueId() );
+//    }
 
     public static void addListener(Listener listener){
         INSTANCE.listeners.add(listener);

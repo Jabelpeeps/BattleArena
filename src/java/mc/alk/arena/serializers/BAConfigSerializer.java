@@ -5,6 +5,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.match.ArenaMatch;
@@ -39,13 +46,6 @@ import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.KeyValue;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
-import mc.alk.plugin.updater.PluginUpdater.AnnounceUpdateOption;
-import mc.alk.plugin.updater.PluginUpdater.UpdateOption;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class BAConfigSerializer extends BaseConfig {
 
@@ -67,10 +67,6 @@ public class BAConfigSerializer extends BaseConfig {
         if (!Defaults.MONEY_SET) {
             Defaults.MONEY_STR = config.getString("moneyName", Defaults.MONEY_STR);
         }
-        UpdateOption o = UpdateOption.fromString(config.getString("autoUpdate", "none"));
-        Defaults.AUTO_UPDATE = o != null ? o : UpdateOption.NONE;
-        AnnounceUpdateOption ao = AnnounceUpdateOption.fromString(config.getString("announceUpdate", "none"));
-        Defaults.ANNOUNCE_UPDATE = ao != null ? ao : AnnounceUpdateOption.NONE;
         Defaults.TELEPORT_Y_OFFSET = config.getDouble("teleportYOffset", Defaults.TELEPORT_Y_OFFSET);
         Defaults.TELEPORT_Y_VELOCITY = config.getDouble("teleportYVelocity", Defaults.TELEPORT_Y_VELOCITY);
         Defaults.NUM_INV_SAVES = config.getInt("numberSavedInventories", Defaults.NUM_INV_SAVES);
@@ -82,6 +78,7 @@ public class BAConfigSerializer extends BaseConfig {
         Defaults.ANNOUNCE_GIVEN_ITEMS = config.getBoolean("announceGivenItemsOrClass", Defaults.ANNOUNCE_GIVEN_ITEMS);
         Defaults.NEED_SAME_ITEMS_TO_CHANGE_CLASS = config.getBoolean("needSameItemsToChangeClass", Defaults.NEED_SAME_ITEMS_TO_CHANGE_CLASS);
         Defaults.SB_MESSAGES = config.getBoolean("executors.arenaScoreboard.messages", true);
+        
         parseOptionSets(config.getConfigurationSection("optionSets"));
         ArenaMatch.setDisabledCommands(config.getStringList("disabledCommands"));
         ArenaMatch.setEnabledCommands(config.getStringList("enabledCommands"));
@@ -102,12 +99,12 @@ public class BAConfigSerializer extends BaseConfig {
         } catch (Exception e) {
             Log.printStackTrace(e);
         }
-        Set<String> defaultMatchTypes = new HashSet<String>(Arrays.asList(
+        Set<String> defaultMatchTypes = new HashSet<>(Arrays.asList(
                 new String[]{"Arena", "Skirmish", "Colosseum", "Battleground", "Duel"}));
-        Set<String> defaultEventTypes = new HashSet<String>(Arrays.asList(new String[]{"FreeForAll", "DeathMatch"}));
-        Set<String> exclude = new HashSet<String>(Arrays.asList(new String[]{}));
+        Set<String> defaultEventTypes = new HashSet<>(Arrays.asList(new String[]{"FreeForAll", "DeathMatch"}));
+        Set<String> exclude = new HashSet<>(Arrays.asList(new String[]{}));
 
-        Set<String> allTypes = new HashSet<String>(defaultMatchTypes);
+        Set<String> allTypes = new HashSet<>(defaultMatchTypes);
         allTypes.addAll(defaultEventTypes);
         JavaPlugin plugin = BattleArena.getSelf();
 
@@ -199,6 +196,7 @@ public class BAConfigSerializer extends BaseConfig {
         }
 
         parseOnServerStartOptions(cs);
+        
         AnnouncementOptions an = new AnnouncementOptions();
         parseAnnouncementOptions(an, true, cs.getConfigurationSection("announcements"), true);
         parseAnnouncementOptions(an, false, cs.getConfigurationSection("eventAnnouncements"), true);
@@ -221,10 +219,10 @@ public class BAConfigSerializer extends BaseConfig {
 
         Defaults.ENABLE_PLAYER_READY_BLOCK = cs.getBoolean("enablePlayerReadyBlock", Defaults.ENABLE_PLAYER_READY_BLOCK);
         
-        String readyBlock = cs.getString("readyBlockType", Defaults.READY_BLOCK.name()).toUpperCase();
+        String readyBlock = cs.getString( "readyBlockType", Defaults.READY_BLOCK.name() ).toUpperCase();
         Material value = null;
         try {
-            int x = Integer.valueOf(readyBlock);
+            int x = Integer.valueOf( readyBlock );
             value = Material.getMaterial(x);
         } catch (NumberFormatException ex) {
             value = Material.matchMaterial(readyBlock);
@@ -260,7 +258,7 @@ public class BAConfigSerializer extends BaseConfig {
 
     private static void parseOnServerStartOptions(ConfigurationSection cs) {
         if (cs == null || !cs.contains("onServerStart")) {
-            Log.warn(BattleArena.getPluginName() + " No onServerStart options found");
+            Log.warn(BattleArena.getNameAndVersion() + " No onServerStart options found");
             return;
         }
         List<String> options = cs.getStringList("onServerStart");
@@ -396,10 +394,9 @@ public class BAConfigSerializer extends BaseConfig {
         /// Look for it in the old location first, config.yml
         if (config.contains("defaultWGFlags")) {
             return config;
-        } else {
-            return loadOtherConfigSection(BattleArena.getSelf().getDataFolder()
-                    + "/otherPluginConfigs/WorldGuardConfig.yml");
         }
+        return loadOtherConfigSection(
+                BattleArena.getSelf().getDataFolder() + "/otherPluginConfigs/WorldGuardConfig.yml" );
     }
 
     private void loadHeroes() {

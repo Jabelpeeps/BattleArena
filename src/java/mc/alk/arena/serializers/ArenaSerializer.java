@@ -1,5 +1,25 @@
 package mc.alk.arena.serializers;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.BattleArenaController;
@@ -33,29 +53,10 @@ import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.SerializerUtil;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class ArenaSerializer extends BaseConfig{
     static BattleArenaController arenaController;
-    static HashMap<Plugin, Set<ArenaSerializer>> configs = new HashMap<Plugin, Set<ArenaSerializer>>();
+    static HashMap<Plugin, Set<ArenaSerializer>> configs = new HashMap<>();
 
     /// Which plugin does this ArenaSerializer belong to
     Plugin plugin;
@@ -71,7 +72,7 @@ public class ArenaSerializer extends BaseConfig{
         config = new YamlConfiguration();
         Set<ArenaSerializer> paths = configs.get(plugin);
         if (paths == null){
-            paths = new HashSet<ArenaSerializer>();
+            paths = new HashSet<>();
             configs.put(plugin, paths);
         } else { /// check to see if we have this path already
             for (ArenaSerializer as : paths){
@@ -131,14 +132,14 @@ public class ArenaSerializer extends BaseConfig{
             return;
         }
 
-        List<String> keys = (as == null) ? new ArrayList<String>() : new ArrayList<String>(as.getKeys(false));
+        List<String> keys = (as == null) ? new ArrayList<>() : new ArrayList<>(as.getKeys(false));
         int oldGoodSize = keys.size();
-        Set<String> brokenKeys = bks == null ? new HashSet<String>() : bks.getKeys(false);
+        Set<String> brokenKeys = bks == null ? new HashSet<>() : bks.getKeys(false);
         int oldBrokenSize = brokenKeys.size();
         keys.addAll(brokenKeys);
 
-        Set<String> brokenArenas = new HashSet<String>();
-        Set<String> loadedArenas = new HashSet<String>();
+        Set<String> brokenArenas = new HashSet<>();
+        Set<String> loadedArenas = new HashSet<>();
         for (String name : keys){
             if (loadedArenas.contains(name) || brokenArenas.contains(name)) /// We already tried to load this arena
                 continue;
@@ -195,7 +196,7 @@ public class ArenaSerializer extends BaseConfig{
 
     private static void transfer(ConfigurationSection cs, String string, String string2) {
         try{
-            Map<String,Object> map = new HashMap<String,Object>(cs.getConfigurationSection(string).getValues(false));
+            Map<String,Object> map = new HashMap<>(cs.getConfigurationSection(string).getValues(false));
             cs.createSection(string2, map);
             cs.set(string,null);
         } catch(Exception e){
@@ -359,11 +360,10 @@ public class ArenaSerializer extends BaseConfig{
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private static void saveArenas(Collection<Arena> arenas, File f, ConfigurationSection config, Plugin plugin, boolean log){
         ConfigurationSection maincs = config.createSection("arenas");
         config.createSection("brokenArenas");
-        List<String> saved = new ArrayList<String>();
+        List<String> saved = new ArrayList<>();
         for (Arena arena : arenas){
             String arenaname = null;
             try{
@@ -373,7 +373,7 @@ public class ArenaSerializer extends BaseConfig{
                     continue;
                 ArenaParams parentParams = arena.getParams().getParent();
                 arena.getParams().setParent(null);
-                HashMap<String, Object> amap = new HashMap<String, Object>();
+                HashMap<String, Object> amap = new HashMap<>();
                 amap.put("type", at.getName());
 
                 /// Spawn locations
@@ -399,7 +399,7 @@ public class ArenaSerializer extends BaseConfig{
                 /// Timed spawns
                 Map<Long, TimedSpawn> timedSpawns = arena.getTimedSpawns();
                 if (timedSpawns != null && !timedSpawns.isEmpty()){
-                    HashMap<String,Object> spawnmap = new HashMap<String,Object>();
+                    HashMap<String,Object> spawnmap = new HashMap<>();
                     for (Long key: timedSpawns.keySet() ){
                         TimedSpawn ts = timedSpawns.get(key);
                         HashMap<String,Object> itemSpawnMap = saveSpawnable(ts);
@@ -434,7 +434,7 @@ public class ArenaSerializer extends BaseConfig{
     }
 
 
-    protected void saveArenas() {
+    public void saveArenas() {
         saveArenas(false);
     }
     @Override
@@ -510,7 +510,7 @@ public class ArenaSerializer extends BaseConfig{
     }
 
     private static HashMap<String, Object> saveSpawnable(TimedSpawn ts) {
-        HashMap<String, Object> spawnMap = new HashMap<String,Object>();
+        HashMap<String, Object> spawnMap = new HashMap<>();
         SpawnInstance si = ts.getSpawn();
         String key = null;
         String value =null;

@@ -1,14 +1,15 @@
 package mc.alk.arena.objects.messaging;
 
+import java.util.EnumMap;
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.util.Log;
 import net.milkbowl.vault.chat.Chat;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 public class AnnouncementOptions {
 
@@ -34,9 +35,9 @@ public class AnnouncementOptions {
 	public static Chat chat = null;
 
     final Map<MatchState, Map<AnnouncementOption,Object>> matchOptions =
-			new EnumMap<MatchState, Map<AnnouncementOption,Object>>(MatchState.class);
+			new EnumMap<>(MatchState.class);
     final Map<MatchState, Map<AnnouncementOption,Object>> eventOptions =
-			new EnumMap<MatchState, Map<AnnouncementOption,Object>>(MatchState.class);
+			new EnumMap<>(MatchState.class);
 
 	public static void setPlugin(ChatPlugin plugin) {
 		AnnouncementOptions.chatPlugin = plugin;
@@ -49,20 +50,20 @@ public class AnnouncementOptions {
 		Map<MatchState, Map<AnnouncementOption,Object>> options = match ? matchOptions : eventOptions;
 		Map<AnnouncementOption,Object> ops = options.get(ms);
 		if (ops == null){
-			ops = new EnumMap<AnnouncementOption,Object>(AnnouncementOption.class);
+			ops = new EnumMap<>(AnnouncementOption.class);
 			options.put(ms, ops);
 		}
 		switch (bo){
 		case CHANNEL:
 			if (chatPlugin == null){
-				Log.err(BattleArena.getPluginName()+"config.yml Announcement option channel="+value+
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel="+value+
 						", will be ignored as a Chat plugin is not enabled. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
 			}
 			Channel channel = chatPlugin.getChannel(value);
 			if (channel == null){
-				Log.err(BattleArena.getPluginName()+"config.yml Announcement option channel="+value+
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel="+value+
 						", will be ignored as channel " + value +" can not be found. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
@@ -74,13 +75,13 @@ public class AnnouncementOptions {
 			break;
 		case WORLD:
 			if (value == null){
-				Log.err(BattleArena.getPluginName()+"config.yml Announcement option world needs a value. Defaulting to Server Announcement");
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option world needs a value. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
 			}
 			World w = Bukkit.getWorld(value);
 			if (w == null){
-				Log.err(BattleArena.getPluginName()+"config.yml Announcement option world="+value+
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option world="+value+
 						", will be ignored as world " + value +" can not be found. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
@@ -108,16 +109,15 @@ public class AnnouncementOptions {
 		if (ops.containsKey(AnnouncementOption.CHANNEL)){
 			String hcChannelName = (String) ops.get(AnnouncementOption.CHANNEL);
 			if (chatPlugin == null){
-				Log.warn(BattleArena.getPluginName()+" channel plugin is not enabled, ignoring config.yml announcement option channel="+hcChannelName);
+				Log.warn(BattleArena.getNameAndVersion()+" channel plugin is not enabled, ignoring config.yml announcement option channel="+hcChannelName);
 				return Channels.ServerChannel;
 			}
 			Channel channel = chatPlugin.getChannel(hcChannelName);
 			if (channel == null){
-				Log.warn(BattleArena.getPluginName()+" channel not found!. ignoring config.yml announcement option channel="+hcChannelName);
+				Log.warn(BattleArena.getNameAndVersion()+" channel not found!. ignoring config.yml announcement option channel="+hcChannelName);
 				return Channels.ServerChannel;
-			} else {
-				return channel;
 			}
+            return channel;
 		}
 		if (ops.containsKey(AnnouncementOption.WORLD)){
 			World w = Bukkit.getWorld((String)ops.get(AnnouncementOption.WORLD));

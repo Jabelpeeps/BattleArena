@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.plugins.DisguiseController;
 import mc.alk.arena.controllers.plugins.HeroesController;
@@ -37,9 +36,9 @@ import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.TimeUtil;
 
 public class ArenaClassController {
-    final static HashMap<String,ArenaClass> classes = new HashMap<String,ArenaClass>();
+    final static HashMap<String,ArenaClass> classes = new HashMap<>();
     /** How much time since they last changed classes*/
-    final static Map<UUID, Long> userClassSwitchTime = new ConcurrentHashMap<UUID, Long>();
+    final static Map<UUID, Long> userClassSwitchTime = new ConcurrentHashMap<>();
 
     static {
         classes.put(ArenaClass.CHOSEN_CLASS.getName().toUpperCase(), ArenaClass.CHOSEN_CLASS);
@@ -113,7 +112,7 @@ public class ArenaClassController {
     }
 
     public static Set<ArenaClass> getClasses() {
-        return new HashSet<ArenaClass>(classes.values());
+        return new HashSet<>(classes.values());
     }
 
 
@@ -125,7 +124,7 @@ public class ArenaClassController {
             return false;
         }
 
-        final ArenaPlayer ap = BattleArena.toArenaPlayer(p);
+        final ArenaPlayer ap = PlayerController.toArenaPlayer(p);
         ArenaClass chosen = ap.getCurrentClass();
         if (chosen != null && chosen.getName().equals(ac.getName())){
             MessageUtil.sendSystemMessage(p, "class_you_are_already", ac.getDisplayName());
@@ -150,7 +149,7 @@ public class ArenaClassController {
         /// Have They have already selected a class this match, have they changed their inventory since then?
         /// If so, make sure they can't just select a class, drop the items, then choose another
         if (chosen != null){
-            List<ItemStack> items = new ArrayList<ItemStack>();
+            List<ItemStack> items = new ArrayList<>();
             if (chosen.getItems()!=null)
                 items.addAll(chosen.getItems());
             if (mp != null && mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.GIVEITEMS) &&

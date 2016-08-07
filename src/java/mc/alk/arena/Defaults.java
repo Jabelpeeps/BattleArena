@@ -2,17 +2,15 @@ package mc.alk.arena;
 
 import java.io.File;
 
-import mc.alk.arena.objects.CompetitionSize;
-import mc.alk.plugin.updater.PluginUpdater.AnnounceUpdateOption;
-import mc.alk.plugin.updater.PluginUpdater.UpdateOption;
-
 import org.bukkit.Material;
+
+import mc.alk.arena.objects.CompetitionSize;
 
 public class Defaults {
 
-    /// Use auto updating
-    public static UpdateOption AUTO_UPDATE = UpdateOption.RELEASE;
-    public static AnnounceUpdateOption ANNOUNCE_UPDATE = AnnounceUpdateOption.CONSOLE;
+//    /// Use auto updating
+//    public static UpdateOption AUTO_UPDATE = UpdateOption.RELEASE;
+//    public static AnnounceUpdateOption ANNOUNCE_UPDATE = AnnounceUpdateOption.CONSOLE;
 
     public static boolean REPORT_ERRORS = false;
 

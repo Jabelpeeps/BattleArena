@@ -42,7 +42,7 @@ public class APIRegistrationController {
 
     final static Set<String> delayedInits = Collections.synchronizedSet(new HashSet<String>());
 
-    private boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
+    private static boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
         if (fullFile.exists()) {
             return true;
         }
@@ -55,7 +55,7 @@ public class APIRegistrationController {
         }
     }
 
-    private boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
+    private static boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
             String fullFileName, String name, String cmd) throws IOException {
         
         if ( pluginFile != null && pluginFile.exists() )  return true; 
@@ -76,7 +76,7 @@ public class APIRegistrationController {
         
     }
 
-    private boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
+    private static boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
         String line;
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         BufferedWriter fw;
@@ -109,7 +109,7 @@ public class APIRegistrationController {
         return true;
     }
 
-    private void setCommandToExecutor(JavaPlugin plugin, String wantedCommand, CommandExecutor executor) {
+    private static void setCommandToExecutor(JavaPlugin plugin, String wantedCommand, CommandExecutor executor) {
         if (!setCommandToExecutor(plugin, wantedCommand, executor, false)) {
             Log.info("[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap.");
             List<String> aliases = new ArrayList<>();
@@ -130,12 +130,12 @@ public class APIRegistrationController {
         }
     }
 
-    public boolean registerCompetition(JavaPlugin plugin, String name, String cmd, ArenaFactory factory) {
-        return registerCompetition(plugin, name, cmd, factory, null);
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory ) {
+        return registerCompetition( plugin, name, cmd, factory, null );
     }
 
-    public boolean registerCompetition(JavaPlugin plugin, String name, String cmd,
-            ArenaFactory factory, CustomCommandExecutor executor) {
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
+                                               ArenaFactory factory, CustomCommandExecutor executor ) {
         File dir = plugin.getDataFolder();
         File configFile = new File(dir.getAbsoluteFile() + "/" + name + "Config.yml");
         File msgFile = new File(dir.getAbsoluteFile() + "/" + name + "Messages.yml");
@@ -144,19 +144,21 @@ public class APIRegistrationController {
                 configFile, msgFile, defaultArenaFile);
     }
 
-    public boolean registerCompetition(JavaPlugin plugin, String name, String cmd,
-            ArenaFactory factory, CustomCommandExecutor executor,
-            File configFile, File messageFile, File defaultArenaFile) {
-        return registerCompetition(plugin, name, cmd, factory, executor, configFile, messageFile,
-                new File(plugin.getDataFolder() + "/" + name + "Config.yml"), defaultArenaFile);
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
+                                               ArenaFactory factory, CustomCommandExecutor executor,
+                                               File configFile, File messageFile, File defaultArenaFile ) {
+        
+        return registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile,
+                            new File( plugin.getDataFolder() + "/" + name + "Config.yml" ), defaultArenaFile );
     }
 
-    public boolean registerCompetition(JavaPlugin plugin, String name, String cmd,
-            ArenaFactory factory, CustomCommandExecutor executor,
-            File configFile, File messageFile, File defaultPluginConfigFile, File defaultArenaFile) {
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
+                                               ArenaFactory factory, CustomCommandExecutor executor,
+                                               File configFile, File messageFile, File defaultPluginConfigFile, 
+                                               File defaultArenaFile ) {
         try {
-            return _registerCompetition(plugin, name, cmd, factory, executor,
-                    configFile, messageFile, defaultPluginConfigFile, defaultArenaFile);
+            return _registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile, 
+                                                   defaultPluginConfigFile, defaultArenaFile );
         } catch (Exception e) {
             Log.err("[BattleArena] could not register " + plugin.getName() + " " + name);
             Log.err("[BattleArena] config " + configFile);
@@ -165,7 +167,7 @@ public class APIRegistrationController {
         }
     }
     
-    private boolean _registerCompetition(JavaPlugin plugin, String name, String cmd,
+    private static boolean _registerCompetition(JavaPlugin plugin, String name, String cmd,
             ArenaFactory factory, CustomCommandExecutor executor,
             File configFile, File messageFile, File defaultPluginConfigFile, File defaultArenaFile)
             throws Exception {
@@ -281,7 +283,7 @@ public class APIRegistrationController {
         return true;
     }
 
-    private void createExecutor(JavaPlugin plugin, String cmd, CustomCommandExecutor executor, MatchParams mp) {
+    private static void createExecutor(JavaPlugin plugin, String cmd, CustomCommandExecutor executor, MatchParams mp) {
         CustomCommandExecutor exe;
 
         if (mp.isDuelOnly()) {
@@ -301,7 +303,7 @@ public class APIRegistrationController {
         }
     }
 
-    class ArenaBukkitCommand extends Command implements PluginIdentifiableCommand {
+    static class ArenaBukkitCommand extends Command implements PluginIdentifiableCommand {
 
         final CommandExecutor executor;
         final Plugin plugin;
@@ -323,7 +325,7 @@ public class APIRegistrationController {
         }
     }
 
-    class DelayedRegistrationHandler implements Runnable {
+    static class DelayedRegistrationHandler implements Runnable {
 
         final JavaPlugin plugin;
         final File compDir;
@@ -356,7 +358,7 @@ public class APIRegistrationController {
                 }
                 File configFile = new File(compDir + "/" + n + "Config.yml");
                 File msgFile = new File(compDir + "/" + n + "Messages.yml");
-                if (!new APIRegistrationController().registerCompetition(
+                if (!APIRegistrationController.registerCompetition(
                         plugin, n /*name*/, n /*command*/, null /*Arena class*/,
                         null /*executor*/, configFile, msgFile, null, arenaFile)) {
                     Log.err("[BattleArena] Unable to load custom competition " + n);

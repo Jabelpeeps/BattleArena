@@ -1,13 +1,14 @@
 package mc.alk.arena.listeners.competition;
 
-import mc.alk.arena.BattleArena;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PotionSplashEvent;
+
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.options.TransitionOption;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PotionSplashEvent;
 
 public class PotionListener implements ArenaListener{
 	PlayerHolder holder;
@@ -22,7 +23,7 @@ public class PotionListener implements ArenaListener{
 			return;
 		if (event.getEntity().getShooter() instanceof Player){
 			Player p = (Player) event.getEntity().getShooter();
-			ArenaPlayer ap = BattleArena.toArenaPlayer(p);
+			ArenaPlayer ap = PlayerController.toArenaPlayer(p);
 			if (holder.isHandled(ap) && holder.hasOption(TransitionOption.POTIONDAMAGEON)){
 				event.setCancelled(false);
 			}

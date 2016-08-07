@@ -139,7 +139,7 @@ public class PlayerRestoreController {
             public void run() {
                 Player pl = player.regetPlayer();
                 if (pl != null){
-                    PlayerStoreController.removeItems(BattleArena.toArenaPlayer(pl), items);
+                    PlayerStoreController.removeItems(PlayerController.toArenaPlayer(pl), items);
                 }
             }
         });
@@ -198,7 +198,7 @@ public class PlayerRestoreController {
             public void run() {
                 Player pl = player.regetPlayer();
                 if (pl != null) {
-                    BattleArena.toArenaPlayer(pl).setFoodLevel(val);
+                    pl.setFoodLevel(val);
                 }
             }
         });
@@ -212,7 +212,7 @@ public class PlayerRestoreController {
             public void run() {
                 Player pl = player.regetPlayer();
                 if (pl != null) {
-                    BattleArena.toArenaPlayer(pl).setHealth(val);
+                    pl.setHealth(val);
                 }
             }
         });

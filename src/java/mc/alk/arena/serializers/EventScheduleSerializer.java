@@ -1,15 +1,5 @@
 package mc.alk.arena.serializers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.controllers.EventScheduler;
-import mc.alk.arena.controllers.ParamController;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.pairs.EventPair;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.SerializerUtil;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.configuration.ConfigurationSection;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +7,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.configuration.ConfigurationSection;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.controllers.EventScheduler;
+import mc.alk.arena.controllers.ParamController;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.pairs.EventPair;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
 
 
 public class EventScheduleSerializer extends BaseConfig {
@@ -30,9 +31,9 @@ public class EventScheduleSerializer extends BaseConfig {
 
 	public void loadScheduledEvents(ConfigurationSection cs) {
 		if (cs == null){
-			Log.info(BattleArena.getPluginName() +" has no scheduled events");
+			Log.info(BattleArena.getNameAndVersion() +" has no scheduled events");
 			return;}
-		List<String> keys = new ArrayList<String>(cs.getKeys(false));
+		List<String> keys = new ArrayList<>(cs.getKeys(false));
 		Collections.sort(keys);
 		for (String key : keys){
 			String se = cs.getString(key);
@@ -41,7 +42,7 @@ public class EventScheduleSerializer extends BaseConfig {
 			String[] fullargs = se.split(" ");
 			MatchParams eventParams = ParamController.getMatchParamCopy(fullargs[0]);
 			if (eventParams == null){
-				Log.err(BattleArena.getPluginName()+" couldn't reparse the scheduled command " + fullargs[0]);
+				Log.err(BattleArena.getNameAndVersion()+" couldn't reparse the scheduled command " + fullargs[0]);
 				continue;
 			}
 			String[] args = Arrays.copyOfRange(fullargs, 1, fullargs.length);
@@ -56,7 +57,7 @@ public class EventScheduleSerializer extends BaseConfig {
 		if (events == null)
 			return;
 		int i = 0;
-		Map<String,Object> map = new HashMap<String,Object>();
+		Map<String,Object> map = new HashMap<>();
 		for (EventPair ep: events){
 			map.put(i++ +"", ep.getEventParams().getName() +" " + StringUtils.join(ep.getArgs()," "));
 		}

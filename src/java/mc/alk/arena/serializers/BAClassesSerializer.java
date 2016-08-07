@@ -1,8 +1,12 @@
 package mc.alk.arena.serializers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.objects.ArenaClass;
@@ -11,9 +15,6 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 public class BAClassesSerializer extends BaseConfig {
 
@@ -28,7 +29,7 @@ public class BAClassesSerializer extends BaseConfig {
 
     public void loadClasses(ConfigurationSection cs) {
         if (cs == null) {
-            Log.info(BattleArena.getPluginName() + " has no classes");
+            Log.info(BattleArena.getNameAndVersion() + " has no classes");
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -53,9 +54,9 @@ public class BAClassesSerializer extends BaseConfig {
             }
         }
         if (first) {
-            Log.info(BattleArena.getPluginName() + " no predefined classes found. inside of " + cs.getCurrentPath());
+            Log.info(BattleArena.getNameAndVersion() + " no predefined classes found. inside of " + cs.getCurrentPath());
         } else {
-            Log.info(BattleArena.getPluginName() + " registering classes: " + sb.toString());
+            Log.info(BattleArena.getNameAndVersion() + " registering classes: " + sb.toString());
         }
     }
 

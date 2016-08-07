@@ -16,7 +16,7 @@ import com.herocraftonline.heroes.characters.classes.HeroClassManager;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 
-import mc.alk.arena.BattleArena;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
@@ -166,12 +166,12 @@ public abstract class HeroesUtil {
 		ArenaTeam t = TeamFactory.createCompositeTeam();
 		Hero leader = party.getLeader();
 		if (leader != null)
-			t.addPlayer(BattleArena.toArenaPlayer(leader.getPlayer()));
+			t.addPlayer(PlayerController.toArenaPlayer(leader.getPlayer()));
 
 		Set<Hero> members = party.getMembers();
 		if (members != null){
 			for (Hero h: members){
-				t.addPlayer(BattleArena.toArenaPlayer(h.getPlayer()));}
+				t.addPlayer(PlayerController.toArenaPlayer(h.getPlayer()));}
 		}
 		return t.size() > 0 ? t : null;
 	}

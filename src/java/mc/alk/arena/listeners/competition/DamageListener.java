@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import mc.alk.arena.BattleArena;
+import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.PVPState;
@@ -30,9 +30,9 @@ public class DamageListener implements ArenaListener{
 	@ArenaEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.LOW)
 	public void onEntityDamageEvent(EntityDamageEvent event) {
         ArenaPlayer damager = null;
-        final ArenaPlayer target = (event.getEntity() instanceof Player) ?
-                BattleArena.toArenaPlayer((Player) event.getEntity()) :
-                null;
+        final ArenaPlayer target = 
+                (event.getEntity() instanceof Player) ? PlayerController.toArenaPlayer((Player) event.getEntity()) 
+                                                      : null;
 
         /// Handle setting targets for mob spawns first
         if (event instanceof EntityDamageByEntityEvent && event.getEntity() instanceof LivingEntity){

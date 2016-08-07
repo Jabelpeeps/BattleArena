@@ -14,17 +14,13 @@ import org.bukkit.inventory.PlayerInventory;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.containers.AreaContainer;
 import mc.alk.arena.controllers.plugins.HeroesController;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.meta.PlayerMetaData;
 import mc.alk.arena.objects.spawns.EntitySpawn;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.ServerUtil;
 
 
@@ -65,7 +61,7 @@ public class ArenaPlayer {
 
     final PlayerMetaData meta = new PlayerMetaData();
     final UUID uuid;
-    final Player player;
+    Player player;
 
     LivingEntity curTarget;
 
@@ -79,10 +75,6 @@ public class ArenaPlayer {
         player = Bukkit.getPlayer( _uuid );
     }
 
-    public String getName() {
-        return player.getName();
-    }
-
     public void reset() {
         isReady = false;
         currentClass = null;
@@ -92,16 +84,12 @@ public class ArenaPlayer {
             mobs.clear();
         }
     }
-
-    public void setHealth(double health) {
-        PlayerUtil.setHealth(player,health);
-    }
-        
+    
     public Player getPlayer() { return player; }
+    public String getName() { return player.getName(); }  
     public boolean isOnline() { return player.isOnline(); }
     public double getHealth() { return player.getHealth(); }
     public int getFoodLevel() { return player.getFoodLevel(); }
-    public void setFoodLevel(int hunger) { player.setFoodLevel(hunger); }
     public String getDisplayName() { return player.getDisplayName(); }
     public void sendMessage(String colorChat) { player.sendMessage(colorChat); }
     public Location getLocation() { return player.getLocation(); }
@@ -118,10 +106,6 @@ public class ArenaPlayer {
     public void setCurrentClass(ArenaClass arenaClass) { currentClass = arenaClass; }
     public ArenaClass getPreferredClass() { return preferredClass; }
     public void setPreferredClass(ArenaClass arenaClass) { preferredClass = arenaClass; }
-
-    public int getPriority() {
-        return PermissionsUtil.getPriority(player);
-    }
 
     public int getLevel() {
         return (HeroesController.enabled()) ? HeroesController.getLevel(player) : player.getLevel();
@@ -151,9 +135,7 @@ public class ArenaPlayer {
         return competitions.isEmpty() ? null : competitions.peek().getTeam(this);
     }
 
-    public void setTeam(ArenaTeam team) {
-        arenaTeam = team;
-    }
+    public void setTeam(ArenaTeam team) { arenaTeam = team; }
 
     /**
      * Sets the players oldLocation to the current spot ONLY if not already set
@@ -163,21 +145,10 @@ public class ArenaPlayer {
             oldLocation = new FixedLocation(getLocation());}
     }
 
-    public void clearOldLocation(){
-        oldLocation = null;
-    }
-
-    public SpawnLocation getOldLocation(){
-        return oldLocation;
-    }
-
-    public void setCurLocation(ArenaLocation type){
-        this.curLocation = type;
-    }
-
-    public ArenaLocation getCurLocation(){
-        return this.curLocation;
-    }
+    public void clearOldLocation() { oldLocation = null; }
+    public SpawnLocation getOldLocation() { return oldLocation; }
+    public void setCurLocation(ArenaLocation type){ curLocation = type; }
+    public ArenaLocation getCurLocation(){ return curLocation; }
 
     public void despawnMobs(){
         if (mobs != null){
@@ -186,8 +157,8 @@ public class ArenaPlayer {
         }
     }
 
-    public void setMobs(List<SpawnInstance> mobs){
-        this.mobs = mobs;
+    public void setMobs(List<SpawnInstance> _mobs){
+        mobs = _mobs;
     }
 
     public void spawnMobs(){
@@ -203,16 +174,15 @@ public class ArenaPlayer {
         }
     }
 
-    public PlayerMetaData getMetaData(){
-        return meta;
-    }
+    public PlayerMetaData getMetaData() { return meta; }
 
-    public ArenaStat getStat(MatchParams type) {
-        return TrackerController.loadRecord(type, this);
-    }
+//    public ArenaStat getStat(MatchParams type) {
+//        return TrackerController.loadRecord(type, this);
+//    }
 
     public Player regetPlayer() {
-        return ServerUtil.findPlayerExact(this.getName());
+        player = ServerUtil.findPlayer( uuid );
+        return player;        
     }
 
     @Override

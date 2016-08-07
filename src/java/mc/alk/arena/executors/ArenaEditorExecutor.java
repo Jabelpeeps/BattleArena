@@ -50,7 +50,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         TimedSpawn ts = a.deleteTimedSpawn((long) number);
         if (ts != null){
             ac.updateArena(a);
-            BattleArena.saveArenas();
+            ArenaSerializer.saveAllArenas(true);
             return MessageUtil.sendMessage(sender, "&6"+a.getName()+ "&e has deleted index=&4D" + number+"&e that had spawn="+ts);
         }
         return MessageUtil.sendMessage(sender, "&cThere was no spawn at that index");
@@ -125,7 +125,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
             if (spawns==null) {
                 return 1L;
             }
-            List<Long> keys = new ArrayList<Long>(spawns.keySet());
+            List<Long> keys = new ArrayList<>(spawns.keySet());
             Collections.sort(keys);
             for (Long k : keys){
                 if (k!= nextIndex)
@@ -224,7 +224,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         Map<Long, TimedSpawn> spawns = arena.getTimedSpawns();
         if (spawns==null) {
             return MessageUtil.sendMessage(sender, ChatColor.RED+ "Arena has no spawns");}
-        List<Long> keys = new ArrayList<Long>(spawns.keySet());
+        List<Long> keys = new ArrayList<>(spawns.keySet());
         Collections.sort(keys);
         for (Long k : keys) {
             MessageUtil.sendMessage(sender, "&5"+k+"&e: "+spawns.get(k).getDisplayName());

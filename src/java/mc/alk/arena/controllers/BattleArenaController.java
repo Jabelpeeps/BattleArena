@@ -346,14 +346,10 @@ public class BattleArenaController implements ArenaListener, Listener{
         return jr;
     }
 
-    public boolean isInQue(ArenaPlayer p) {return amq.isInQue(p);}
-
-    public void addMatchup(MatchTeamQObject m) {
-        amq.join(m);
-    }
-
-    public Arena reserveArena(Arena arena) {return amq.reserveArena(arena);}
-    public Arena getArena(String arenaName) {return allarenas.get(arenaName.toUpperCase());}
+    public boolean isInQue(ArenaPlayer p) { return amq.isInQue( p ); }
+    public void addMatchup(MatchTeamQObject m) { amq.join( m ); }
+    public Arena reserveArena(Arena arena) { return amq.reserveArena( arena ); }
+    public Arena getArena(String arenaName) { return allarenas.get( arenaName.toUpperCase() ); }
 
     public Arena removeArena(Arena arena) {
         amq.removeArena(arena);
