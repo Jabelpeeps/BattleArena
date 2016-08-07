@@ -1,5 +1,12 @@
 package mc.alk.arena.objects.options;
 
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.BattleArenaController;
@@ -10,12 +17,6 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.util.MinMax;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class EventOpenOptions {
 	public static enum EventOpenOption{
@@ -57,7 +58,7 @@ public class EventOpenOptions {
 		}
 	}
 
-	Map<EventOpenOption,Object> options = new EnumMap<EventOpenOption,Object>(EventOpenOption.class);
+	Map<EventOpenOption,Object> options = new EnumMap<>(EventOpenOption.class);
 	MatchParams params;
 
 	int announceInterval = 0, secTillStart = -1;
@@ -249,9 +250,8 @@ public class EventOpenOptions {
 	public String getOpenCmd() {
 		if (hasOption(EventOpenOption.AUTO)){
 			return EventOpenOption.AUTO.toString().toLowerCase();
-		} else {
-			return EventOpenOption.OPEN.toString().toLowerCase();
 		}
+        return EventOpenOption.OPEN.toString().toLowerCase();
 	}
 
 

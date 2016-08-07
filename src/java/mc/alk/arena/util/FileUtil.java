@@ -1,7 +1,5 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.BattleArena;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,9 +7,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import mc.alk.arena.BattleArena;
+
 public class FileUtil {
 
-	public static InputStream getInputStream(Class<?> clazz, File file) {
+	@SuppressWarnings( "resource" )
+    public static InputStream getInputStream(Class<?> clazz, File file) {
 		InputStream inputStream = null;
 		if (file.exists()){
 			try {
@@ -28,8 +29,9 @@ public class FileUtil {
 		return inputStream;
 	}
 
-	@SuppressWarnings("resource")
-	public static InputStream getInputStream(Class<?> clazz, File defaultFile, File defaultPluginFile) {
+
+	@SuppressWarnings( "resource" )
+    public static InputStream getInputStream(Class<?> clazz, File defaultFile, File defaultPluginFile) {
 		InputStream inputStream = null;
 		if (defaultPluginFile.exists()){
 			try {
@@ -51,7 +53,7 @@ public class FileUtil {
 			inputStream = BattleArena.getSelf().getClass().getResourceAsStream(defaultFile.getPath());
 		if (inputStream == null)
 			inputStream = BattleArena.getSelf().getClass().getClassLoader().getResourceAsStream(defaultFile.getPath());
-
+		
 		return inputStream;
 	}
 
@@ -59,30 +61,35 @@ public class FileUtil {
 		InputStream inputStream = null;
 		try{
 			inputStream = clazz.getResourceAsStream(default_file);
-			if (inputStream == null){ /// will this work to fix the problems in windows??
-				inputStream = clazz.getClassLoader().getResourceAsStream(default_file);}
+			if (inputStream == null) /// will this work to fix the problems in windows??
+				inputStream = clazz.getClassLoader().getResourceAsStream(default_file);
 			return inputStream != null;
 		} catch (Exception e){
 			return false;
 		} finally{
-			if (inputStream!=null)try{inputStream.close();}catch(Exception e){}
+			if ( inputStream!=null )
+			    try { 
+			        inputStream.close();
+			    }
+			    catch( Exception e ){}
 		}
 	}
 
 	public static File load(Class<?> clazz, String config_file, String default_file) {
 		File file = new File(config_file);
-		if (!file.exists()){ /// Create a new file from our default example
+		if (!file.exists()) { /// Create a new file from our default example
 			InputStream inputStream = null;
 			OutputStream out = null;
 			try{
 				inputStream = clazz.getResourceAsStream(default_file);
 				if (inputStream == null){
 					inputStream = clazz.getClassLoader().getResourceAsStream(default_file);}
-				out=new FileOutputStream(config_file);
-				byte buf[]=new byte[1024];
+				out = new FileOutputStream(config_file);
+				byte buf[] = new byte[1024];
 				int len;
-				while((len=inputStream.read(buf))>0){
-					out.write(buf,0,len);}
+				while((len = inputStream.read( buf ))>0 ){
+					out.write( buf,0,len );
+				}
 			} catch (Exception e){
 				Log.printStackTrace(e);
 			} finally {

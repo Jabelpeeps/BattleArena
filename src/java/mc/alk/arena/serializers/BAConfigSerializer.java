@@ -1,7 +1,7 @@
 package mc.alk.arena.serializers;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -99,27 +99,31 @@ public class BAConfigSerializer extends BaseConfig {
         } catch (Exception e) {
             Log.printStackTrace(e);
         }
-        Set<String> defaultMatchTypes = new HashSet<>(Arrays.asList(
-                new String[]{"Arena", "Skirmish", "Colosseum", "Battleground", "Duel"}));
-        Set<String> defaultEventTypes = new HashSet<>(Arrays.asList(new String[]{"FreeForAll", "DeathMatch"}));
-        Set<String> exclude = new HashSet<>(Arrays.asList(new String[]{}));
-
+        Set<String> defaultMatchTypes = new HashSet<>();
+        Collections.addAll( defaultMatchTypes, "Arena", "Skirmish", "Colosseum", "Battleground", "Duel" );
+        
+        Set<String> defaultEventTypes = new HashSet<>();
+        Collections.addAll( defaultEventTypes, "FreeForAll", "DeathMatch" );
+        
+//        Set<String> exclude = new HashSet<>();
+ 
         Set<String> allTypes = new HashSet<>(defaultMatchTypes);
         allTypes.addAll(defaultEventTypes);
+        
         JavaPlugin plugin = BattleArena.getSelf();
 
-        ArenaType.register("Tourney", Arena.class, plugin);
-
         File dir = plugin.getDataFolder();
-        File compDir = new File(dir + "/competitions");
+        File compDir = new File(dir.getPath() + "/competitions");
 
         /// Load all default types
         for (String comp : allTypes) {
             /// For some reason this next line is almost directly in APIRegistration and works
             /// for extensions but not for BattleArena defaults.
             /// ONLY doesnt work in Windows... odd...
-            FileUtil.load(BattleArena.getSelf().getClass(), dir.getPath() + "/competitions/" + comp + "Config.yml",
-                    "/default_files/competitions/" + comp + "Config.yml");
+            FileUtil.load( BattleArena.getSelf().getClass(),
+                           dir.getPath() + "/competitions/" + comp + "Config.yml",
+                           "/default_files/competitions/" + comp + "Config.yml" );
+            
             String capComp = StringUtils.capitalize(comp);
             CustomCommandExecutor executor = comp.equalsIgnoreCase("duel") ? new DuelExecutor() : null;
             APIRegistrationController.registerCompetition( plugin, capComp, capComp, ArenaFactory.DEFAULT, executor,
@@ -127,7 +131,7 @@ public class BAConfigSerializer extends BaseConfig {
                                                            new File(compDir + "/" + capComp + "Messages.yml"),
                                                            new File("/default_files/competitions/" + capComp + "Config.yml"),
                                                            new File(dir.getPath() + "/saves/arenas.yml"));
-            exclude.add(capComp + "Config.yml");
+//            exclude.add(capComp + "Config.yml");
         }
 
         /// These commands arent specified in the config, so manually add.
@@ -136,10 +140,8 @@ public class BAConfigSerializer extends BaseConfig {
         ArenaType.addAliasForType("Colosseum", "col");
 
         /// And lastly.. add our tournament which is different than the rest
-        createTournament(plugin, dir);
-    }
-
-    private void createTournament(JavaPlugin plugin, File dir) {
+        ArenaType.register("Tourney", Arena.class, plugin);
+        
         File cf = FileUtil.load(BattleArena.getSelf().getClass(), dir.getPath() + "/competitions/TourneyConfig.yml",
                 "/default_files/competitions/TourneyConfig.yml");
         ConfigSerializer cs = new ConfigSerializer(plugin, cf, "Tourney");

@@ -10,6 +10,10 @@ public class CaseInsensitiveMap<V> extends LinkedHashMap<String, V> {
 		 return super.get(key.toString().toUpperCase());
 	}
 
+	public V get(String key) {
+	    return super.get( key.toUpperCase() );
+	}
+	
 	@Override
     public V put(String key, V value) {
         return super.put(key.toUpperCase(), value);
@@ -20,8 +24,16 @@ public class CaseInsensitiveMap<V> extends LinkedHashMap<String, V> {
         return super.containsKey(key.toString().toUpperCase());
     }
 
+	public boolean containsKey(String key) {
+	    return super.containsKey( key.toUpperCase() );
+	}
+	
 	@Override
     public V remove(Object key) {
         return super.remove(key.toString().toUpperCase());
     }
+	
+	public V remove(String key) {
+	    return super.remove( key.toUpperCase() );
+	}
 }

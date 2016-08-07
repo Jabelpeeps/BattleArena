@@ -6,24 +6,26 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.util.CaseInsensitiveMap;
 import mc.alk.arena.util.Log;
-import org.bukkit.plugin.Plugin;
 
 public class ArenaType implements Comparable<ArenaType> {
 
-    public static final CaseInsensitiveMap<ArenaFactory> factories = new CaseInsensitiveMap<ArenaFactory>();
-    final static public CaseInsensitiveMap<Class<? extends Arena>> classes = new CaseInsensitiveMap<Class<? extends Arena>>();
-    final static public CaseInsensitiveMap<ArenaType> types = new CaseInsensitiveMap<ArenaType>();
+    public static final CaseInsensitiveMap<ArenaFactory> factories = new CaseInsensitiveMap<>();
+    public static final CaseInsensitiveMap<Class<? extends Arena>> classes = new CaseInsensitiveMap<>();
+    public static final CaseInsensitiveMap<ArenaType> types = new CaseInsensitiveMap<>();
 
     static int count = 0;
 
     final String name;
     final Plugin ownerPlugin;
     final int id = count++;
-    Set<ArenaType> compatibleTypes = null;
+    final Set<ArenaType> compatibleTypes = new HashSet<>();
 
     private ArenaType(final String name, Plugin plugin) {
         this.name = name;
@@ -39,11 +41,11 @@ public class ArenaType implements Comparable<ArenaType> {
     }
 
     public boolean matches(ArenaType arenaType) {
-        return this == arenaType || ((compatibleTypes != null) && compatibleTypes.contains(arenaType));
+        return this == arenaType || compatibleTypes.contains(arenaType);
     }
 
     public Collection<String> getInvalidMatchReasons(ArenaType arenaType) {
-        List<String> reasons = new ArrayList<String>();
+        List<String> reasons = new ArrayList<>();
         if (this != arenaType) {
             reasons.add("Arena type is " + this + ". You requested " + arenaType);
         }
@@ -53,13 +55,12 @@ public class ArenaType implements Comparable<ArenaType> {
     public String toPrettyString(int min, int max) {
         if (this.name.equals("ARENA") || this.name.equals("SKIRMISH")) {
             return min + "v" + max;
-        } else {
-            return toString();
         }
+        return toString();
     }
 
     public String getCompatibleTypes() {
-        if (compatibleTypes == null || compatibleTypes.isEmpty()) {
+        if ( compatibleTypes.isEmpty() ) {
             return name;
         }
         StringBuilder sb = new StringBuilder(name);
@@ -78,13 +79,9 @@ public class ArenaType implements Comparable<ArenaType> {
     }
 
     private void addCompatibleType(ArenaType at) {
-        if (compatibleTypes == null) {
-            compatibleTypes = new HashSet<ArenaType>();
-        }
         compatibleTypes.add(at);
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(ArenaType type) {
         Integer ord = ordinal();
@@ -92,7 +89,6 @@ public class ArenaType implements Comparable<ArenaType> {
     }
 
     @Override
-    @SuppressWarnings("SimplifiableIfStatement")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -243,7 +239,7 @@ public class ArenaType implements Comparable<ArenaType> {
             return;
         }
         types.put(alias, at);
-        Class c = getArenaClass(at);
+        Class<? extends Arena> c = getArenaClass(at);
         ArenaFactory f = getArenaFactory(at);
         if (c != null) {
             classes.put(alias, c);
@@ -258,11 +254,11 @@ public class ArenaType implements Comparable<ArenaType> {
     }
 
     public static Collection<ArenaType> getTypes() {
-        return new HashSet<ArenaType>(types.values());
+        return new HashSet<>(types.values());
     }
 
     public static Collection<ArenaType> getTypes(Plugin plugin) {
-        Set<ArenaType> result = new HashSet<ArenaType>();
+        Set<ArenaType> result = new HashSet<>();
         for (ArenaType type : types.values()) {
             if (type.getPlugin().equals(plugin)) {
                 result.add(type);

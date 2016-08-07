@@ -48,17 +48,13 @@ public class APIRegistrationController {
         if (fullFile.exists()) {
             return true;
         }
-        InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName));
-        try {
+        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName) ) ) {
             return inputStream != null && createFile(fullFile, name, cmd, inputStream);
-        }
-        finally {
-            inputStream.close();
         }
     }
 
     private static boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
-            String fullFileName, String name, String cmd) throws IOException {
+                                                            String fullFileName, String name, String cmd) throws IOException {
         
         if ( pluginFile != null && pluginFile.exists() )  return true; 
         
@@ -136,28 +132,27 @@ public class APIRegistrationController {
         return registerCompetition( plugin, name, cmd, factory, null );
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
-                                               ArenaFactory factory, CustomCommandExecutor executor ) {
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+                                               CustomCommandExecutor executor ) {
         File dir = plugin.getDataFolder();
         File configFile = new File(dir.getAbsoluteFile() + "/" + name + "Config.yml");
         File msgFile = new File(dir.getAbsoluteFile() + "/" + name + "Messages.yml");
         File defaultArenaFile = new File(dir.getAbsoluteFile() + "/arenas.yml");
-        return registerCompetition(plugin, name, cmd, factory, executor,
-                configFile, msgFile, defaultArenaFile);
+        
+        return registerCompetition(plugin, name, cmd, factory, executor, configFile, msgFile, defaultArenaFile);
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
-                                               ArenaFactory factory, CustomCommandExecutor executor,
-                                               File configFile, File messageFile, File defaultArenaFile ) {
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+                                               CustomCommandExecutor executor, File configFile, File messageFile, 
+                                               File defaultArenaFile ) {
         
         return registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile,
                             new File( plugin.getDataFolder() + "/" + name + "Config.yml" ), defaultArenaFile );
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd,
-                                               ArenaFactory factory, CustomCommandExecutor executor,
-                                               File configFile, File messageFile, File defaultPluginConfigFile, 
-                                               File defaultArenaFile ) {
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+                                               CustomCommandExecutor executor, File configFile, File messageFile, 
+                                               File defaultPluginConfigFile, File defaultArenaFile ) {
         try {
             return _registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile, 
                                                    defaultPluginConfigFile, defaultArenaFile );
@@ -235,14 +230,14 @@ public class APIRegistrationController {
         }
         ArenaType at = ArenaType.register(name, arenaClass, plugin);
         */
-        ArenaType at = ArenaType.register(name, factory, plugin);
+        ArenaType at = ArenaType.register( name, factory, plugin );
 
         /// Load our Match Params for this types
         MatchParams mp = config.loadMatchParams();
 
         MessageSerializer ms = null;
         /// load messages
-        if (loadFile(plugin, messageFile, name + "Messages.yml", name, cmd)) {
+        if ( loadFile( plugin, messageFile, name + "Messages.yml", name, cmd) ) {
             ms = new MessageSerializer(name, mp);
         } else if (gameType != null) {
             RegisteredCompetition rc = CompetitionController.getCompetition(plugin, gameType.getName());
