@@ -21,7 +21,7 @@ import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.ServerUtil;
+import mc.alk.util.ServerUtil;
 
 
 public class ArenaPlayer {

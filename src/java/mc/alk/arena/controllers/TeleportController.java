@@ -27,10 +27,10 @@ import mc.alk.arena.controllers.plugins.VanishNoPacketInterface;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.plugins.CombatTagUtil;
+import mc.alk.arena.plugins.CombatTagUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.PermissionsUtil;
 
 public class TeleportController implements Listener {
 

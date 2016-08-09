@@ -3,9 +3,10 @@ package mc.alk.arena.objects.arenas;
 import mc.alk.arena.objects.YamlSerializable;
 import mc.alk.arena.objects.exceptions.SerializationException;
 import mc.alk.arena.serializers.Persist;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.SerializerUtil;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;

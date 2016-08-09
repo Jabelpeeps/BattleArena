@@ -21,10 +21,10 @@ import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
 import mc.alk.arena.objects.signs.ArenaStatusSign;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.SignUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.PermissionsUtil;
+import mc.alk.util.SignUtil;
 
 public class BASignListener implements Listener{
     SignUpdateListener sul;

@@ -13,14 +13,14 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.util.ScoreMap;
-import mc.alk.scoreboardapi.api.SAPIFactory;
-import mc.alk.scoreboardapi.api.SEntry;
-import mc.alk.scoreboardapi.api.SObjective;
-import mc.alk.scoreboardapi.api.SScoreboard;
-import mc.alk.scoreboardapi.api.STeam;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.scoreboard.bukkit.BObjective;
+import mc.alk.scoreboardapi.BObjective;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SAPIFactory;
+import mc.alk.scoreboardapi.SEntry;
+import mc.alk.scoreboardapi.SObjective;
+import mc.alk.scoreboardapi.SScoreboard;
+import mc.alk.scoreboardapi.STeam;
+import mc.alk.util.ScoreMap;
 
 
 public class ArenaObjective implements SObjective, ScoreTracker{

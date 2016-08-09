@@ -5,7 +5,8 @@ import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.SerializerUtil;
+
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 

@@ -4,9 +4,9 @@ import mc.alk.arena.events.prizes.ArenaPrizeEvent;
 import mc.alk.arena.events.prizes.Reward;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.EffectUtil;
-import mc.alk.arena.util.ExpUtil;
-import mc.alk.arena.util.InventoryUtil;
+import mc.alk.util.EffectUtil;
+import mc.alk.util.ExpUtil;
+import mc.alk.util.InventoryUtil;
 
 import org.bukkit.entity.Player;
 

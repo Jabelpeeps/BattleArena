@@ -6,7 +6,7 @@ import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumTeams;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.MinMax;
 
 import java.util.ArrayList;
 import java.util.HashSet;

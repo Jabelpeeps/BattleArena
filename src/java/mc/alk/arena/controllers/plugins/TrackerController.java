@@ -6,7 +6,8 @@ import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.stats.BlankArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.BTInterface;
+import mc.alk.util.BTInterface;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;

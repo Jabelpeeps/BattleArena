@@ -11,12 +11,12 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SEntry;
+import mc.alk.scoreboardapi.SObjective;
+import mc.alk.scoreboardapi.SScoreboard;
+import mc.alk.scoreboardapi.STeam;
 import mc.alk.scoreboardapi.ScoreboardAPI;
-import mc.alk.scoreboardapi.api.SEntry;
-import mc.alk.scoreboardapi.api.SObjective;
-import mc.alk.scoreboardapi.api.SScoreboard;
-import mc.alk.scoreboardapi.api.STeam;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
 
 public class ArenaScoreboard implements SScoreboard {
     final protected SScoreboard board;

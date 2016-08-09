@@ -1,7 +1,7 @@
 package mc.alk.arena.controllers.plugins;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.plugins.EssentialsUtil;
+import mc.alk.arena.plugins.EssentialsUtil;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

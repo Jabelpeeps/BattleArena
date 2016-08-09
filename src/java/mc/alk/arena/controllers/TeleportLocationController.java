@@ -17,8 +17,9 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.Util;
+import mc.alk.util.Log;
+import mc.alk.util.Util;
+
 import org.bukkit.Location;
 
 public class TeleportLocationController {

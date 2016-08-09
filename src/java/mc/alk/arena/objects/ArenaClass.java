@@ -2,7 +2,8 @@ package mc.alk.arena.objects;
 
 import mc.alk.arena.objects.spawns.EntitySpawn;
 import mc.alk.arena.objects.spawns.SpawnInstance;
-import mc.alk.arena.util.InventoryUtil;
+import mc.alk.util.InventoryUtil;
+
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 

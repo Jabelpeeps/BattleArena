@@ -11,7 +11,8 @@ import mc.alk.arena.controllers.Modules;
 import mc.alk.arena.modules.Grenades;
 import mc.alk.arena.modules.Paintballs;
 import mc.alk.arena.objects.modules.ArenaModule;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
+
 import org.apache.commons.lang.StringUtils;
 
 public class ModuleLoader {

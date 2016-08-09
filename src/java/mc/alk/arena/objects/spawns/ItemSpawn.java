@@ -1,9 +1,9 @@
 package mc.alk.arena.objects.spawns;
 
-import mc.alk.arena.util.InventoryUtil;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
+
+import mc.alk.util.InventoryUtil;
 
 
 public class ItemSpawn extends SpawnInstance{

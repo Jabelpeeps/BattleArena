@@ -18,7 +18,7 @@ import mc.alk.arena.objects.joining.MatchTeamQObject;
 import mc.alk.arena.objects.options.DuelOptions.DuelOption;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

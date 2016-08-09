@@ -8,9 +8,9 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import mc.alk.arena.listeners.SignUpdateListener;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MapOfTreeSet;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MapOfTreeSet;
+import mc.alk.util.SerializerUtil;
 
 public class SignSerializer extends BaseConfig {
     

@@ -5,13 +5,7 @@ import org.bukkit.entity.Player;
 
 import mc.alk.arena.executors.BaseExecutor;
 import mc.alk.arena.executors.MCCommand;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.scoreboardapi.api.SAPIFactory;
-import mc.alk.scoreboardapi.api.SEntry;
-import mc.alk.scoreboardapi.api.SObjective;
-import mc.alk.scoreboardapi.api.SScoreboard;
-import mc.alk.scoreboardapi.api.STeam;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
+import mc.alk.util.MessageUtil;
 
 
 public class ScoreboardAPIExecutor extends BaseExecutor {

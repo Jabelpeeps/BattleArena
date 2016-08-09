@@ -2,9 +2,10 @@ package mc.alk.arena.listeners.custom;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.TimingUtil;
-import mc.alk.arena.util.TimingUtil.TimingStat;
+import mc.alk.util.Log;
+import mc.alk.util.TimingUtil;
+import mc.alk.util.TimingUtil.TimingStat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;

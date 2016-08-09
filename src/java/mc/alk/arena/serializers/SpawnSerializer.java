@@ -9,9 +9,10 @@ import mc.alk.arena.objects.spawns.ItemSpawn;
 import mc.alk.arena.objects.spawns.SpawnGroup;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
-import mc.alk.arena.util.EntityUtil;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
+import mc.alk.util.EntityUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;

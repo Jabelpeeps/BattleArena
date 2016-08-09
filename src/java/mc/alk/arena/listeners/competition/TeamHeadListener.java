@@ -7,7 +7,7 @@ import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.TeamUtil;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

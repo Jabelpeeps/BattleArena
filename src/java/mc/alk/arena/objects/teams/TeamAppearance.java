@@ -1,9 +1,10 @@
 package mc.alk.arena.objects.teams;
 
-import mc.alk.arena.util.MessageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
+
+import mc.alk.util.MessageUtil;
 
 import java.awt.*;
 

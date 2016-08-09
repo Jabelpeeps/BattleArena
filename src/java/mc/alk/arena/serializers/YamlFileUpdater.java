@@ -1,12 +1,5 @@
 package mc.alk.arena.serializers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.util.Log;
-import mc.alk.plugin.updater.FileUpdater;
-import mc.alk.plugin.updater.Version;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,6 +10,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.util.FileUpdater;
+import mc.alk.util.FileUpdater.Version;
+import mc.alk.util.Log;
 
 public class YamlFileUpdater {
     private BufferedReader br = null;

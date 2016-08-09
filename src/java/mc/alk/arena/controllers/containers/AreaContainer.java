@@ -19,8 +19,8 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.Util;
+import mc.alk.util.Log;
+import mc.alk.util.Util;
 
 
 public class AreaContainer extends AbstractAreaContainer{

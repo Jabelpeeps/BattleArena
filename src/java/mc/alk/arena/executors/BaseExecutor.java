@@ -23,9 +23,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.ServerUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.ServerUtil;
 
 public abstract class BaseExecutor implements CommandExecutor{
     public static final String version = "2.1.0";

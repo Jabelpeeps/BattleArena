@@ -8,9 +8,9 @@ import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.TimeUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.TimeUtil;
 
 import java.util.Collection;
 import java.util.HashMap;

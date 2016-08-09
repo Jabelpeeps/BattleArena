@@ -16,7 +16,7 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.MinMax;
 
 public class EventOpenOptions {
 	public static enum EventOpenOption{

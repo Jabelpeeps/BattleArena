@@ -1,20 +1,21 @@
 package mc.alk.arena.objects.signs;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.Location;
+import org.bukkit.block.Sign;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.JoinOptions;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.SerializerUtil;
-import mc.alk.arena.util.SignUtil;
-import org.bukkit.Location;
-import org.bukkit.block.Sign;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.SerializerUtil;
+import mc.alk.util.SignUtil;
 
 public abstract class ArenaCommandSign implements ConfigurationSerializable{
 
@@ -53,7 +54,7 @@ public abstract class ArenaCommandSign implements ConfigurationSerializable{
 
     @Override
 	public Map<String, Object> serialize() {
-		HashMap<String,Object> map = new HashMap<String,Object>();
+		HashMap<String,Object> map = new HashMap<>();
 		map.put("location", SerializerUtil.getBlockLocString(location));
 		return map;
 	}

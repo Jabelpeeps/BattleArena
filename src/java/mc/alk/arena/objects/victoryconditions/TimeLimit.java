@@ -8,8 +8,8 @@ import mc.alk.arena.events.matches.MatchStartEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
-import mc.alk.arena.util.Countdown;
-import mc.alk.arena.util.Countdown.CountdownCallback;
+import mc.alk.util.Countdown;
+import mc.alk.util.Countdown.CountdownCallback;
 
 public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, CountdownCallback {
 

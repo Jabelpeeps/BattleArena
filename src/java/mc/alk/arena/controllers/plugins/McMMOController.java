@@ -4,7 +4,7 @@ import java.util.List;
 
 import mc.alk.arena.listeners.competition.plugins.McMMOListener;
 import mc.alk.arena.objects.arenas.ArenaListener;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 
 public class McMMOController {

@@ -13,10 +13,10 @@ import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamHandler;
-import mc.alk.arena.util.Log;
-import mc.alk.scoreboardapi.api.SAPI;
-import mc.alk.scoreboardapi.api.SAPIFactory;
-import mc.alk.scoreboardapi.api.SScoreboard;
+import mc.alk.scoreboardapi.SAPI;
+import mc.alk.scoreboardapi.SAPIFactory;
+import mc.alk.scoreboardapi.SScoreboard;
+import mc.alk.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;

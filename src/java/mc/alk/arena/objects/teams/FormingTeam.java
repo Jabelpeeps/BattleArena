@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
 
 
 

@@ -6,10 +6,11 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.MinMax;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.MinMax;
+import mc.alk.util.PermissionsUtil;
+import mc.alk.util.TeamUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 

@@ -42,10 +42,10 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.Custom;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.arena.util.FileUtil;
-import mc.alk.arena.util.KeyValue;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.FileUtil;
+import mc.alk.util.KeyValue;
+import mc.alk.util.Log;
+import mc.alk.util.MinMax;
 
 public class BAConfigSerializer extends BaseConfig {
 
@@ -120,9 +120,9 @@ public class BAConfigSerializer extends BaseConfig {
             /// For some reason this next line is almost directly in APIRegistration and works
             /// for extensions but not for BattleArena defaults.
             /// ONLY doesnt work in Windows... odd...
-            FileUtil.load( BattleArena.getSelf().getClass(),
-                           dir.getPath() + "/competitions/" + comp + "Config.yml",
-                           "/default_files/competitions/" + comp + "Config.yml" );
+//            FileUtil.load( BattleArena.getSelf().getClass(),
+//                           dir.getPath() + "/competitions/" + comp + "Config.yml",
+//                           "/default_files/competitions/" + comp + "Config.yml" );
             
             String capComp = StringUtils.capitalize(comp);
             CustomCommandExecutor executor = comp.equalsIgnoreCase("duel") ? new DuelExecutor() : null;

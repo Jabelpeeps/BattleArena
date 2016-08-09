@@ -49,12 +49,12 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.OneTeamLeft;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.arena.util.BTInterface;
-import mc.alk.arena.util.EffectUtil;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MinMax;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.BTInterface;
+import mc.alk.util.EffectUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MinMax;
+import mc.alk.util.SerializerUtil;
 
 /**
  *

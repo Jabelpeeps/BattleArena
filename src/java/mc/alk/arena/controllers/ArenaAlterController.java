@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
@@ -27,13 +27,13 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnIndex;
+import mc.alk.arena.plugins.WorldEditUtil;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.PlayerContainerSerializer;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.TeamUtil;
-import mc.alk.arena.util.Util;
-import mc.alk.arena.util.plugins.WorldEditUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.TeamUtil;
+import mc.alk.util.Util;
 
 public class ArenaAlterController {
 
@@ -194,7 +194,7 @@ public class ArenaAlterController {
     }
 
     private static boolean checkWorldGuard(CommandSender sender){
-        if (!WorldGuardController.hasWorldGuard()){
+        if ( !WorldGuardController.hasWorldGuard() ){
             MessageUtil.sendMessage(sender,"&cWorldGuard is not enabled");
             return false;
         }
@@ -206,10 +206,9 @@ public class ArenaAlterController {
     }
 
     private static boolean addWorldGuardRegion(Player sender, Arena arena) {
-        if (!checkWorldGuard(sender)){
-            return false;}
-        WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
-        Selection sel = wep.getSelection(sender);
+        if ( !checkWorldGuard(sender) )
+            return false;
+        Selection sel = WorldEditUtil.getSelection(sender);
         if (sel == null){
             MessageUtil.sendMessage(sender,"&cYou need to select a region to use this command.");
             return false;
@@ -223,9 +222,9 @@ public class ArenaAlterController {
                 WorldGuardController.updateProtectedRegion(sender,id);
                 MessageUtil.sendMessage(sender,"&2Region updated! ");
             } else {
-                region = WorldGuardController.createProtectedRegion(sender, id);
-                if (region != null) {
-                    MessageUtil.sendMessage(sender,"&2Region "+region.getID()+" added! ");
+                ProtectedRegion WGregion = WorldGuardController.createRegion(sender, id);
+                if (WGregion != null) {
+                    MessageUtil.sendMessage(sender,"&2Region "+WGregion.getId()+" added! ");
                 } else {
                     MessageUtil.sendMessage(sender,"&cRegion addition failed! ");
                     return false;

@@ -1,10 +1,10 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.util.MinMax;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import mc.alk.util.MinMax;
 
 public class ArenaSize implements CompetitionSize{
 	int minTeamSize = 1;

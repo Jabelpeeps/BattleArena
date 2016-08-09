@@ -1,7 +1,7 @@
 package mc.alk.arena.controllers;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 import net.milkbowl.vault.economy.Economy;
 
 public class MoneyController {

@@ -36,8 +36,8 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamHandler;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.Log;
+import mc.alk.util.TeamUtil;
 
 public abstract class AbstractAreaContainer implements PlayerHolder, TeamHandler {
     

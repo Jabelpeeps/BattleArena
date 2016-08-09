@@ -1,7 +1,7 @@
 package mc.alk.arena.controllers;
 
 import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.util.CaseInsensitiveMap;
+import mc.alk.util.CaseInsensitiveMap;
 
 import java.util.Map;
 import java.util.TreeMap;

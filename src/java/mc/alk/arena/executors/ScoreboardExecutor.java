@@ -10,8 +10,9 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.util.MessageUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;

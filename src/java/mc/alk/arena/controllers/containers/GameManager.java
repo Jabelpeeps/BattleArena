@@ -36,8 +36,8 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PlayerUtil;
+import mc.alk.util.Log;
+import mc.alk.util.PlayerUtil;
 
 public class GameManager implements PlayerHolder{
 	static final HashMap<ArenaType, GameManager> map = new HashMap<ArenaType, GameManager>();

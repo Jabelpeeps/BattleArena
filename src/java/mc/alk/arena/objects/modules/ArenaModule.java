@@ -2,8 +2,9 @@ package mc.alk.arena.objects.modules;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.arenas.ArenaListener;
-import mc.alk.arena.util.FileUtil;
-import mc.alk.arena.util.Log;
+import mc.alk.util.FileUtil;
+import mc.alk.util.Log;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;

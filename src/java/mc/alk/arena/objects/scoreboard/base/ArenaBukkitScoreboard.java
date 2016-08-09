@@ -8,12 +8,13 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.scoreboardapi.api.SObjective;
-import mc.alk.scoreboardapi.api.SScoreboard;
-import mc.alk.scoreboardapi.api.STeam;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.scoreboard.bukkit.BScoreboard;
+import mc.alk.scoreboardapi.BScoreboard;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SObjective;
+import mc.alk.scoreboardapi.SScoreboard;
+import mc.alk.scoreboardapi.STeam;
+import mc.alk.util.Log;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 

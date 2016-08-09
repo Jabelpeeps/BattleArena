@@ -3,7 +3,7 @@ package mc.alk.arena.objects.options;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.MinMax;
 
 import java.util.EnumMap;
 import java.util.Map;

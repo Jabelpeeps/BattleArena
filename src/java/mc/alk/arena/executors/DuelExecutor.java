@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
 
 
 

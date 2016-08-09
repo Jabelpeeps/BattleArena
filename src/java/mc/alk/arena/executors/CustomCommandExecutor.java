@@ -32,8 +32,8 @@ import mc.alk.arena.objects.pairs.ParamAlterOptionPair;
 import mc.alk.arena.objects.pairs.TransitionOptionTuple;
 import mc.alk.arena.objects.spawns.SpawnIndex;
 import mc.alk.arena.objects.teams.TeamIndex;
-import mc.alk.arena.util.ServerUtil;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.ServerUtil;
+import mc.alk.util.TeamUtil;
 
 public abstract class CustomCommandExecutor extends BaseExecutor{
 

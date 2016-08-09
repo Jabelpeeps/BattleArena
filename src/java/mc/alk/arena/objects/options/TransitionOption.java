@@ -2,8 +2,9 @@ package mc.alk.arena.objects.options;
 
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.objects.StateOption;
-import mc.alk.arena.util.EffectUtil;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.EffectUtil;
+import mc.alk.util.MinMax;
+
 import org.bukkit.GameMode;
 
 import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.CONFIG;

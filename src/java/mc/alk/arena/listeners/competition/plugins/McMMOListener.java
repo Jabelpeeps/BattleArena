@@ -4,7 +4,8 @@ import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.events.skills.McMMOPlayerSkillEvent;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
+
 import org.bukkit.event.Cancellable;
 
 import java.util.Collection;

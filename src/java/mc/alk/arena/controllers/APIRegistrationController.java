@@ -36,9 +36,9 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.util.FileUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.plugin.updater.FileUpdater;
+import mc.alk.util.FileUpdater;
+import mc.alk.util.FileUtil;
+import mc.alk.util.Log;
 
 public class APIRegistrationController {
 

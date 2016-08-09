@@ -4,7 +4,7 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.serializers.ConfigSerializer;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.MinMax;
 
 public enum AlterParamOption {
     NLIVES ("nLives", true, false),

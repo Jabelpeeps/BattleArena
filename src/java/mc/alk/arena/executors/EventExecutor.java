@@ -21,10 +21,10 @@ import mc.alk.arena.objects.options.EventOpenOptions;
 import mc.alk.arena.objects.options.EventOpenOptions.EventOpenOption;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.TimeUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.PermissionsUtil;
+import mc.alk.util.TimeUtil;
 
 
 public class EventExecutor extends BAExecutor{

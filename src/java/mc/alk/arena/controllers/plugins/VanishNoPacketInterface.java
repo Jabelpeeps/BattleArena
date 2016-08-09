@@ -3,7 +3,7 @@ package mc.alk.arena.controllers.plugins;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import mc.alk.arena.util.plugins.VanishNoPacketUtil;
+import mc.alk.arena.plugins.VanishNoPacketUtil;
 
 public class VanishNoPacketInterface {
 	private static boolean enabled = false;

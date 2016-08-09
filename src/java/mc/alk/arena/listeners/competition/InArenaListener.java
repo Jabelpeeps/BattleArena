@@ -19,7 +19,7 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveMatchEvent;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 public enum InArenaListener implements Listener {
     INSTANCE;

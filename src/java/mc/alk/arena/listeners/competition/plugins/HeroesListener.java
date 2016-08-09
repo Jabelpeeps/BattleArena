@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.listeners.competition.InArenaListener;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.ServerUtil;
-import mc.alk.arena.util.plugins.HeroesUtil;
+import mc.alk.arena.plugins.HeroesUtil;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.ServerUtil;
 
 public enum HeroesListener implements Listener {
 	INSTANCE;

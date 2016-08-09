@@ -21,7 +21,8 @@ import mc.alk.arena.controllers.plugins.VanishNoPacketInterface;
 import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.messaging.plugins.HerochatPlugin;
-import mc.alk.arena.util.Log;
+import mc.alk.arena.plugins.WorldEditUtil;
+import mc.alk.util.Log;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 
@@ -103,11 +104,7 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadCombatTag() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("CombatTag");
-        if (plugin != null) {
-            // CombatTagUtil will statically load and use CombatTagInterface
-            // so there's no need to do anything here
-            // except alert server admins that CombatTag was detected.
+        if ( Bukkit.getPluginManager().getPlugin("CombatTag") != null ) {
             Log.info("[BattleArena] CombatTag detected, enabling limited tag support");
         }
     }
@@ -219,25 +216,13 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadWorldEdit() {
-        if (!WorldGuardController.hasWorldEdit()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
-            if (plugin != null) {
-                if (WorldGuardController.setWorldEdit(plugin)) {
-                    Log.info("[BattleArena] WorldEdit detected.");
-                }
-            }
-        }
+        if ( !WorldEditUtil.hasWorldEdit() && WorldEditUtil.checkIfLoadedYet() )
+            Log.info("[BattleArena] WorldEdit detected.");               
     }
 
     public void loadWorldGuard() {
-        if (!WorldGuardController.hasWorldGuard()) {
-            Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-            if (plugin != null) {
-                if (WorldGuardController.setWorldGuard(plugin)) {
-                    Log.info("[BattleArena] WorldGuard detected. WorldGuard regions can now be used");
-                }
-            }
-        }
+        if ( !WorldGuardController.hasWorldGuard() && WorldGuardController.checkIfLoadedYet() ) 
+            Log.info("[BattleArena] WorldGuard detected. WorldGuard regions can now be used");
     }
 
     public void loadVanishNoPacket() {
@@ -251,8 +236,7 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadVault() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("Vault");
-        if (plugin != null) {
+        if ( Bukkit.getPluginManager().getPlugin("Vault") != null ) {
             /// Load vault economy
             if (!MoneyController.hasEconomy()) {
                 try {

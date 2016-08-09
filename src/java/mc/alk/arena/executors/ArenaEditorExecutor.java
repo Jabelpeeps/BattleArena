@@ -25,7 +25,7 @@ import mc.alk.arena.objects.pairs.TransitionOptionTuple;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.SpawnSerializer;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
 
 public class ArenaEditorExecutor extends CustomCommandExecutor {
     public static String idPrefix = "ar_";

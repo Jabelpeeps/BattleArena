@@ -12,10 +12,11 @@ import mc.alk.arena.objects.PVPState;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.util.EffectUtil;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.InventoryUtil.ArmorLevel;
-import mc.alk.arena.util.MinMax;
+import mc.alk.util.EffectUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.MinMax;
+import mc.alk.util.InventoryUtil.ArmorLevel;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

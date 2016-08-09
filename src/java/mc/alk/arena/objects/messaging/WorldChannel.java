@@ -1,9 +1,9 @@
 package mc.alk.arena.objects.messaging;
 
-import mc.alk.arena.util.MessageUtil;
-
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
+import mc.alk.util.MessageUtil;
 
 public class WorldChannel implements Channel {
 	final World world;

@@ -16,7 +16,7 @@ import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.DmgDeathUtil;
+import mc.alk.util.DmgDeathUtil;
 
 public class DamageListener implements ArenaListener{
 	StateGraph transitionOptions;

@@ -51,7 +51,7 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 public class BattleArenaController implements ArenaListener, Listener{
 

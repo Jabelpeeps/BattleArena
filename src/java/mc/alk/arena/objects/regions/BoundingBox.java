@@ -1,10 +1,10 @@
 package mc.alk.arena.objects.regions;
 
 
-import mc.alk.arena.util.SerializerUtil;
-
 import org.bukkit.Location;
 import org.bukkit.World;
+
+import mc.alk.util.SerializerUtil;
 
 public class BoundingBox
 {

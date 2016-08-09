@@ -10,7 +10,7 @@ import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
 
 import java.util.Collection;
 import java.util.Set;

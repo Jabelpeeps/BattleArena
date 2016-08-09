@@ -33,13 +33,13 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.EffectUtil;
-import mc.alk.arena.util.ExpUtil;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PlayerUtil;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.EffectUtil;
+import mc.alk.util.ExpUtil;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.PlayerUtil;
+import mc.alk.util.TeamUtil;
 
 
 public class TransitionController {

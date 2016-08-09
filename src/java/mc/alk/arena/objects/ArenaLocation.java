@@ -1,7 +1,7 @@
 package mc.alk.arena.objects;
 
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.SerializerUtil;
 
 import org.bukkit.Location;
 

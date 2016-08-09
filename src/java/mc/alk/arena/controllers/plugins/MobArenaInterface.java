@@ -1,8 +1,8 @@
 package mc.alk.arena.controllers.plugins;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.plugins.MobArenaUtil;
+import mc.alk.arena.plugins.MobArenaUtil;
+import mc.alk.util.Log;
 
 import org.bukkit.plugin.Plugin;
 

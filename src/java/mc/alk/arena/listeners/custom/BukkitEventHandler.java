@@ -3,7 +3,8 @@ package mc.alk.arena.listeners.custom;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
+
 import org.bukkit.event.Event;
 
 import java.util.Collection;

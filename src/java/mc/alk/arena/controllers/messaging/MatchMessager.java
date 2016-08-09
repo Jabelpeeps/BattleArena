@@ -8,7 +8,7 @@ import mc.alk.arena.objects.messaging.Channel;
 import mc.alk.arena.objects.messaging.Channels;
 import mc.alk.arena.objects.messaging.MatchMessageHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 import java.util.Collection;
 import java.util.List;

@@ -53,8 +53,8 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
 
 public class TournamentEvent extends Event implements Listener, ArenaListener {
     public long timeBetweenRounds;

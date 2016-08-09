@@ -9,8 +9,9 @@ import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.util.DmgDeathUtil;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.util.DmgDeathUtil;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.EntityDeathEvent;
 

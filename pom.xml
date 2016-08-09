@@ -27,18 +27,10 @@
             <id>rainbowcraft-repo</id>
             <url>http://rainbowcraft.sytes.net/maven/repository/</url>
         </repository>
-<!--         <repository>
-            <id>battleplugins-repo</id>
-            <url>http://server.battleplugins.com/maven/repository</url>
-        </repository> -->
         <repository>
   			<id>md_5-public</id>
   			<url>http://repo.md-5.net/content/groups/public/</url>
 		</repository>
-<!--         <repository>
-            <id>md_5-snapshots</id>
-            <url>http://repo.md-5.net/content/repositories/snapshots/</url>
-        </repository> -->
         <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
@@ -299,13 +291,6 @@
                     <include>default_files/victoryConditions/*</include>
                 </includes>
             </resource>
-            <!-- Exclude JUnit test directory -->
- <!--            <resource>
-                <directory>src/tests</directory>
-                <excludes>
-                    <exclude>**/*</exclude>
-                </excludes>
-            </resource> -->
         </resources>
         <pluginManagement>
 		    <plugins>
@@ -340,7 +325,6 @@
                         </goals>
                         <configuration>
                         	<createDependencyReducedPom>false</createDependencyReducedPom>
-                            <!-- Specify to remove all unneeded classes -->
                             <minimizeJar>true</minimizeJar>
                         </configuration>
                     </execution>

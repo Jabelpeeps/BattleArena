@@ -4,7 +4,7 @@ import mc.alk.arena.competition.events.Event;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 import java.util.Collection;
 import java.util.Set;

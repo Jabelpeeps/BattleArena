@@ -19,8 +19,8 @@ import mc.alk.arena.objects.exceptions.InvalidEventException;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.options.EventOpenOptions;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
 
 
 public class TournamentExecutor extends EventExecutor implements CommandExecutor {

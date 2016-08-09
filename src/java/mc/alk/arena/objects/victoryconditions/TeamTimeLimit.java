@@ -11,13 +11,13 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
-import mc.alk.arena.util.Countdown;
-import mc.alk.arena.util.Countdown.CountdownCallback;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.scoreboardapi.api.SObjective;
-import mc.alk.scoreboardapi.api.STeam;
-import mc.alk.scoreboardapi.scoreboard.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.scoreboard.bukkit.BObjective;
+import mc.alk.scoreboardapi.BObjective;
+import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SObjective;
+import mc.alk.scoreboardapi.STeam;
+import mc.alk.util.Countdown;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.Countdown.CountdownCallback;
 
 public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit, CountdownCallback {
 

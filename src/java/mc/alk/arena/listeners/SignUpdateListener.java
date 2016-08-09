@@ -14,8 +14,8 @@ import mc.alk.arena.events.players.ArenaPlayerLeaveQueueEvent;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
-import mc.alk.arena.util.MapOfTreeSet;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MapOfTreeSet;
+import mc.alk.util.MessageUtil;
 
 public class SignUpdateListener implements Listener{
     MapOfTreeSet<String,ArenaCommandSign> arenaSigns =

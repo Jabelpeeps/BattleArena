@@ -28,8 +28,8 @@ import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
-import mc.alk.arena.util.InventoryUtil.PInv;
-import mc.alk.arena.util.MessageUtil;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.InventoryUtil.PInv;
 
 
 /**

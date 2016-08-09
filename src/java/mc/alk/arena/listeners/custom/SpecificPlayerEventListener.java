@@ -17,9 +17,9 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.listeners.custom.RListener.RListenerPriorityComparator;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.DmgDeathUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MapOfTreeSet;
+import mc.alk.util.DmgDeathUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MapOfTreeSet;
 
 
 /**

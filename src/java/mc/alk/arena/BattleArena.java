@@ -63,12 +63,11 @@ import mc.alk.arena.serializers.SpawnSerializer;
 import mc.alk.arena.serializers.StateFlagSerializer;
 import mc.alk.arena.serializers.TeamHeadSerializer;
 import mc.alk.arena.serializers.YamlFileUpdater;
-import mc.alk.arena.util.FileLogger;
-import mc.alk.arena.util.FileUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.MessageUtil;
-import mc.alk.plugin.updater.FileUpdater;
-import mc.battleplugins.api.BattlePluginsAPI;
+import mc.alk.util.FileLogger;
+import mc.alk.util.FileUpdater;
+import mc.alk.util.FileUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
 
 public class BattleArena extends JavaPlugin {
 
@@ -95,7 +94,6 @@ public class BattleArena extends JavaPlugin {
     private static final BAClassesSerializer classesSerializer = new BAClassesSerializer();
     private static final EventScheduleSerializer eventSchedulerSerializer = new EventScheduleSerializer();
     private static final SignSerializer signSerializer = new SignSerializer();
-    public BattlePluginsAPI bpapi;
 
     /**
      * enable the BattleArena plugin
@@ -259,7 +257,6 @@ public class BattleArena extends JavaPlugin {
                     es.start();
             }
         });
-        bpapi = new BattlePluginsAPI();
         Log.info("&4[" + pluginname + "] &6v" + BattleArena.version + "&f enabled!");
     }
 

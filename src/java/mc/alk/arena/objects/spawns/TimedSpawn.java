@@ -1,7 +1,8 @@
 package mc.alk.arena.objects.spawns;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.util.SerializerUtil;
+import mc.alk.util.SerializerUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;

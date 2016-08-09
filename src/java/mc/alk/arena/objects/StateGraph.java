@@ -4,7 +4,8 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.InventoryUtil;
+import mc.alk.util.InventoryUtil;
+
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 

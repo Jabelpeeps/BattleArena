@@ -15,8 +15,8 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.TeamUtil;
+import mc.alk.util.Log;
+import mc.alk.util.TeamUtil;
 
 public class EntitySpawn extends SpawnInstance{
     final private EntityType et;

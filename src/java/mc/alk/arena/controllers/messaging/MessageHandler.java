@@ -4,7 +4,7 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.util.Log;
+import mc.alk.util.Log;
 
 import java.util.List;
 
