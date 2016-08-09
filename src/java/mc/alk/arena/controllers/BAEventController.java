@@ -11,7 +11,7 @@ import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.events.events.EventFinishedEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.EventParams;
@@ -22,25 +22,25 @@ import mc.alk.arena.objects.exceptions.InvalidEventException;
 
 public class BAEventController implements Listener{
 	/// A map of all of our events
-	private Map<String, Map<EventState,List<Event>>> allEvents =
-			Collections.synchronizedMap(new HashMap<String,Map<EventState,List<Event>>>());
+	private Map<String, Map<EventState,List<AbstractComp>>> allEvents =
+			Collections.synchronizedMap(new HashMap<String,Map<EventState,List<AbstractComp>>>());
 
 	public static class SizeEventPair{
 		public Integer nEvents = 0;
-		public Event event = null;
+		public AbstractComp event = null;
 	}
 
 	public SizeEventPair getUniqueEvent(MatchParams eventParams) {
 		final String key = getKey(eventParams);
-		Map<EventState,List<Event>> events = allEvents.get(key);
+		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		SizeEventPair result = new SizeEventPair();
 		if (events == null || events.isEmpty())
 			return result;
 		result.nEvents = 0;
-		Event event = null;
-		for (List<Event> list: events.values()){
+		AbstractComp event = null;
+		for (List<AbstractComp> list: events.values()){
 			result.nEvents += list.size();
-			for (Event evt: list){
+			for (AbstractComp evt: list){
 				if (evt != null){
 					if (event != null){
 						result.event = null;
@@ -54,11 +54,11 @@ public class BAEventController implements Listener{
 		return result;
 	}
 
-	public Event getEvent(ArenaPlayer p) {
+	public AbstractComp getEvent(ArenaPlayer p) {
 		/// Really??? I need a triply nested loop??  maybe ArenaPlayers can have a sense of which event has them...
-		for (Map<EventState,List<Event>> map : allEvents.values()){
-			for (List<Event> list: map.values()){
-				for (Event event: list){
+		for (Map<EventState,List<AbstractComp>> map : allEvents.values()){
+			for (List<AbstractComp> list: map.values()){
+				for (AbstractComp event: list){
 					if (event.hasPlayer(p)){
 						return event;}
 				}
@@ -68,7 +68,7 @@ public class BAEventController implements Listener{
 	}
 
 	public boolean hasOpenEvent() {
-		for (Map<EventState, List<Event>> map : allEvents.values()){
+		for (Map<EventState, List<AbstractComp>> map : allEvents.values()){
 			for (EventState es: map.keySet()){
 				switch (es){
 				case CLOSED:
@@ -88,11 +88,11 @@ public class BAEventController implements Listener{
 
 	public boolean hasOpenEvent(EventParams eventParam) {
 		final String key = getKey(eventParam);
-		Map<EventState,List<Event>> events = allEvents.get(key);
+		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
         return events != null && events.get(EventState.OPEN) != null;
     }
 
-	private String getKey(final Event event){
+	private String getKey(final AbstractComp event){
 		return getKey(event.getParams());
 	}
 
@@ -100,16 +100,16 @@ public class BAEventController implements Listener{
 		return eventParams.getCommand().toUpperCase();
 	}
 
-	public void addOpenEvent(Event event) throws InvalidEventException {
+	public void addOpenEvent(AbstractComp event) throws InvalidEventException {
 		final String key = getKey(event);
-		Map<EventState, List<Event>> map = allEvents.get(key);
+		Map<EventState, List<AbstractComp>> map = allEvents.get(key);
 		if (map == null){
-			map = Collections.synchronizedMap(new EnumMap<EventState,List<Event>>(EventState.class));
+			map = Collections.synchronizedMap(new EnumMap<EventState,List<AbstractComp>>(EventState.class));
 			allEvents.put(key, map);
 		}
-		List<Event> events = map.get(EventState.OPEN);
+		List<AbstractComp> events = map.get(EventState.OPEN);
 		if (events == null){
-			events = Collections.synchronizedList(new ArrayList<Event>());
+			events = Collections.synchronizedList(new ArrayList<AbstractComp>());
 			map.put(EventState.OPEN, events);
 		}
 		if (!events.isEmpty()){
@@ -117,52 +117,52 @@ public class BAEventController implements Listener{
 		events.add(event);
 	}
 
-	public Event getOpenEvent(EventParams eventParams) {
+	public AbstractComp getOpenEvent(EventParams eventParams) {
 		final String key = getKey(eventParams);
-		Map<EventState,List<Event>> events = allEvents.get(key);
+		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		if (events == null)
 			return null;
-		List<Event> es = events.get(EventState.OPEN);
+		List<AbstractComp> es = events.get(EventState.OPEN);
 		return (es != null && !es.isEmpty()) ? es.get(0) : null;
 	}
 
-	public void startEvent(Event event) throws Exception {
+	public void startEvent(AbstractComp event) throws Exception {
 		if (event.getState() != EventState.OPEN)
 			throw new Exception("Event was not open!");
 		final String key = getKey(event);
-		Event evt = getOpenEvent(event.getParams());
+		AbstractComp evt = getOpenEvent(event.getParams());
 		if (evt != event){
 			throw new Exception("Trying to start the wrong open event!");}
-		Map<EventState, List<Event>> map = allEvents.get(key);
+		Map<EventState, List<AbstractComp>> map = allEvents.get(key);
 		if (map == null){
-			map = Collections.synchronizedMap(new EnumMap<EventState,List<Event>>(EventState.class));
+			map = Collections.synchronizedMap(new EnumMap<EventState,List<AbstractComp>>(EventState.class));
 			allEvents.put(key, map);
 		}
 		/// Remove the open event
-		List<Event> events = map.get(EventState.OPEN);
+		List<AbstractComp> events = map.get(EventState.OPEN);
 		events.remove(event);
 		/// Add to running events and start
 		events = map.get(EventState.RUNNING);
 		if (events == null){
-			events = Collections.synchronizedList(new ArrayList<Event>());
+			events = Collections.synchronizedList(new ArrayList<AbstractComp>());
 			map.put(EventState.RUNNING, events);
 		}
 		events.add(event);
 		event.startEvent();
 	}
 
-	public Map<EventState,List<Event>> getCurrentEvents(EventParams eventParams) {
+	public Map<EventState,List<AbstractComp>> getCurrentEvents(EventParams eventParams) {
 		final String key = getKey(eventParams);
-		Map<EventState,List<Event>> events = allEvents.get(key);
+		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		return events != null ? new EnumMap<>(events) : null;
 	}
 
-	public boolean removeEvent(Event event){
-		for (Map<EventState,List<Event>> map : allEvents.values()){
-			for (List<Event> list: map.values()){
-				Iterator<Event> iter = list.iterator();
+	public boolean removeEvent(AbstractComp event){
+		for (Map<EventState,List<AbstractComp>> map : allEvents.values()){
+			for (List<AbstractComp> list: map.values()){
+				Iterator<AbstractComp> iter = list.iterator();
 				while(iter.hasNext()){
-					Event evt = iter.next();
+					AbstractComp evt = iter.next();
 					if (evt.equals(event)){
 						iter.remove();}
 				}
@@ -171,7 +171,7 @@ public class BAEventController implements Listener{
 		return false;
 	}
 
-	public boolean cancelEvent(Event event) {
+	public boolean cancelEvent(AbstractComp event) {
 		event.cancelEvent();
 		return removeEvent(event);
 	}

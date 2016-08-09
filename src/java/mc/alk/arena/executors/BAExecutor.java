@@ -19,9 +19,9 @@ import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.competition.Competition;
-import mc.alk.arena.competition.events.Event;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ArenaAlterController;
 import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
@@ -41,12 +41,8 @@ import mc.alk.arena.controllers.containers.LobbyContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.controllers.messaging.MessageHandler;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.HeroesController;
-import mc.alk.arena.controllers.plugins.MobArenaInterface;
-import mc.alk.arena.controllers.plugins.TrackerController;
-import mc.alk.arena.events.arenas.ArenaCreateEvent;
-import mc.alk.arena.events.arenas.ArenaDeleteEvent;
+import mc.alk.arena.events.ArenaCreateEvent;
+import mc.alk.arena.events.ArenaDeleteEvent;
 import mc.alk.arena.events.players.ArenaPlayerJoinEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.listeners.PlayerHolder;
@@ -87,6 +83,10 @@ import mc.alk.arena.objects.teams.FormingTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamIndex;
 import mc.alk.arena.plugins.CombatTagUtil;
+import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.HeroesController;
+import mc.alk.arena.plugins.MobArenaInterface;
+import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;
@@ -1452,7 +1452,7 @@ public class BAExecutor extends CustomCommandExecutor {
         }
 
         /// Inside an Event?
-        Event ae = insideEvent(player);
+        AbstractComp ae = insideEvent(player);
         if (ae != null) {
             if (showMessages) {
                 MessageUtil.sendMessage(player, "&eYou need to leave the Event first. &6/" + ae.getCommand() + " leave");
@@ -1528,7 +1528,7 @@ public class BAExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    public Event insideEvent(ArenaPlayer p) {
+    public AbstractComp insideEvent(ArenaPlayer p) {
         return EventController.insideEvent(p);
     }
 

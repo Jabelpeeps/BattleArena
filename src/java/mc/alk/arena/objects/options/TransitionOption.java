@@ -1,15 +1,15 @@
 package mc.alk.arena.objects.options;
 
+import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.CONFIG;
+import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.STATE;
+import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.TRANSITION;
+
+import org.bukkit.GameMode;
+
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.objects.StateOption;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.MinMax;
-
-import org.bukkit.GameMode;
-
-import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.CONFIG;
-import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.STATE;
-import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.TRANSITION;
 
 public enum TransitionOption implements StateOption {
     /// Default only Options
@@ -141,7 +141,7 @@ public enum TransitionOption implements StateOption {
     ;
 
     public boolean isState() {
-        return opType==OPTYPE.STATE;
+        return opType == OPTYPE.STATE;
     }
 
     public boolean isTransition() {
@@ -151,11 +151,11 @@ public enum TransitionOption implements StateOption {
     public enum OPTYPE{
         STATE, TRANSITION, CONFIG
     }
-    final String name; /// Transition name
-
-    final boolean hasValue; /// whether the transition needs a value
-
+    
+    final String name; 
+    final boolean hasValue; 
     final OPTYPE opType;
+    
     TransitionOption(String name,Boolean hasValue, OPTYPE opType){
         this.name= name;
         this.hasValue = hasValue;
@@ -163,10 +163,10 @@ public enum TransitionOption implements StateOption {
     }
 
     @Override
-    public String toString(){return name;}
+    public String toString(){ return name; }
 
     @Override
-    public boolean hasValue(){return hasValue;}
+    public boolean hasValue(){ return hasValue; }
 
     public static TransitionOption fromString(String str){
         str = str.toUpperCase();
@@ -195,7 +195,7 @@ public enum TransitionOption implements StateOption {
 
     public Object parseValue(String value) throws Exception{
         /// Handle values for this option
-        switch(this){
+        switch( this ) {
             case HEALTHP:
             case HEALTH:
             case POOLMONEY:
@@ -226,7 +226,7 @@ public enum TransitionOption implements StateOption {
                 } catch (Throwable e){
                     gm = GameMode.valueOf(value.toUpperCase());
                 }
-                return gm; // multiply by number of ticks per second
+                return gm; 
             default:
                 break;
         }

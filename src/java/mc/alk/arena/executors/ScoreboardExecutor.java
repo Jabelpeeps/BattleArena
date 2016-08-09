@@ -3,7 +3,8 @@ package mc.alk.arena.executors;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import mc.alk.arena.competition.match.Match;
+
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.arenas.Arena;

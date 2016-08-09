@@ -8,12 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.HeroesController;
-import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.PlayerSave;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
+import mc.alk.arena.plugins.HeroesController;
+import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;

@@ -11,8 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.competition.TransitionController;
-import mc.alk.arena.competition.match.Match;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
@@ -42,34 +42,24 @@ public class Arena extends AreaContainer {
 
     /// If this is not null, this is where distance will be based off of, otherwise it's an area around the spawns
     protected Location joinloc;
-
     protected Map<Long, TimedSpawn> timedSpawns; /// Item/mob/other spawn events
-
     protected SpawnController spawnController;
-
     protected Match match;
-
     protected RoomContainer spectate;
-
     protected RoomContainer waitroom;
-
     protected RoomContainer visitorRoom;
-
     @Persist
     protected WorldGuardRegion wgRegion;
 
-    /**
-     * Arena constructor
-     */
     public Arena(){
-        super("arena",LocationType.ARENA);
+        super( "arena",LocationType.ARENA );
     }
 
     /**
      * Called after construction or after persistance variables have been assigned, whichever is later
      */
     void privateInit(){
-        try{init();}catch(Exception e){Log.printStackTrace(e);}
+        try { init(); }catch( Exception e ) { Log.printStackTrace(e); }
     }
     /**
      * private Arena crate events, calls create for subclasses to be able to override
@@ -207,7 +197,6 @@ public class Arena extends AreaContainer {
      * @param player the player
      * @param team the team they are on
      */
-    @SuppressWarnings("unused")
     protected void onJoin(ArenaPlayer player, ArenaTeam team){}
 
     /**
@@ -216,7 +205,6 @@ public class Arena extends AreaContainer {
      * @param player the player
      * @param team the team they were on
      */
-    @SuppressWarnings("unused")
     protected void onLeave(ArenaPlayer player, ArenaTeam team) {}
 
     /**
@@ -238,7 +226,6 @@ public class Arena extends AreaContainer {
      * Called after the victor team has won the match
      * @param result Result of the Match
      */
-    @SuppressWarnings("unused")
     protected void onVictory(MatchResult result){}
 
     /**
@@ -261,7 +248,6 @@ public class Arena extends AreaContainer {
      * @param player ArenaPlayer
      * @param team : the team they were in
      */
-    @SuppressWarnings("unused")
     protected void onEnter(ArenaPlayer player, ArenaTeam team) {}
 
     /**
@@ -269,7 +255,6 @@ public class Arena extends AreaContainer {
      * @param player ArenaPlayer
      * @param team: the team they are in
      */
-    @SuppressWarnings("unused")
     protected void onEnterWaitRoom(ArenaPlayer player, ArenaTeam team) {}
 
     /**
@@ -277,7 +262,6 @@ public class Arena extends AreaContainer {
      * @param player ArenaPlayer
      * @param team: the team they are in
      */
-    @SuppressWarnings("unused")
     protected void onEnterSpectate(ArenaPlayer player, ArenaTeam team) {}
 
     /**
@@ -285,7 +269,6 @@ public class Arena extends AreaContainer {
      * @param player ArenaPlayer
      * @param team : the team they were in
      */
-    @SuppressWarnings("unused")
     protected void onExit(ArenaPlayer player, ArenaTeam team) {}
 
     /**
@@ -332,13 +315,15 @@ public class Arena extends AreaContainer {
      * @return name
      */
     @Override
-    public String getName() {return name;}
+    public String getName() { return name; }
 
     /**
      * Return the waitroom spawn locations
      * @return list of location
      */
-    public List<List<SpawnLocation>> getWaitRoomSpawnLocs(){return waitroom != null ? waitroom.getSpawns() : null;}
+    public List<List<SpawnLocation>> getWaitRoomSpawnLocs() { 
+        return waitroom != null ? waitroom.getSpawns() : null;
+    }
 
     /**
      * Get the type of this arena
@@ -358,9 +343,16 @@ public class Arena extends AreaContainer {
 
     public List<String> getInvalidReasons() {
         List<String> reasons = new ArrayList<>();
-        if (name == null) reasons.add("Arena name is null");
-        if (spawns.size() <1) reasons.add("needs to have at least 1 spawn location");
-        if (spawns.get(0) == null) reasons.add("1st spawn is set to a null location");
+        
+        if (name == null) 
+            reasons.add("Arena name is null");
+        
+        if (spawns.size() <1) 
+            reasons.add("needs to have at least 1 spawn location");
+        
+        if (spawns.get(0) == null) 
+            reasons.add("1st spawn is set to a null location");
+        
         reasons.addAll(params.getInvalidReasons());
         return reasons;
     }
@@ -593,18 +585,15 @@ public class Arena extends AreaContainer {
      * @param _params1 params
      * @return true if arena matches the params
      */
- 
     public boolean matches(MatchParams _params1) {
-        if (!getParams().matches(_params1)) {
-            return false;}
+        if (!getParams().matches(_params1)) 
+            return false;
         if ((waitroom == null || !waitroom.hasSpawns()) && _params1.needsWaitroom())
             return false;
         if ((spectate == null || !spectate.hasSpawns()) && _params1.needsSpectate())
             return false;
         return true;
     }
-
-
 
     public List<String> getInvalidMatchReasons(Arena arena) {
         List<String> reasons = new ArrayList<>();
@@ -662,10 +651,6 @@ public class Arena extends AreaContainer {
         return reasons;
     }
 
-
-    /**
-     * Arena printing
-     */
     @Override
     public String toString(){
         return toSummaryString();
@@ -675,16 +660,18 @@ public class Arena extends AreaContainer {
      * return detailed arena details (includes bukkit coloring)
      * @return detailed info
      */
-    @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public String toDetailedString(){
-        StringBuilder sb = new StringBuilder("&6" + name+" &e");
-        sb.append("&eTeamSizes=&6"+params.getTeamSize() + " &eTypes=&6" +params.getType());
-        sb.append("&e, #Teams:&6"+params.getNTeams());
-        sb.append("&e, #spawns:&6" +spawns.size() +"\n");
-        sb.append("&eteamSpawnLocs=&b"+getSpawnLocationString()+"\n");
-        if (waitroom != null) sb.append("&ewrSpawnLocs=&b"+waitroom.getSpawnLocationString()+"\n");
-        if (spectate != null) sb.append("&espectateSpawnLocs=&b"+spectate.getSpawnLocationString()+"\n");
-        if (timedSpawns != null){sb.append("&e#item/mob spawns:&6" +timedSpawns.size() +"\n");}
+        StringBuilder sb = new StringBuilder( "&6" + name + " &e" );
+        sb.append( "&eTeamSizes=&6" + params.getTeamSize() + " &eTypes=&6" + params.getType());
+        sb.append( "&e, #Teams:&6" + params.getNTeams() );
+        sb.append( "&e, #spawns:&6" + spawns.size() + "\n" );
+        sb.append( "&eteamSpawnLocs=&b" + getSpawnLocationString() + "\n" );
+        if (waitroom != null) 
+            sb.append( "&ewrSpawnLocs=&b" + waitroom.getSpawnLocationString() + "\n" );
+        if (spectate != null) 
+            sb.append( "&espectateSpawnLocs=&b" + spectate.getSpawnLocationString() + "\n" );
+        if (timedSpawns != null)
+            sb.append( "&e#item/mob spawns:&6" + timedSpawns.size() + "\n" );
         return sb.toString();
     }
 

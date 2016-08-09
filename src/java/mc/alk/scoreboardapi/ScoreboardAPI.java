@@ -3,7 +3,7 @@ package mc.alk.scoreboardapi;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ScoreboardAPI extends JavaPlugin{
+public class ScoreboardAPI extends JavaPlugin {
 
     static ScoreboardAPI plugin;
 

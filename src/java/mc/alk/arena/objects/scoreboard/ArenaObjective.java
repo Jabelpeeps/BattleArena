@@ -8,7 +8,7 @@ import java.util.TreeMap;
 import org.bukkit.OfflinePlayer;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -89,7 +89,6 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 			}
 		}
 	}
-
 
 	public Integer addPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);

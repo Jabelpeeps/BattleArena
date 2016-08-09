@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,13 +35,15 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventMethod;
+import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.util.Log;
 import mc.alk.util.MapOfTreeSet;
 import mc.alk.util.MessageUtil;
+import mc.alk.util.ServerUtil;
 import mc.alk.util.TimingUtil;
-import mc.alk.util.Util;
 import mc.alk.util.TimingUtil.TimingStat;
+import mc.alk.util.Util;
 
 
 public class MethodController {
@@ -77,12 +78,12 @@ public class MethodController {
         this.owner = owner;
         controllerCount++;
         if (Bukkit.getPluginManager().useTimings() || Defaults.DEBUG_TIMINGS){
-            if (timings == null) {
-                timings = new TimingUtil();}
+            
+            if (timings == null) 
+                timings = new TimingUtil();
 
-            baexecutor = new BAEventCaller() {
-                @Override
-                public void callEvent(BAEvent event) {
+            baexecutor = event -> {
+                
                     TimingStat t = timings.getOrCreate(event.getClass().getSimpleName());
                     long startTime = System.nanoTime();
 
@@ -95,24 +96,24 @@ public class MethodController {
                     }
                     event.callEvent();
                     t.count+=1;
-                    t.totalTime += System.nanoTime() - startTime;
-                }
-            };
-        } else {
-            baexecutor = new BAEventCaller() {
-                @Override
-                public void callEvent(BAEvent event) {
+                    t.totalTime += System.nanoTime() - startTime;       
+                    };                   
+        } 
+        else {
+            baexecutor = event -> {
+ 
                     Class<?> clazz = event.getClass();
+                    
                     for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
+                        
                         BukkitEventHandler beh = ls.get(clazz);
-                        if (beh == null)
-                            continue;
+                        
+                        if (beh == null) continue;
+                        
                         beh.invokeArenaEvent(listeners, event);
                     }
-
-                    event.callEvent();
-                }
-            };
+                    event.callEvent(); 
+                    };
         }
     }
 
@@ -241,7 +242,8 @@ public class MethodController {
             if (mem.getBeginState() == matchState){
                 BukkitEventHandler bel = getCreateBA(event,mem);
                 bel.addListener(rl,players);
-            } else if (mem.getEndState() == matchState ) {
+            } 
+            else if (mem.getEndState() == matchState ) {
                 for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
                     BukkitEventHandler bel = ls.get(event);
                     if (bel != null){
@@ -259,10 +261,12 @@ public class MethodController {
             bukkitListeners.put(mem.getBukkitPriority(), gels);
         }
         BukkitEventHandler gel = gels.get(event);
-        if (Defaults.DEBUG_EVENTS) System.out.println("***************************** checking for " + event.getSimpleName());
+        if (Defaults.DEBUG_EVENTS) 
+            System.out.println("***************************** checking for " + event.getSimpleName());
 
         if (gel == null){
-            if (Defaults.DEBUG_EVENTS) System.out.println("***************************** making new gel for type " + event.getSimpleName());
+            if (Defaults.DEBUG_EVENTS) 
+                System.out.println("***************************** making new gel for type " + event.getSimpleName());
             gel = new BukkitEventHandler(event,mem);
             gels.put(event, gel);
         }
@@ -275,7 +279,8 @@ public class MethodController {
 
     private static List<ArenaEventMethod> getMethods(ArenaListener ael, Class<? extends Event> eventClass) {
         HashMap<Class<? extends Event>,List<ArenaEventMethod>> typeMap = bukkitEventMethods.get(ael.getClass());
-        if (Defaults.DEBUG_EVENTS) System.out.println("!! getEvent "+ael.getClass()+ " " +eventClass+"  methods="+
+        if (Defaults.DEBUG_EVENTS) 
+            System.out.println("!! getEvent "+ael.getClass()+ " " +eventClass+"  methods="+
                 (typeMap==null?"null" :typeMap.size() +":"+ (typeMap.get(eventClass) != null ? typeMap.get(eventClass).size() : 0) ) );
         if (typeMap == null)
             return null;
@@ -283,12 +288,14 @@ public class MethodController {
     }
 
     private static Map<Class<? extends Event>,List<ArenaEventMethod>> getBukkitMethods(ArenaListener ael) {
-        if (Defaults.DEBUG_EVENTS) System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
+        if (Defaults.DEBUG_EVENTS) 
+            System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
         return bukkitEventMethods.get(ael.getClass());
     }
 
     private static Map<Class<? extends BAEvent>,List<ArenaEventMethod>> getMatchMethods(ArenaListener ael) {
-        if (Defaults.DEBUG_EVENTS) System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
+        if (Defaults.DEBUG_EVENTS) 
+            System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
         return matchEventMethods.get(ael.getClass());
     }
 
@@ -303,21 +310,22 @@ public class MethodController {
         Method[] methodArray = alClass.getMethods();
 
         for (Method method : methodArray){
-            MatchState beginState,endState, cancelState;
+            
+            MatchState beginState, endState, cancelState;
             boolean needsPlayer;
             final String entityMethod;
             boolean supressCastWarnings;
             boolean suppressWarnings;
-            mc.alk.arena.objects.events.ArenaEventPriority priority;
-            org.bukkit.event.EventPriority bukkitPriority;
+            ArenaEventPriority priority;
+            EventPriority bukkitPriority;
 
             ArenaEventHandler aeh = method.getAnnotation(ArenaEventHandler.class);
-            if (aeh == null){
-                continue;}
+            
+            if (aeh == null) continue;
 
             beginState = aeh.begin();
             endState = aeh.end();
-            cancelState=MatchState.NONE;
+            cancelState = MatchState.NONE;
             needsPlayer = aeh.needsPlayer();
             entityMethod = aeh.entityMethod();
             supressCastWarnings = aeh.suppressCastWarnings();
@@ -357,7 +365,8 @@ public class MethodController {
                             ArenaPlayer.class.isAssignableFrom((Class<?>) t)){
                         playerMethods.add(m);
                         getPlayerMethod = m;
-                    } else if (Entity.class.isAssignableFrom((Class<?>) t)){
+                    } 
+                    else if (Entity.class.isAssignableFrom((Class<?>) t)){
                         entityMethods.add(m);
                         getLivingMethod = m;
                     }
@@ -381,10 +390,12 @@ public class MethodController {
                                 System.err.println(alClass+". Use @ArenaEventHandler(entityMethod=\"methodWhichYouWantToUse\")");
                                 return;
                             }
-                        } else {
+                        } 
+                        else {
                             getPlayerMethod = playerMethods.get(0);
                         }
-                    } else if (!entityMethods.isEmpty()){
+                    } 
+                    else if (!entityMethods.isEmpty()){
                         if (bukkitEvent == EntityDeathEvent.class){
                             try {
                                 getEntityMethod = EntityDeathEvent.class.getMethod("getEntity");
@@ -392,11 +403,13 @@ public class MethodController {
                                 Log.printStackTrace(e);
                                 continue;
                             }
-                        } else if (entityMethods.size() > 1 && !EntityDamageEvent.class.isAssignableFrom(bukkitEvent)){
+                        } 
+                        else if (entityMethods.size() > 1 && !EntityDamageEvent.class.isAssignableFrom(bukkitEvent)){
                             System.err.println(alClass+". Method "+method.getName() +" has multiple methods that return an entity");
                             System.err.println(alClass+". Use @MatchEventHandler(entityMethod=\"methodWhichYouWantToUse\")");
                             return;
-                        } else {
+                        } 
+                        else {
                             getEntityMethod = entityMethods.get(0);
                         }
                     }
@@ -417,11 +430,13 @@ public class MethodController {
                     System.err.println("[BattleArena] "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
                             bukkitEvent.getCanonicalName()+"returns no player, and no entities. Class="+alClass);
                     return;
-                } else if (getLivingMethod != null && !supressCastWarnings && !suppressWarnings){
+                } 
+                else if (getLivingMethod != null && !supressCastWarnings && !suppressWarnings){
                     if (!EntityDamageByEntityEvent.class.isAssignableFrom(bukkitEvent))
                         Log.warn("[BattleArena] Warning. "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
                                 bukkitEvent.getCanonicalName()+" returns only a living entity. Cast to Player will be attempted at runtime");
-                } else if (getEntityMethod != null && !supressCastWarnings && !suppressWarnings){
+                } 
+                else if (getEntityMethod != null && !supressCastWarnings && !suppressWarnings){
                     if (!EntityDamageByEntityEvent.class.isAssignableFrom(bukkitEvent))
                         Log.warn("[BattleArena] Warning. "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
                                 bukkitEvent.getCanonicalName()+" returns only an Entity. Cast to Player will be attempted at runtime");
@@ -454,12 +469,7 @@ public class MethodController {
                 mths.add(new ArenaEventMethod(method, bukkitEvent,beginState,
                         endState,cancelState, priority, bukkitPriority, baEvent));
             }
-            Collections.sort(mths, new Comparator<ArenaEventMethod>(){
-                @Override
-                public int compare(ArenaEventMethod o1, ArenaEventMethod o2) {
-                    return o1.getPriority().compareTo(o2.getPriority());
-                }
-            });
+            Collections.sort( mths, (o1, o2) -> { return o1.getPriority().compareTo( o2.getPriority() ); });
         }
         bukkitEventMethods.put(alClass, bukkitTypeMap);
         matchEventMethods.put(alClass, matchTypeMap);
@@ -589,7 +599,8 @@ public class MethodController {
 
     public static boolean showAllListeners(CommandSender sender, String limitToPlayer) {
         MessageUtil.sendMessage(sender, "&2# &e-!! controller=&5"+controllers.size()+"&e : &5" + controllerCount+"&e !!- &2#");
-//        for (MethodController mc: controllers){
+
+        //        for (MethodController mc: controllers){
 //            StringBuilder sb = new StringBuilder();
 //            for (ArenaListener al: mc.listeners){
 //                sb.append(al.getClass().getSimpleName()).append(", ");
@@ -597,8 +608,10 @@ public class MethodController {
 //            MessageUtil.sendMessage(sender, "&c###### &e----!! controller=&5" + mc.owner + " : " + mc.hashCode() + "&e !!---- &c######  listeners=" + sb.toString());
 //        }
 //		for (MethodController mc: controllers){
-        EnumMap<org.bukkit.event.EventPriority, HashMap<Type, BukkitEventHandler>> gels = MethodController.getEventListeners();
-//			EnumMap<org.bukkit.event.EventPriority, HashMap<Type, BukkitEventHandler>> gels = mc.getEventListeners();
+
+        EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> gels = MethodController.getEventListeners();
+
+        //			EnumMap<org.bukkit.event.EventPriority, HashMap<Type, BukkitEventHandler>> gels = mc.getEventListeners();
 //			if (gels.isEmpty())
 //				continue;
 //			StringBuilder sb = new StringBuilder();
@@ -607,22 +620,25 @@ public class MethodController {
 //			}
 //			Log.info("&c###### &e----!! controller=&5"+mc.owner+" : " + mc.hashCode()+"&e !!---- &c######  listeners="+sb.toString());
 
-        for (org.bukkit.event.EventPriority bp: gels.keySet()){
+        for (EventPriority bp: gels.keySet()){
             MessageUtil.sendMessage(sender, "&4#### &e----!! Bukkit Priority=&5" + bp + "&e !!---- &4####");
             HashMap<Type, BukkitEventHandler> types = gels.get(bp);
             for (BukkitEventHandler bel: types.values()){
                 if (bel.getSpecificPlayerListener() != null){
                     MapOfTreeSet<UUID,RListener> lists2 = bel.getSpecificPlayerListener().getListeners();
+                    
 //                    String str = StringUtils.join(PlayerController.UUIDToPlayerList(bel.getSpecificPlayerListener().getPlayers()), ", ");
+                    
                     String str = StringUtils.join(bel.getSpecificPlayerListener().getPlayers(), ", ");
                     String has = bel.hasListeners() ? "&2true" : "&cfalse";
                     if (!lists2.isEmpty())
                         MessageUtil.sendMessage(sender, "---- Event &e" +
                                 bel.getSpecificPlayerListener().getEvent().getSimpleName() + "&e:" + has + "&e, players=" + str);
                     for (UUID id : lists2.keySet()) {
-//                        Player p = ServerUtil.findPlayer(id);
-                        Player p = null;
-                        if (limitToPlayer != null && (p != null && !p.getName().equalsIgnoreCase(limitToPlayer)))
+                        
+                        Player p = ServerUtil.findPlayer(id);
+                        
+                        if (limitToPlayer != null && p != null && !p.getName().equalsIgnoreCase(limitToPlayer) )
                             continue;
                         Collection<RListener> rls = lists2.get(id);
                         for (RListener rl : rls) {
@@ -633,7 +649,9 @@ public class MethodController {
                     }
                 }
                 if (bel.getSpecificArenaPlayerListener() != null){
+                    
                     MapOfTreeSet<UUID,RListener> lists2 = bel.getSpecificArenaPlayerListener().getListeners();
+                    
 //                    String str = StringUtils.join(PlayerController.UUIDToPlayerList(bel.getSpecificArenaPlayerListener().getPlayers()), ", ");
                     String str = StringUtils.join(bel.getSpecificArenaPlayerListener().getPlayers(), ", ");
 
@@ -642,10 +660,10 @@ public class MethodController {
                         MessageUtil.sendMessage(sender, "---- ArenaPlayerEvent &e" +
                                 bel.getSpecificArenaPlayerListener().getEvent().getSimpleName() + "&e:" + has + "&e, players=" + str);
                     for (UUID id : lists2.keySet()){
-//                        Player p = ServerUtil.findPlayer(id);
-                        Player p = null;
+                        
+                        Player p = ServerUtil.findPlayer(id);
 
-                        if (limitToPlayer != null && (p != null && !p.getName().equalsIgnoreCase(limitToPlayer)))
+                        if (limitToPlayer != null && p != null && !p.getName().equalsIgnoreCase(limitToPlayer) )
                             continue;
                         Collection<RListener> rls = lists2.get(id);
                         for (RListener rl : rls){
@@ -657,8 +675,8 @@ public class MethodController {
                 }
 
                 if (bel.getMatchListener()!=null){
-                    EnumMap<mc.alk.arena.objects.events.ArenaEventPriority, Map<RListener,Integer>> lists = bel.getMatchListener().getListeners();
-                    for (mc.alk.arena.objects.events.ArenaEventPriority ep: lists.keySet()){
+                    EnumMap<ArenaEventPriority, Map<RListener,Integer>> lists = bel.getMatchListener().getListeners();
+                    for (ArenaEventPriority ep: lists.keySet()){
                         for (Entry<RListener,Integer> entry : lists.get(ep).entrySet()){
                             MessageUtil.sendMessage(sender, "! " + ep + "  -  " + entry.getKey() + "  count=" + entry.getValue());
                         }

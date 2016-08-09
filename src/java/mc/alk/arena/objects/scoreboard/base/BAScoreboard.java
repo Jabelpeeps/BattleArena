@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.scoreboard.base;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;

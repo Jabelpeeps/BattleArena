@@ -1,6 +1,9 @@
 package mc.alk.arena.controllers.messaging;
 
-import mc.alk.arena.competition.match.Match;
+import java.util.Collection;
+import java.util.List;
+
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
@@ -10,9 +13,6 @@ import mc.alk.arena.objects.messaging.MatchMessageHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.util.Log;
 
-import java.util.Collection;
-import java.util.List;
-
 
 public class MatchMessager {
 	MatchMessageHandler impl;
@@ -20,13 +20,14 @@ public class MatchMessager {
 	boolean silent = false;
 
 	public MatchMessager(Match match){
-		this.impl = new MatchMessageImpl(match);
-		this.bos = match.getParams().getAnnouncementOptions();
+		impl = new MatchMessageImpl(match);
+		bos = match.getParams().getAnnouncementOptions();
 	}
 
 	private Channel getChannel(MatchState state) {
 		if (silent) return Channels.NullChannel;
-		return bos != null && bos.hasOption(true,state) ? bos.getChannel(true,state) : AnnouncementOptions.getDefaultChannel(true,state);
+		return bos != null && bos.hasOption(true,state) ? bos.getChannel(true,state) 
+		                                                : AnnouncementOptions.getDefaultChannel(true,state);
 	}
 
 	public void sendOnBeginMsg(List<ArenaTeam> teams) {

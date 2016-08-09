@@ -13,7 +13,6 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.controllers.PlayerStoreController;
-import mc.alk.arena.controllers.plugins.EssentialsController;
 import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
@@ -36,14 +35,15 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.plugins.EssentialsController;
 import mc.alk.util.Log;
 import mc.alk.util.PlayerUtil;
 
-public class GameManager implements PlayerHolder{
-	static final HashMap<ArenaType, GameManager> map = new HashMap<ArenaType, GameManager>();
+public class GameManager implements PlayerHolder {
+	static final HashMap<ArenaType, GameManager> map = new HashMap<>();
 
 	final MatchParams params;
-	final Set<ArenaPlayer> handled = new HashSet<ArenaPlayer>(); /// which players are now being handled
+	final Set<ArenaPlayer> handled = new HashSet<>(); /// which players are now being handled
 	MethodController methodController;
 
 	public static GameManager getGameManager(MatchParams mp) {
@@ -95,7 +95,7 @@ public class GameManager implements PlayerHolder{
 	}
 
 	private void cancel() {
-		List<ArenaPlayer> col = new ArrayList<ArenaPlayer>(handled);
+		List<ArenaPlayer> col = new ArrayList<>(handled);
 		for (ArenaPlayer player: col){
 			ArenaTeam t = getTeam(player);
 			TransitionController.transition(this, MatchState.ONCANCEL, player, t, false);
@@ -149,10 +149,11 @@ public class GameManager implements PlayerHolder{
             PlayerStoreController.getPlayerStoreController().storeScoreboard(player);
 			TransitionController.transition(this, MatchState.ONENTER, player, null, false);
 			updateBukkitEvents(MatchState.ONENTER, player);
-			if (EssentialsController.enabled())
-				BAPlayerListener.setBackLocation(player,
-						EssentialsController.getBackLocation(player.getName()));
-			// When teleporting in for the first time defaults
+			
+			if ( EssentialsController.enabled() )
+				BAPlayerListener.setBackLocation( player,
+						                          EssentialsController.getBackLocation(player.getName()));
+			
 			PlayerUtil.setGameMode(player.getPlayer(), GameMode.SURVIVAL);
 			EssentialsController.setGod(player.getPlayer(), false);
             callEvent(new ArenaPlayerEnterMatchEvent(player, player.getTeam()));

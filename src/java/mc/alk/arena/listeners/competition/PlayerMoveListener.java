@@ -1,12 +1,13 @@
 package mc.alk.arena.listeners.competition;
 
-import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.ArenaRegion;
+import mc.alk.arena.plugins.WorldGuardController;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerMoveEvent;

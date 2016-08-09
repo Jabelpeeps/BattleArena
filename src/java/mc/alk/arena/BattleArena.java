@@ -226,37 +226,34 @@ public class BattleArena extends JavaPlugin {
         /// Load Competitions and Arenas after everything is loaded (plugins and worlds)
         /// Other plugins using BattleArena are going to be registering
         /// Lets hold off on loading the scheduled events until those plugins have registered
-        Scheduler.scheduleSynchronousTask(this, new Runnable() {
-            @Override
-            @SuppressWarnings( "synthetic-access" )
-            public void run() {
-                baConfigSerializer.loadVictoryConditions();
-                /// Load our competitions, has to happen after classes and teams
-                baConfigSerializer.loadCompetitions(); 
-                
-                /// persist our disabled arena types
-                StateFlagSerializer sfs = new StateFlagSerializer();
-                sfs.setConfig(dir.getPath() + "/saves/state.yml");
-                commandExecutor.setDisabled(sfs.loadEnabled());
-                ArenaSerializer.setBAC(arenaController);
+        Scheduler.scheduleSynchronousTask(this, () -> {
 
-                sfs.loadLobbyStates(RoomController.getLobbies());
-                sfs.loadContainerStates(arenaController.getArenas());
-
-                arenaControllerSerializer.load();
-
-                /// Load up our signs
-                signSerializer.setConfig(dir.getPath() + "/saves/signs.yml");
-                signSerializer.loadAll(signUpdateListener);
-                signUpdateListener.updateAllSigns();
-
-                eventSchedulerSerializer.loadAll();
-                if (Defaults.START_NEXT)
-                    es.startNext();
-                else if (Defaults.START_CONTINUOUS)
-                    es.start();
-            }
-        });
+                        baConfigSerializer.loadVictoryConditions();
+                        /// Load our competitions, has to happen after classes and teams
+                        baConfigSerializer.loadCompetitions(); 
+                        
+                        /// persist our disabled arena types
+                        StateFlagSerializer sfs = new StateFlagSerializer();
+                        sfs.setConfig(dir.getPath() + "/saves/state.yml");
+                        commandExecutor.setDisabled(sfs.loadEnabled());
+                        ArenaSerializer.setBAC(arenaController);
+        
+                        sfs.loadLobbyStates(RoomController.getLobbies());
+                        sfs.loadContainerStates(arenaController.getArenas());
+        
+                        arenaControllerSerializer.load();
+        
+                        /// Load up our signs
+                        signSerializer.setConfig(dir.getPath() + "/saves/signs.yml");
+                        signSerializer.loadAll(signUpdateListener);
+                        signUpdateListener.updateAllSigns();
+        
+                        eventSchedulerSerializer.loadAll();
+                        if (Defaults.START_NEXT)
+                            es.startNext();
+                        else if (Defaults.START_CONTINUOUS)
+                            es.start();           
+                });
         Log.info("&4[" + pluginname + "] &6v" + BattleArena.version + "&f enabled!");
     }
 

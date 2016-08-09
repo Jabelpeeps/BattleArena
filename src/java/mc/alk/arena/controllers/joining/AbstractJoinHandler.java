@@ -1,5 +1,12 @@
 package mc.alk.arena.controllers.joining;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.joining.scoreboard.CutoffScoreboard;
@@ -18,30 +25,18 @@ import mc.alk.scoreboardapi.SAPIFactory;
 import mc.alk.scoreboardapi.SScoreboard;
 import mc.alk.util.Log;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
+    
     public static final TeamJoinResult CANTFIT = new TeamJoinResult(TeamJoinStatus.CANT_FIT,-1,null);
-
     final MatchParams matchParams;
-
-    final List<ArenaTeam> teams = new CopyOnWriteArrayList<ArenaTeam>();
-
+    final List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
     final int minTeams,maxTeams;
-
     Competition competition;
-
     WaitingScoreboard scoreboard;
-
     int nPlayers;
 
     public Collection<ArenaPlayer> getPlayers() {
-        List<ArenaPlayer> players = new ArrayList<ArenaPlayer>();
+        List<ArenaPlayer> players = new ArrayList<>();
         for (ArenaTeam at: teams) {
             players.addAll(at.getPlayers());
         }
@@ -56,8 +51,8 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public void useWaitingScoreboard(){
-        if (scoreboard==null)
-            return;
+        if (scoreboard==null) return;
+        
         for (ArenaTeam at: teams){
             for (ArenaPlayer ap: at.getPlayers()){
                 scoreboard.getScoreboard().setScoreboard(ap.getPlayer());
@@ -98,7 +93,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     private void initWaitingScoreboard(List<ArenaTeam> startingTeams) {
-        List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> teams = new ArrayList<>();
         try {
             if (maxTeams <= 16) {
                 int needed = 0;
@@ -127,7 +122,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
 
     public void setCompetition(Competition comp) {
-        this.competition = comp;
+        competition = comp;
     }
 
     public void transferOldScoreboards(SScoreboard newScoreboard){
@@ -203,7 +198,6 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         return true;
     }
 
-
     @Override
     public boolean addTeam(ArenaTeam team){
         nPlayers+=team.size();
@@ -242,7 +236,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public Set<ArenaPlayer> getExcludedPlayers() {
-        Set<ArenaPlayer> tplayers = new HashSet<ArenaPlayer>();
+        Set<ArenaPlayer> tplayers = new HashSet<>();
         for (ArenaTeam t : teams) {
             if (t.size() < t.getMinPlayers()) {
                 tplayers.addAll(t.getPlayers());
@@ -254,7 +248,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public List<ArenaTeam> removeImproperTeams(){
-        List<ArenaTeam> improper = new ArrayList<ArenaTeam>();
+        List<ArenaTeam> improper = new ArrayList<>();
         for (ArenaTeam t : teams) {
             if (t.size() < t.getMinPlayers()|| t.size() > t.getMaxPlayers()) {
                 improper.add(t);
@@ -322,6 +316,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         return nPlayers;
     }
 
+    @Override
     public String toString() {
         return "[TJH " + this.hashCode() + "]";
     }

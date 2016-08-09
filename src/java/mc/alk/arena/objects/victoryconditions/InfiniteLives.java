@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.victoryconditions;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 
 public class InfiniteLives extends NLives{
 

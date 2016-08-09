@@ -14,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.plugins.HeroesController;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.ExpUtil;
 import mc.alk.util.InventoryUtil;

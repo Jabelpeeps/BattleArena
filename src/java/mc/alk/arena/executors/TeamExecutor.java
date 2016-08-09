@@ -11,14 +11,14 @@ import org.bukkit.entity.Player;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.controllers.EventController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.TeamController;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.FormingTeam;
+import mc.alk.arena.plugins.HeroesController;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.ServerUtil;
@@ -184,7 +184,7 @@ public class TeamExecutor extends CustomCommandExecutor {
 		ArenaTeam t = teamc.getSelfFormedTeam(player);
 		if (t== null){
 			return MessageUtil.sendMessage(sender,ChatColor.YELLOW + player.getName() + " is not part of a team");}
-		Event ae = EventController.insideEvent(player);
+		AbstractComp ae = EventController.insideEvent(player);
 		if (ae != null){
 			ae.leave(player);
 		} else {

@@ -12,7 +12,6 @@ import mc.alk.arena.BattleArena;
  *
  */
 public class Scheduler {
-	static int count = 0; /// count of current async timers
 
 	public static int scheduleAsynchronousTask(Runnable task) {
 	    return Bukkit.getScheduler().runTaskLaterAsynchronously(BattleArena.getSelf(),task,0 ).getTaskId();
@@ -41,5 +40,4 @@ public class Scheduler {
     public static void cancelTask(int taskId) {
         Bukkit.getScheduler().cancelTask(taskId);
     }
-
 }

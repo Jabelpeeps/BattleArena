@@ -1,12 +1,12 @@
 package mc.alk.arena.controllers.joining;
 
+import java.util.List;
+
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.teams.ArenaTeam;
-
-import java.util.List;
 
 public class TeamJoinFactory {
 
@@ -19,17 +19,15 @@ public class TeamJoinFactory {
 	}
 
     public static AbstractJoinHandler createTeamJoinHandler(MatchParams params, List<ArenaTeam> teams) throws NeverWouldJoinException {
-        AbstractJoinHandler as = createTeamJoinHandler(params, null, teams);
-        return as;
+        return createTeamJoinHandler(params, null, teams);
     }
 
 	public static AbstractJoinHandler createTeamJoinHandler(MatchParams params, Competition competition,
 			List<ArenaTeam> teams) throws NeverWouldJoinException {
-		if (params.getMaxTeams() <= Defaults.MAX_TEAMS ){
-			return new AddToLeastFullTeam(params, competition, teams);	/// lets try and add players to all players first
-		} else { /// finite team size
-			return new BinPackAdd(params, competition, teams);
-		}
+		if (params.getMaxTeams() <= Defaults.MAX_TEAMS )
+			return new AddToLeastFullTeam(params, competition, teams);	
+		
+        return new BinPackAdd(params, competition, teams);
 	}
 
 }

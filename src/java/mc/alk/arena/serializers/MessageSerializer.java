@@ -1,5 +1,15 @@
 package mc.alk.arena.serializers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.MemorySection;
+
 import mc.alk.arena.controllers.messaging.MessageFormatter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -9,15 +19,6 @@ import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.MemorySection;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
 public class MessageSerializer extends BaseConfig {
@@ -25,9 +26,9 @@ public class MessageSerializer extends BaseConfig {
 	private static MessageSerializer defaultMessages;
 
 	/// Map of path to options
-	private HashMap<String,MessageOptions> msgOptions = new HashMap<String,MessageOptions>();
+	private HashMap<String,MessageOptions> msgOptions = new HashMap<>();
 
-    final private static HashMap<String,MessageSerializer> files = new HashMap<String,MessageSerializer>();
+    final private static HashMap<String,MessageSerializer> files = new HashMap<>();
 
     final protected MatchParams mp;
 
@@ -87,9 +88,8 @@ public class MessageSerializer extends BaseConfig {
 		}
 		if (this != defaultMessages){
 			return defaultMessages.getNodeMessage(path);
-		} else {
-			return null;
 		}
+        return null;
 	}
 
 	public String getNodeText(String path) {
@@ -98,9 +98,8 @@ public class MessageSerializer extends BaseConfig {
 		}
 		if (this != defaultMessages){
 			return defaultMessages.getNodeText(path);
-		} else {
-			return null;
 		}
+        return null;
 	}
 
 	private boolean contains(String path) {
@@ -142,7 +141,7 @@ public class MessageSerializer extends BaseConfig {
 
 		Set<MessageOption> ops = winnermessage.getOptions();
 		if (ops == null)
-			ops =new HashSet<MessageOption>();
+			ops =new HashSet<>();
 		ops.addAll(losermessage.getOptions());
 		if (serverChannel != Channels.NullChannel && serverMessage != null){
 			ops.addAll(serverMessage.getOptions());
@@ -151,9 +150,9 @@ public class MessageSerializer extends BaseConfig {
 		MessageFormatter msgf = new MessageFormatter(this, mp, size, losermessage, ops);
         List<ArenaTeam> teams;
         if (losers !=null) {
-            teams = new ArrayList<ArenaTeam>(losers);
+            teams = new ArrayList<>(losers);
         } else {
-            teams = new ArrayList<ArenaTeam>();
+            teams = new ArrayList<>();
         }
 
         if (victors != null){
@@ -215,7 +214,7 @@ public class MessageSerializer extends BaseConfig {
 			ops.addAll(serverMessage.getOptions());
 		}
 
-		List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+		List<ArenaTeam> teams = new ArrayList<>();
 		teams.add(team);
 		MessageFormatter msgf = new MessageFormatter(this, mp, teams.size(), message, ops);
 		msgf.formatCommonOptions(teams);

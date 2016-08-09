@@ -21,8 +21,8 @@ import mc.alk.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.scoreboardapi.SEntry;
 import mc.alk.scoreboardapi.STeam;
 import mc.alk.util.Countdown;
-import mc.alk.util.TeamUtil;
 import mc.alk.util.Countdown.CountdownCallback;
+import mc.alk.util.TeamUtil;
 
 public class FullScoreboard implements WaitingScoreboard {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();

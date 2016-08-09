@@ -1,6 +1,6 @@
 package mc.alk.arena.events.matches;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.CompetitionResult;
 import org.bukkit.event.Cancellable;
 

@@ -1,5 +1,8 @@
 package mc.alk.arena.controllers.joining;
 
+import java.util.Collection;
+import java.util.List;
+
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -7,9 +10,6 @@ import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.joining.TeamJoinObject;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * When there is an infinite number of teams
@@ -49,12 +49,11 @@ public class BinPackAdd extends AbstractJoinHandler {
                 return true;
             }
             return false;
-        } else {
-            ArenaTeam team = teams.get(toTeamIndex);
-            removeFromTeam(oldTeam, player);
-            addToTeam(team, player);
-            return true;
         }
+        ArenaTeam team = teams.get(toTeamIndex);
+        removeFromTeam(oldTeam, player);
+        addToTeam(team, player);
+        return true;
     }
 
     @Override
@@ -86,10 +85,9 @@ public class BinPackAdd extends AbstractJoinHandler {
                 addTeam(ct);
                 if (ct.size() >= ct.getMinPlayers()) {
                     return new TeamJoinResult(TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size(), ct);
-                } else {
-                    return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS,
-                            ct.getMinPlayers() - ct.size(), ct);
                 }
+                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS,
+                        ct.getMinPlayers() - ct.size(), ct);
             }
         }
 
@@ -101,12 +99,10 @@ public class BinPackAdd extends AbstractJoinHandler {
                     team.setIndex(t.getIndex());
                     addToTeam(t, team.getPlayers());
                     return new TeamJoinResult(TeamJoinStatus.ADDED, 0,t);
-                } else {
-                    return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, t.getMinPlayers() - t.size(),t);
                 }
+                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, t.getMinPlayers() - t.size(),t);
             }
         }
-        /// sorry peeps.. full up
         return CANTFIT;
     }
 

@@ -1,6 +1,6 @@
 package mc.alk.arena.controllers.messaging;
 
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.messaging.Channel;
@@ -24,9 +24,9 @@ import java.util.Set;
 public class EventMessageImpl extends MessageSerializer implements EventMessageHandler {
 
 	final MatchParams mp;
-	final Event event;
+	final AbstractComp event;
 
-	public EventMessageImpl(Event e ){
+	public EventMessageImpl(AbstractComp e ){
 		super(e.getParams().getName(), e.getParams());
 		this.mp = e.getParams();
 		this.event = e;

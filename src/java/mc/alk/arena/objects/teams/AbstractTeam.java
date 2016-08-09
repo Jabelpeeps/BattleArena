@@ -13,11 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
+import mc.alk.arena.plugins.TrackerController;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.PermissionsUtil;
 

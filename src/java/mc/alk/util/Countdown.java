@@ -4,7 +4,7 @@ import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.controllers.Scheduler;
 
-public class Countdown implements Runnable{
+public class Countdown implements Runnable {
     static int count = 0;
     int id = count++;
 
@@ -30,28 +30,29 @@ public class Countdown implements Runnable{
         this(plugin, (long)seconds, (long) intervalSeconds,callback);
     }
 
-    public Countdown(final Plugin plugin, long seconds, long intervalSeconds, CountdownCallback callback){
-        if (seconds > Integer.MAX_VALUE)
-            seconds = Integer.MAX_VALUE;
-        this.interval = intervalSeconds <= 0 ? seconds : intervalSeconds;
-        this.callback = callback;
-        this.plugin = plugin;
-        final long rem = seconds % this.interval;
+    public Countdown(final Plugin _plugin, long _seconds, long intervalSeconds, CountdownCallback _callback){
+        if (_seconds > Integer.MAX_VALUE)
+            _seconds = Integer.MAX_VALUE;
+        interval = intervalSeconds <= 0 ? _seconds 
+                                        : intervalSeconds;
+        callback = _callback;
+        plugin = _plugin;
+        final long rem = _seconds % interval;
         /// Lets get rid of the remainder first, so that the rest of the events
         /// are a multiple of the timeInterval
-        long time = (rem != 0? rem : this.interval) * 20L;
-        this.seconds = seconds - (rem != 0? rem : this.interval);
-        if (this.seconds < 0 ){
-            this.seconds = 0;
+        long time = (rem != 0? rem : interval) * 20L;
+        seconds = _seconds - (rem != 0? rem : interval);
+        if ( seconds < 0 ){
+            seconds = 0;
             time = 0;
         }
         startTime = System.currentTimeMillis();
-        expectedEndTime = startTime + seconds*1000;
-        this.timerId  = Scheduler.scheduleSynchronousTask(plugin, this, (int)(time));
+        expectedEndTime = startTime + _seconds*1000;
+        timerId  = Scheduler.scheduleSynchronousTask(_plugin, this, (int)(time));
     }
 
     public void setCancelOnExpire(boolean cancel){
-        this.cancelOnExpire = cancel;
+        cancelOnExpire = cancel;
     }
 
     @Override
@@ -59,13 +60,13 @@ public class Countdown implements Runnable{
         if (stop)
             return;
         final boolean continueOn = callback.intervalTick((int)seconds);
+        
         timerId = null;
         if (!continueOn)
             return;
 //        TimeUtil.testClock();
         if (!stop && (seconds > 0 || !cancelOnExpire)){
-            timerId  = Scheduler.scheduleSynchronousTask(plugin, this,
-                    interval * 20L);
+            timerId  = Scheduler.scheduleSynchronousTask(plugin, this, interval * 20L);
         }
         seconds -= interval;
     }

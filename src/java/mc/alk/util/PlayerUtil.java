@@ -14,10 +14,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.scoreboard.Scoreboard;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CommandLineString;
+import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.HeroesController;
 
 public class PlayerUtil {
 

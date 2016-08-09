@@ -1,6 +1,6 @@
 package mc.alk.arena.controllers.messaging;
 
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ReservedArenaEventMessager extends EventMessager{
 
-	public ReservedArenaEventMessager(Event event){
+	public ReservedArenaEventMessager(AbstractComp event){
 		super(event);
 	}
 

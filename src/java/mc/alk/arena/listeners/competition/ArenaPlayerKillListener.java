@@ -2,7 +2,6 @@ package mc.alk.arena.listeners.competition;
 
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.competition.TransitionController;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -10,6 +9,7 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
+import mc.alk.arena.plugins.TrackerController;
 
 public class ArenaPlayerKillListener implements ArenaListener {
 

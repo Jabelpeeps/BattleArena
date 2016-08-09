@@ -10,7 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.match.ArenaMatch;
+import mc.alk.arena.competition.ArenaMatch;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.LocationType;

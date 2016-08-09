@@ -1,35 +1,35 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.controllers.plugins.WorldGuardController;
-import mc.alk.arena.objects.ArenaClass;
-import mc.alk.arena.objects.CommandLineString;
-import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.MatchState;
-import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.RegisteredCompetition;
-import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.objects.options.AlterParamOption;
-import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.MinMax;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.objects.ArenaClass;
+import mc.alk.arena.objects.CommandLineString;
+import mc.alk.arena.objects.CompetitionState;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.MatchState;
+import mc.alk.arena.objects.RegisteredCompetition;
+import mc.alk.arena.objects.StateGraph;
+import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.exceptions.InvalidOptionException;
+import mc.alk.arena.objects.options.AlterParamOption;
+import mc.alk.arena.objects.options.StateOptions;
+import mc.alk.arena.objects.options.TransitionOption;
+import mc.alk.arena.objects.victoryconditions.VictoryType;
+import mc.alk.arena.plugins.WorldGuardController;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.MessageUtil;
+import mc.alk.util.MinMax;
 
 public class ParamAlterController {
     MatchParams params;
@@ -41,7 +41,7 @@ public class ParamAlterController {
     private static MatchParams getOrCreateTeamParams(Integer teamIndex, MatchParams params){
         Map<Integer, MatchParams> map = params.getThisTeamParams();
         if (map == null) {
-            map = new HashMap<Integer, MatchParams>();
+            map = new HashMap<>();
             params.setTeamParams(map);
         }
         MatchParams tp = map.get(teamIndex);
@@ -168,17 +168,17 @@ public class ParamAlterController {
             value = InventoryUtil.getItemList((Player) sender);
         } else if (to == TransitionOption.ENCHANTS){
             List<PotionEffect> list = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getEffects() : new ArrayList<PotionEffect>();
+                    tops.getOptions(state).getEffects() : new ArrayList<>();
             list.add((PotionEffect) value);
             value = list;
         } else if (to == TransitionOption.DOCOMMANDS){
             List<CommandLineString> list = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getDoCommands() : new ArrayList<CommandLineString>();
+                    tops.getOptions(state).getDoCommands() : new ArrayList<>();
             list.add((CommandLineString)value);
             value = list;
         } else if (to == TransitionOption.GIVECLASS){
             Map<Integer, ArenaClass> map = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getClasses() : new HashMap<Integer, ArenaClass>();
+                    tops.getOptions(state).getClasses() : new HashMap<>();
             map.put(ArenaClass.DEFAULT, (ArenaClass) value);
             value = map;
         } else if (to == TransitionOption.TELEPORTTO){
@@ -190,7 +190,7 @@ public class ParamAlterController {
 
         /// For teleport options, remove them from other places where they just dont make sense
         HashSet<TransitionOption> tpOps =
-                new HashSet<TransitionOption>(Arrays.asList(
+                new HashSet<>(Arrays.asList(
                         TransitionOption.TELEPORTIN,TransitionOption.TELEPORTWAITROOM ,
                         TransitionOption.TELEPORTCOURTYARD, TransitionOption.TELEPORTLOBBY,
                         TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTMAINWAITROOM,
@@ -267,27 +267,25 @@ public class ParamAlterController {
             if (args.length < 3){
                 StateGraph tops = params.getThisStateGraph();
                 tops.deleteOptions(state);
-                return  sendMessage(sender, "&2Options at &6"+state +"&2 are now empty");
-            } else {
-                final String key = args[2].trim().toUpperCase();
-                try{
-                    deleteTransitionOption(state, key);
-                    rc.saveParams(params);
-                    sendMessage(sender, "&2Game option &6"+state +" "+key+" &2 removed");
-                    StateGraph tops = params.getThisStateGraph();
-                    StateOptions ops = tops.getOptions(state);
-                    if (ops == null){
-                        sendMessage(sender, "&2Options at &6"+state +"&2 are empty");
-                    } else {
-                        sendMessage(sender, "&2Options at &6"+state +"&2 are &6" + ops.toString());
-                    }
-                    return true;
-                } catch (Exception e) {
-                    sendMessage(sender, "&cCould not remove game option " + args[1]);
-                    sendMessage(sender, e.getMessage());
-                    return false;
+                return sendMessage(sender, "&2Options at &6"+state +"&2 are now empty");
+            }
+            final String key = args[2].trim().toUpperCase();
+            try {
+                deleteTransitionOption(state, key);
+                rc.saveParams(params);
+                sendMessage(sender, "&2Game option &6"+state +" "+key+" &2 removed");
+                StateGraph tops = params.getThisStateGraph();
+                StateOptions ops = tops.getOptions(state);
+                if (ops == null){
+                    sendMessage(sender, "&2Options at &6"+state +"&2 are empty");
+                } else {
+                    sendMessage(sender, "&2Options at &6"+state +"&2 are &6" + ops.toString());
                 }
-
+                return true;
+            } catch (Exception e) {
+                sendMessage(sender, "&cCould not remove game option " + args[1]);
+                sendMessage(sender, e.getMessage());
+                return false;
             }
         }
         sendMessage(sender, "&cGame option &6" + args[1] +"&c not found!");

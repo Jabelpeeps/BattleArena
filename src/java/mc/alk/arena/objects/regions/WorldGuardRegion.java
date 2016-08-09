@@ -1,8 +1,8 @@
 package mc.alk.arena.objects.regions;
 
-import mc.alk.arena.controllers.plugins.WorldGuardController;
-
 import java.util.Map;
+
+import mc.alk.arena.plugins.WorldGuardController;
 
 public class WorldGuardRegion implements ArenaRegion {
 

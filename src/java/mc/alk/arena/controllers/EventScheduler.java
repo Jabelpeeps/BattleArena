@@ -2,8 +2,8 @@ package mc.alk.arena.controllers;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.events.Event;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.AbstractComp;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.events.EventFinishedEvent;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.executors.EventExecutor;
@@ -69,7 +69,7 @@ public class EventScheduler implements Runnable, ArenaListener{
 				EventExecutor ee = EventController.getEventExecutor(eventPair.getEventParams().getName());
 				if (ee != null && ee instanceof TournamentExecutor){
 					TournamentExecutor exe = (TournamentExecutor) ee;
-					Event event = exe.openIt(sender, (EventParams)params, args);
+					AbstractComp event = exe.openIt(sender, (EventParams)params, args);
 					if (event != null){
 						event.addArenaListener(scheduler);
 						success = true;
@@ -106,7 +106,7 @@ public class EventScheduler implements Runnable, ArenaListener{
 
 	@ArenaEventHandler
 	public void onEventFinished(EventFinishedEvent event){
-		Event e = event.getEvent();
+		AbstractComp e = event.getEvent();
 		e.removeArenaListener(this);
 		if (continuous){
 			if (Defaults.DEBUG_SCHEDULER) Log.info("[BattleArena debugging] finished event "+ e+

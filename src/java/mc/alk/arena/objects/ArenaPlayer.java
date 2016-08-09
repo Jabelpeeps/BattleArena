@@ -13,7 +13,6 @@ import org.bukkit.inventory.PlayerInventory;
 
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.containers.AreaContainer;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.meta.PlayerMetaData;
 import mc.alk.arena.objects.spawns.EntitySpawn;
@@ -21,6 +20,7 @@ import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.plugins.HeroesController;
 import mc.alk.util.ServerUtil;
 
 

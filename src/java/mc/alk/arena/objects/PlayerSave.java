@@ -11,9 +11,9 @@ import org.bukkit.potion.PotionEffect;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.MoneyController;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.listeners.BAPlayerListener;
+import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.serializers.InventorySerializer;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.ExpUtil;

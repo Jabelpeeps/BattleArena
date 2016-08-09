@@ -23,11 +23,11 @@ import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.PlayerRestoreController;
-import mc.alk.arena.controllers.plugins.EssentialsController;
-import mc.alk.arena.controllers.plugins.WorldGuardController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
+import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.InventoryUtil.PInv;
 

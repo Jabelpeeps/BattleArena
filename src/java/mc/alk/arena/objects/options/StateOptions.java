@@ -1,7 +1,6 @@
 package mc.alk.arena.objects.options;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.MobArenaInterface;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
@@ -12,6 +11,7 @@ import mc.alk.arena.objects.PVPState;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
+import mc.alk.arena.plugins.MobArenaInterface;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.MinMax;

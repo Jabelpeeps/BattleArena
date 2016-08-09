@@ -1,7 +1,7 @@
 package mc.alk.arena.objects.victoryconditions;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.events.matches.MatchResultEvent;
 import mc.alk.arena.events.matches.MatchStartEvent;

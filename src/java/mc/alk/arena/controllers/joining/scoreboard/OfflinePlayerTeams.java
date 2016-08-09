@@ -1,9 +1,9 @@
 package mc.alk.arena.controllers.joining.scoreboard;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-
-import java.util.HashMap;
 
 /**
  * @author alkarin
@@ -20,12 +20,12 @@ class OfflinePlayerTeams {
 //                    });
 //
 
-    static HashMap<String, OfflinePlayer> map = new HashMap<String, OfflinePlayer>();
+    static HashMap<String, OfflinePlayer> map = new HashMap<>();
 
     static OfflinePlayer getOfflinePlayer(String name) {
         OfflinePlayer op = map.get(name);
         if (op == null) {
-            op = Bukkit.getOfflinePlayer(name);
+            op = Bukkit.getPlayerExact( name );
             map.put(name, op);
         }
         return op;

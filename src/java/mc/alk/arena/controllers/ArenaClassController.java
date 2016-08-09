@@ -15,8 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.plugins.DisguiseController;
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.events.players.ArenaPlayerClassSelectedEvent;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaClass;
@@ -27,6 +25,8 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.plugins.DisguiseController;
+import mc.alk.arena.plugins.HeroesController;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;

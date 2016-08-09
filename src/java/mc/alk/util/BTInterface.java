@@ -2,13 +2,13 @@ package mc.alk.util;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.PlayerController;
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.stats.TrackerArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.plugins.TrackerController;
 import mc.alk.tracker.Tracker;
 import mc.alk.tracker.TrackerInterface;
 import mc.alk.tracker.objects.Stat;

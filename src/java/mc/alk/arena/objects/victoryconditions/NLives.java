@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.victoryconditions;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.players.ArenaPlayerDeathEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;

@@ -1,9 +1,9 @@
 package mc.alk.arena.events.events;
 
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 
 public class EventCancelEvent extends EventEvent {
-	public EventCancelEvent(Event event){
+	public EventCancelEvent(AbstractComp event){
 		super(event);
 	}
 }

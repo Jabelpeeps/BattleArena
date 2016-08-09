@@ -1,14 +1,5 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.InventoryUtil;
-
-import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +11,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
+
+import mc.alk.arena.objects.exceptions.InvalidOptionException;
+import mc.alk.arena.objects.options.StateOptions;
+import mc.alk.arena.objects.options.TransitionOption;
+import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.util.InventoryUtil;
+
 public class StateGraph {
-	final Map<CompetitionState,StateOptions> ops = new HashMap<CompetitionState,StateOptions>();
+	final Map<CompetitionState,StateOptions> ops = new HashMap<>();
 	Set<StateOption> allops;
 
 	public StateGraph() {}
@@ -42,6 +42,7 @@ public class StateGraph {
 
 	public void addStateOption(CompetitionState state, StateOption option) throws InvalidOptionException {
 		StateOptions tops = ops.get(state);
+		
 		if (tops == null){
 			tops = new StateOptions();
 			ops.put(state, tops);
@@ -52,6 +53,7 @@ public class StateGraph {
 
 	public void addStateOption(CompetitionState state, StateOption option, Object value) throws InvalidOptionException {
 		StateOptions tops = ops.get(state);
+		
 		if (tops == null){
 			tops = new StateOptions();
 			ops.put(state, tops);
@@ -71,25 +73,24 @@ public class StateGraph {
 	}
 
 	private void calculateAllOptions(){
-		if (allops != null){
+		if (allops != null)
             allops.clear();
-        } else {
-            allops = new HashSet<StateOption>();
-        }
-        for (StateOptions top: ops.values()){
+        else
+            allops = new HashSet<>();
+		
+        for (StateOptions top: ops.values())
 			allops.addAll(top.getOptions().keySet());
-		}
 	}
 
 	public boolean hasAnyOption(StateOption option) {
-        if (allops == null)
-            calculateAllOptions();
+        if (allops == null) calculateAllOptions();
+        
 		return allops.contains(option);
 	}
 
 	public boolean hasAnyOption(StateOption... options) {
-        if (allops == null)
-            calculateAllOptions();
+        if (allops == null) calculateAllOptions();
+        
 		for (StateOption op: options){
 			if (allops.contains(op))
 				return true;
@@ -99,7 +100,9 @@ public class StateGraph {
 
 	public CompetitionState getCompetitionState(StateOption option) {
 		for (CompetitionState state: ops.keySet()){
+		    
 			StateOptions tops = ops.get(state);
+			
 			if (tops.hasOption(option))
 				return state;
 		}
@@ -107,10 +110,11 @@ public class StateGraph {
 	}
 
 	public boolean hasAllOptions(StateOption... options) {
-		Set<StateOption> ops = new HashSet<StateOption>(Arrays.asList(options));
-        if (allops == null)
-            calculateAllOptions();
-        return allops.containsAll(ops);
+		Set<StateOption> opts = new HashSet<>(Arrays.asList(options));
+		
+        if (allops == null) calculateAllOptions();
+        
+        return allops.containsAll(opts);
 	}
 
 	public boolean hasInArenaOrOptionAt(CompetitionState state, StateOption option) {
@@ -131,10 +135,11 @@ public class StateGraph {
 
     public boolean hasOptionIn(MatchState beginState, MatchState endState, StateOption option) {
 		List<MatchState> states = MatchState.getStates(beginState, endState);
+		
 		for (MatchState state : states){
 			StateOptions tops = ops.get(state);
-			if (tops != null && tops.hasOption(option))
-				return true;
+			
+			if (tops != null && tops.hasOption(option)) return true;
 		}
 		return false;
 	}
@@ -142,59 +147,52 @@ public class StateGraph {
     public boolean needsClearInventory() {
 		return ops.containsKey(MatchState.PREREQS) && ops.get(MatchState.PREREQS).clearInventory();
 	}
-
 	public String getRequiredString(String header) {
 		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(header): null;
 	}
-
 	public String getRequiredString(ArenaPlayer p, World w, String header) {
 		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(p,w,header): null;
 	}
-
 	public String getGiveString(CompetitionState ms) {
 		return ops.containsKey(ms) ? ops.get(ms).getPrizeMsg(null): null;
 	}
-
 	public StateOptions getOptions(CompetitionState ms) {
 		return ops.get(ms);
 	}
-
 	public Double getEntranceFee() {
 		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getMoney() : null;
 	}
-
     public boolean hasEntranceFee() {
 		return ops.containsKey(MatchState.PREREQS) && ops.get(MatchState.PREREQS).hasMoney();
-	}
-
+    }
 	public boolean playerReady(ArenaPlayer p, World w) {
 		return !ops.containsKey(MatchState.PREREQS) || ops.get(MatchState.PREREQS).playerReady(p, w);
 	}
-
     public List<ItemStack> getNeedItems(CompetitionState state){
         return ops.containsKey(state) ? ops.get(state).getNeedItems(): null;
     }
-
     public List<ItemStack> getTakeItems(CompetitionState state){
         return ops.containsKey(state) ? ops.get(state).getTakeItems(): null;
     }
-
     public List<ItemStack> getGiveItems(CompetitionState state){
         return ops.containsKey(state) ? ops.get(state).getGiveItems(): null;
     }
+    
 	public boolean teamReady(ArenaTeam t, World w) {
 		StateOptions to = ops.get(MatchState.PREREQS);
-		if (to == null)
-			return true;
+		
+		if (to == null) return true;
+		
 		for (ArenaPlayer p: t.getPlayers()){
 			if (!to.playerReady(p,w))
 				return false;
 		}
 		return true;
 	}
+	
 	public List<MatchState> getMatchStateRange(TransitionOption startOption, TransitionOption endOption) {
 		boolean foundOption = false;
-		List<MatchState> list = new ArrayList<MatchState>();
+		List<MatchState> list = new ArrayList<>();
 		for (MatchState ms : MatchState.values()){
 			StateOptions to = ops.get(ms);
 			if (to == null) continue;
@@ -208,46 +206,52 @@ public class StateGraph {
 		return list;
 	}
 
-
     class CStateComparator implements Comparator<CompetitionState> {
         @Override
         public int compare(CompetitionState o1, CompetitionState o2) {
             return o1.globalOrdinal() - o2.globalOrdinal();
         }
     }
+    
     public String getOptionString(StateGraph subset) {
+        
         if (subset == null) {
             subset = new StateGraph();
         }
         StringBuilder sb = new StringBuilder();
-        List<CompetitionState> states = new ArrayList<CompetitionState>(ops.keySet());
-        List<CompetitionState> states2 = new ArrayList<CompetitionState>(subset.ops.keySet());
+        List<CompetitionState> states = new ArrayList<>(ops.keySet());
+        List<CompetitionState> states2 = new ArrayList<>(subset.ops.keySet());
         Collections.sort(states, new CStateComparator());
         Collections.sort(states2, new CStateComparator());
 
         for (CompetitionState ms : states){
+            
             StateOptions to = ops.get(ms);
             StateOptions to2 = subset.ops.get(ms);
             sb.append(ms).append(" -- ");
             sb.append(to.getOptionString(to2)).append("\n");
-            Map<Integer, ArenaClass> classes = to2 != null && to2.getClasses() != null ?
-                    to2.getClasses() : to.getClasses();
+            
+            Map<Integer, ArenaClass> classes = ( to2 != null && to2.getClasses() != null ) ? to2.getClasses() 
+                                                                                           : to.getClasses();
             if (classes != null){
                 sb.append("             classes - ");
+                
                 for (ArenaClass ac : classes.values()){
                     sb.append(" ").append(ac.getDisplayName());}
                 sb.append("\n");
             }
-            List<ItemStack> items = to2 != null && to2.getGiveItems() != null ?
-                    to2.getGiveItems() : to.getGiveItems();
+            
+            List<ItemStack> items = ( to2 != null && to2.getGiveItems() != null ) ? to2.getGiveItems() 
+                                                                                  : to.getGiveItems();
             if (items != null){
                 sb.append("             items - ");
                 for (ItemStack item: items){
                     sb.append(" ").append(InventoryUtil.getItemString(item));}
                 sb.append("\n");
             }
-            items = to2 != null && to2.getNeedItems() != null ?
-                    to2.getNeedItems() : to.getNeedItems();
+            
+            items = ( to2 != null && to2.getNeedItems() != null ) ? to2.getNeedItems() 
+                                                                  : to.getNeedItems();
             if (items != null){
                 sb.append("             needitems - ");
                 for (ItemStack item: items){

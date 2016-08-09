@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.victoryconditions;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.events.ArenaEventHandler;

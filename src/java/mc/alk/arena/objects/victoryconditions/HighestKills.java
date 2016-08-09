@@ -1,7 +1,8 @@
 package mc.alk.arena.objects.victoryconditions;
 
-import mc.alk.arena.competition.match.Match;
 import org.bukkit.configuration.ConfigurationSection;
+
+import mc.alk.arena.competition.Match;
 
 @Deprecated
 public class HighestKills extends PlayerKills {

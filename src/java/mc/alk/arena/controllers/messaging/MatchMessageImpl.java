@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ParamController;
+import mc.alk.arena.events.matches.MatchIntervalMessageEvent;
 import mc.alk.arena.events.matches.MatchMessageEvent;
-import mc.alk.arena.events.matches.messages.MatchIntervalMessageEvent;
-import mc.alk.arena.events.matches.messages.MatchTimeExpiredMessageEvent;
+import mc.alk.arena.events.matches.MatchTimeExpiredMessageEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.messaging.Channel;
@@ -61,6 +61,7 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 		Message message = getNodeMessage(typedot+ nTeamPath+"."+path);
 		Message serverMessage = getNodeMessage(typedot+ nTeamPath+"."+serverpath);
 		Set<MessageOption> ops = message.getOptions();
+		
 		if (serverChannel != Channels.NullChannel){
 			ops.addAll(serverMessage.getOptions());
 		}
@@ -108,7 +109,6 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 				break;
 			}
 		}
-
 		sendVictory(serverChannel,victors,losers,mp,typedot+nTeamPath+".victory",typedot+nTeamPath+".loss",
 				typedot+nTeamPath+".server_victory");
 	}
@@ -160,30 +160,29 @@ public class MatchMessageImpl extends MessageSerializer implements MatchMessageH
 		MessageFormatter msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message, ops);
 		msgf.formatCommonOptions(currentLeaders, remaining);
 		msg = msgf.getFormattedMessage(message);
+		
 		if (currentLeaders == null || currentLeaders.isEmpty()){
 //			msg = match.getParams().getPrefix()+"&e ends in &4" +timeStr;
+		} else if (currentLeaders.size() == 1){
+			ArenaTeam currentLeader = currentLeaders.iterator().next();
+			Message message2 = getNodeMessage("match.interval_update_winning");
+			ops = message2.getOptions();
+			msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
+			msgf.formatCommonOptions(currentLeaders, remaining);
+			msgf.formatTeamOptions(currentLeader, true);
+			msg += msgf.getFormattedMessage(message2);
+			if (msg.contains("{winnerpointsfor}"))
+				msg = msg.replaceAll("\\{winnerpointsfor\\}", currentLeader.getNKills()+"");
+			if (msg.contains("{winnerpointsagainst}"))
+				msg = msg.replaceAll("\\{winnerpointsagainst\\}", currentLeader.getNDeaths()+"");
 		} else {
-			if (currentLeaders.size() == 1){
-				ArenaTeam currentLeader = currentLeaders.iterator().next();
-				Message message2 = getNodeMessage("match.interval_update_winning");
-				ops = message2.getOptions();
-				msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
-				msgf.formatCommonOptions(currentLeaders, remaining);
-				msgf.formatTeamOptions(currentLeader, true);
-				msg += msgf.getFormattedMessage(message2);
-				if (msg.contains("{winnerpointsfor}"))
-					msg = msg.replaceAll("\\{winnerpointsfor\\}", currentLeader.getNKills()+"");
-				if (msg.contains("{winnerpointsagainst}"))
-					msg = msg.replaceAll("\\{winnerpointsagainst\\}", currentLeader.getNDeaths()+"");
-			} else {
-				String teamStr = MessageUtil.joinTeams(currentLeaders,"&e and ");
-				Message message2 = getNodeMessage("match.interval_update_tied");
-				msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
-				msgf.formatCommonOptions(currentLeaders, remaining);
-				msg += msgf.getFormattedMessage(message2);
-				if (msg.contains("{teams}"))
-						msg = msg.replaceAll("\\{teams\\}", teamStr);
-			}
+			String teamStr = MessageUtil.joinTeams(currentLeaders,"&e and ");
+			Message message2 = getNodeMessage("match.interval_update_tied");
+			msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
+			msgf.formatCommonOptions(currentLeaders, remaining);
+			msg += msgf.getFormattedMessage(message2);
+			if (msg.contains("{teams}"))
+					msg = msg.replaceAll("\\{teams\\}", teamStr);		
 		}
 		MatchMessageEvent event = new MatchIntervalMessageEvent(match,MatchState.ONMATCHINTERVAL,
 				serverChannel,"", msg,remaining);

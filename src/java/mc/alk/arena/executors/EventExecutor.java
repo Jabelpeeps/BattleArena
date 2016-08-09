@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.controllers.BAEventController;
 import mc.alk.arena.controllers.BAEventController.SizeEventPair;
 import mc.alk.arena.controllers.TeamController;
@@ -43,11 +43,11 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"cancel"},admin=true, order=2)
 	public boolean eventCancel(CommandSender sender, EventParams eventParams) {
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
         return event == null || cancelEvent(sender, event);
     }
 
-	protected Event findUnique(CommandSender sender, EventParams eventParams) {
+	protected AbstractComp findUnique(CommandSender sender, EventParams eventParams) {
 		SizeEventPair result = controller.getUniqueEvent(eventParams);
 		if (result.nEvents == 0){
 		    MessageUtil.sendMessage(sender, "&cThere are no events open/running of this type");}
@@ -59,13 +59,13 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"cancel"},admin=true, order=4)
 	public boolean eventCancel(CommandSender sender, ArenaPlayer player) {
-		Event event = controller.getEvent(player);
+		AbstractComp event = controller.getEvent(player);
 		if (event == null){
 			return MessageUtil.sendMessage(sender, "&cThere was no event with " + player.getName() +" inside");}
 		return cancelEvent(sender,event);
 	}
 
-	public boolean cancelEvent(CommandSender sender, Event event){
+	public boolean cancelEvent(CommandSender sender, AbstractComp event){
 		if (!event.isRunning() && !event.isOpen()){
 			return MessageUtil.sendMessage(sender,"&eA "+event.getCommand()+" is not running");}
 		controller.cancelEvent(event);
@@ -74,7 +74,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"start"},admin=true,usage="start", order=2)
 	public boolean eventStart(CommandSender sender, final EventParams eventParams, String[] args) {
-		Event event = controller.getOpenEvent(eventParams);
+		AbstractComp event = controller.getOpenEvent(eventParams);
 		if (event == null){
 			return MessageUtil.sendMessage(sender, "&cThere are no open events right now");
 		}
@@ -103,7 +103,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"info"},usage="info", order=2)
 	public boolean eventInfo(CommandSender sender, EventParams eventParams){
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
 			return true;}
 
@@ -118,7 +118,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"check"},usage="check", order=2)
 	public boolean eventCheck(CommandSender sender, EventParams eventParams) {
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
 			return true;}
 
@@ -151,7 +151,7 @@ public class EventExecutor extends BAExecutor{
 		}
 		if (isDisabled(p.getPlayer(), eventParams)){
 			return true;}
-		Event event = controller.getOpenEvent(eventParams);
+		AbstractComp event = controller.getOpenEvent(eventParams);
 
 		/// perform add checks
 		if (event == null){
@@ -228,11 +228,11 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"teams"}, usage="teams", admin=true, order=2)
 	public boolean eventTeams(CommandSender sender, EventParams eventParams) {
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
         return event == null || eventTeams(sender, event);
     }
 
-	private boolean eventTeams(CommandSender sender, Event event) {
+	private boolean eventTeams(CommandSender sender, AbstractComp event) {
 		StringBuilder sb = new StringBuilder();
 		for (ArenaTeam t: event.getTeams()){
 			sb.append("\n").append(t.getTeamInfo(null)); }
@@ -242,7 +242,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"status"}, usage="status", order=4)
 	public boolean eventStatus(CommandSender sender, EventParams eventParams) {
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
 			return true;}
 		StringBuilder sb = new StringBuilder(event.getStatus());
@@ -251,7 +251,7 @@ public class EventExecutor extends BAExecutor{
 	}
 
 
-	private void appendTeamStatus(CommandSender sender, Event event, StringBuilder sb) {
+	private void appendTeamStatus(CommandSender sender, AbstractComp event, StringBuilder sb) {
 		if (PermissionsUtil.isAdmin(sender) || sender.hasPermission("arena.event.status")){
 			for (ArenaTeam t: event.getTeams()){
 				sb.append("\n").append(t.getTeamInfo(null));
@@ -261,7 +261,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"result"},usage="result", order=2)
 	public boolean eventResult(CommandSender sender, EventParams eventParams) {
-		Event event = findUnique(sender, eventParams);
+		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
 			return true;}
 
@@ -272,7 +272,7 @@ public class EventExecutor extends BAExecutor{
 		return MessageUtil.sendMessage(sender,"&eResults for the &6" + event.getDisplayName() + "&e\n" + sb.toString());
 	}
 
-    protected void openEvent(Event event, EventOpenOptions eoo) throws InvalidEventException {
+    protected void openEvent(AbstractComp event, EventOpenOptions eoo) throws InvalidEventException {
         if (eoo.hasOption(EventOpenOption.SILENT)){
             event.setSilent(true);}
         controller.addOpenEvent(event);

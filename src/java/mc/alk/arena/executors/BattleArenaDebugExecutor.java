@@ -24,7 +24,7 @@ import org.bukkit.scoreboard.Team;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.ParamController;

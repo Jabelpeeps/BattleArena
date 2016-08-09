@@ -1,12 +1,12 @@
 package mc.alk.arena.controllers.messaging;
 
-import mc.alk.arena.controllers.plugins.TrackerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;

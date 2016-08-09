@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeMap;
 
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class VictoryUtil {

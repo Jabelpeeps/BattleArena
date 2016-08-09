@@ -1,7 +1,6 @@
 package mc.alk.arena.objects.victoryconditions;
 
-import mc.alk.arena.competition.match.Match;
-import mc.alk.arena.controllers.plugins.TrackerController;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.WinLossDraw;
@@ -11,6 +10,7 @@ import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
+import mc.alk.arena.plugins.TrackerController;
 import mc.alk.scoreboardapi.SAPIDisplaySlot;
 
 import org.bukkit.configuration.ConfigurationSection;

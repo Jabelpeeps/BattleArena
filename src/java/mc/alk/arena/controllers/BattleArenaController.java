@@ -21,7 +21,7 @@ import org.bukkit.event.Listener;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.competition.match.Match;
+import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;

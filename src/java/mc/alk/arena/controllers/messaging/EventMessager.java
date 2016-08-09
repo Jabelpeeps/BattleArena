@@ -1,6 +1,6 @@
 package mc.alk.arena.controllers.messaging;
 
-import mc.alk.arena.competition.events.Event;
+import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
@@ -19,7 +19,7 @@ public class EventMessager {
 	final AnnouncementOptions bos;
 	boolean silent = false;
 
-	public EventMessager(Event event){
+	public EventMessager(AbstractComp event){
 		this.impl = new EventMessageImpl(event);
 		this.bos = event.getParams().getAnnouncementOptions();
 	}

@@ -7,8 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.competition.events.Event;
-import mc.alk.arena.competition.events.tournament.TournamentEvent;
+import mc.alk.arena.competition.AbstractComp;
+import mc.alk.arena.competition.TournamentEvent;
 import mc.alk.arena.controllers.BAEventController.SizeEventPair;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.ArenaSize;
@@ -47,9 +47,9 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
         return true;
     }
 
-    public Event openIt(CommandSender sender, EventParams eventParams, String[] args) throws InvalidEventException{
+    public AbstractComp openIt(CommandSender sender, EventParams eventParams, String[] args) throws InvalidEventException{
         SizeEventPair result = controller.getUniqueEvent(eventParams);
-        Event event = result.event;
+        AbstractComp event = result.event;
         if (event != null){
             MessageUtil.sendMessage(sender,"&4There is already a tournament in progress");
             return null;

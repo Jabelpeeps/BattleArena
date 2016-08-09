@@ -1,12 +1,13 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.controllers.plugins.HeroesController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.FormingTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
+import mc.alk.arena.plugins.HeroesController;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

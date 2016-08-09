@@ -36,12 +36,10 @@ public class MoneyController {
 
 	}
 
-    @SuppressWarnings({"unused"})
 	public static boolean hasEnough(String name, float amount, String world) {
 		return hasEnough(name,amount);
 	}
 
-    @SuppressWarnings({"unused"})
 	public static void subtract(String name, float amount, String world) {
 		subtract(name,amount);
 	}
@@ -59,8 +57,6 @@ public class MoneyController {
 		}
 	}
 
-
-    @SuppressWarnings({"unused"})
     public static void add(String name, float amount, String world) {
 		add(name,amount);
 	}
@@ -79,7 +75,6 @@ public class MoneyController {
 		}
 	}
 
-    @SuppressWarnings({"unused"})
 	public static Double balance(String name, String world) {
 		return balance(name);
 	}
@@ -93,7 +88,6 @@ public class MoneyController {
 			return 0.0;
 		}
 	}
-
 
 	public static void setEconomy(Economy economy) {
 		MoneyController.economy = economy;
