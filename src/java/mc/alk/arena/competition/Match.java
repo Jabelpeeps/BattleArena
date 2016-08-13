@@ -164,7 +164,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         transitionTo(MatchState.ONCREATE);
 
         if (Defaults.DEBUG) 
-            System.out.println("ArenaMatch::" + params);
+            System.out.println("ArenaMatch::" + matchParams );
         
         params = ParamController.copyParams(matchParams);
         params.setName(this.getName());
