@@ -27,12 +27,12 @@ import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
+import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.plugins.EssentialsController;
@@ -47,8 +47,10 @@ public class GameManager implements PlayerHolder {
 	MethodController methodController;
 
 	public static GameManager getGameManager(MatchParams mp) {
+	    
 		if (map.containsKey(mp.getType()))
 			return map.get(mp.getType());
+		
 		GameManager gm = new GameManager(mp);
 		map.put(mp.getType(), gm);
 		return gm;
@@ -200,7 +202,7 @@ public class GameManager implements PlayerHolder {
 	}
 
     @Override
-    public boolean hasOption(StateOption option) {
+    public boolean hasOption(TransitionOption option) {
         return params.hasOptionAt(getState(), option);
     }
 

@@ -5,12 +5,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import org.bukkit.Material;
@@ -24,9 +22,9 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.util.InventoryUtil;
+import mc.alk.util.InventoryUtil.PInv;
 import mc.alk.util.KeyValue;
 import mc.alk.util.Log;
-import mc.alk.util.InventoryUtil.PInv;
 
 public class InventorySerializer {
 
@@ -62,28 +60,28 @@ public class InventorySerializer {
     }
 
 	public static PInv getInventory(final OfflinePlayer player, int index){
-		if (index < 0 || index >= Defaults.NUM_INV_SAVES){
-			return null;}
+		if (index < 0 || index >= Defaults.NUM_INV_SAVES)
+			return null;
+		
         UUID id = player.getUniqueId();
 		BaseConfig serializer = getSerializer(id);
-		if (serializer == null)
-			return null;
+		
+		if (serializer == null) return null;
+		
 		PriorityQueue<KeyValue<Long,PInv>> dates =
-				new PriorityQueue<>(Defaults.NUM_INV_SAVES, new Comparator<KeyValue<Long,PInv>>(){
-					@Override
-					public int compare(KeyValue<Long, PInv> arg0, KeyValue<Long, PInv> arg1) {
+				new PriorityQueue<>( Defaults.NUM_INV_SAVES, (arg0, arg1) -> { 
 						return arg1.key.compareTo(arg0.key);
-					}
-				});
+					});
 		Set<String> keys = serializer.config.getKeys(false);
 
-		DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG);
+		DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG );
 
-		for (String key: keys){
+		for (String key: keys) {
 			ConfigurationSection cs = serializer.config.getConfigurationSection(key);
-			if (cs == null)
-				continue;
-			String strdate = cs.getString("storedDate");
+			
+			if (cs == null) continue;
+			
+			String strdate = cs.getString( "storedDate" );
 			Date date;
 			try {
 				date = format.parse(strdate);
@@ -94,60 +92,63 @@ public class InventorySerializer {
 			PInv pinv = ArenaControllerSerializer.getInventory(cs);
 			dates.add(new KeyValue<>(date.getTime(),pinv));
 		}
-		int i=0;
-		for (KeyValue<Long,PInv> l: dates){
-			if (i++==index)
+		int i = 0;
+		for ( KeyValue<Long,PInv> l : dates ){
+			if ( i++ == index )
 				return l.value;
 		}
 		return null;
 	}
 
 	public static void saveInventory(final UUID id, final PInv pinv) {
-		if (Defaults.NUM_INV_SAVES <= 0){
-			return;}
-        Scheduler.scheduleAsynchronousTask(new TimerTask(){
-			@Override
-			public void run() {
+		if (Defaults.NUM_INV_SAVES <= 0) return;
+		
+        Scheduler.scheduleAsynchronousTask( () -> {
+            
 				BaseConfig serializer = getSerializer(id);
 				if (serializer == null)
 					return;
 				Date now = new Date();
-				String date = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG).format(now);
-				int curSection = serializer.config.getInt("curSection", 0);
-				serializer.config.set("curSection", (curSection +1) % Defaults.NUM_INV_SAVES);
-				ConfigurationSection pcs = serializer.config.createSection(curSection+"");
-				pcs.set("storedDate", date);
+				String date = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG ).format(now);
+				int curSection = serializer.config.getInt( "curSection", 0 );
+				serializer.config.set( "curSection", (curSection +1) % Defaults.NUM_INV_SAVES );
+				ConfigurationSection pcs = serializer.config.createSection( curSection + "" );
+				pcs.set( "storedDate", date );
 				List<String> stritems = new ArrayList<>();
-				for (ItemStack is : pinv.armor){
+				
+				for (ItemStack is : pinv.armor) {
 					if (is == null || is.getType() == Material.AIR)
 						continue;
-					stritems.add(InventoryUtil.getItemString(is));}
+					
+					stritems.add(InventoryUtil.getItemString(is));
+				}
 				pcs.set("armor", stritems);
 
 				stritems = new ArrayList<>();
-				for (ItemStack is : pinv.contents){
+				for (ItemStack is : pinv.contents) {
 					if (is == null || is.getType() == Material.AIR)
 						continue;
-					stritems.add(InventoryUtil.getItemString(is));}
+					
+					stritems.add(InventoryUtil.getItemString(is));
+				}
 				pcs.set("contents", stritems);
 				serializer.save();
-			}
-
 		}, 0);
 	}
 
 	private static BaseConfig getSerializer(UUID id) {
 		BaseConfig bs = new BaseConfig();
 		File dir = new File(BattleArena.getSelf().getDataFolder()+"/saves/inventories/");
+		
 		if (!dir.exists()){
 			try {dir.mkdirs();}catch (Exception e){/* do nothing */}
 			}
 		return bs.setConfig(dir.getPath()+"/"+id+".yml") ? bs : null;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static boolean giveInventory(ArenaPlayer player, Integer index, Player other) {
 		PInv pinv = getInventory(player.getPlayer(), index);
+		
 		if (pinv == null)
 			return false;
 

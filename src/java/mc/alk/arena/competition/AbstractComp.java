@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.PlayerController;
@@ -38,12 +40,12 @@ import mc.alk.arena.objects.CompetitionResult;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.EventState;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.joining.TeamJoinObject;
 import mc.alk.arena.objects.messaging.EventMessageHandler;
 import mc.alk.arena.objects.options.StateOptions;
+import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.util.Countdown;
@@ -54,17 +56,17 @@ import mc.alk.util.PermissionsUtil;
 
 
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {
-    final String name; /// Name of this event
+    @Getter final String name; 
 
-    protected EventParams eventParams; /// The parameters for this event
+    @Getter protected EventParams params; 
 
-    EventMessager mc; /// Our message handler
+    EventMessager mc; 
 
-    Countdown timer; /// Timer till Event starts
+    Countdown timer; 
 
-    protected AbstractJoinHandler joinHandler; /// Specify how teams are allocated
+    @Setter protected AbstractJoinHandler teamJoinHandler; 
 
-    protected EventState state; /// The current state of this event
+    @Getter protected EventState state; 
 
     /// When did each transition occur
     final Map<EventState, Long> times = new EnumMap<>(EventState.class);
@@ -74,10 +76,10 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
      * @param params EventParams
      */
     public AbstractComp(EventParams params) throws NeverWouldJoinException {
-        this.eventParams = params;
+        this.params = params;
         transitionTo(EventState.CLOSED);
         this.name = params.getName();
-        joinHandler = TeamJoinFactory.createTeamJoinHandler(params, this);
+        teamJoinHandler = TeamJoinFactory.createTeamJoinHandler(params, this);
         if (mc == null)
             mc = new EventMessager(this);
         mc.setMessageHandler(new EventMessageImpl(this));
@@ -98,9 +100,9 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public void autoEvent(){
         openEvent();
 //        TimeUtil.testClock();
-        mc.sendCountdownTillEvent(eventParams.getSecondsTillStart());
-        timer = new Countdown(BattleArena.getSelf(),(long)eventParams.getSecondsTillStart(),
-                (long)eventParams.getAnnouncementInterval(), this);
+        mc.sendCountdownTillEvent(params.getSecondsTillStart());
+        timer = new Countdown(BattleArena.getSelf(),(long)params.getSecondsTillStart(),
+                (long)params.getAnnouncementInterval(), this);
     }
 
     public void addAllOnline() {
@@ -108,8 +110,8 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         for (Player p: Bukkit.getOnlinePlayers()){
             if (PermissionsUtil.isAdmin(p)) { /// skip admins (they are doin' importantz thingz)
                 continue;}
-            ArenaTeam t = TeamController.createTeam(eventParams, PlayerController.toArenaPlayer(p));
-            TeamJoinObject tqo = new TeamJoinObject(t,eventParams,null);
+            ArenaTeam t = TeamController.createTeam(params, PlayerController.toArenaPlayer(p));
+            TeamJoinObject tqo = new TeamJoinObject(t,params,null);
             this.joining(tqo);
         }
     }
@@ -133,15 +135,15 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     public void startEvent() {
-        List<ArenaTeam> improper = joinHandler.removeImproperTeams();
+        List<ArenaTeam> improper = teamJoinHandler.removeImproperTeams();
         for (ArenaTeam t: improper){
             t.sendMessage("&cYour team has been excluded to having an improper team size");
         }
         /// TODO rebalance teams
         Set<ArenaPlayer> excludedPlayers = getExcludedPlayers();
         for (ArenaPlayer p : excludedPlayers){
-            p.sendMessage(Log.colorChat(eventParams.getPrefix()+
-                    "&6 &5There werent enough players to create a &6" + eventParams.getMinTeamSize() +"&5 person team"));
+            p.sendMessage(Log.colorChat(params.getPrefix()+
+                    "&6 &5There werent enough players to create a &6" + params.getMinTeamSize() +"&5 person team"));
         }
         transitionTo(EventState.RUNNING);
 
@@ -192,7 +194,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
         removeAllTeams();
         teams.clear();
-        joinHandler = null;
+        teamJoinHandler = null;
         callEvent(new EventFinishedEvent(this));
         HandlerList.unregisterAll(this);
     }
@@ -207,9 +209,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     @Override
     public abstract boolean canLeave(ArenaPlayer p);
-
-    @Override
-    public EventState getState() {return state;}
 
     @Override
     protected void transitionTo(CompetitionState state){
@@ -229,8 +228,8 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public boolean leave(ArenaPlayer p) {
         ArenaTeam t = getTeam(p);
         p.removeCompetition(this);
-        if (eventParams.needsLobby()){
-            RoomController.leaveLobby(eventParams, p);
+        if (params.needsLobby()){
+            RoomController.leaveLobby(params, p);
         }
         if (t==null) /// they arent in this Event
             return false;
@@ -259,10 +258,9 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return false;
     }
 
-
     @Override
     public boolean addedTeam(ArenaTeam team){
-        if (teams.contains(team)) /// adding a team twice is bad mmkay
+        if (teams.contains(team)) 
             return true;
         callEvent(new TeamJoinedEvent(this,team));
         return teams.add(team);
@@ -276,11 +274,11 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public JoinResult.JoinStatus joining(TeamJoinObject tqo){
         JoinResult.JoinStatus js;
         ArenaTeam team = tqo.getTeam();
-        if (joinHandler == null) {
+        if (teamJoinHandler == null) {
             js = JoinResult.JoinStatus.NOTOPEN;
             return js;
         }
-        AbstractJoinHandler.TeamJoinResult tjr = joinHandler.joiningTeam(tqo);
+        AbstractJoinHandler.TeamJoinResult tjr = teamJoinHandler.joiningTeam(tqo);
         switch(tjr.status){
             case ADDED_TO_EXISTING: /* drop down into added */
             case ADDED:
@@ -301,16 +299,12 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return null;
     }
 
-    @Override
-    public String getName(){ return name; }
-    public String getCommand(){return eventParams.getCommand();}
+    public String getCommand(){return params.getCommand();}
     public String getDisplayName() { return getName(); }
     public boolean isRunning() {return state == EventState.RUNNING;}
     public boolean isOpen() {return state == EventState.OPEN;}
     public boolean isClosed() {return state == EventState.CLOSED;}
     public boolean isFinished() {return state== EventState.FINISHED;}
-    @Override
-    public EventParams getParams() {return eventParams;}
 
     public int getNTeams() {
         int size = 0;
@@ -321,16 +315,12 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return size;
     }
 
-    public void setTeamJoinHandler(AbstractJoinHandler tjh){
-        this.joinHandler = tjh;
-    }
-
     /**
      * Set a Message handler to override default Event messages
      * @param handler EventMessageHandler
      */
     public void setMessageHandler(EventMessageHandler handler){
-        this.mc.setMessageHandler(handler);
+        mc.setMessageHandler(handler);
     }
 
     /**
@@ -343,36 +333,27 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     public abstract String getResultString();
 
-//    public static class TeamSizeComparator implements Comparator<ArenaTeam>{
-//        @Override
-//        public int compare(ArenaTeam arg0, ArenaTeam arg1) {
-//            if ( arg0.size() == arg1.size() ) return 0;
-//            return (arg0.size() < arg1.size()) ? -1 : 1;
-//        }
-//    }
-
-
     protected Set<ArenaPlayer> getExcludedPlayers() {
-        return joinHandler == null ? null :  joinHandler.getExcludedPlayers();
+        return teamJoinHandler == null ? null :  teamJoinHandler.getExcludedPlayers();
     }
 
     public String getStatus() {
         StringBuilder sb = new StringBuilder();
-        if (eventParams != null){
-            boolean rated = eventParams.isRated();
+        if (params != null){
+            boolean rated = params.isRated();
             sb.append(rated ? "&4Rated" : "&aUnrated").append("&e ").append(name).append(". ");
             sb.append("&e(&6").append(state).append("&e)");
-            sb.append("&eTeam size=").append(eventParams.getTeamSize());
+            sb.append("&eTeam size=").append(params.getTeamSize());
             sb.append("&e Teams=&6 ").append(teams.size());
         }
-        if (state == EventState.OPEN && joinHandler != null){
-            sb.append("\n&eJoiningTeams: ").append(MessageUtil.joinPlayers(joinHandler.getExcludedPlayers(), ", "));
+        if (state == EventState.OPEN && teamJoinHandler != null){
+            sb.append("\n&eJoiningTeams: ").append(MessageUtil.joinPlayers(teamJoinHandler.getExcludedPlayers(), ", "));
         }
         return sb.toString();
     }
 
     public String getInfo() {
-        return StateOptions.getInfo(eventParams, eventParams.getName());
+        return StateOptions.getInfo(params, params.getName());
     }
 
     public boolean canLeaveTeam(ArenaPlayer p) {return canLeave(p);}
@@ -415,8 +396,8 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         Set<ArenaPlayer> players = new HashSet<>();
         for (ArenaTeam t: getTeams()){
             players.addAll(t.getPlayers());}
-        if (isOpen() && joinHandler != null){
-            players.addAll(joinHandler.getExcludedPlayers());
+        if (isOpen() && teamJoinHandler != null){
+            players.addAll(teamJoinHandler.getExcludedPlayers());
         }
         return players;
     }
@@ -431,15 +412,15 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     public boolean waitingToJoin(ArenaPlayer p) {
-        return joinHandler != null && joinHandler.getExcludedPlayers().contains(p);
+        return teamJoinHandler != null && teamJoinHandler.getExcludedPlayers().contains(p);
     }
 
     public boolean hasEnoughTeams() {
-        return getNTeams() >= eventParams.getMinTeams();
+        return getNTeams() >= params.getMinTeams();
     }
 
     public boolean hasEnough() {
-        return joinHandler != null && joinHandler.hasEnough(Integer.MAX_VALUE);
+        return teamJoinHandler != null && teamJoinHandler.hasEnough(Integer.MAX_VALUE);
     }
 
     @Override
@@ -453,11 +434,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     @Override
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {/* do nothing */}
-
-    @Override
-    public int getID(){
-        return id;
-    }
 
     @Override
     public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
@@ -494,7 +470,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     @Override
-    public boolean hasOption(StateOption option) {
+    public boolean hasOption(TransitionOption option) {
         return getParams().hasOptionAt(state, option);
     }
 }

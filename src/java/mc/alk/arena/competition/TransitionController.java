@@ -80,7 +80,7 @@ public class TransitionController {
             if (WorldGuardController.hasWorldGuard() && ac.getArena() != null && ac.getArena().hasRegion()){
                 WorldGuardRegion region = ac.getArena().getWorldGuardRegion();
                 /// Clear the area
-                if ( mo.shouldClearRegion() ) 
+                if ( mo.hasOption(TransitionOption.WGCLEARREGION) ) 
                     WorldGuardController.clearRegion(region);
 
                 if ( mo.hasOption(TransitionOption.WGRESETREGION) ) 
@@ -112,21 +112,24 @@ public class TransitionController {
         final StateOptions mo = tops.getOptions(transition);
         if (mo == null){ /// no options
             return true;}
-        if (Defaults.DEBUG_TRANSITIONS) Log.info("-- transition "+am.getClass().getSimpleName()+"  " + transition + " p= " +player.getName() +
-                " ops="+am.getParams().getThisStateGraph().getOptions(transition)+" onlyInMatch="+onlyInMatch+
+        if (Defaults.DEBUG_TRANSITIONS) 
+            Log.info("-- transition "+am.getClass().getSimpleName()+"  " + transition + " p= " +player.getName() +
+                " ops="+am.getParams().getArenaStateGraph().getOptions(transition)+" onlyInMatch="+onlyInMatch+
                 " inArena="+am.isHandled(player) + " dead="+player.isDead()+":"+player.getHealth()+" online="+player.isOnline()+" clearInv=" +
-                am.getParams().getThisStateGraph().hasOptionAt(transition, TransitionOption.CLEARINVENTORY));
+                am.getParams().getArenaStateGraph().hasOptionAt(transition, TransitionOption.CLEARINVENTORY));
+        
         final boolean insideArena = am.isHandled(player);
-        final boolean teleportIn = mo.shouldTeleportIn();
-        final boolean teleportRoom = mo.shouldTeleportWaitRoom() || mo.shouldTeleportLobby() || mo.shouldTeleportSpectate();
+        final boolean teleportIn = mo.hasOption(TransitionOption.TELEPORTIN);
+        final boolean teleportRoom = mo.hasAnyOption( TransitionOption.TELEPORTSPECTATE, TransitionOption.TELEPORTLOBBY, 
+                TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM);
         /// If the flag onlyInMatch is set, we should leave if the player isnt inside.  disregard if we are teleporting people in
         if (onlyInMatch && (!insideArena && !(teleportIn || teleportRoom) ||
                 am instanceof Match && !((Match)am).isInMatch(player) &&
                         player.getCompetition()!=null && !player.getCompetition().equals(am) )  ){
             return true;}
 
-        final boolean teleportOut = mo.shouldTeleportOut();
-        final boolean wipeInventory = mo.clearInventory();
+        final boolean teleportOut = mo.hasAnyOption( TransitionOption.TELEPORTOUT, TransitionOption.TELEPORTTO );
+        final boolean wipeInventory = mo.hasOption( TransitionOption.CLEARINVENTORY );
 
         List<PotionEffect> effects = mo.getEffects()!=null ? new ArrayList<>(mo.getEffects()) : null;
         final Integer hunger = mo.getHunger();
@@ -176,8 +179,8 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.FLIGHTON)) { PlayerUtil.setFlight(p,true); }
             if (mo.hasOption(TransitionOption.FLIGHTSPEED)) { PlayerUtil.setFlightSpeed(p,mo.getFlightSpeed()); }
             if (mo.hasOption(TransitionOption.DOCOMMANDS)) { PlayerUtil.doCommands(p,mo.getDoCommands()); }
-            if (mo.deEnchant()) { psc.deEnchant(p);}
-            if (mo.undisguise() != null && mo.undisguise()) {DisguiseController.undisguise(p);}
+            if (mo.hasOption(TransitionOption.DEENCHANT)) { psc.deEnchant(p);}
+            if (mo.hasOption(TransitionOption.UNDISGUISE)) {DisguiseController.undisguise(p);}
             if (mo.getDisguiseAllAs() != null) {DisguiseController.disguisePlayer(p, mo.getDisguiseAllAs());}
             if (mo.getMoney() != null) {MoneyController.add(player.getName(), mo.getMoney());}
             if (mo.hasOption(TransitionOption.POOLMONEY) && am instanceof Match) {
@@ -194,8 +197,9 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.ADDPERMS)){ addPerms(player, mo.getAddPerms(), 0);}
             if (mo.hasOption(TransitionOption.GIVECLASS) && player.getCurrentClass() == null){
                 final ArenaClass ac = getArenaClass(mo,teamIndex);
-                if (ac != null && ac.valid()){ /// Give class items and effects
-                    if (mo.woolTeams()) TeamUtil.setTeamHead(teamIndex, player); // give wool heads first
+                if (ac != null && ac.valid()) { 
+                    if (mo.hasAnyOption(TransitionOption.WOOLTEAMS, TransitionOption.ALWAYSWOOLTEAMS)) 
+                        TeamUtil.setTeamHead(teamIndex, player); 
                     if (armorTeams){
                         ArenaClassController.giveClass(player, ac, TeamUtil.getTeamColor(teamIndex));
                     } else{
@@ -237,7 +241,7 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.REMOVEPERMS)){ removePerms(player, mo.getRemovePerms());}
             if (mo.hasOption(TransitionOption.GAMEMODE)) { PlayerUtil.setGameMode(p,mo.getGameMode()); }
             if (mo.hasOption(TransitionOption.FLIGHTOFF)) { PlayerUtil.setFlight(p,false); }
-            if (mo.deEnchant()) { psc.deEnchant(p);}
+            if (mo.hasOption(TransitionOption.DEENCHANT)) { psc.deEnchant(p);}
 
 
             if (wipeInventory) { InventoryUtil.clearInventory(p); }

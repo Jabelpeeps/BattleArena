@@ -1,11 +1,11 @@
 package mc.alk.arena.objects.spawns;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.util.SerializerUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.util.SerializerUtil;
 
 public class TimedSpawn implements Spawnable {
 
@@ -24,42 +24,20 @@ public class TimedSpawn implements Spawnable {
 
     }
 
-    public Long getRespawnTime() {
-        return respawnInterval;
-    }
-
-    public void setRespawnTime(Long timeToNext) {
-        this.respawnInterval = timeToNext;
-    }
-
-    public Long getFirstSpawnTime() {
-        return firstSpawnTime;
-    }
-
-    public void setFirstSpawnTime(Long timeToStart) {
-        this.firstSpawnTime = timeToStart;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public SpawnInstance getSpawn() {
-        return sg;
-    }
-
-    public Long getTimeToDespawn() {
-        return timeToDespawn;
-    }
-
+    public Long getRespawnTime() { return respawnInterval; }
+    public void setRespawnTime(Long timeToNext) { respawnInterval = timeToNext; }
+    public Long getFirstSpawnTime() { return firstSpawnTime; }
+    public void setFirstSpawnTime(Long timeToStart) { firstSpawnTime = timeToStart; }
+    public int getId() { return id; }
+    public SpawnInstance getSpawn() { return sg; }
+    public Long getTimeToDespawn() { return timeToDespawn; }
     @Override
-    public void despawn() {
-        sg.despawn();
-    }
+    public void despawn() { sg.despawn(); }
 
     @Override
     public void spawn() {
         sg.spawn();
+        
         if (timeToDespawn > 0) {
             if (despawnTimer != null) {
                 Bukkit.getScheduler().cancelTask(despawnTimer.getTaskId());

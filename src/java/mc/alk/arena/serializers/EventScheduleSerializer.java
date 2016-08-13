@@ -24,15 +24,20 @@ public class EventScheduleSerializer extends BaseConfig {
 	EventScheduler es;
 
 	public void loadAll(){
-		try {config.load(file);} catch (Exception e){Log.printStackTrace(e);}
+		try {
+		    config.load(file);
+		} 
+		catch (Exception e) {
+		    Log.printStackTrace(e);
+		}
 		loadScheduledEvents(config.getConfigurationSection("events"));
-
 	}
 
 	public void loadScheduledEvents(ConfigurationSection cs) {
 		if (cs == null){
 			Log.info(BattleArena.getNameAndVersion() +" has no scheduled events");
-			return;}
+			return;
+		}
 		List<String> keys = new ArrayList<>(cs.getKeys(false));
 		Collections.sort(keys);
 		for (String key : keys){
@@ -41,8 +46,9 @@ public class EventScheduleSerializer extends BaseConfig {
 				continue;
 			String[] fullargs = se.split(" ");
 			MatchParams eventParams = ParamController.getMatchParamCopy(fullargs[0]);
+			
 			if (eventParams == null){
-				Log.err(BattleArena.getNameAndVersion()+" couldn't reparse the scheduled command " + fullargs[0]);
+				Log.err( BattleArena.getNameAndVersion() + " couldn't reparse the scheduled command " + fullargs[0] );
 				continue;
 			}
 			String[] args = Arrays.copyOfRange(fullargs, 1, fullargs.length);
@@ -51,14 +57,15 @@ public class EventScheduleSerializer extends BaseConfig {
 	}
 
 	public void saveScheduledEvents(){
-		if (es == null)
-			return;
+		if (es == null) return;
+		
 		List<EventPair> events = es.getEvents();
-		if (events == null)
-			return;
+		
+		if (events == null) return;
+		
 		int i = 0;
 		Map<String,Object> map = new HashMap<>();
-		for (EventPair ep: events){
+		for ( EventPair ep: events ) {
 			map.put(i++ +"", ep.getEventParams().getName() +" " + StringUtils.join(ep.getArgs()," "));
 		}
 		ConfigurationSection cs = config.createSection("events");

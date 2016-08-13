@@ -8,9 +8,9 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.options.StateOptions;
+import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
@@ -65,8 +65,8 @@ public interface PlayerHolder extends Listener, ArenaListener{
 
     /**
      * Checks the current CompetitionState for the given option
-     * @param option the option to check for
+     * @param blockbreakon the option to check for
      * @return true if the current CompetitionState has the specified options or false otherwise
      */
-    boolean hasOption(StateOption option);
+    boolean hasOption(TransitionOption blockbreakon);
 }

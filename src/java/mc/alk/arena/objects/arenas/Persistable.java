@@ -1,19 +1,5 @@
 package mc.alk.arena.objects.arenas;
 
-import mc.alk.arena.objects.YamlSerializable;
-import mc.alk.arena.objects.exceptions.SerializationException;
-import mc.alk.arena.serializers.Persist;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.SerializerUtil;
-
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.inventory.ItemStack;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -26,6 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.inventory.ItemStack;
+
+import mc.alk.arena.objects.YamlSerializable;
+import mc.alk.arena.objects.exceptions.SerializationException;
+import mc.alk.arena.serializers.Persist;
+import mc.alk.util.InventoryUtil;
+import mc.alk.util.Log;
+import mc.alk.util.SerializerUtil;
 
 public class Persistable {
 
@@ -117,7 +117,7 @@ public class Persistable {
                         if (list == null)
                             continue;
                         Type genType = pt.getActualTypeArguments()[0];
-                        List<Object> newList = new ArrayList<Object>();
+                        List<Object> newList = new ArrayList<>();
                         for (Object o : list){
                             newList.add(yamlToObj(o,genType));
                         }
@@ -128,7 +128,7 @@ public class Persistable {
                         if (list == null)
                             continue;
                         Type genType = pt.getActualTypeArguments()[0];
-                        Set<Object> newSet = new HashSet<Object>();
+                        Set<Object> newSet = new HashSet<>();
                         for (Object o : list){
                             newSet.add(yamlToObj(o,genType));
                         }
@@ -141,7 +141,7 @@ public class Persistable {
                         Set<String> keyset = mapcs.getKeys(false);
                         Type keyType = pt.getActualTypeArguments()[0];
                         Type mapType = pt.getActualTypeArguments()[1];
-                        Map<Object,Object> newMap = new HashMap<Object,Object>();
+                        Map<Object,Object> newMap = new HashMap<>();
                         for (String key : keyset){
                             Object k = yamlToObj(key,keyType);
                             Object v = yamlToObj(mapcs.get(key), mapType);
@@ -206,9 +206,8 @@ public class Persistable {
         } else if (YamlSerializable.class.isAssignableFrom((Class<?>) type)){
             if (Map.class.isAssignableFrom(name.getClass())){
                 return createYamlSerializable((Class<?>)type, (Map<String,Object>)name, null);
-            } else {
-                return createYamlSerializable((Class<?>)type, null, (String)name);
             }
+            return createYamlSerializable((Class<?>)type, null, (String)name);
         }
         throw new NotPersistableException("Type " + type +" is not persistable. Not loading values for "+name);
     }
@@ -240,7 +239,7 @@ public class Persistable {
     }
 
     public static Map<String, Object> objectsToYamlMap(Object object, Class<?> onlyCheckClass) {
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String,Object> map = new HashMap<>();
 
         Class<?> objectClass = object.getClass();
         objectsToYamlMap(object,objectClass,map,onlyCheckClass);
@@ -290,7 +289,7 @@ public class Persistable {
                         List<Object> list = (List<Object>) field.get(object);
                         if (list == null)
                             continue;
-                        List<Object> olist = new ArrayList<Object>();
+                        List<Object> olist = new ArrayList<>();
                         for (Object o : list){
                             olist.add(objToYaml(o));
                         }
@@ -301,7 +300,7 @@ public class Persistable {
                         Set<Object> set = (Set<Object>) field.get(object);
                         if (set == null)
                             continue;
-                        List<Object> oset = new ArrayList<Object>();
+                        List<Object> oset = new ArrayList<>();
                         for (Object o : set){
                             oset.add(objToYaml(o));
                         }
@@ -311,7 +310,7 @@ public class Persistable {
                         Map<Object,Object> mymap = (ConcurrentHashMap<Object,Object>) field.get(object);
                         if (mymap == null)
                             continue;
-                        Map<Object,Object> oset = new HashMap<Object,Object>();
+                        Map<Object,Object> oset = new HashMap<>();
                         for (Object o : mymap.keySet()){
                             Object key = objToYaml(o);
                             if (key == null)
@@ -327,7 +326,7 @@ public class Persistable {
                         Map<Object,Object> mymap = (Map<Object,Object>) field.get(object);
                         if (mymap == null)
                             continue;
-                        Map<Object,Object> oset = new HashMap<Object,Object>();
+                        Map<Object,Object> oset = new HashMap<>();
                         for (Object o : mymap.keySet()){
                             Object key = objToYaml(o);
                             if (key == null)

@@ -232,11 +232,11 @@ public class BAConfigSerializer extends BaseConfig {
             Defaults.READY_BLOCK = value;
         }
 
-        defaults.setWaitroomClosedWhileRunning(true);
+        defaults.setCloseWaitroomWhileRunning(true);
         defaults.setCancelIfNotEnoughPlayers(false);
         defaults.setRated(true);
         defaults.setUseTrackerPvP(false);
-        defaults.setTeamRating(false);
+        defaults.setUseTeamRating(false);
         defaults.setUseTrackerMessages(true);
         defaults.setNLives(1);
         defaults.setTeamSize(new MinMax(1, ArenaSize.MAX));
@@ -244,7 +244,7 @@ public class BAConfigSerializer extends BaseConfig {
         defaults.setArenaCooldown(cs.getInt("arenaCooldown", 1));
         defaults.setAllowedTeamSizeDifference(cs.getInt("allowedTeamSizeDifference", 1));
 
-        defaults.setNConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions", "infinite")));
+        defaults.setNumConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions", "infinite")));
 
         List<String> list = cs.getStringList("defaultDuelOptions");
         if (list != null && !list.isEmpty()) {

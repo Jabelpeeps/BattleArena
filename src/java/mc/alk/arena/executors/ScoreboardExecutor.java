@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -13,10 +17,6 @@ import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.util.MessageUtil;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 
 /**
  * Command executor used to modify the Scoreboard of an arena that is in
@@ -45,15 +45,15 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * key = matchID
      */
-    Map<Integer, ArenaObjective> objectives = new HashMap<Integer, ArenaObjective>(); // key = matchID
+    Map<Integer, ArenaObjective> objectives = new HashMap<>(); // key = matchID
     /**
      * key = matchID, value is the amount of points needed to win the arena.
      */
-    Map<Integer, Integer> amount2win = new HashMap<Integer, Integer>(); // key = matchID
+    Map<Integer, Integer> amount2win = new HashMap<>(); // key = matchID
     /**
      * Stack of inverse Commands.
      */
-    LinkedList<String> stack = new LinkedList<String>();
+    LinkedList<String> stack = new LinkedList<>();
     String lastOperation = "";
 
     public ScoreboardExecutor(Plugin reference, BattleArenaController controller, boolean messages) {
@@ -73,7 +73,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     @MCCommand(cmds = {"create"}, op = true)
     public boolean create(CommandSender sender, Arena arena, String label, Integer amountToWin) {
         Match match = this.bac.getMatch(arena);
-        int matchID = match.getID();
+        int matchID = match.getId();
         if (objectives.containsKey(matchID)) {
             printMessage(sender, "You may only have one custom objective per match.");
             String name = objectives.get(matchID).getID();
@@ -104,7 +104,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     @MCCommand(cmds = {"remove", "delete", "unregister"}, op = true)
     public boolean remove(CommandSender sender, Arena arena) {
         Match match = this.bac.getMatch(arena);
-        int matchID = match.getID();
+        int matchID = match.getId();
         ArenaObjective objective = objectives.get(matchID);
         if (objective == null) {
             printMessage(sender, "This command will only unregister a custom Objective created by the /arenaScoreboard cmd");
@@ -124,7 +124,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     @MCCommand(cmds = {"addpoints", "add"}, op = true)
     public boolean add(CommandSender sender, ArenaPlayer ap, Integer x) {
         Match match = bac.getMatch(ap);
-        int matchID = match.getID();
+        int matchID = match.getId();
         ArenaTeam team = ap.getTeam();
         ArenaObjective objective = objectives.get(matchID);
         objective.addPoints(team, x);

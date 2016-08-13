@@ -1,37 +1,28 @@
 package mc.alk.arena.objects;
 
+import lombok.Getter;
+import lombok.Setter;
 
 public class ContainerState {
 	public static final ContainerState OPEN = new ContainerState(AreaContainerState.OPEN);
 
 	public static final ContainerState CLOSED = new ContainerState(AreaContainerState.CLOSED);
 
-	public enum AreaContainerState{
-		CLOSED, OPEN
+    @SuppressWarnings( "hiding" )
+	public enum AreaContainerState {
+        CLOSED, OPEN
 	}
 
-	final AreaContainerState state;
-	String msg;
+	@Getter final AreaContainerState state;
+	@Getter @Setter String msg;
 
-	public ContainerState(AreaContainerState state){
-		this.state = state;
+	public ContainerState(AreaContainerState _state){
+		state = _state;
 	}
 
-	public ContainerState(AreaContainerState state, String msg){
-		this.state = state;
-		this.msg = msg;
-	}
-
-	public AreaContainerState getState(){
-		return state;
-	}
-
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public ContainerState(AreaContainerState _state, String _msg){
+		state = _state;
+		msg = _msg;
 	}
 
 	public static ContainerState toState(AreaContainerState state) {
@@ -49,5 +40,4 @@ public class ContainerState {
 	public boolean isClosed() {
 		return state == AreaContainerState.CLOSED;
 	}
-
 }

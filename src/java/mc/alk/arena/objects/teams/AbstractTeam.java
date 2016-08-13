@@ -23,7 +23,7 @@ import mc.alk.util.PermissionsUtil;
 
 abstract class AbstractTeam implements ArenaTeam{
 	static int count = 0;
-	final int id = count++; /// id
+	final int id = count++; 
 
     final protected Set<ArenaPlayer> players = new HashSet<>();
     final protected Set<ArenaPlayer> deadplayers = new HashSet<>();
@@ -31,9 +31,9 @@ abstract class AbstractTeam implements ArenaTeam{
 
 	protected boolean nameManuallySet = false;
 	protected boolean nameChanged = true;
-	protected String name =null; /// Internal name of this team
-	protected String displayName =null; /// Display name
-	protected String scoreboardDisplayName =null; /// Scoreboard name
+	protected String name = null; 
+	protected String displayName = null; 
+	protected String scoreboardDisplayName = null; 
 
     final HashMap<ArenaPlayer, Integer> kills = new HashMap<>();
     final HashMap<ArenaPlayer, Integer> deaths = new HashMap<>();
@@ -66,7 +66,7 @@ abstract class AbstractTeam implements ArenaTeam{
 
 	protected AbstractTeam(Collection<ArenaPlayer> teammates) {
 		init();
-		this.players.addAll(teammates);
+		players.addAll(teammates);
 		nameChanged = true;
 	}
 
@@ -92,17 +92,25 @@ abstract class AbstractTeam implements ArenaTeam{
 	}
 
 	protected String createName() {
-		if (nameManuallySet || !nameChanged){ ///
-			return name;}
+		if (nameManuallySet || !nameChanged)
+			return name;
+		
 		/// Sort the names and then append them together
 		ArrayList<String> list = new ArrayList<>(players.size());
-		for (ArenaPlayer p:players){list.add(p.getName());}
-		for (ArenaPlayer p:leftplayers){list.add(p.getName());}
+		
+		for (ArenaPlayer p:players)
+		    list.add(p.getName());
+		
+		for (ArenaPlayer p:leftplayers)
+		    list.add(p.getName());
+		
 		if (list.size() > 1)
 			Collections.sort(list);
+		
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (String s: list){
+		
+		for (String s: list) {
 			if (!first) sb.append(", ");
 			sb.append(s);
 			first = false;
@@ -338,9 +346,8 @@ abstract class AbstractTeam implements ArenaTeam{
 					return true;
 			}
 			return false;
-		} else {
-			return this.equals(team);
 		}
+        return this.equals(team);
 	}
 
     @Override

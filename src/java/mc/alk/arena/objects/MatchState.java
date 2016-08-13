@@ -109,37 +109,37 @@ public enum MatchState implements CompetitionTransition {
         return list;
     }
 
-    public MatchState getCorrectState(StateOption option) {
-        if (!(option instanceof TransitionOption)) {
+    public MatchState getCorrectState(TransitionOption option) {
+        if ( option == null ) {
             return this;
         }
-        TransitionOption op = (TransitionOption) option;
+
         switch (this) {
             
             case ONJOIN:
             case ONOPEN:
-                if (op.isState()) return INOPEN;
+                if (option.isState()) return INOPEN;
                 break;
             case INOPEN:
-                if (op.isTransition()) return INOPEN;
+                if (option.isTransition()) return INOPEN;
                 break;
             case ONPRESTART:
-                if (op.isState()) return INPRESTART;
+                if (option.isState()) return INPRESTART;
                 break;
             case INPRESTART:
-                if (op.isTransition()) return ONPRESTART;
+                if (option.isTransition()) return ONPRESTART;
                 break;
             case ONSTART:
-                if (op.isState()) return INGAME;
+                if (option.isState()) return INGAME;
                 break;
             case INGAME:
-                if (op.isTransition()) return ONSTART;
+                if (option.isTransition()) return ONSTART;
                 break;
             case ONVICTORY:
-                if (op.isState()) return INVICTORY;
+                if (option.isState()) return INVICTORY;
                 break;
             case INVICTORY:
-                if (op.isTransition()) return ONVICTORY;
+                if (option.isTransition()) return ONVICTORY;
                 break;
             
             default:

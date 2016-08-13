@@ -60,7 +60,6 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaControllerInterface;
@@ -373,7 +372,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         
         StateOptions ts = params.getStateOptions( MatchState.ONPRESTART );
         /// If we will teleport them into the arena for the first time, check to see they are ready first
-        if ( ts != null && ts.teleportsIn() ) {
+        if ( ts != null && ts.hasAnyOption( TransitionOption.TELEPORTWAITROOM, 
+                                            TransitionOption.TELEPORTMAINWAITROOM, 
+                                            TransitionOption.TELEPORTIN) ) {
             for ( ArenaTeam t : teams ) 
                 checkReady( t, params.getStateOptions( MatchState.PREREQS ) );	
         }
@@ -450,7 +451,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         List<ArenaTeam> competingTeams = new ArrayList<>();
         /// If we will teleport them into the arena for the first time, check to see they are ready first
         StateOptions ts = params.getStateOptions( state );
-        if ( ts != null && ts.teleportsIn() ) {
+        if ( ts != null && ts.hasAnyOption( TransitionOption.TELEPORTWAITROOM, 
+                                            TransitionOption.TELEPORTMAINWAITROOM, 
+                                            TransitionOption.TELEPORTIN) ) {
             for ( ArenaTeam t : teams ) 
                 checkReady( t, params.getStateOptions( MatchState.PREREQS ) );
         }
@@ -483,7 +486,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     @Override
-    public boolean hasOption(StateOption option) {
+    public boolean hasOption(TransitionOption option) {
         return params.getStateGraph().hasInArenaOrOptionAt(state, option);
     }
 
@@ -590,7 +593,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             aTeams.addAll( losers );
             aTeams.addAll( drawers );
             if ( Defaults.DEBUG_TRACE ) 
-                Log.trace( am.getID(), "Match::MatchVictory():" + am +
+                Log.trace( am.getId(), "Match::MatchVictory():" + am +
                                        "  victors=" + victors +
                                        "  losers=" + losers + 
                                        "  drawers=" + drawers + " " + matchResult + 
@@ -626,7 +629,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             final Set<ArenaTeam> drawers = matchResult.getDrawers();
             
             if ( Defaults.DEBUG_TRACE ) 
-                Log.trace( am.getID(), "Match::MatchVictory():" + am + 
+                Log.trace( am.getId(), "Match::MatchVictory():" + am + 
                                        "  victors=" + victors +
                                        "  losers=" + losers + 
                                        "  drawers=" + drawers + " " + matchResult + 
@@ -808,7 +811,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         
         if (this.isFinished())
             return false;
-        if (Defaults.DEBUG_MATCH_TEAMS)Log.info(getID() + " addedTeam(" + team.getName() + ":" + team.getId()+ ")" );
+        if (Defaults.DEBUG_MATCH_TEAMS)Log.info( id + " addedTeam(" + team.getName() + ":" + team.getId()+ ")" );
 
         team.setArenaObjective(defaultObjective);
         scoreboard.addTeam(team);
@@ -865,7 +868,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                 added = true;
             }
         }
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(), player.getName() + "   !!!!&2playerEntering  "+added+" t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + "   !!!!&2playerEntering  "+added+" t=" + player.getTeam());
         if (added){
             updateBukkitEvents(MatchState.ONENTER,player);
             arenaInterface.onEnter(player, player.getTeam());
@@ -883,7 +886,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             }
         }
         if ( Defaults.DEBUG_TRACE ) 
-            Log.trace( getID(), player.getName() + "   !!!!&4playerLeaving  " + removed + " t=" + player.getTeam() );
+            Log.trace( id, player.getName() + "   !!!!&4playerLeaving  " + removed + " t=" + player.getTeam() );
         if ( removed ) {
             player.despawnMobs();
             updateBukkitEvents(MatchState.ONLEAVE,player);
@@ -903,7 +906,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     @Override
     public boolean removedTeam(ArenaTeam team){
         if ( Defaults.DEBUG_MATCH_TEAMS ) 
-            Log.info( getID() + " removedTeam(" + team.getName() + ":" + team.getId() + ")" );
+            Log.info( id + " removedTeam(" + team.getName() + ":" + team.getId() + ")" );
         scoreboard.removeTeam(team);
         teams.remove(team);
         HeroesController.removeTeam(team);
@@ -920,7 +923,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if (isEnding())
             return;
         if (Defaults.DEBUG_MATCH_TEAMS)
-            Log.info(getID() + " addedToTeam(" + team.getName() + ":" + team.getId() + 
+            Log.info( id + " addedToTeam(" + team.getName() + ":" + team.getId() + 
                     ", " + player.getName() + ") inside=" + isInMatch( player ) );
 
         if ( !team.hasSetName() && team.getDisplayName().length() > Defaults.MAX_TEAM_NAME_APPEND ) 
@@ -980,7 +983,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {
        
         if ( Defaults.DEBUG_MATCH_TEAMS ) 
-            Log.info( getID() + " removedFromTeam(" + team.getName() + ":" + team.getId() + ")" + player.getName() );
+            Log.info( id + " removedFromTeam(" + team.getName() + ":" + team.getId() + ")" + player.getName() );
         HeroesController.removedFromTeam(team, player.getPlayer());
         scoreboard.removedFromTeam(team, player);
     }
@@ -1118,7 +1121,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     @Override
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(), player.getName() + " -onPostQuit  t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -onPostQuit  t=" + player.getTeam());
         ArenaTeam t = player.getTeam();
         TransitionController.transition( this, MatchState.ONLEAVEARENA, player, t, false);
         if (WorldGuardController.hasWorldGuard() && arena.hasRegion())
@@ -1166,7 +1169,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     @Override
     public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(),player.getName() + " -&fonPreEnter  t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id,player.getName() + " -&fonPreEnter  t=" + player.getTeam());
         if (!inGamePlayers.contains(player)){
             preFirstJoin(player);
             player.getMetaData().setJoining(true);
@@ -1176,7 +1179,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     @Override
     public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(),player.getName() + " -&fonPostEnter  t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&fonPostEnter  t=" + player.getTeam());
         if (player.getMetaData().isJoining()){
             player.getMetaData().setJoining(false);
             postFirstJoin(player);
@@ -1185,13 +1188,13 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     @Override
     public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(),player.getName() + " -&8onPreLeave  t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&8onPreLeave  t=" + player.getTeam());
         removeInMatch(player);
     }
 
     @Override
     public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(), player.getName() + " -&8onPostLeave  t=" + player.getTeam());
+        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&8onPostLeave  t=" + player.getTeam());
     }
 
     public void setMessageHandler(MatchMessageHandler mc){this.mc.setMessageHandler(mc);}
@@ -1247,7 +1250,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
      * @param victoryCondition Victory condition to add
      */
     public void addVictoryCondition(VictoryCondition victoryCondition){
-        if (Defaults.DEBUG_TRACE) Log.trace(getID(),getArena().getName() + " adding vc=" + victoryCondition);
+        if (Defaults.DEBUG_TRACE) Log.trace( id, getArena().getName() + " adding vc=" + victoryCondition);
         vcs.add(victoryCondition);
         addArenaListener(victoryCondition);
         if (!alwaysOpen && victoryCondition instanceof DefinesNumTeams)
@@ -1587,8 +1590,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                                 && state.ordinal() < MatchState.ONSTART.ordinal() )                );
     }
 
-    @Override
-    public int getID() { return id; }
+
     @Override
     public String getName() { return params.getName(); }
 

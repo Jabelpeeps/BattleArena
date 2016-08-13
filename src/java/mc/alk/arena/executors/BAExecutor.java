@@ -89,6 +89,7 @@ import mc.alk.arena.plugins.MobArenaInterface;
 import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.util.InventoryUtil;
+import mc.alk.util.InventoryUtil.PInv;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.MinMax;
@@ -96,7 +97,6 @@ import mc.alk.util.PermissionsUtil;
 import mc.alk.util.ServerUtil;
 import mc.alk.util.TeamUtil;
 import mc.alk.util.TimeUtil;
-import mc.alk.util.InventoryUtil.PInv;
 
 /**
  *
@@ -120,7 +120,7 @@ public class BAExecutor extends CustomCommandExecutor {
         this.watchController = BattleArena.getSelf().getWatchController();
     }
 
-    @MCCommand(cmds = {"enable"}, admin = true, perm = "arena.enable", usage = "enable")
+    @MCCommand( cmds = {"enable"}, admin = true, perm = "arena.enable", usage = "enable" )
     public boolean arenaEnable(CommandSender sender, MatchParams mp,
             String[] args) {
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
@@ -142,14 +142,12 @@ public class BAExecutor extends CustomCommandExecutor {
         return sendSystemMessage(sender, "type_enabled", mp.getName());
     }
 
-    @MCCommand(cmds = {"disable"}, admin = true, perm = "arena.enable", usage = "disable")
+    @MCCommand( cmds = {"disable"}, admin = true, perm = "arena.enable", usage = "disable" )
     public boolean arenaDisable(CommandSender sender, MatchParams mp,
             String[] args) {
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-            Set<String> set = new HashSet<>(); // / Since some commands
-            // have aliases.. we
-            // just want the
-            // original name
+            Set<String> set = new HashSet<>(); 
+            
             for (MatchParams param : ParamController.getAllParams()) {
                 disabled.add(param.getName());
                 set.add(param.getName());
@@ -176,14 +174,14 @@ public class BAExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(sender, MessageHandler.getSystemMessage(node, args));
     }
 
-    @MCCommand(cmds = {"enabled"}, admin = true)
+    @MCCommand( cmds = {"enabled"}, admin = true )
     public boolean arenaCheckArenaTypes(CommandSender sender) {
         String types = ArenaType.getValidList();
         MessageUtil.sendMessage(sender, "&e valid types are = &6" + types);
         return MessageUtil.sendMessage(sender, "&5Enabled types = &6 " + ParamController.getAvaibleTypes(disabled));
     }
 
-    @MCCommand(cmds = {"join", "j"}, usage = "add [options]", helpOrder = 1)
+    @MCCommand( cmds = {"join", "j"}, usage = "add [options]", helpOrder = 1 )
     public boolean join(ArenaPlayer player, MatchParams mp, String args[]) {
         return join(player, mp, args, false);
     }
@@ -990,7 +988,7 @@ public class BAExecutor extends CustomCommandExecutor {
             } else {
                 MessageUtil.sendMessage(sender, "&2Game options &6" + state + "&2 added &6" + to);
             }
-            StateGraph tops = params.getThisStateGraph();
+            StateGraph tops = params.getArenaStateGraph();
             StateOptions ops = tops.getOptions(state);
             MessageUtil.sendMessage(sender, "&2Options at &6" + state + "&2 now &6" + ops.toString());
         } catch (InvalidOptionException e) {
@@ -1557,7 +1555,7 @@ public class BAExecutor extends CustomCommandExecutor {
             }
         }
         if (needsItems) {
-            List<ItemStack> fee = pi.getStateOptions().getNeedItems(MatchState.PREREQS);
+            List<ItemStack> fee = pi.getStateGraph().getNeedItems(MatchState.PREREQS);
             if (fee != null) {
                 boolean hasEnough = true;
 
@@ -1580,7 +1578,7 @@ public class BAExecutor extends CustomCommandExecutor {
             }
         }
         if (takesItems) {
-            List<ItemStack> fee = pi.getStateOptions().getTakeItems(MatchState.PREREQS);
+            List<ItemStack> fee = pi.getStateGraph().getTakeItems(MatchState.PREREQS);
             if (fee != null) {
                 boolean hasEnough = true;
 
@@ -1615,7 +1613,7 @@ public class BAExecutor extends CustomCommandExecutor {
             }
         }
         if (takesItems) {
-            List<ItemStack> fee = pi.getStateOptions().getTakeItems(MatchState.PREREQS);
+            List<ItemStack> fee = pi.getStateGraph().getTakeItems(MatchState.PREREQS);
             if (fee != null) {
                 for (ArenaPlayer player : t.getPlayers()) {
                     getOrCreateJoinReqs(player).setItems(new PInv(fee));

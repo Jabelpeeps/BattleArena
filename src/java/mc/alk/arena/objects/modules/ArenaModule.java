@@ -1,42 +1,33 @@
 package mc.alk.arena.objects.modules;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.util.FileUtil;
 import mc.alk.util.Log;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-
-import java.io.File;
-import java.io.IOException;
-
-/**
- *
- */
-public abstract class ArenaModule implements Listener, ArenaListener{
-	private boolean enabled;
+public abstract class ArenaModule implements Listener, ArenaListener {
+	@Getter private boolean enabled;
 	protected FileConfiguration config;
-
-	public ArenaModule(){
-//		config = new BaseConfig(BattleArena.getSelf().getModuleDirectory()+"/"+this.getName());
-	}
 
 	/**
 	 * Called when the module is first created
 	 */
-	public void onEnable(){
-		this.enabled = true;
-	}
+	public void onEnable() { enabled = true; }
 
 	/**
 	 * Called when the module is being disabled
 	 */
-	public void onDisable(){
-		this.enabled = false;
-	}
+	public void onDisable() { enabled = false; }
 
 	/**
 	 * Return the Name of this module
@@ -51,55 +42,47 @@ public abstract class ArenaModule implements Listener, ArenaListener{
 	public abstract String getVersion();
 
 	/**
-	 * Is this module currently enabled
-	 * @return enabled
-	 */
-	public boolean isEnabled(){
-		return enabled;
-	}
-
-	/**
 	 * Set the module to be enabled or not
 	 * @param enable Whether to enable or disable
 	 */
-	public void setEnabled(boolean enable){
-		if (this.enabled != enable){
-			if (enable){
-				this.onEnable();
-				Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
-			} else {
-				this.onDisable();
-				HandlerList.unregisterAll(this);
+	public void setEnabled( boolean enable ) {
+		if ( enabled != enable ) {
+			if ( enable ){
+				onEnable();
+				Bukkit.getPluginManager().registerEvents( this, BattleArena.getSelf() );
+			} 
+			else {
+				onDisable();
+				HandlerList.unregisterAll( this );
 			}
 		}
-		this.enabled = enable;
-	}
-
-	public String getDescription(){
-		return getName();
+		enabled = enable;
 	}
 
 	public void reloadConfig(){
 		try {
-			config.load(getConfigFile());
+			config = YamlConfiguration.loadConfiguration( getConfigFile() );
 		} catch (Exception e) {
 			Log.printStackTrace(e);
 		}
 	}
 
-	protected File getConfigFile(){
-		return new File(BattleArena.getSelf().getModuleDirectory()+"/"+this.getName());
+	protected File getConfigFile() {
+		return new File( BattleArena.getSelf().getModuleDirectory() + "/" + getName() );
 	}
 
 	/**
 	 * create or save the default config.yml
 	 */
-	protected void saveDefaultConfig(){
+	protected void saveDefaultConfig() {
 		File f = getConfigFile();
-		if (config == null || !f.exists()){
-			if (FileUtil.hasResource(this.getClass(), "/config.yml")){
-				f = FileUtil.load(this.getClass(), f.getPath(), "/config.yml");
-			} else {
+		
+		if ( config == null || !f.exists() ) {
+		    
+			if ( FileUtil.hasResource( this.getClass(), "/config.yml" ) ) {
+				f = FileUtil.load( this.getClass(), f.getPath(), "/config.yml" );
+			} 
+			else {
 				try {
 					f.createNewFile();
 				} catch (IOException e) {
@@ -124,6 +107,6 @@ public abstract class ArenaModule implements Listener, ArenaListener{
 
 	@Override
 	public String toString(){
-		return "["+this.getName()+"_"+this.getVersion()+"]";
+		return "[" + getName() + "_" + getVersion() + "]";
 	}
 }

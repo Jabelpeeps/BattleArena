@@ -19,8 +19,8 @@ public @interface MCCommand {
 
     int order() default -1;
     float helpOrder() default Integer.MAX_VALUE;
-	boolean admin() default false; /// admin
-    boolean op() default false; /// op
+	boolean admin() default false; 
+    boolean op() default false; 
 
     String usage() default "";
     String usageNode() default "";

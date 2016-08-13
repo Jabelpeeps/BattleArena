@@ -7,11 +7,10 @@ import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.TRANSITION;
 import org.bukkit.GameMode;
 
 import mc.alk.arena.controllers.ArenaClassController;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.MinMax;
 
-public enum TransitionOption implements StateOption {
+public enum TransitionOption {
     /// Default only Options
     DUELONLY ("duelOnly", false, CONFIG),					/// DEFAULTS only: this game type is duel only
     ALWAYSOPEN("alwaysOpen", false, CONFIG),				/// DEFAULTS only: this game is always open to joins
@@ -165,7 +164,6 @@ public enum TransitionOption implements StateOption {
     @Override
     public String toString(){ return name; }
 
-    @Override
     public boolean hasValue(){ return hasValue; }
 
     public static TransitionOption fromString(String str){

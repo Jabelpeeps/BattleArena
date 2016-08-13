@@ -127,8 +127,10 @@ public class ArenaSerializer extends BaseConfig{
 
         ConfigurationSection as = cs.getConfigurationSection("arenas");
         ConfigurationSection bks = cs.getConfigurationSection("brokenArenas");
+        
         if (as == null && bks == null){
-            if (Defaults.DEBUG) Log.info(pname+" " + arenaType + " has no arenas, configSectionPath=" + cs.getCurrentPath());
+            if (Defaults.DEBUG) 
+                Log.info(pname+" " + arenaType + " has no arenas, configSectionPath=" + cs.getCurrentPath());
             return;
         }
 
@@ -340,7 +342,7 @@ public class ArenaSerializer extends BaseConfig{
         MatchParams mp = ParamController.getMatchParamCopy(arena.getArenaType().getName());
         if (mp == null)
             return;
-        StateGraph trans = mp.getThisStateGraph();
+        StateGraph trans = mp.getArenaStateGraph();
         if (trans == null)
             return;
         WorldGuardController.setFlag(arena.getWorldGuardRegion(), "entry", !trans.hasAnyOption(TransitionOption.WGNOENTER));
@@ -391,15 +393,15 @@ public class ArenaSerializer extends BaseConfig{
                 if (locs != null) {
                     amap.put("spectateLocations", locs);}
 
-                /// Visitor locations
                 locs = SerializerUtil.toSpawnMap(arena.getVisitorRoom());
                 if (locs != null) {
                     amap.put("visitorLocations", locs);}
 
-                /// Timed spawns
                 Map<Long, TimedSpawn> timedSpawns = arena.getTimedSpawns();
+                
                 if (timedSpawns != null && !timedSpawns.isEmpty()){
                     HashMap<String,Object> spawnmap = new HashMap<>();
+                
                     for (Long key: timedSpawns.keySet() ){
                         TimedSpawn ts = timedSpawns.get(key);
                         HashMap<String,Object> itemSpawnMap = saveSpawnable(ts);
@@ -421,7 +423,8 @@ public class ArenaSerializer extends BaseConfig{
                 arena.getParams().setParent(parentParams);
 
                 config.set("brokenArenas."+arenaname, null); /// take out any duplicate names in broken arenas
-            } catch (Exception e){
+            } 
+            catch (Exception e){
                 Log.printStackTrace(e);
                 if (arenaname != null){
                     transfer(config, "arenas."+arenaname, "brokenArenas."+arenaname);
@@ -439,7 +442,7 @@ public class ArenaSerializer extends BaseConfig{
     }
     @Override
     public void save() {
-        this.saveArenas(true);
+        saveArenas(true);
     }
 
     public static void saveAllArenas(boolean log){
@@ -459,6 +462,7 @@ public class ArenaSerializer extends BaseConfig{
     }
 
     private static TimedSpawn parseSpawnable(ConfigurationSection cs) throws IllegalArgumentException {
+        
         if (!cs.contains("spawn") || !cs.contains("time") || !cs.contains("loc")){
             Log.err("configuration section cs = " + cs +"  is missing either spawn,time,or loc");
             return null;
@@ -466,10 +470,13 @@ public class ArenaSerializer extends BaseConfig{
         SpawnTime st = parseSpawnTime(cs.getString("time"));
         Location loc = SerializerUtil.getLocation(cs.getString("loc"));
         List<String> strings = SpawnSerializer.convertToStringList(cs.getString("spawn"));
+        
         if (strings == null || strings.isEmpty())
             return null;
+        
         SpawnInstance si;
         if (cs.contains("type") && cs.getString("type").equalsIgnoreCase("block")){
+            
             si = new BlockSpawn(loc.getBlock(),false);
             Material mat = Material.valueOf(cs.getString("spawn"));
             ((BlockSpawn)si).setMaterial(mat);
@@ -480,8 +487,9 @@ public class ArenaSerializer extends BaseConfig{
                 mat = Material.AIR;
             }
             if (mat != null)
-                ((BlockSpawn)si).setDespawnMaterial(mat);
-        }else if (cs.contains("type") && cs.getString("type").equalsIgnoreCase("chest")) {
+                ((BlockSpawn)si).setDespawnMaterial(mat);    
+        }
+        else if (cs.contains("type") && cs.getString("type").equalsIgnoreCase("chest")) {
             si = new ChestSpawn(loc.getBlock(), false);
             Material mat = Material.valueOf(cs.getString("spawn"));
             ((BlockSpawn)si).setMaterial(mat);
@@ -489,7 +497,8 @@ public class ArenaSerializer extends BaseConfig{
             List<ItemStack> giveItems = InventoryUtil.getItemList(cs, "giveItems");
             items = (items.size() >= giveItems.size()) ? items : giveItems;
             ((ChestSpawn)si).setItems(items);
-        } else {
+        } 
+        else {
             List<SpawnInstance> spawns = SpawnSerializer.parseSpawnable(strings);
             if (spawns == null || spawns.isEmpty())
                 return null;
@@ -514,18 +523,22 @@ public class ArenaSerializer extends BaseConfig{
         SpawnInstance si = ts.getSpawn();
         String key = null;
         String value =null;
+        
         if (si instanceof SpawnGroup){
             SpawnGroup in = (SpawnGroup) si;
             key = in.getName();
             value =  "1";
-        } else if (si instanceof ItemSpawn){
+        } 
+        else if (si instanceof ItemSpawn){
             ItemSpawn in = (ItemSpawn) si;
             key = InventoryUtil.getItemString(in.getItemStack());
 
-        } else if (si instanceof EntitySpawn){
+        } 
+        else if (si instanceof EntitySpawn){
             EntitySpawn in = (EntitySpawn) si;
             key = in.getEntityString() + " " + in.getNumber();
-        } else if (si instanceof ChestSpawn){
+        } 
+        else if (si instanceof ChestSpawn){
             ChestSpawn bs = (ChestSpawn) si;
             key = bs.getMaterial().name();
             ItemStack[] items = bs.getItems();
@@ -533,7 +546,8 @@ public class ArenaSerializer extends BaseConfig{
             if (items != null) {
                 spawnMap.put("items", ConfigSerializer.getItems(Arrays.asList(items)));
             }
-        } else if (si instanceof BlockSpawn){
+        } 
+        else if (si instanceof BlockSpawn){
             BlockSpawn bs = (BlockSpawn) si;
             spawnMap.put("type", "block");
             spawnMap.put("despawnMat", (bs.getDespawnMaterial()!=null ? bs.getDespawnMaterial().name() : "AIR"));
@@ -548,6 +562,4 @@ public class ArenaSerializer extends BaseConfig{
         spawnMap.put("time", ts.getFirstSpawnTime() + " " + ts.getRespawnTime() + " " + ts.getTimeToDespawn());
         return spawnMap;
     }
-
-
 }

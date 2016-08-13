@@ -39,10 +39,10 @@ public class ParamAlterController {
     }
 
     private static MatchParams getOrCreateTeamParams(Integer teamIndex, MatchParams params){
-        Map<Integer, MatchParams> map = params.getThisTeamParams();
+        Map<Integer, MatchParams> map = params.getArenaTeamParams();
         if (map == null) {
             map = new HashMap<>();
-            params.setTeamParams(map);
+            params.setArenaTeamParams(map);
         }
         MatchParams tp = map.get(teamIndex);
         if (tp == null) {
@@ -114,14 +114,14 @@ public class ParamAlterController {
             case TEAMSIZE: params.setTeamSize((MinMax) value);  break;
             case PREFIX: params.setPrefix((String)value); break;
             case SIGNDISPLAYNAME: params.setSignDisplayName((String) value); break;
-            case DISPLAYNAME: params.setDisplayName((String) value); break;
+            case DISPLAYNAME: params.setArenaDisplayName((String) value); break;
             case COMMAND: params.setCommand((String) value); break;
             case DATABASE: params.setTableName((String) value); break;
             case MATCHTIME: params.setMatchTime((Integer)value);break;
-            case CLOSEWAITROOMWHILERUNNING: params.setWaitroomClosedWhileRunning((Boolean)value); break;
+            case CLOSEWAITROOMWHILERUNNING: params.setCloseWaitroomWhileRunning((Boolean)value); break;
             case CANCELIFNOTENOUGHPLAYERS: params.setCancelIfNotEnoughPlayers((Boolean)value); break;
             case ALLOWEDTEAMSIZEDIFFERENCE: params.setAllowedTeamSizeDifference((Integer)value); break;
-            case NCUMONCURRENTCOMPETITIONS: params.setNConcurrentCompetitions((Integer)value); break;
+            case NCUMONCURRENTCOMPETITIONS: params.setNumConcurrentCompetitions((Integer)value); break;
             case PRESTARTTIME:
                 iv = (Integer) value;
                 checkGreater(iv,0, true);
@@ -132,7 +132,7 @@ public class ParamAlterController {
                 checkGreater(iv,1, true);
                 params.setSecondsToLoot(iv); break;
             case VICTORYCONDITION:
-                params.setVictoryCondition((VictoryType)value);
+                params.setVictoryType((VictoryType)value);
                 break;
             case USETRACKERMESSAGES:
                 params.setUseTrackerMessages((Boolean)value);
@@ -157,7 +157,7 @@ public class ParamAlterController {
 
         if (to.hasValue() && value == null)
             throw new InvalidOptionException("Transition Option " + to +" needs a value! " + to+"=<value>");
-        StateGraph tops = params.getThisStateGraph();
+        StateGraph tops = params.getArenaStateGraph();
         if (tops == null) {
             tops = new StateGraph();
         }
@@ -243,7 +243,7 @@ public class ParamAlterController {
         if (go != null){
             try {
                 deleteGameOption(go);
-                params.getThisStateGraph();
+                params.getArenaStateGraph();
                 saveParamsAndUpdate(rc, params);
                 ParamController.addMatchParams(params);
                 sendMessage(sender, "&2Game option &6"+go.toString()+"&2 removed");
@@ -265,7 +265,7 @@ public class ParamAlterController {
         CompetitionState state = StateController.fromString(args[1]);
         if (state != null){
             if (args.length < 3){
-                StateGraph tops = params.getThisStateGraph();
+                StateGraph tops = params.getArenaStateGraph();
                 tops.deleteOptions(state);
                 return sendMessage(sender, "&2Options at &6"+state +"&2 are now empty");
             }
@@ -274,7 +274,7 @@ public class ParamAlterController {
                 deleteTransitionOption(state, key);
                 rc.saveParams(params);
                 sendMessage(sender, "&2Game option &6"+state +" "+key+" &2 removed");
-                StateGraph tops = params.getThisStateGraph();
+                StateGraph tops = params.getArenaStateGraph();
                 StateOptions ops = tops.getOptions(state);
                 if (ops == null){
                     sendMessage(sender, "&2Options at &6"+state +"&2 are empty");
@@ -294,13 +294,13 @@ public class ParamAlterController {
 
     private boolean deleteTransitionOption(CompetitionState state, String key) throws Exception{
         TransitionOption to = TransitionOption.fromString(key);
-        StateGraph tops = params.getThisStateGraph();
+        StateGraph tops = params.getArenaStateGraph();
         return tops.removeStateOption(state, to);
     }
 
     private boolean deleteGameOption(AlterParamOption go) throws Exception {
         switch(go){
-            case NLIVES: params.setNLives(null); break;
+            case NLIVES: params.setNLives(0); break;
             case NTEAMS: params.setNTeams(null);  break;
             case TEAMSIZE: params.setTeamSize(null);  break;
             case PREFIX: params.setPrefix(null); break;
@@ -309,8 +309,8 @@ public class ParamAlterController {
             case MATCHTIME: params.setMatchTime(null);break;
             case PRESTARTTIME: params.setSecondsTillMatch(null);break;
             case VICTORYTIME: params.setSecondsToLoot(null); break;
-            case VICTORYCONDITION: params.setVictoryCondition(null); break;
-            case CLOSEWAITROOMWHILERUNNING: params.setWaitroomClosedWhileRunning(null);
+            case VICTORYCONDITION: params.setVictoryType(null); break;
+            case CLOSEWAITROOMWHILERUNNING: params.setCloseWaitroomWhileRunning(null);
             case RATED: params.setRated(false); break;
             default:
                 break;

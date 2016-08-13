@@ -8,13 +8,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import lombok.Getter;
 import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.CompetitionEvent;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.joining.JoinResponseHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -27,30 +27,20 @@ import mc.alk.arena.objects.teams.TeamHandler;
  */
 public abstract class Competition implements JoinResponseHandler, PlayerHolder, TeamHandler {
 
-	protected List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
+	@Getter protected List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
 	protected final Set<UUID> leftPlayers = Collections.synchronizedSet(new HashSet<UUID>());
 	static int count =0;
-	final protected int id = count++;
+	@Getter final protected int id = count++;
 	/** Our Method Controller that will handle anyone listening to this competition*/
-	protected final MethodController methodController = new MethodController("id ="+id);
+	protected final MethodController methodController = new MethodController("id =" + id );
+	
 	/**
 	 * Get the time of when the competition did the given state
 	 * @return time or null if not found
 	 */
 	public abstract Long getTime(CompetitionState state);
 
-	/**
-	 * Get the unique ID for this competition
-	 * @return id
-	 */
-	public int getID(){
-		return id;
-	}
-
 	public abstract String getName();
-
-	@Override
-    public abstract CompetitionState getState();
 
 	/**
 	 * Transition from one state to another
@@ -68,13 +58,6 @@ public abstract class Competition implements JoinResponseHandler, PlayerHolder, 
 		return leftPlayers.contains(player.getUniqueId());
 	}
 
-	/**
-	 * Returns either the MatchParams or EventParams of the match/event
-	 * @return MatchParams
-	 */
-	@Override
-    public abstract MatchParams getParams();
-
 	public void setTeams(List<ArenaTeam> _teams){
 		teams.clear();
 		teams.addAll( _teams );
@@ -82,10 +65,6 @@ public abstract class Competition implements JoinResponseHandler, PlayerHolder, 
 		for ( int i = 0; i < _teams.size(); i++ ) {
 			_teams.get(i).setIndex(i);
 		}
-	}
-
-	public List<ArenaTeam> getTeams() {
-		return teams;
 	}
 
 	/**

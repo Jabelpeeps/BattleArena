@@ -1,7 +1,6 @@
-package mc.alk.arena.objects.meta;
+package mc.alk.arena.objects;
 
 
-import mc.alk.arena.objects.PlayerSave;
 import mc.alk.arena.objects.options.JoinOptions;
 
 public class PlayerMetaData {

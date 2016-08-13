@@ -42,7 +42,7 @@ public class BlockSpawn extends SpawnInstance{
 	}
 
     public Block getBlock() {
-        return this.getLocation().getBlock();
+        return getLocation().getBlock();
     }
     public Material getMaterial() {
         return mat;

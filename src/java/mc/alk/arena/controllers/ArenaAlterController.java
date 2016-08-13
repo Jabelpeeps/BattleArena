@@ -245,11 +245,11 @@ public class ArenaAlterController {
             arena.setWorldGuardRegion(region);
             WorldGuardController.saveSchematic(sender, id);
             MatchParams mp = ParamController.getMatchParams(arena.getArenaType().getName());
-            if (mp != null && mp.getThisStateGraph().hasAnyOption(TransitionOption.WGNOENTER)){
+            if (mp != null && mp.getArenaStateGraph().hasAnyOption(TransitionOption.WGNOENTER)){
                 WorldGuardController.trackRegion(w.getName(), id);
                 WorldGuardController.setFlag(region, "entry", false);
             }
-            if (mp != null && mp.getThisStateGraph().hasAnyOption(TransitionOption.WGNOLEAVE)){
+            if (mp != null && mp.getArenaStateGraph().hasAnyOption(TransitionOption.WGNOLEAVE)){
                 WorldGuardController.trackRegion(w.getName(), id);
                 WorldGuardController.setFlag(region, "exit", false);
             }

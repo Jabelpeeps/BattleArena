@@ -3,6 +3,8 @@ package mc.alk.arena;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -38,6 +40,7 @@ import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaFactory;
+import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.victoryconditions.AllKills;
 import mc.alk.arena.objects.victoryconditions.Custom;
 import mc.alk.arena.objects.victoryconditions.HighestKills;
@@ -94,6 +97,9 @@ public class BattleArena extends JavaPlugin {
     private static final BAClassesSerializer classesSerializer = new BAClassesSerializer();
     private static final EventScheduleSerializer eventSchedulerSerializer = new EventScheduleSerializer();
     private static final SignSerializer signSerializer = new SignSerializer();
+    
+
+    private static final Map<String, ArenaModule> modules = new HashMap<>();
 
     /**
      * enable the BattleArena plugin
@@ -407,13 +413,15 @@ public class BattleArena extends JavaPlugin {
                     Constructor<?> constructor = arenaClass.getConstructor(args);
                     Arena  arena = (Arena) constructor.newInstance((Object[]) args);                  
                     return arena;
-                } catch (NoSuchMethodException ex) {
+                } 
+                catch (NoSuchMethodException ex) {
                     Log.err("If you have custom constructors for your class you must also have a public default constructor");
                     Log.err("Add the following line to your Arena Class '" + arenaClass.getSimpleName() + ".java'");
                     Log.err("public " + arenaClass.getSimpleName() + "(){}");
                     Log.err("Or you can create your own ArenaFactory to support custom constructors");
                     Log.printStackTrace(ex);
-                } catch ( IllegalAccessException | InstantiationException 
+                } 
+                catch ( IllegalAccessException | InstantiationException 
                         | IllegalArgumentException | InvocationTargetException ex ) {
                     Log.printStackTrace(ex);
                 }
@@ -428,5 +436,13 @@ public class BattleArena extends JavaPlugin {
      */
     public File getModuleDirectory() {
         return new File( getDataFolder() + "/modules");
+    }
+    
+    public static void addModule(ArenaModule mod) {
+        modules.put(mod.getName().toUpperCase(), mod);
+    }
+    
+    public static ArenaModule getModule(String name) {
+        return modules.get(name.toUpperCase());
     }
 }

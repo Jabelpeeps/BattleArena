@@ -93,7 +93,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         rounds.clear();
         curRound = -1;
         nrounds = -1;
-        joinHandler.removeImproperTeams();
+        teamJoinHandler.removeImproperTeams();
     }
 
     static int getNTeams(Collection<ArenaTeam> teams) {
@@ -112,14 +112,14 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         Server server = Bukkit.getServer();
         int osize = getNTeams(teams);
         nrounds = calcNRounds(osize);
-        final int minTeams = eventParams.getMinTeams();
+        final int minTeams = params.getMinTeams();
         int roundteams = (int) Math.pow(minTeams, nrounds);
         
         server.broadcastMessage( 
-                Log.colorChat( eventParams.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
+                Log.colorChat( params.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
 
         TreeMap<Double,ArenaTeam> sortTeams = new TreeMap<>(Collections.reverseOrder());
-        TrackerController sc = new TrackerController(eventParams);
+        TrackerController sc = new TrackerController(params);
 
         for (ArenaTeam t: teams) {
             if (t.size() <= 0) {
@@ -146,7 +146,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         
         if (preliminary_round) nrounds++;
         
-        server.broadcastMessage( Log.colorChat( eventParams.getPrefix() + "&6 " + teams.size() + 
+        server.broadcastMessage( Log.colorChat( params.getPrefix() + "&6 " + teams.size() + 
                                             " &e" + MessageUtil.getTeamsOrPlayers( teams.size() ) +
                                             " will compete in a &6" + nrounds + "&e round tournament" ) );
         if ( preliminary_round ) 
@@ -288,7 +288,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
 
     private void removeExtraneous(){
 
-        int minTeams = eventParams.getMinTeams();
+        int minTeams = params.getMinTeams();
         final int needed_size = (int) Math.pow(minTeams, nrounds);
         final int nprelims = (teams.size() - needed_size) / (minTeams-1);
 
@@ -312,7 +312,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         Round tr = new Round(curRound);
         rounds.add(tr);
         int nRounds = calcNRounds(teams.size()) + 1;
-        int minTeams = eventParams.getMinTeams();
+        int minTeams = params.getMinTeams();
         final int needed_size = (int) Math.pow(minTeams, nRounds-1);
         final int nprelims = (aliveTeams.size() - needed_size) / (minTeams-1);
 
@@ -355,7 +355,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         incompleteMatchups.clear();
         Round tr = new Round(curRound);
         rounds.add(tr);
-        int minTeams = eventParams.getMinTeams();
+        int minTeams = params.getMinTeams();
         int size = aliveTeams.size();
         final int nMatches = size/minTeams;
         
@@ -402,14 +402,14 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             strround = "Final Round";}
         if (preliminary_round){
             preliminary_round = false;
-            int nprelims = tr.getMatchups().size()*eventParams.getMinTeams();
+            int nprelims = tr.getMatchups().size()*params.getMinTeams();
             for (int i=0;i< aliveTeams.size()-nprelims;i++){
                 ArenaTeam t = aliveTeams.get(i);
                 t.sendMessage("&4["+strround+"]&e You have a &5bye&e this round");
             }
         }
-        TrackerController sc = new TrackerController(eventParams);
-        final String prefix = eventParams.getPrefix();
+        TrackerController sc = new TrackerController(params);
+        final String prefix = params.getPrefix();
         if (tr.getMatchups().size() <= 8){
             for (Matchup m: tr.getMatchups()){
                 List<String> names = new ArrayList<>();
@@ -426,7 +426,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             }
         } else {
             broadcastAlive(prefix + "&e Round " + strround +" has " + tr.getMatchups().size()+ " "+
-                    MessageUtil.teamsOrPlayers(eventParams.getMinTeamSize())+" competing. &6/tourney status:&e for updates");
+                    MessageUtil.teamsOrPlayers(params.getMinTeamSize())+" competing. &6/tourney status:&e for updates");
         }
         if (curRound != nrounds)
             broadcast(prefix+"&e "+strround+" will start in &4" + timeBetweenRounds +" &eseconds!");
@@ -463,9 +463,9 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 size++;
         }
         int nrounds = calcNRounds(size);
-        int idealteam = (int) Math.pow(eventParams.getMinTeams(), nrounds);
+        int idealteam = (int) Math.pow(params.getMinTeams(), nrounds);
         if (nrounds > 1 && size % idealteam == 0){
-            MessageUtil.broadcastMessage(Log.colorChat(eventParams.getPrefix()+"&6" + size +" "+MessageUtil.getTeamsOrPlayers(teams.size())+
+            MessageUtil.broadcastMessage(Log.colorChat(params.getPrefix()+"&6" + size +" "+MessageUtil.getTeamsOrPlayers(teams.size())+
                     "&e have joined, Current tournament will have &6" + nrounds+"&e rounds"));
         }
     }
@@ -475,7 +475,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     private int calcNRounds(int size){
-        return (int) Math.floor(Math.log(size)/Math.log(eventParams.getMinTeams()));
+        return (int) Math.floor(Math.log(size)/Math.log(params.getMinTeams()));
     }
 
     @Override
@@ -567,7 +567,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     @Override
     public String getInfo() {
         StringBuilder sb = new StringBuilder();
-        StateGraph so = singleGameParms.getStateOptions();
+        StateGraph so = singleGameParms.getStateGraph();
         sb.append(StateOptions.getInfo(singleGameParms, singleGameParms.getName()));
         String firstPlacePrizes = so.getGiveString(TournamentTransition.FIRSTPLACE);
         String participantPrizes = so.getGiveString(TournamentTransition.PARTICIPANTS);

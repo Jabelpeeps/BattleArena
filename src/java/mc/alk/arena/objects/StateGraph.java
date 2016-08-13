@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,25 +23,25 @@ import mc.alk.util.InventoryUtil;
 
 public class StateGraph {
 	final Map<CompetitionState,StateOptions> ops = new HashMap<>();
-	Set<StateOption> allops;
+	final EnumSet<TransitionOption> allops = EnumSet.noneOf( TransitionOption.class );;
 
 	public StateGraph() {}
 	public StateGraph(StateGraph o) {
-		for (CompetitionState ms: o.ops.keySet()){
+		for (CompetitionState ms : o.ops.keySet()){
 			ops.put(ms, new StateOptions(o.ops.get(ms)));
 		}
 	}
 
-	public Map<CompetitionState,StateOptions> getAllOptions(){
+	public Map<CompetitionState, StateOptions> getAllOptions(){
 		return ops;
 	}
 
 	public void addStateOptions(CompetitionState ms, StateOptions tops) {
 		ops.put(ms, tops);
-		allops = null;
+		allops.clear();
 	}
 
-	public void addStateOption(CompetitionState state, StateOption option) throws InvalidOptionException {
+	public void addStateOption(CompetitionState state, TransitionOption option) throws InvalidOptionException {
 		StateOptions tops = ops.get(state);
 		
 		if (tops == null){
@@ -48,10 +49,10 @@ public class StateGraph {
 			ops.put(state, tops);
 		}
 		tops.addOption(option);
-        allops = null;
+        allops.clear();
 	}
 
-	public void addStateOption(CompetitionState state, StateOption option, Object value) throws InvalidOptionException {
+	public void addStateOption(CompetitionState state, TransitionOption option, Object value) throws InvalidOptionException {
 		StateOptions tops = ops.get(state);
 		
 		if (tops == null){
@@ -59,46 +60,44 @@ public class StateGraph {
 			ops.put(state, tops);
 		}
 		tops.addOption(option,value);
-        allops = null;
+        allops.clear();
 	}
 
-	public boolean removeStateOption(CompetitionState state, StateOption option) {
+	public boolean removeStateOption(CompetitionState state, TransitionOption option) {
 		StateOptions tops = ops.get(state);
 		return tops != null && tops.removeOption(option) != null;
 	}
 
 	public void removeStateOptions(CompetitionState ms) {
 		ops.remove(ms);
-        allops = null;
+        allops.clear();
 	}
 
 	private void calculateAllOptions(){
-		if (allops != null)
-            allops.clear();
-        else
-            allops = new HashSet<>();
 		
+        allops.clear();
+
         for (StateOptions top: ops.values())
 			allops.addAll(top.getOptions().keySet());
 	}
 
-	public boolean hasAnyOption(StateOption option) {
-        if (allops == null) calculateAllOptions();
+	public boolean hasAnyOption(TransitionOption wgnoenter) {
+        if ( allops.isEmpty() ) calculateAllOptions();
         
-		return allops.contains(option);
+		return allops.contains(wgnoenter);
 	}
 
-	public boolean hasAnyOption(StateOption... options) {
-        if (allops == null) calculateAllOptions();
+	public boolean hasAnyOption(TransitionOption... options) {
+        if ( allops.isEmpty() ) calculateAllOptions();
         
-		for (StateOption op: options){
+		for (TransitionOption op: options){
 			if (allops.contains(op))
 				return true;
 		}
 		return false;
 	}
 
-	public CompetitionState getCompetitionState(StateOption option) {
+	public CompetitionState getCompetitionState(TransitionOption option) {
 		for (CompetitionState state: ops.keySet()){
 		    
 			StateOptions tops = ops.get(state);
@@ -109,15 +108,15 @@ public class StateGraph {
 		return null;
 	}
 
-	public boolean hasAllOptions(StateOption... options) {
-		Set<StateOption> opts = new HashSet<>(Arrays.asList(options));
+	public boolean hasAllOptions(TransitionOption... options) {
+		Set<TransitionOption> opts = new HashSet<>(Arrays.asList(options));
 		
-        if (allops == null) calculateAllOptions();
+        if ( allops.isEmpty() ) calculateAllOptions();
         
         return allops.containsAll(opts);
 	}
 
-	public boolean hasInArenaOrOptionAt(CompetitionState state, StateOption option) {
+	public boolean hasInArenaOrOptionAt(CompetitionState state, TransitionOption option) {
 		StateOptions tops = ops.get(state);
 		return tops == null ? hasOptionAt(MatchState.INARENA,option) : tops.hasOption(option);
 	}
@@ -125,15 +124,15 @@ public class StateGraph {
     /**
      * Return whether the given state is found with the given option
      * @param state CompetitionState
-     * @param option StateOption
+     * @param withindistance StateOption
      * @return true or false
      */
-	public boolean hasOptionAt(CompetitionState state, StateOption option) {
+	public boolean hasOptionAt(CompetitionState state, TransitionOption withindistance) {
 		StateOptions tops = ops.get(state);
-		return tops != null && tops.hasOption(option);
+		return tops != null && tops.hasOption(withindistance);
 	}
 
-    public boolean hasOptionIn(MatchState beginState, MatchState endState, StateOption option) {
+    public boolean hasOptionIn(MatchState beginState, MatchState endState, TransitionOption option) {
 		List<MatchState> states = MatchState.getStates(beginState, endState);
 		
 		for (MatchState state : states){
@@ -145,7 +144,7 @@ public class StateGraph {
 	}
 
     public boolean needsClearInventory() {
-		return ops.containsKey(MatchState.PREREQS) && ops.get(MatchState.PREREQS).clearInventory();
+		return ops.containsKey(MatchState.PREREQS) && ops.get(MatchState.PREREQS).hasOption(TransitionOption.CLEARINVENTORY);
 	}
 	public String getRequiredString(String header) {
 		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(header): null;
@@ -205,14 +204,11 @@ public class StateGraph {
 		}
 		return list;
 	}
-
-    class CStateComparator implements Comparator<CompetitionState> {
-        @Override
-        public int compare(CompetitionState o1, CompetitionState o2) {
-            return o1.globalOrdinal() - o2.globalOrdinal();
-        }
-    }
-    
+   
+	final Comparator<CompetitionState> compComp = (o1, o2) -> {
+	    return o1.globalOrdinal() - o2.globalOrdinal();
+	};
+	
     public String getOptionString(StateGraph subset) {
         
         if (subset == null) {
@@ -221,8 +217,8 @@ public class StateGraph {
         StringBuilder sb = new StringBuilder();
         List<CompetitionState> states = new ArrayList<>(ops.keySet());
         List<CompetitionState> states2 = new ArrayList<>(subset.ops.keySet());
-        Collections.sort(states, new CStateComparator());
-        Collections.sort(states2, new CStateComparator());
+        Collections.sort(states, compComp);
+        Collections.sort(states2, compComp);
 
         for (CompetitionState ms : states){
             
@@ -266,7 +262,7 @@ public class StateGraph {
         return getOptionString(null);
     }
 
-	public Double getDoubleOption(CompetitionState state, StateOption option) {
+	public Double getDoubleOption(CompetitionState state, TransitionOption option) {
 		StateOptions tops = getOptions(state);
 		return tops == null ? null : tops.getDouble(option);
 	}

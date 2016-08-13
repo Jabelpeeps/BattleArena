@@ -22,8 +22,8 @@ import mc.alk.arena.objects.teams.TeamAppearance;
 
 public class TeamUtil {
 	static final int NTEAMS = 35;
-	static final List<TeamAppearance> teamHeads = new ArrayList<TeamAppearance>();
-	static final HashMap<String,Integer> map = new HashMap<String,Integer>();
+	static final List<TeamAppearance> teamHeads = new ArrayList<>();
+	static final HashMap<String,Integer> map = new HashMap<>();
 
 	public static void removeTeamHead(final int color, Player p) {
 		ItemStack item = getTeamHead(color);
@@ -151,14 +151,14 @@ public class TeamUtil {
             }
 
             final String name;
-            if (!isTeamParam || teamParams.getThisDisplayName() == null) {
+            if (!isTeamParam || teamParams.getDisplayName() == null) {
                 name = TeamUtil.getTeamName(index);
                 if ( alwaysTeamNames ||
                         (!team.hasSetName() && team.getDisplayName().length() > Defaults.MAX_TEAM_NAME_APPEND)){
                     team.setDisplayName(name);
                 }
             } else {
-                name = teamParams.getThisDisplayName();
+                name = teamParams.getDisplayName();
                 team.setDisplayName(name);
             }
             team.setScoreboardDisplayName(name.length() > Defaults.MAX_SCOREBOARD_NAME_SIZE ?

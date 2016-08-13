@@ -11,7 +11,6 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.CommandLineString;
-import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;
@@ -80,11 +79,7 @@ public class BAClassesSerializer extends BaseConfig {
             permissions = cs.getStringList("permissions");
         }
         if (cs.contains("doCommands")) {
-            try {
-                commands = ConfigSerializer.getDoCommands(cs.getStringList("doCommands"));
-            } catch (InvalidOptionException e) {
-                Log.printStackTrace(e);
-            }
+            commands = ConfigSerializer.getDoCommands(cs.getStringList("doCommands"));
         }
         String displayName = cs.getString("displayName", null);
         displayName = displayName == null || displayName.isEmpty() ? cs.getName() : displayName;

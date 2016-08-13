@@ -21,7 +21,6 @@ import org.bukkit.potion.PotionEffect;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
-import mc.alk.arena.controllers.Modules;
 import mc.alk.arena.controllers.OptionSetController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.StateController;
@@ -35,7 +34,6 @@ import mc.alk.arena.objects.JoinType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.StateOption;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.ConfigException;
@@ -61,14 +59,14 @@ import mc.alk.util.SerializerUtil;
  * @author alkarin
  *
  */
-public class ConfigSerializer extends BaseConfig{
+public class ConfigSerializer extends BaseConfig {
     final Plugin plugin;
     final String name;
 
-    public ConfigSerializer(Plugin plugin, File configFile, String name) {
-        this.setConfig(configFile);
-        this.name = name;
-        this.plugin = plugin;
+    public ConfigSerializer(Plugin _plugin, File configFile, String _name) {
+        setConfig(configFile);
+        name = _name;
+        plugin = _plugin;
     }
 
     public MatchParams loadMatchParams() throws ConfigException, InvalidOptionException {
@@ -78,11 +76,13 @@ public class ConfigSerializer extends BaseConfig{
     public static MatchParams loadMatchParams(Plugin plugin, BaseConfig config, String name)
             throws ConfigException, InvalidOptionException {
         ConfigurationSection cs = config.getConfig();
-        if (config.getConfigurationSection(name) != null){
-            cs = config.getConfigurationSection(name);}
+        if (config.getConfigurationSection(name) != null) {
+            cs = config.getConfigurationSection(name);
+        }
         /// Set up match options.. specifying defaults where not specified
-        /// Set Arena Type
+
         ArenaType at = getArenaType(cs);
+        
         if (at == null && !name.equalsIgnoreCase("tourney"))
             throw new ConfigException("Could not parse arena type. Valid types. " + ArenaType.getValidList());
 
@@ -98,44 +98,59 @@ public class ConfigSerializer extends BaseConfig{
                                               ConfigurationSection cs, boolean isNonBaseConfig) throws ConfigException, InvalidOptionException {
 
         MatchParams mp = at != null ? new MatchParams(at) : new MatchParams();
+        
         if (!isNonBaseConfig || cs.contains("victoryCondition"))
-            mp.setVictoryType(loadVictoryType(cs)); /// How does one win this game
+            mp.setVictoryType(loadVictoryType(cs)); 
 
-        /// Set our name and command
-        if (!isNonBaseConfig){
+        if (!isNonBaseConfig) {
+            
             mp.setName(name);
             mp.setCommand(cs.getString("command",name));
-            if (cs.contains("cmd")){ /// turns out I used cmd in a lot of old configs.. so use both :(
-                mp.setCommand(cs.getString("cmd"));}
+            if ( cs.contains("cmd") )
+                mp.setCommand(cs.getString("cmd"));
         }
-        loadGameSize(cs, mp, isNonBaseConfig); /// Set the game size
+        loadGameSize(cs, mp, isNonBaseConfig);
 
-        if (cs.contains("prefix")) mp.setPrefix( cs.getString("prefix","&6["+name+"]"));
-        if (cs.contains("displayName")) mp.setDisplayName( cs.getString("displayName"));
-        if (cs.contains("signDisplayName")) mp.setSignDisplayName(cs.getString("signDisplayName"));
+        if (cs.contains("prefix")) 
+            mp.setPrefix( cs.getString("prefix","&6["+name+"]"));
+        
+        if (cs.contains("displayName")) 
+            mp.setArenaDisplayName( cs.getString("displayName"));
+        
+        if (cs.contains("signDisplayName")) 
+            mp.setSignDisplayName(cs.getString("signDisplayName"));
 
-        loadTimes(cs, mp); /// Set the game times
+        loadTimes(cs, mp); 
+        
         if (!isNonBaseConfig || cs.contains("nLives"))
-            mp.setNLives(toPositiveSize(cs.getString("nLives"), 1)); /// Number of lives
-        loadBTOptions(cs, mp, isNonBaseConfig); /// Load battle tracker options
+            mp.setNLives(toPositiveSize(cs.getString("nLives"), 1)); 
+
+        loadBTOptions(cs, mp, isNonBaseConfig); 
 
         /// number of concurrently running matches of this type
         if (cs.contains("nConcurrentCompetitions"))
-            mp.setNConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions","infinite")));
+            mp.setNumConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions","infinite")));
+        
         if (cs.contains("waitroomClosedWhileRunning"))
-            mp.setWaitroomClosedWhileRunning(cs.getBoolean("waitroomClosedWhileRunning",true));
+            mp.setCloseWaitroomWhileRunning(cs.getBoolean("waitroomClosedWhileRunning",true));
+        
         if (cs.contains("cancelIfNotEnoughPlayers"))
             mp.setCancelIfNotEnoughPlayers(cs.getBoolean("cancelIfNotEnoughPlayers",false));
+        
         if (cs.contains("arenaCooldown"))
             mp.setArenaCooldown(cs.getInt("arenaCooldown"));
+        
         if (cs.contains("allowedTeamSizeDifference"))
             mp.setAllowedTeamSizeDifference(cs.getInt("allowedTeamSizeDifference"));
+        
         if (cs.contains("forceStartTime"))
             mp.setForceStartTime(cs.getInt("forceStartTime"));
 
         if (cs.contains("teamParams")) {
+            
             ConfigurationSection teamcs = cs.getConfigurationSection("teamParams");
             Set<String> teamKeys = teamcs.getKeys(false);
+            
             if (teamKeys != null) {
                 Map<Integer, MatchParams> teamParams = new HashMap<>();
                 for (String s : teamKeys) {
@@ -149,16 +164,15 @@ public class ConfigSerializer extends BaseConfig{
                     }
                 }
                 if (!teamParams.isEmpty()) {
-                    mp.setTeamParams(teamParams);
+                    mp.setArenaTeamParams(teamParams);
                 }
             }
         }
-        loadAnnouncementsOptions(cs, mp); /// Load announcement options
+        loadAnnouncementsOptions(cs, mp); 
 
-        //noinspection UnusedAssignment
-        List<String> modules = loadModules(cs, mp); /// load modules
+        List<String> modules = loadModules(cs, mp); 
 
-        StateGraph tops = loadTransitionOptions(cs, mp); /// load transition options
+        StateGraph tops = loadTransitionOptions(cs, mp); 
         mp.setStateGraph(tops);
 
         mp.setParent(ParamController.getDefaultConfig());
@@ -176,8 +190,7 @@ public class ConfigSerializer extends BaseConfig{
             Log.err("Error loading Player Containers");
         }
 
-        //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!isNonBaseConfig && Defaults.DEBUG){
+        if ( !isNonBaseConfig && Defaults.DEBUG ) {
             String mods = modules.isEmpty() ? "" : " mods=" + StringUtils.join(modules,", ");
             Log.info("[" + plugin.getName() + "] Loaded " + mp.getName() + " params" + mods);
         }
@@ -187,16 +200,15 @@ public class ConfigSerializer extends BaseConfig{
 
     public static VictoryType loadVictoryType(ConfigurationSection cs) throws ConfigException {
         VictoryType vt;
-        if (cs.contains("victoryCondition")){
+        if (cs.contains("victoryCondition"))
             vt = VictoryType.fromString(cs.getString("victoryCondition"));
-        } else {
+        else
             vt = VictoryType.getType(OneTeamLeft.class);
-        }
 
         // TODO make unknown types with a valid plugin name be deferred until after the other plugin is loaded
-        if (vt == null){
+        if (vt == null)
             throw new ConfigException("Could not add the victoryCondition " +cs.getString("victoryCondition") +"\n"
-                    +"valid types are " + VictoryType.getValidList());}
+                    +"valid types are " + VictoryType.getValidList());
         return vt;
     }
 
@@ -205,11 +217,13 @@ public class ConfigSerializer extends BaseConfig{
             throws InvalidOptionException {
         StateGraph allTops = new StateGraph();
         boolean found = false;
+        
         /// Set all Transition Options
         for (CompetitionState cstate : StateController.values()){
+            
             /// OnCancel gets taken from onComplete and modified
-            if (cstate == MatchState.ONCANCEL)
-                continue;
+            if (cstate == MatchState.ONCANCEL) continue;
+            
             StateOptions tops;
             try{
                 tops = getTransitionOptions(cs.getConfigurationSection(cstate.toString()));
@@ -225,7 +239,7 @@ public class ConfigSerializer extends BaseConfig{
                     if (tops == null){
                         tops = prevOptions;
                     }else {
-                        tops.addOptions(prevOptions.getOptions());
+                        tops.addOptions(prevOptions);
                     }
                 }
             } catch (Exception e){
@@ -260,8 +274,9 @@ public class ConfigSerializer extends BaseConfig{
         }
         if (allTops.hasOptionAt(MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN))
             allTops.addStateOption(MatchState.ONJOIN, TransitionOption.ALWAYSJOIN);
+        
         /// By Default if they respawn in the arena.. people must want infinite lives
-        if (mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.RESPAWN) && !cs.contains("nLives")){
+        if (mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.RESPAWN) && !cs.contains("nLives")) {
             mp.setNLives(Integer.MAX_VALUE);
         }
         /// start auto setting this option, as really thats what they want
@@ -277,8 +292,8 @@ public class ConfigSerializer extends BaseConfig{
                 state == MatchState.ONPRESTART || state == MatchState.ONSTART || state == MatchState.ONVICTORY))
             return;
         MatchState other=null;
-        List<StateOption> add = new ArrayList<>();
-        for (StateOption op : tops.getOptions().keySet()) {
+        List<TransitionOption> add = new ArrayList<>();
+        for (TransitionOption op : tops.getOptions().keySet()) {
             MatchState o = ((MatchState) state).getCorrectState(op);
             if (!o.equals(state)) {
                 if (other == null)
@@ -288,7 +303,7 @@ public class ConfigSerializer extends BaseConfig{
         }
         if (!add.isEmpty()) {
             StateOptions newTops = new StateOptions();
-            for (StateOption op : add) {
+            for (TransitionOption op : add) {
                 Object o = tops.removeOption(op);
                 try {
                     newTops.addOption(op,o);
@@ -316,13 +331,16 @@ public class ConfigSerializer extends BaseConfig{
 
         if (cs.contains("modules")){
             List<?> keys = cs.getList("modules");
+            
             if (keys != null){
                 for (Object key: keys){
-                    ArenaModule am = Modules.getModule(key.toString());
+                    ArenaModule am = BattleArena.getModule(key.toString());
+                    
                     if (am == null){
                         Log.err("[" + cs.getString("name") + "] Module " + key +" not found!");
                         mp.addModule(new BrokenArenaModule(key.toString()));
-                    } else {
+                    } 
+                    else {
                         Log.info("[" + cs.getString("name") + "] Module " + key + " successfully loaded.");
                         mp.addModule(am);
                         modules.add(am.getName());
@@ -334,14 +352,17 @@ public class ConfigSerializer extends BaseConfig{
     }
 
 
-    private static void loadBTOptions(ConfigurationSection cs, MatchParams mp, boolean isNonBaseConfig) throws ConfigException {
+    private static void loadBTOptions(ConfigurationSection cs, MatchParams mp, boolean isNonBaseConfig) {
         if (cs.contains("tracking")){
             cs = cs.getConfigurationSection("tracking");}
 
         /// TeamJoinResult in tracking for this match type
         String dbName = (cs.contains("database")) ? cs.getString("database",null) : cs.getString("db",null);
-        if (dbName == null) dbName = cs.getString("dbTableName", null);
-        if (dbName != null){
+        
+        if (dbName == null) 
+            dbName = cs.getString("dbTableName", null);
+        
+        if (dbName != null) {
             mp.setTableName(dbName);
             if (TrackerController.enabled()){
                 try{
@@ -354,13 +375,14 @@ public class ConfigSerializer extends BaseConfig{
         }
         if (cs.contains("overrideBattleTracker")){
             mp.setUseTrackerPvP(cs.getBoolean("overrideBattleTracker", true));
-        } else {
+        } 
+        else {
             mp.setUseTrackerPvP(cs.getBoolean("useTrackerPvP", false));
         }
         if (!isNonBaseConfig || cs.contains("useTrackerMessages"))
             mp.setUseTrackerMessages(cs.getBoolean("useTrackerMessages", false));
         if (cs.contains("teamRating")){
-            mp.setTeamRating(cs.getBoolean("teamRating",false));}
+            mp.setUseTeamRating(cs.getBoolean("teamRating",false));}
         //		mp.set
         //		mp.setOverrideBTMessages(cs.getBoolean(path))
         /// What is the default rating for this match type
@@ -419,8 +441,6 @@ public class ConfigSerializer extends BaseConfig{
         return ArenaSize.toInt(value, defValue);
     }
 
-
-
     /**
      * Get and create the ArenaType for this plugin given the Configuration section
      * @param cs section containing the "type"
@@ -470,12 +490,14 @@ public class ConfigSerializer extends BaseConfig{
     public static StateOptions getTransitionOptions(ConfigurationSection cs) throws InvalidOptionException, IllegalArgumentException {
         if (cs == null )
             return null;
-        Map<StateOption,Object> options = new HashMap<>();
         StateOptions tops = new StateOptions();
+        
         if (cs.contains("options")){
             if (!cs.isList("options")) {
                 throw new InvalidOptionException("options: should be a list, instead it was '" + cs.getString("options", null) + "'");}
+            
             Collection<String> optionsstr = cs.getStringList("options");
+            
             for (String obj : optionsstr){
                 String[] split = obj.split("=");
                 /// Our key for this option
@@ -504,20 +526,18 @@ public class ConfigSerializer extends BaseConfig{
                     Log.err("Couldn't parse Option " + key +" value="+value);
                     continue;
                 }
-
-                options.put(to,ovalue);
+                tops.addOption( to, ovalue );
             }
         }
-        if (!options.isEmpty())
-            tops.addOptions(options);
-        try{
+
+        try {
             if (cs.contains("teleportTo")){
                 tops.addOption(TransitionOption.TELEPORTTO, SerializerUtil.getLocation(cs.getString("teleportTo")));}
         } catch (Exception e){
             Log.err("Error setting the value of teleportTo ");
             Log.printStackTrace(e);
         }
-        try{
+        try {
             if (cs.contains("giveClass")){
                 tops.addOption(TransitionOption.GIVECLASS, getArenaClasses(cs.getConfigurationSection("giveClass")));}
         } catch (Exception e){
@@ -538,19 +558,22 @@ public class ConfigSerializer extends BaseConfig{
             Log.err("Error setting the value of doCommands ");
             Log.printStackTrace(e);
         }
-        try{
+        try {
             /// Convert from old to new style aka ("needItems" and items: list, to needItems:)
             List<ItemStack> items = InventoryUtil.getItemList(cs,"needItems");
-            if (items == null && options.containsKey(TransitionOption.NEEDITEMS)){
+            
+            if (items == null && tops.hasOption( TransitionOption.NEEDITEMS)){
                 items = InventoryUtil.getItemList(cs, "items");
-                if (items!=null && !items.isEmpty())
-                    tops.addOption(TransitionOption.NEEDITEMS,items);
+                if ( items != null && !items.isEmpty() )
+                    tops.addOption( TransitionOption.NEEDITEMS, items );
                 else
-                    options.remove(TransitionOption.NEEDITEMS);
-            } else if (items != null && !items.isEmpty()){
+                    tops.removeOption(TransitionOption.NEEDITEMS);
+            } 
+            else if (items != null && !items.isEmpty()){
                 tops.addOption(TransitionOption.NEEDITEMS,items);
-            } else {
-                options.remove(TransitionOption.NEEDITEMS);
+            } 
+            else {
+                tops.removeOption(TransitionOption.NEEDITEMS);
             }
         } catch (Exception e){
             Log.err("Error setting the value of needItems ");
@@ -563,8 +586,10 @@ public class ConfigSerializer extends BaseConfig{
 
             if (items!=null && !items.isEmpty()) {
                 tops.addOption(TransitionOption.GIVEITEMS,items);
-            } else {
-                options.remove(TransitionOption.GIVEITEMS);}
+            } 
+            else {
+                tops.removeOption(TransitionOption.GIVEITEMS);
+            }
         } catch (Exception e){
             Log.err("Error setting the value of giveItems ");
             Log.printStackTrace(e);
@@ -574,8 +599,10 @@ public class ConfigSerializer extends BaseConfig{
             List<ItemStack> items = InventoryUtil.getItemList(cs,"takeItems");
             if (items!=null && !items.isEmpty()) {
                 tops.addOption(TransitionOption.TAKEITEMS,items);
-            } else {
-                options.remove(TransitionOption.TAKEITEMS);}
+            } 
+            else {
+                tops.removeOption(TransitionOption.TAKEITEMS);
+            }
         } catch (Exception e){
             Log.err("Error setting the value of takeItems ");
             Log.printStackTrace(e);
@@ -586,7 +613,8 @@ public class ConfigSerializer extends BaseConfig{
             if (effects!=null && !effects.isEmpty())
                 tops.addOption(TransitionOption.ENCHANTS, effects);
             else
-                options.remove(TransitionOption.ENCHANTS);
+                tops.removeOption(TransitionOption.ENCHANTS);
+            
         } catch (Exception e){
             Log.err("Error setting the value of enchants ");
             Log.printStackTrace(e);
@@ -597,7 +625,7 @@ public class ConfigSerializer extends BaseConfig{
         return tops.getOptions() == null || tops.getOptions().isEmpty() ? null : tops;
     }
 
-    public static List<CommandLineString> getDoCommands(List<String> list) throws InvalidOptionException {
+    public static List<CommandLineString> getDoCommands(List<String> list) {
         List<CommandLineString> commands = new ArrayList<>();
         for (String line: list){
             CommandLineString cls = CommandLineString.parse(line);
@@ -739,7 +767,7 @@ public class ConfigSerializer extends BaseConfig{
         }
 
         if (params.getPrefix() != null) maincs.set("prefix", params.getPrefix());
-        if (params.getThisDisplayName() != null) maincs.set("displayName", params.getThisDisplayName());
+        if (params.getDisplayName() != null) maincs.set("displayName", params.getDisplayName());
         if (params.getSignDisplayName() != null) maincs.set("signDisplayName", params.getSignDisplayName());
 
         if (params.getNTeams() != null || params.getTeamSize() != null) {
@@ -833,7 +861,7 @@ public class ConfigSerializer extends BaseConfig{
             }
         }
 
-        StateGraph alltops = params.getThisStateGraph();
+        StateGraph alltops = params.getArenaStateGraph();
         if (alltops != null) {
             Map<CompetitionState, StateOptions> transitions =
                     new TreeMap<>(new Comparator<CompetitionState>() {
@@ -853,13 +881,13 @@ public class ConfigSerializer extends BaseConfig{
                     if (tops.getOptions() == null)
                         continue;
                     tops = new StateOptions(tops); // make a copy so we can modify while saving
-                    Map<StateOption, Object> ops = new TreeMap<>(tops.getOptions());
+                    Map<TransitionOption, Object> ops = new TreeMap<>(tops.getOptions());
                     List<String> list = new ArrayList<>();
 
                     for (Entry<String, StateOptions> entry : OptionSetController.getOptionSets().entrySet()) {
                         if (tops.containsAll(entry.getValue())) {
                             list.add(entry.getKey());
-                            for (StateOption op : entry.getValue().getOptions().keySet()) {
+                            for (TransitionOption op : entry.getValue().getOptions().keySet()) {
                                 ops.remove(op);
                             }
                         }
@@ -867,32 +895,39 @@ public class ConfigSerializer extends BaseConfig{
                     /// transition map
                     Map<String, Object> tmap = new LinkedHashMap<>();
                     ops = new TreeMap<>(ops); /// try to maintain some ordering
-                    for (StateOption to : ops.keySet()) {
+                    for (TransitionOption to : ops.keySet()) {
                         try {
                             String s;
-//                            switch (to) {
-                            if (to.equals(TransitionOption.NEEDITEMS)) {
-                                tmap.put(to.toString(), getItems(tops.getNeedItems()));
-                            } else if (to.equals(TransitionOption.GIVEITEMS)) {
-                                tmap.put(to.toString(), getItems(tops.getGiveItems()));
-                            } else if (to.equals(TransitionOption.TAKEITEMS)) {
-                                tmap.put(to.toString(), getItems(tops.getTakeItems()));
-                            } else if (to.equals(TransitionOption.GIVECLASS)) {
-                                tmap.put(to.toString(), getArenaClasses(tops.getClasses()));
-                            } else if (to.equals(TransitionOption.ENCHANTS)) {
-                                tmap.put(to.toString(), getEnchants(tops.getEffects()));
-                            } else if (to.equals(TransitionOption.DOCOMMANDS)) {
-                                tmap.put(to.toString(), getDoCommandsStringList(tops.getDoCommands()));
-                            } else if (to.equals(TransitionOption.TELEPORTTO)){
-                                tmap.put(to.toString(), SerializerUtil.getLocString(tops.getTeleportToLoc()));
-                            } else {
-                                Object value = ops.get(to);
-                                if (value == null) {
-                                    s = to.toString();
-                                } else {
-                                    s = to.toString() + "=" + value.toString();
-                                }
-                                list.add(s);
+                            switch (to) {
+                                case NEEDITEMS:
+                                    tmap.put(to.toString(), getItems(tops.getNeedItems()));
+                                    break;
+                                case GIVEITEMS:
+                                    tmap.put(to.toString(), getItems(tops.getGiveItems()));
+                                    break;
+                                case TAKEITEMS:
+                                    tmap.put(to.toString(), getItems(tops.getTakeItems()));
+                                    break;
+                                case GIVECLASS:
+                                    tmap.put(to.toString(), getArenaClasses(tops.getClasses()));
+                                    break;
+                                case ENCHANTS:
+                                    tmap.put(to.toString(), getEnchants(tops.getEffects()));
+                                    break;
+                                case DOCOMMANDS:
+                                    tmap.put(to.toString(), getDoCommandsStringList(tops.getDoCommands()));
+                                    break;
+                                case TELEPORTTO:
+                                    tmap.put(to.toString(), SerializerUtil.getLocString(tops.getTeleportToLoc()));
+                                    break;
+                                default:
+                                    Object value = ops.get(to);
+                                    if (value == null) {
+                                        s = to.toString();
+                                    } else {
+                                        s = to.toString() + "=" + value.toString();
+                                    }
+                                    list.add(s);
                             }
                         } catch (Exception e) {
                             Log.err("[BA Error] couldn't save " + to);

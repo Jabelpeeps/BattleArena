@@ -1,10 +1,14 @@
 package mc.alk.arena.controllers;
 
 import java.util.Random;
+
+import org.bukkit.Location;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.containers.AbstractAreaContainer;
+import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaLocation;
@@ -19,8 +23,6 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.util.Log;
 import mc.alk.util.Util;
-
-import org.bukkit.Location;
 
 public class TeleportLocationController {
     
@@ -91,7 +93,7 @@ public class TeleportLocationController {
             case RESPAWN:
                 break;
             case FIRSTIN:
-                mp.getGameManager().onPreJoin(player, apte);
+                GameManager.getGameManager( mp ).onPreJoin(player, apte);
                 dest.onPreJoin(player, apte);
                 break;
             case IN:
@@ -99,7 +101,7 @@ public class TeleportLocationController {
                 dest.onPreEnter(player, apte);
                 break;
             case OUT:
-                mp.getGameManager().onPreQuit(player, apte);
+                GameManager.getGameManager( mp ).onPreQuit(player, apte);
                 src.onPreQuit(player, apte);
                 dest.onPreJoin(player, apte);
                 break;
@@ -116,7 +118,7 @@ public class TeleportLocationController {
             case RESPAWN:
                 break;
             case FIRSTIN:
-                mp.getGameManager().onPostJoin(player, apte);
+                GameManager.getGameManager( mp ).onPostJoin(player, apte);
                 dest.onPostJoin(player, apte);
                 break;
             case IN:
@@ -124,7 +126,7 @@ public class TeleportLocationController {
                 dest.onPostEnter(player, apte);
                 break;
             case OUT:
-                mp.getGameManager().onPostQuit(player, apte);
+                GameManager.getGameManager( mp ).onPostQuit(player, apte);
                 src.onPostQuit(player, apte);
                 dest.onPostJoin(player, apte);
                 break;
@@ -158,25 +160,28 @@ public class TeleportLocationController {
             Util.printStackTrace();
             teamIndex = 0;
         }
-        if (tops.shouldTeleportWaitRoom()) {
+        if (tops.hasAnyOption(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM)) {
             if (tops.hasOption(TransitionOption.TELEPORTMAINWAITROOM)) {
                 teamIndex = Defaults.MAIN_SPAWN;
             }
             ph = (am instanceof Match) ? ((Match) am).getArena().getWaitroom() : am;
             type = LocationType.WAITROOM;
             l = ph.getSpawn(teamIndex, randomRespawn);
-        } else if (tops.shouldTeleportLobby()) {
+        } 
+        else if ( tops.hasAnyOption( TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTMAINLOBBY ) ) {
             if (tops.hasOption(TransitionOption.TELEPORTMAINLOBBY)) {
                 teamIndex = Defaults.MAIN_SPAWN;
             }
             ph = RoomController.getLobby(mp.getType());
             type = LocationType.LOBBY;
             l = RoomController.getLobbySpawn(teamIndex, mp.getType(), randomRespawn);
-        } else if (tops.shouldTeleportSpectate()) {
+        } 
+        else if (tops.hasOption(TransitionOption.TELEPORTSPECTATE)) {
             ph = (am instanceof Match) ? ((Match) am).getArena().getSpectatorRoom() : am;
             type = LocationType.SPECTATE;
             l = ph.getSpawn(teamIndex, randomRespawn);
-        } else { // They should teleportIn, aka to the Arena
+        } 
+        else { // They should teleportIn, aka to the Arena
             final Arena arena;
             if (am instanceof Arena) {
                 arena = (Arena) am;

@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.util.MinMax;
 
 public class ArenaSize implements CompetitionSize{
-	int minTeamSize = 1;
-	int maxTeamSize = MAX;
-	int minTeams = 2;
-	int maxTeams = MAX;
+	@Getter @Setter int minTeamSize = 1;
+	@Getter @Setter int maxTeamSize = MAX;
+	@Getter @Setter int minTeams = 2;
+	@Getter @Setter int maxTeams = MAX;
 
 	public ArenaSize(){}
 
@@ -23,7 +25,7 @@ public class ArenaSize implements CompetitionSize{
 
 	@Override
 	public int getMinPlayers(){
-		return minTeams* minTeamSize;
+		return minTeams * minTeamSize;
 	}
 
 	@Override
@@ -69,29 +71,6 @@ public class ArenaSize implements CompetitionSize{
 		maxTeams = mm.max;
 	}
 
-	@Override
-	public int getMinTeams() {return minTeams;}
-
-	@Override
-	public int getMaxTeams() {return maxTeams;}
-
-	@Override
-	public void setMinTeams(int nteams) {this.minTeams = nteams;}
-
-	@Override
-	public void setMaxTeams(int nteams) {this.maxTeams = nteams;}
-
-	@Override
-	public void setMinTeamSize(int size) {minTeamSize=size;}
-
-	@Override
-	public void setMaxTeamSize(int size) {maxTeamSize=size;}
-
-	@Override
-	public int getMinTeamSize() {return minTeamSize;}
-
-	@Override
-	public int getMaxTeamSize() {return maxTeamSize;}
 
 	@Override
 	public boolean matchesNTeams(final CompetitionSize csize) {
@@ -173,7 +152,7 @@ public class ArenaSize implements CompetitionSize{
 	}
 
 	public Collection<String> getInvalidReasons() {
-		List<String> reasons = new ArrayList<String>();
+		List<String> reasons = new ArrayList<>();
 		if (minTeamSize <= 0) reasons.add("Min Team Size is <= 0");
 		if (maxTeamSize <= 0) reasons.add("Max Team Size is <= 0");
 		if (minTeamSize > maxTeamSize) reasons.add("Min Team Size is greater than Max Team Size " + minTeamSize+":"+ maxTeamSize);

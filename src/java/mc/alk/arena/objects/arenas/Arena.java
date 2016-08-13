@@ -689,8 +689,8 @@ public class Arena extends AreaContainer {
         StringBuilder sb = new StringBuilder("&4" + name);
         if (params != null){
 //            sb.append("&2 type=&f").append(params.getType());
-            sb.append(" &2TeamSizes:" + getColor(params.getThisTeamSize()) + params.getTeamSize() +
-                    "&2, nTeams:"+getColor(params.getThisNTeams()) + params.getNTeams());
+            sb.append(" &2TeamSizes:" + getColor(params.getArenaTeamSize()) + params.getTeamSize() +
+                    "&2, nTeams:"+getColor(params.getArenaNTeams()) + params.getNTeams());
         }
 
         sb.append("&2 #spawns:&f" +spawns.size() +"&2 1stSpawn:&f");

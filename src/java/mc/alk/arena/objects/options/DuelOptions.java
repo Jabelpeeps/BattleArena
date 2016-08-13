@@ -229,19 +229,18 @@ public class DuelOptions {
     }
 
     public boolean matches(ArenaPlayer player, MatchParams mp) {
-        if (mp.getThisStateGraph().hasOptionAt(MatchState.PREREQS, TransitionOption.WITHINDISTANCE)) {
+        if (mp.getArenaStateGraph().hasOptionAt(MatchState.PREREQS, TransitionOption.WITHINDISTANCE)) {
             Double distance = mp.getStateGraph().getOptions(MatchState.PREREQS).getWithinDistance();
             if (options.containsKey(DuelOption.ARENA)) {
                 Arena arena = (Arena) options.get(DuelOption.ARENA);
                 return arena.withinDistance(player.getLocation(), distance);
-            } else {
-                for (Arena arena : BattleArena.getBAController().getArenas(mp)) {
-                    if (arena.withinDistance(player.getLocation(), distance)) {
-                        return true;
-                    }
-                }
-                return false;
             }
+            for (Arena arena : BattleArena.getBAController().getArenas(mp)) {
+                if (arena.withinDistance(player.getLocation(), distance)) {
+                    return true;
+                }
+            }
+            return false;
         }
         return true;
     }

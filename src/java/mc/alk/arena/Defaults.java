@@ -94,7 +94,7 @@ public class Defaults {
     public static boolean ITEMS_UNSAFE_ENCHANTMENTS = true;
 
     /// DEBUG OPTIONS
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final boolean DEBUGQ = false;
     public static final boolean DEBUG_TRACE = false;
     public static final boolean DEBUG_EVENTS = false;
@@ -106,7 +106,7 @@ public class Defaults {
     public static final String DEFAULT_CONFIG_NAME = "Default";
     public static boolean DEBUG_STRESS = false;
     public static boolean DEBUG_MSGS = false;
-    public static boolean DEBUG_COMMANDS = false;
+    public static boolean DEBUG_COMMANDS = true;
     public static boolean DEBUG_TIMINGS = false;
 
     public static int TIME_BETWEEN_CLASS_CHANGE = 3;

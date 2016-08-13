@@ -1,10 +1,12 @@
 package mc.alk.arena.modules;
 
-import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.modules.ArenaModule;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import lombok.Getter;
+import mc.alk.arena.objects.events.ArenaEventHandler;
+import mc.alk.arena.objects.modules.ArenaModule;
 
 /**
  * 
@@ -13,45 +15,34 @@ import org.bukkit.event.player.PlayerInteractEvent;
  */
 public class Paintballs extends ArenaModule {
     
-    String name = "Paintballs";
-    String version = "1.0";
+    @Getter String name = "Paintballs";
+    @Getter String version = "1.0";
     EntityType paintballs;
     double damage;
     
     public Paintballs() {
-        this(EntityType.SNOWBALL);
+        this( EntityType.SNOWBALL );
     }
     
-    public Paintballs(EntityType paintballType) {
-        this(paintballType, 20);
+    public Paintballs( EntityType paintballType ) {
+        this( paintballType, 20 );
     }
     
-    public Paintballs(EntityType paintballType, double damageAmount) {
-        this.paintballs = paintballType;
-        this.damage = damageAmount;
+    public Paintballs( EntityType paintballType, double damageAmount ) {
+        paintballs = paintballType;
+        damage = damageAmount;
     }
 
     @ArenaEventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        e.getPlayer().sendMessage("Module: Paintballs");
+    public void onPlayerInteract( PlayerInteractEvent e ) {
+        e.getPlayer().sendMessage( "Module: Paintballs" );
     }
 
     @ArenaEventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
-        EntityType type = event.getDamager().getType();
-        if (type == EntityType.SNOWBALL) {
-            event.setDamage(damage);
+    public void onEntityDamage( EntityDamageByEntityEvent event ) {
+        
+        if ( event.getDamager().getType() == EntityType.SNOWBALL ) {
+            event.setDamage( damage );
         }        
     }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String getVersion() {
-        return this.version;
-    }
-    
 }

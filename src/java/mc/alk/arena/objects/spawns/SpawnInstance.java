@@ -9,24 +9,11 @@ public abstract class SpawnInstance implements Spawnable, SpawnableInstance{
 	final Integer spawnId = classCount++;
 	Location loc;
 
-	public SpawnInstance(Location location) {
-		this.loc = location;
-	}
-
-	public World getWorld() {
-		return loc != null ? loc.getWorld() : null;
-	}
-
-	public void setLocation(Location l) {
-		this.loc = l;
-	}
-
-	public Location getLocation() {
-		return loc;
-	}
-
-    public int getID() {
-        return spawnId;
-    }
+	public SpawnInstance(Location location) { loc = location; }
+	public World getWorld() { return loc != null ? loc.getWorld() : null; }
+	@Override
+    public void setLocation(Location l) { loc = l; }
+	public Location getLocation() { return loc; }
+    public int getID() { return spawnId; }
 
 }

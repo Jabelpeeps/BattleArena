@@ -60,7 +60,7 @@
         <!-- Dependencies that have maven repos -->
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <artifactId>spigot</artifactId>
             <version>${craftbukkit.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -232,7 +232,7 @@
             <version>4.1.0</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- groupId = unknown.plugins -->
         <dependency>
             <groupId>unknown.plugins</groupId>
@@ -256,6 +256,14 @@
             <groupId>unknown.plugins</groupId>
             <artifactId>MobArena</artifactId>
             <version>0.94.4.95</version>
+            <scope>provided</scope>
+        </dependency>
+         
+ <!-- java dependency, not bukkit plugin, see https://projectlombok.org/ -->               
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.10</version>
             <scope>provided</scope>
         </dependency>
 

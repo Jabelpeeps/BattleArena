@@ -37,7 +37,7 @@ public class EventExecutor extends BAExecutor{
 
 	@MCCommand(cmds={"options"},admin=true, usage="options", order=2)
 	public boolean eventOptions(CommandSender sender,EventParams eventParams) {
-		StateGraph tops = eventParams.getThisStateGraph();
+		StateGraph tops = eventParams.getArenaStateGraph();
         return MessageUtil.sendMessage(sender, tops.getOptionString());
 	}
 
@@ -173,7 +173,7 @@ public class EventExecutor extends BAExecutor{
 		}
 
 		EventParams sq = event.getParams();
-		StateGraph tops = sq.getStateOptions();
+		StateGraph tops = sq.getStateGraph();
 		/// Perform is ready check
 		if(!tops.playerReady(p,null)){
 			String notReadyMsg = tops.getRequiredString(MessageHandler.getSystemMessage("need_the_following")+"\n");
