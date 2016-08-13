@@ -3,11 +3,13 @@ package mc.alk.scoreboardapi;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import lombok.Getter;
+
 public class SAPIEntry implements SEntry, Comparable<SEntry>{
-	private final String id;
+    @Getter private final String id;
     private String displayName;
-    private String displayNameSuffix;
-    private String displayNamePrefix;
+    @Getter private String displayNameSuffix;
+    @Getter private String displayNamePrefix;
     private String combinedDisplayName;
     /// Note : Spigots "getOfflinePlayer(...)" seems to be extremely slow, so cache it if possible
     protected OfflinePlayer offlinePlayer;
@@ -31,11 +33,6 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
 	}
 
     @Override
-	public String getID() {
-		return id;
-	}
-
-    @Override
     public String getDisplayName(){
         return combinedDisplayName;
     }
@@ -46,8 +43,8 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
     }
 
     @Override
-    public void setDisplayName(String displayName) {
-        this.displayName = SAPIObjective.colorChat(displayName);
+    public void setDisplayName(String _displayName) {
+        displayName = SAPIObjective.colorChat(_displayName);
         _setDisplayName();
     }
 
@@ -61,11 +58,6 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
     }
 
     @Override
-    public String getDisplayNameSuffix() {
-        return displayNameSuffix;
-    }
-
-    @Override
     public void setDisplayNamePrefix(String suffix) {
         displayNamePrefix = SAPIObjective.colorChat(suffix);
         if (displayNamePrefix.length() > 8) {
@@ -74,23 +66,18 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
         _setDisplayName();
     }
 
-    @Override
-    public String getDisplayNamePrefix() {
-        return displayNamePrefix;
-    }
-
     private void _setDisplayName() {
-        this.combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName,
-                displayNameSuffix, SAPI.MAX_NAMESIZE);
+        combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix, SAPI.MAX_NAMESIZE);
         offlinePlayer = null;
     }
 
+    @Override
     public String toString() {
-        return "[SAPIEntry " + this.getID() + " : " + this.getDisplayName() + "]";
+        return "[SAPIEntry " + getId() + " : " + getDisplayName() + "]";
     }
 
     @Override
     public int compareTo(SEntry o) {
-        return this.getID().compareTo(o.getID());
+        return getId().compareTo(o.getId());
     }
 }

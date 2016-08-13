@@ -50,17 +50,16 @@ public class ArenaAlterController {
         TYPE(true,false),
         ADDREGION(false,true);
 
-        final boolean needsValue; /// whether the transition needs a value
+        final boolean needsValue; 
+        final boolean needsPlayer; 
 
-        final boolean needsPlayer; /// whether we need a player
-
-        ChangeType(Boolean hasValue, Boolean needsPlayer){
-            this.needsValue = hasValue;
-            this.needsPlayer = needsPlayer;
+        ChangeType(Boolean hasValue, Boolean _needsPlayer){
+            needsValue = hasValue;
+            needsPlayer = _needsPlayer;
         }
         
-        public boolean needsPlayer() {return needsPlayer;}
-        public boolean hasValue(){return needsValue;}
+        public boolean needsPlayer() { return needsPlayer; }
+        public boolean hasValue(){ return needsValue; }
 
         public static ChangeType fromName(String str) {
             str = str.toUpperCase();

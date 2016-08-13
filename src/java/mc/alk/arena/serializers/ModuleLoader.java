@@ -29,11 +29,12 @@ public class ModuleLoader {
             return;
         }
 
-        for ( File mod : moduleDirectory.listFiles( (dir, name) -> {
+        for ( File mod : moduleDirectory.listFiles( 
+                       (dir, name) -> {
                                         int period = name.lastIndexOf('.');
                                         final String extension = name.substring(period + 1);
                                         return period != -1 && extension.equals("class") || extension.equals("jar");
-                                    } ) ) {
+                                      } ) ) {
             ArenaModule am = null;
             try {
                 am = loadModule(moduleDirectory, mod);
@@ -50,7 +51,8 @@ public class ModuleLoader {
                 Log.printStackTrace(ex);
             }
         }
-        Log.info(Log.colorChat("[BattleArena] Modules (" + loadedModules.size() + ") [&a" + StringUtils.join(loadedModules, "&f, &a") + "&f]"));
+        Log.info( Log.colorChat( "[BattleArena] Modules (" + loadedModules.size() + ") [&a" + 
+                                    StringUtils.join( loadedModules, "&f, &a" ) + "&f]" ) );
 
     }
 

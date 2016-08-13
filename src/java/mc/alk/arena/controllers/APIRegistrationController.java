@@ -22,6 +22,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.executors.BAExecutor;
 import mc.alk.arena.executors.CustomCommandExecutor;
@@ -187,7 +188,6 @@ public class APIRegistrationController {
                     new DelayedRegistrationHandler(plugin, compDir, defaultArenaFile));
         }
 
-        /// load config
         if (!loadFile(plugin, defaultFile, defaultPluginConfigFile, pluginFile,
                 name + "Config.yml", name, cmd)) {
             Log.err(plugin.getName() + " " + pluginFile.getName() + " could not be loaded!");
@@ -232,16 +232,15 @@ public class APIRegistrationController {
         */
         ArenaType at = ArenaType.register( name, factory, plugin );
 
-        /// Load our Match Params for this types
         MatchParams mp = config.loadMatchParams();
 
         MessageSerializer ms = null;
-        /// load messages
+
         if ( loadFile( plugin, messageFile, name + "Messages.yml", name, cmd) ) {
             ms = new MessageSerializer(name, mp);
         } else if (gameType != null) {
-            RegisteredCompetition rc = CompetitionController.getCompetition(plugin, gameType.getName());
-            if (rc != null) {
+            RegisteredCompetition regComp = CompetitionController.getCompetition(plugin, gameType.getName());
+            if (regComp != null) {
                 ms = MessageSerializer.getMessageSerializer(gameType.getName());
             }
         }
@@ -260,21 +259,16 @@ public class APIRegistrationController {
                 executor = comp.getCustomExecutor();
             }
         } else {
-            rc.setCustomExeuctor(executor);
+            rc.setCustomExecutor(executor);
         }
 
-        /// Create our Executor
         createExecutor(plugin, cmd, executor, mp);
-
-        /// Set our config
         rc.setConfigSerializer(config);
-
-        /// Add the competition
         CompetitionController.addRegisteredCompetition(rc);
 
         /// Load our arenas
-        ArenaSerializer as = new ArenaSerializer(plugin, defaultArenaFile); /// arena config
-        as.loadArenas(plugin, at);
+        ArenaSerializer as = new ArenaSerializer( plugin, defaultArenaFile ); 
+        as.loadArenas( at );
         rc.setArenaSerializer(as);
 
         return true;
@@ -303,23 +297,18 @@ public class APIRegistrationController {
     static class ArenaBukkitCommand extends Command implements PluginIdentifiableCommand {
 
         final CommandExecutor executor;
-        final Plugin plugin;
+        @Getter final Plugin plugin;
 
-        public ArenaBukkitCommand( String name, String description, String usageMessage, List<String> aliases, 
-                                                Plugin plugin, CommandExecutor executor) {
-            super( name, description, usageMessage, aliases );
-            this.plugin = plugin;
-            this.executor = executor;
+        public ArenaBukkitCommand( String name, String _description, String _usageMessage, List<String> aliases, 
+                                                Plugin _plugin, CommandExecutor _executor) {
+            super( name, _description, _usageMessage, aliases );
+            plugin = _plugin;
+            executor = _executor;
         }
 
         @Override
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             return executor.onCommand(sender, this, commandLabel, args);
-        }
-
-        @Override
-        public Plugin getPlugin() {
-            return plugin;
         }
     }
 
@@ -329,10 +318,10 @@ public class APIRegistrationController {
         final File compDir;
         final File arenaFile;
 
-        DelayedRegistrationHandler(JavaPlugin plugin, File compDir, File arenaFile) {
-            this.plugin = plugin;
-            this.compDir = compDir;
-            this.arenaFile = arenaFile;
+        DelayedRegistrationHandler(JavaPlugin _plugin, File _compDir, File _arenaFile) {
+            plugin = _plugin;
+            compDir = _compDir;
+            arenaFile = _arenaFile;
         }
 
         @Override

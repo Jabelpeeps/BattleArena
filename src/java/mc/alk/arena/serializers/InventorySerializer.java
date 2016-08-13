@@ -29,6 +29,7 @@ import mc.alk.util.Log;
 public class InventorySerializer {
 
 	public static List<String> getDates(final OfflinePlayer player) {
+	    
         UUID id = player.getUniqueId();
         BaseConfig serializer = getSerializer(id);
         if (serializer == null)
@@ -69,9 +70,8 @@ public class InventorySerializer {
 		if (serializer == null) return null;
 		
 		PriorityQueue<KeyValue<Long,PInv>> dates =
-				new PriorityQueue<>( Defaults.NUM_INV_SAVES, (arg0, arg1) -> { 
-						return arg1.key.compareTo(arg0.key);
-					});
+				new PriorityQueue<>( Defaults.NUM_INV_SAVES, (arg0, arg1) -> { return arg1.key.compareTo(arg0.key); });
+		
 		Set<String> keys = serializer.config.getKeys(false);
 
 		DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG );
@@ -85,7 +85,8 @@ public class InventorySerializer {
 			Date date;
 			try {
 				date = format.parse(strdate);
-			} catch (ParseException e) {
+			} 
+			catch (ParseException e) {
 				Log.printStackTrace(e);
 				continue;
 			}

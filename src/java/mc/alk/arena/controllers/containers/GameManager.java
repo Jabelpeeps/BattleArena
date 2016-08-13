@@ -9,6 +9,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
@@ -42,8 +43,8 @@ import mc.alk.util.PlayerUtil;
 public class GameManager implements PlayerHolder {
 	static final HashMap<ArenaType, GameManager> map = new HashMap<>();
 
-	final MatchParams params;
-	final Set<ArenaPlayer> handled = new HashSet<>(); /// which players are now being handled
+	@Getter final MatchParams params;
+	final Set<ArenaPlayer> handled = new HashSet<>(); 
 	MethodController methodController;
 
 	public static GameManager getGameManager(MatchParams mp) {
@@ -105,44 +106,22 @@ public class GameManager implements PlayerHolder {
 	}
 
 	@Override
-	public MatchParams getParams() {
-		return params;
-	}
+	public CompetitionState getState() { return MatchState.NONE; }
 
 	@Override
-	public CompetitionState getState() {
-		return MatchState.NONE;
-	}
+	public boolean isHandled(ArenaPlayer player) { return handled.contains(player); }
 
 	@Override
-	public boolean isHandled(ArenaPlayer player) {
-		return handled.contains(player);
-	}
+	public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) { return false; }
 
 	@Override
-	public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) {
-		return false;
-	}
-
+	public void callEvent(BAEvent event) { methodController.callEvent(event); }
 	@Override
-	public void callEvent(BAEvent event) {
-		methodController.callEvent(event);
-	}
-
+	public SpawnLocation getSpawn(int index, boolean random) { return null; }
 	@Override
-	public SpawnLocation getSpawn(int index, boolean random) {
-		return null;
-	}
-
+	public LocationType getLocationType() { return null; }
 	@Override
-	public LocationType getLocationType() {
-		return null;
-	}
-
-	@Override
-	public ArenaTeam getTeam(ArenaPlayer player) {
-		return null;
-	}
+	public ArenaTeam getTeam(ArenaPlayer player) { return null; }
 
 	@Override
 	public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
@@ -175,17 +154,19 @@ public class GameManager implements PlayerHolder {
 
 	@Override
 	public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-		this.quitting(player);
+		quitting(player);
         callEvent(new ArenaPlayerLeaveMatchEvent(player,player.getTeam()));
+        
 		if (EssentialsController.enabled())
 			BAPlayerListener.setBackLocation(player, null);
+		
         PlayerStoreController.getPlayerStoreController().restoreScoreboard(player);
+        
         if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPostQuit  t=" + player.getTeam());
 	}
 
 	@Override
-	public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-	}
+	public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
 	@Override
 	public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
@@ -193,8 +174,7 @@ public class GameManager implements PlayerHolder {
 	}
 
 	@Override
-	public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-	}
+	public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
 	@Override
 	public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
@@ -218,8 +198,5 @@ public class GameManager implements PlayerHolder {
 		}
 	}
 
-    public void setTeleportTime(ArenaPlayer player, ArenaLocation location){
-
-    }
-
+    public void setTeleportTime(ArenaPlayer player, ArenaLocation location) { }
 }

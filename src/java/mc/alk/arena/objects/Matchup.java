@@ -1,5 +1,11 @@
 package mc.alk.arena.objects;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.arenas.Arena;
@@ -7,43 +13,31 @@ import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 
 public class Matchup {
 	static int count = 0;
-	final int id = count++; /// id
+	final int id = count++; 
 
-	public CompetitionResult result = new MatchResult();
-	public List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+	@Setter @Getter public MatchResult result = new MatchResult();
+	@Getter public List<ArenaTeam> teams = new ArrayList<>();
 
-	List<ArenaListener> listeners = new ArrayList<ArenaListener>();
+	@Getter List<ArenaListener> arenaListeners = new ArrayList<>();
 
-	MatchParams params = null;
-	Match match = null;
-	final JoinOptions joinOptions;
+	@Getter MatchParams matchParams = null;
+	@Getter Match match = null;
+	@Getter final JoinOptions joinOptions;
 
-	public Matchup(MatchParams params, ArenaTeam team, ArenaTeam team2, JoinOptions joinOptions) {
-		this.params = params;
+	public Matchup(MatchParams _params, ArenaTeam team, ArenaTeam team2, JoinOptions _joinOptions) {
+		matchParams = _params;
 		teams.add(team);
 		teams.add(team2);
-		this.joinOptions = joinOptions;
+		joinOptions = _joinOptions;
 	}
 
-	public Matchup(MatchParams params, Collection<ArenaTeam> teams, JoinOptions joinOptions) {
-		this.teams = new ArrayList<ArenaTeam>(teams);
-		this.params = ParamController.copyParams(params);
-		this.joinOptions = joinOptions;
-	}
-
-	public MatchParams getMatchParams() {
-		return params;
-	}
-
-	public void setResult(CompetitionResult result) {
-		this.result = result;
+	public Matchup(MatchParams _params, Collection<ArenaTeam> _teams, JoinOptions _joinOptions) {
+		teams = new ArrayList<>(_teams);
+		matchParams = ParamController.copyParams(_params);
+		joinOptions = _joinOptions;
 	}
 
 	@Override
@@ -55,12 +49,8 @@ public class Matchup {
 		return sb.toString() + " result=" + result;
 	}
 
-	public List<ArenaTeam> getTeams() {return teams;}
 	public ArenaTeam getTeam(int i) {
 		return teams.get(i);
-	}
-	public CompetitionResult getResult() {
-		return result;
 	}
 
 	@Override
@@ -74,20 +64,13 @@ public class Matchup {
 	public int hashCode() { return id;}
 
 	public void addArenaListener(ArenaListener transitionListener) {
-		listeners.add(transitionListener);
+		arenaListeners.add(transitionListener);
 	}
 
-	public List<ArenaListener> getArenaListeners() {
-		return listeners;
+	public void addMatch(Match _match) {
+		match = _match;
 	}
 
-	public void addMatch(Match match) {
-		this.match = match;
-	}
-
-	public Match getMatch(){
-		return match;
-	}
 	public Integer getPriority() {
 		Integer priority = Integer.MAX_VALUE;
 		for (ArenaTeam t: teams){
@@ -118,11 +101,7 @@ public class Matchup {
 		return size;
 	}
 
-	public JoinOptions getJoinOptions() {
-		return joinOptions;
-	}
-
-	public Arena getArena() {return joinOptions.getArena();}
-	public void setArena(Arena arena) {joinOptions.setArena(arena);}
+	public Arena getArena() { return joinOptions.getArena(); }
+	public void setArena(Arena arena) { joinOptions.setArena(arena); }
 
 }

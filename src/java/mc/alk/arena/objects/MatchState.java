@@ -57,9 +57,9 @@ public enum MatchState implements CompetitionTransition {
     final String name;
     final int globalOrdinal;
 
-    MatchState(String name) {
-        this.name = name;
-        this.globalOrdinal = StateController.register(this.getClass());
+    MatchState( String _name ) {
+        name = _name;
+        globalOrdinal = StateController.register( this.getClass() );
     }
 
     @Override
@@ -79,9 +79,11 @@ public enum MatchState implements CompetitionTransition {
         } catch (Exception e) {
             if (str.equals("ONCOUNTDOWNTOEVENT")) {
                 return ONCOUNTDOWNTOEVENT;
-            } else if (str.equals("WINNER")) {
+            } 
+            else if (str.equals("WINNER")) {
                 return WINNERS;
-            } else if (str.equals("INSTART")) {
+            } 
+            else if (str.equals("INSTART")) {
                 return INGAME;
             }
             return null;

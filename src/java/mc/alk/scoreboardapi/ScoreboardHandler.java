@@ -5,5 +5,4 @@ public class ScoreboardHandler {
 	public void addScoreboard(SScoreboard bs) {
 		this.bs = bs;
 	}
-
 }

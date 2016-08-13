@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -109,7 +108,7 @@ public class StateGraph {
 	}
 
 	public boolean hasAllOptions(TransitionOption... options) {
-		Set<TransitionOption> opts = new HashSet<>(Arrays.asList(options));
+		Set<TransitionOption> opts = EnumSet.copyOf( Arrays.asList( options ) );
 		
         if ( allops.isEmpty() ) calculateAllOptions();
         
@@ -132,28 +131,17 @@ public class StateGraph {
 		return tops != null && tops.hasOption(withindistance);
 	}
 
-    public boolean hasOptionIn(MatchState beginState, MatchState endState, TransitionOption option) {
-		List<MatchState> states = MatchState.getStates(beginState, endState);
-		
-		for (MatchState state : states){
-			StateOptions tops = ops.get(state);
-			
-			if (tops != null && tops.hasOption(option)) return true;
-		}
-		return false;
-	}
-
     public boolean needsClearInventory() {
 		return ops.containsKey(MatchState.PREREQS) && ops.get(MatchState.PREREQS).hasOption(TransitionOption.CLEARINVENTORY);
 	}
 	public String getRequiredString(String header) {
-		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(header): null;
+		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(header) : null;
 	}
 	public String getRequiredString(ArenaPlayer p, World w, String header) {
-		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(p,w,header): null;
+		return ops.containsKey(MatchState.PREREQS) ? ops.get(MatchState.PREREQS).getNotReadyMsg(p,w,header) : null;
 	}
 	public String getGiveString(CompetitionState ms) {
-		return ops.containsKey(ms) ? ops.get(ms).getPrizeMsg(null): null;
+		return ops.containsKey(ms) ? ops.get(ms).getPrizeMsg(null) : null;
 	}
 	public StateOptions getOptions(CompetitionState ms) {
 		return ops.get(ms);
@@ -168,21 +156,21 @@ public class StateGraph {
 		return !ops.containsKey(MatchState.PREREQS) || ops.get(MatchState.PREREQS).playerReady(p, w);
 	}
     public List<ItemStack> getNeedItems(CompetitionState state){
-        return ops.containsKey(state) ? ops.get(state).getNeedItems(): null;
+        return ops.containsKey(state) ? ops.get(state).getNeedItems() : null;
     }
     public List<ItemStack> getTakeItems(CompetitionState state){
-        return ops.containsKey(state) ? ops.get(state).getTakeItems(): null;
+        return ops.containsKey(state) ? ops.get(state).getTakeItems() : null;
     }
     public List<ItemStack> getGiveItems(CompetitionState state){
-        return ops.containsKey(state) ? ops.get(state).getGiveItems(): null;
+        return ops.containsKey(state) ? ops.get(state).getGiveItems() : null;
     }
     
 	public boolean teamReady(ArenaTeam t, World w) {
 		StateOptions to = ops.get(MatchState.PREREQS);
 		
-		if (to == null) return true;
+		if ( to == null ) return true;
 		
-		for (ArenaPlayer p: t.getPlayers()){
+		for ( ArenaPlayer p : t.getPlayers() ){
 			if (!to.playerReady(p,w))
 				return false;
 		}
@@ -192,15 +180,16 @@ public class StateGraph {
 	public List<MatchState> getMatchStateRange(TransitionOption startOption, TransitionOption endOption) {
 		boolean foundOption = false;
 		List<MatchState> list = new ArrayList<>();
-		for (MatchState ms : MatchState.values()){
+		
+		for ( MatchState ms : MatchState.values() ) {
 			StateOptions to = ops.get(ms);
-			if (to == null) continue;
-			if (to.hasOption(startOption)){
-				foundOption = true;}
-			if (to.hasOption(endOption))
-				return list;
-			if (foundOption)
-				list.add(ms);
+			if ( to == null ) continue;
+			
+			if ( to.hasOption( startOption ) ) foundOption = true;
+			
+			if ( to.hasOption( endOption ) ) return list;
+			
+			if ( foundOption ) list.add( ms );
 		}
 		return list;
 	}
@@ -209,6 +198,10 @@ public class StateGraph {
 	    return o1.globalOrdinal() - o2.globalOrdinal();
 	};
 	
+	public String getOptionString() {
+        return getOptionString(null);
+    }
+    
     public String getOptionString(StateGraph subset) {
         
         if (subset == null) {
@@ -258,11 +251,7 @@ public class StateGraph {
         return sb.toString();
     }
 
-    public String getOptionString() {
-        return getOptionString(null);
-    }
-
-	public Double getDoubleOption(CompetitionState state, TransitionOption option) {
+    public Double getDoubleOption(CompetitionState state, TransitionOption option) {
 		StateOptions tops = getOptions(state);
 		return tops == null ? null : tops.getDouble(option);
 	}
@@ -270,10 +259,13 @@ public class StateGraph {
 	public static StateGraph mergeChildWithParent(StateGraph cmt, StateGraph pmt) {
         if (cmt == null && pmt == null)
             return null;
-        if (cmt == null){
-			cmt = new StateGraph();}
+        
+        if (cmt == null)
+			cmt = new StateGraph();
+        
 		if (pmt == null)
 			return cmt;
+		
 		for (Entry<CompetitionState, StateOptions> entry: pmt.ops.entrySet()){
             if (cmt.ops.containsKey(entry.getKey())){
                 cmt.ops.get(entry.getKey()).addOptions(entry.getValue());

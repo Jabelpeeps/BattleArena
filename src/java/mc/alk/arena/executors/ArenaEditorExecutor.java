@@ -34,14 +34,14 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         super();
     }
 
-    @MCCommand(cmds={"select","sel"}, admin=true)
+    @MCCommand( cmds={"select","sel"}, admin=true )
     public boolean arenaSelect(CommandSender sender, Arena arena) {
         ArenaEditor aac = BattleArena.getArenaEditor();
         aac.setCurrentArena(sender, arena);
         return MessageUtil.sendMessage(sender, "&2You have selected arena &6" + arena.getName());
     }
 
-    @MCCommand(cmds={"ds","deletespawn"}, admin=true, usage="/aa deleteSpawn <index>")
+    @MCCommand( cmds={"ds","deletespawn"}, admin=true, usage="/aa deleteSpawn <index>" )
     public boolean arenaDeleteSpawn(CommandSender sender, CurrentSelection cs, Integer number) {
         if (number <= 0 || number > 10000){
             return MessageUtil.sendMessage(sender, "&cYou need to specify an index within the range &61-10000");}
@@ -66,7 +66,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
      * the BattleArena API.
      * 
      */
-    @MCCommand(cmds={"as","addspawn"}, admin=true, min=2,
+    @MCCommand( cmds={"as","addspawn"}, admin=true, min=2,
             usage="/aa addspawn <mob/item/spawnGroup> [buffs or effects] [number] [fs=first spawn time] [rs=respawn time] [ds=despawn time] [index|i=<index>]")
     public boolean arenaAddSpawn(Player sender, CurrentSelection cs, String[] args) {
         Long index = parseIndex(sender, cs.getArena(), args);
@@ -89,13 +89,13 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(sender, "&6"+a.getName()+ "&e now has spawn &6" + spawn +"&2  index=&5" + index);
     }
     
-    @MCCommand(cmds={"ss","setspawn"}, admin=true, min=2,
+    @MCCommand( cmds={"ss","setspawn"}, admin=true, min=2,
             usage="/aa setspawn <mob/item/spawnGroup> [buffs or effects] [number] [fs=first spawn time] [rs=respawn time] [ds=despawn time] [index|i=<index>]")
     public boolean arenaSetSpawn(Player sender, CurrentSelection cs, String[] args) {
         return arenaAddSpawn(sender, cs, args);
     }
 
-    @MCCommand(cmds={"ab","addBlock"}, admin=true,
+    @MCCommand( cmds={"ab","addBlock"}, admin=true,
             usage="/aa addBlock [number] [fs=first spawn time] [rt=respawn time] [trigger=<trigger type>] [resetTo=<block>] [index]")
     public boolean arenaAddBlock(Player sender, CurrentSelection cs, String[] args) {
         Long index = parseIndex(sender, cs.getArena(), args);

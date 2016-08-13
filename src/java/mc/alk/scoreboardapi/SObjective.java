@@ -51,7 +51,7 @@ public interface SObjective {
 
 	public SAPIDisplaySlot getDisplaySlot();
 
-	public String getID();
+	public String getId();
 
 
 	public int getPriority();
@@ -72,7 +72,7 @@ public interface SObjective {
 
 	public SEntry removeEntry(SEntry entry);
 
-	public void setScoreBoard(SScoreboard scoreboard);
+	public void setScoreboard(SScoreboard scoreboard);
 
     int getPoints(String id);
 

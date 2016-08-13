@@ -1,8 +1,8 @@
 package mc.alk.arena.serializers;
 
-import java.awt.Color;
 import java.util.List;
 
+import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,7 +57,7 @@ public class TeamHeadSerializer extends BaseConfig{
 		Integer r = Integer.valueOf(split[2]);
 		Integer g = Integer.valueOf(split[3]);
 		Integer b = Integer.valueOf(split[4]);
-		TeamAppearance th = new TeamAppearance(item,split[0], new Color(r, g, b));
+		TeamAppearance th = new TeamAppearance(item,split[0], Color.fromRGB( r, g, b));
 		TeamUtil.addTeamHead(name,th);
 		return name;
 	}

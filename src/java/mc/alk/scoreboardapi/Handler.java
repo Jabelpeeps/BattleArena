@@ -29,9 +29,9 @@ public class Handler {
 	}
 
 	public void registerEntry(SEntry entry){
-		if (!contains(entry.getID())){
+		if (!contains(entry.getId())){
 			Integer realid = ids++;
-			idmap.put(entry.getID(), realid);
+			idmap.put(entry.getId(), realid);
 			row.put(realid, entry);
 		}
 	}
@@ -49,7 +49,7 @@ public class Handler {
 	}
 
 	public SEntry removeEntry(SEntry e) {
-		Integer id = idmap.remove(e.getID());
+		Integer id = idmap.remove(e.getId());
 		if (id != null){
 			return row.remove(id);
 		}

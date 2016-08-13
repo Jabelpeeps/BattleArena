@@ -54,27 +54,28 @@ import mc.alk.util.Log;
 import mc.alk.util.MinMax;
 import mc.alk.util.SerializerUtil;
 
-public class ArenaSerializer extends BaseConfig{
+public class ArenaSerializer extends BaseConfig {
     static BattleArenaController arenaController;
     static HashMap<Plugin, Set<ArenaSerializer>> configs = new HashMap<>();
 
-    /// Which plugin does this ArenaSerializer belong to
     Plugin plugin;
 
     public static void setBAC(BattleArenaController bac){
         arenaController = bac;
     }
 
-    public ArenaSerializer(Plugin plugin, File file){
-        setConfig(file);
-        this.plugin = plugin;
+    public ArenaSerializer(Plugin _plugin, File _file){
+        setConfig(_file);
+        plugin = _plugin;
 
         config = new YamlConfiguration();
-        Set<ArenaSerializer> paths = configs.get(plugin);
+        Set<ArenaSerializer> paths = configs.get(_plugin);
+        
         if (paths == null){
             paths = new HashSet<>();
-            configs.put(plugin, paths);
-        } else { /// check to see if we have this path already
+            configs.put(_plugin, paths);
+        } 
+        else { /// check to see if we have this path already
             for (ArenaSerializer as : paths){
                 if (as.file.getPath().equals(this.file.getPath())){
                     return;}
@@ -84,18 +85,18 @@ public class ArenaSerializer extends BaseConfig{
     }
 
     public static void loadAllArenas(){
-        for (Plugin plugin: configs.keySet()){
+        for ( Plugin plugin : configs.keySet() ){
             loadAllArenas(plugin);
         }
     }
 
     public static void loadAllArenas(Plugin plugin){
         for (ArenaSerializer serializer: configs.get(plugin)){
-            serializer.loadArenas(plugin);
+            serializer.loadArenas();
         }
     }
 
-    public static void loadAllArenas(Plugin plugin, ArenaType arenaType){
+    public static void loadAllArenas(Plugin plugin, ArenaType arenaType) {
         Set<ArenaSerializer> serializers = configs.get(plugin);
         if (serializers == null || serializers.isEmpty()){
             Log.err(plugin.getName() +" has no arenas to load");
@@ -103,22 +104,29 @@ public class ArenaSerializer extends BaseConfig{
         }
 
         for (ArenaSerializer serializer: serializers){
-            serializer.loadArenas(plugin,arenaType);
+            serializer.loadArenas( arenaType );
         }
     }
 
-    public void loadArenas(Plugin plugin){
-        try {config.load(file);} catch (Exception e){Log.printStackTrace(e);}
-        loadArenas(plugin, BattleArena.getBAController(), config,null);
+    public void loadArenas() {
+        try {
+            config.load(file);
+        } 
+        catch (Exception e) {Log.printStackTrace(e); }
+        
+        loadArenas( BattleArena.getBAController(), config, null );
     }
 
-    public void loadArenas(Plugin plugin, ArenaType arenaType){
-        try {config.load(file);} catch (Exception e){Log.printStackTrace(e);}
-        loadArenas(plugin, BattleArena.getBAController(), config, arenaType);
+    public void loadArenas( ArenaType arenaType ) {
+        try {
+            config.load(file);
+        } 
+        catch (Exception e){Log.printStackTrace(e);}
+        
+        loadArenas( BattleArena.getBAController(), config, arenaType);
     }
 
-    protected void loadArenas(Plugin plugin, BattleArenaController bac, //ArenaSerializer arenaSerializer,
-                              ConfigurationSection cs, ArenaType arenaType){
+    protected void loadArenas( BattleArenaController bac, ConfigurationSection cs, ArenaType arenaType ) {
         final String pname = "["+plugin.getName()+"] ";
         if (cs == null){
             Log.info(pname+" " + arenaType + " has no arenas, cs is null");
@@ -217,8 +225,9 @@ public class ArenaSerializer extends BaseConfig{
         MatchParams mp = new MatchParams(atype);
         try {
             if (cs.contains("params"))
-                mp = ConfigSerializer.loadMatchParams(plugin, atype, name, cs.getConfigurationSection("params"),true);
-        } catch (Exception e) {
+                mp = ConfigSerializer.loadMatchParams( atype, name, cs.getConfigurationSection("params"), true );
+        } 
+        catch (Exception e) {
             Log.printStackTrace(e);
         }
         /// Get from the "old" way of specifying teamSize and nTeams
@@ -244,8 +253,7 @@ public class ArenaSerializer extends BaseConfig{
 
 
         /// Spawns
-        Map<Integer, List<SpawnLocation>> locs =
-                SerializerUtil.parseLocations(cs.getConfigurationSection("locations"));
+        Map<Integer, List<SpawnLocation>> locs = SerializerUtil.parseLocations(cs.getConfigurationSection("locations"));
         if (locs != null){
             setSpawns(arena,locs);
         }

@@ -1,6 +1,5 @@
 package mc.alk.util;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -142,7 +142,7 @@ public class InventoryUtil {
 
 	static final Map<Material,Armor> armor;
 	static {
-		armor = new EnumMap<Material,Armor>(Material.class);
+		armor = new EnumMap<>(Material.class);
 
 	    armor.put( Material.SKULL_ITEM, new Armor(ArmorType.HELM, ArmorLevel.DISGUISE));
 		armor.put(Material.WOOL,new Armor(ArmorType.HELM, ArmorLevel.WOOL));
@@ -368,7 +368,7 @@ public class InventoryUtil {
 	}
 
 	public static void addItemToInventory(Player player, ItemStack itemStack, int stockAmount,
-			boolean update, boolean ignoreCustomHelmet) {
+			                                                        boolean update, boolean ignoreCustomHelmet) {
 		addItemToInventory(player,itemStack,stockAmount,update,ignoreCustomHelmet,null);
 	}
 
@@ -398,9 +398,7 @@ public class InventoryUtil {
                 } catch (NullPointerException handled) {
                     isHelmet = false;
                 }
-		/// no item: add to armor slot
-		/// item better: add old to inventory, new to armor slot
-		/// item notbetter: add to inventory
+
 		Armor a = armor.get(itemType);
 		final ItemStack oldArmor = getArmorSlot(inv,a.type);
 		boolean empty = (oldArmor == null || oldArmor.getType() == Material.AIR);
@@ -432,7 +430,7 @@ public class InventoryUtil {
 	public static void setColor(ItemStack itemStack, Color color) {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null && itemStack.getItemMeta() instanceof LeatherArmorMeta){
-            org.bukkit.Color bukkitColor = org.bukkit.Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
+            Color bukkitColor = Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
             LeatherArmorMeta lam = (LeatherArmorMeta) itemStack.getItemMeta();
             lam.setColor(bukkitColor);
             itemStack.setItemMeta(lam);
@@ -483,7 +481,7 @@ public class InventoryUtil {
 				inv.setHelmet(null);
 			}
 		}
-		/// TODO technically this is not correct as removing the armor slots should also decrease the leftover
+		/// TODO technically this is not correct as removing the armour slots should also decrease the leftover
 		return leftover;
 	}
 
@@ -497,7 +495,7 @@ public class InventoryUtil {
 	 * @return HashMap Integer ItemStack
 	 */
 	public static HashMap<Integer, ItemStack> removeItem(Inventory inv, ItemStack... items) {
-		HashMap<Integer, ItemStack> leftover = new HashMap<Integer, ItemStack>();
+		HashMap<Integer, ItemStack> leftover = new HashMap<>();
 
 		for (int i = 0; i < items.length; i++) {
 			ItemStack item = items[i];
@@ -505,7 +503,7 @@ public class InventoryUtil {
 
 			while (true) {
 				int first = first(inv, item);
-				// Drat! we don't have this type in the inventory
+				
 				if (first == -1) {
 					item.setAmount(toDelete);
 					leftover.put(i, item);
@@ -516,16 +514,15 @@ public class InventoryUtil {
 
                 if (amount <= toDelete) {
                 	toDelete -= amount;
-                	// clear the slot, all used up
+                	
                 	inv.setItem(first, null);
-                } else {
-                	// split the stack and store
+                } 
+                else {
                 	itemStack.setAmount(amount - toDelete);
                 	inv.setItem(first, itemStack);
                 	toDelete = 0;
                 }
-
-				// Bail when done
+                
 				if (toDelete <= 0) {
 					break;
 				}
@@ -547,8 +544,8 @@ public class InventoryUtil {
 		return null;
 	}
 
-	///Adds item to inventory
 	public static void addItemToInventory(Inventory inv, ItemStack is, int left){
+	    
 		if (is == null || is.getType() == Material.AIR)
 			return;
 		if (Defaults.ITEMS_IGNORE_STACKSIZE){
@@ -563,7 +560,7 @@ public class InventoryUtil {
 			return;
 		}
 		if(maxStackSize != 64){
-			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+			ArrayList<ItemStack> items = new ArrayList<>();
 			for (int i = 0; i < Math.ceil((double)left / maxStackSize); i++) {
 				if (left < maxStackSize) {
 					is2.setAmount(left);
@@ -577,35 +574,24 @@ public class InventoryUtil {
 			for(Object o : iArray){
 				inv.addItem((ItemStack) o);
 			}
-		}else{
-			inv.addItem(is);
 		}
+		else inv.addItem(is);
 	}
 
-	public static void closeInventory(Player p) {
-		try{
-			p.closeInventory();
-		}catch(Exception closeInventoryError){
-			/// This almost always throws an NPE, but does its job so ignore
-		}
-	}
 
 	public static void clearInventory(Player p) {
 		if(Defaults.DEBUG_STORAGE) Log.info("Clearing inventory of " + p.getName() +" o=" +
 				p.isOnline() +", d="+ p.isDead() +"   inv=" + p.getInventory());
-		try{
-			PlayerInventory inv = p.getInventory();
-			closeInventory(p);
-			if (inv != null){
-				inv.clear();
-				inv.setArmorContents(null);
-				inv.setItemInMainHand(null);
-				inv.setItemInOffHand( null );
-			}
-			p.updateInventory();
-		} catch(Exception e){
-			Log.printStackTrace(e);
+
+		PlayerInventory inv = p.getInventory();
+		p.closeInventory();
+		if (inv != null){
+			inv.clear();
+			inv.setArmorContents(null);
+			inv.setItemInMainHand(null);
+			inv.setItemInOffHand( null );
 		}
+		p.updateInventory();
 	}
 
 	public static void clearInventory(Player p, boolean skipHead) {
@@ -614,22 +600,23 @@ public class InventoryUtil {
 			return;
 		}
 		if(Defaults.DEBUG_STORAGE) Log.info("Clearing inventory of " + p.getName());
-		try{
-			PlayerInventory inv = p.getInventory();
-			closeInventory(p);
-			if (inv != null){
-				inv.clear();
-				if (inv.getHelmet()!=null && isRealArmor(inv.getHelmet())) inv.setHelmet(null);
-				inv.setBoots(null);
-				inv.setChestplate(null);
-				inv.setLeggings(null);
-                inv.setItemInMainHand(null);
-                inv.setItemInOffHand( null );
-			}
-			p.updateInventory();
-		} catch(Exception e){
-			Log.printStackTrace(e);
+		
+		PlayerInventory inv = p.getInventory();
+		p.closeInventory();
+		
+		if (inv != null){
+			inv.clear();
+			if ( inv.getHelmet() != null && isRealArmor(inv.getHelmet()) ) 
+			    inv.setHelmet(null);
+			
+			inv.setBoots(null);
+			inv.setChestplate(null);
+			inv.setLeggings(null);
+            inv.setItemInMainHand(null);
+            inv.setItemInOffHand( null );
 		}
+		p.updateInventory();
+
 	}
 
 	public static Object getCommonName(ItemStack is) {
@@ -643,11 +630,7 @@ public class InventoryUtil {
 
 
 	public static boolean isItem(String str){
-		try {
-			return parseItem(str) != null;
-		} catch (Exception e) {
-			return false;
-		}
+		return parseItem(str) != null;	
 	}
 
 	private static final Pattern PATTERN_LORE =
@@ -661,7 +644,8 @@ public class InventoryUtil {
 	private static final Pattern PATTERN_POSITION =
 			Pattern.compile("position= ?\"([^\"]*)\"",Pattern.CASE_INSENSITIVE); //The pattern for matching position
 
-	public static ItemStack parseItem(String str) throws Exception{
+	public static ItemStack parseItem(String str)  {
+	    
 		/// items in yaml get stored like this {leather_chest=fireprot:5 1}
 		/// so need to remove the {} and the first '='
 		if (str.contains("{"))
@@ -758,7 +742,7 @@ public class InventoryUtil {
 		Matcher m = PATTERN_COLOR.matcher(str);
 		if (!m.find())
 			return null;
-		return new Color(Integer.valueOf(m.group(1)),Integer.valueOf(m.group(2)),Integer.valueOf(m.group(3)));
+		return Color.fromRGB( Integer.valueOf(m.group(1)),Integer.valueOf(m.group(2)),Integer.valueOf(m.group(3)));
 	}
 
 	public static String parseOwner(String str){
@@ -786,7 +770,7 @@ public class InventoryUtil {
 				//DEBUG
 				if(DEBUG) Log.info(Arrays.toString(lines));
 				//Create a new list
-				LinkedList<String> lore = new LinkedList<String>();
+				LinkedList<String> lore = new LinkedList<>();
 				//Add all the sections to the list
                 Collections.addAll(lore, lines);
 				//Success!
@@ -830,7 +814,7 @@ public class InventoryUtil {
 	}
 
 	public boolean addEnchantments(ItemStack is, String[] args) {
-		Map<Enchantment,Integer> encs = new HashMap<Enchantment,Integer>();
+		Map<Enchantment,Integer> encs = new HashMap<>();
 		for (String s : args){
 			EnchantmentWithLevel ewl = getEnchantment(s);
 			if (ewl != null){
@@ -883,7 +867,7 @@ public class InventoryUtil {
     		}
     		if (meta instanceof LeatherArmorMeta){
                 LeatherArmorMeta lam = (LeatherArmorMeta) meta;
-                Color color = new Color(lam.getColor().getRed(), lam.getColor().getGreen(), lam.getColor().getBlue());
+                Color color = Color.fromRGB(lam.getColor().getRed(), lam.getColor().getGreen(), lam.getColor().getBlue());
                 if (color!=null)
                     sb.append("color=\"").append(color.getRed()).append(",").append(color.getGreen()).append(",").append(color.getBlue()).append("\" ");
     		}
@@ -1154,7 +1138,7 @@ public class InventoryUtil {
 
 
 	public static List<ItemStack> getItemList(Player player){
-		List<ItemStack> items = new ArrayList<ItemStack>();
+		List<ItemStack> items = new ArrayList<>();
 		for (ItemStack item: player.getInventory().getArmorContents()){
 			if (item != null && item.getType() != Material.AIR){
 				items.add(item);}
@@ -1185,7 +1169,7 @@ public class InventoryUtil {
 	public static ArrayList<ItemStack> getItemList(ConfigurationSection cs, String nodeString) {
 		if (cs == null || cs.getList(nodeString) == null)
 			return null;
-		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> items = new ArrayList<>();
 		try {
 			String str = null;
 			for (Object o : cs.getList(nodeString)){

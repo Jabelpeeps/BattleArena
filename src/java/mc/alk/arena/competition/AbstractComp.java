@@ -36,10 +36,10 @@ import mc.alk.arena.events.events.TeamJoinedEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.CompetitionResult;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.EventState;
+import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.joining.TeamJoinObject;
@@ -57,15 +57,10 @@ import mc.alk.util.PermissionsUtil;
 
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {
     @Getter final String name; 
-
     @Getter protected EventParams params; 
-
     EventMessager mc; 
-
     Countdown timer; 
-
     @Setter protected AbstractJoinHandler teamJoinHandler; 
-
     @Getter protected EventState state; 
 
     /// When did each transition occur
@@ -73,13 +68,13 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     /**
      * Create our event from the specified paramaters
-     * @param params EventParams
+     * @param _params EventParams
      */
-    public AbstractComp(EventParams params) throws NeverWouldJoinException {
-        this.params = params;
+    public AbstractComp(EventParams _params) throws NeverWouldJoinException {
+        params = _params;
         transitionTo(EventState.CLOSED);
-        this.name = params.getName();
-        teamJoinHandler = TeamJoinFactory.createTeamJoinHandler(params, this);
+        name = _params.getName();
+        teamJoinHandler = TeamJoinFactory.createTeamJoinHandler(_params, this);
         if (mc == null)
             mc = new EventMessager(this);
         mc.setMessageHandler(new EventMessageImpl(this));
@@ -99,7 +94,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     public void autoEvent(){
         openEvent();
-//        TimeUtil.testClock();
         mc.sendCountdownTillEvent(params.getSecondsTillStart());
         timer = new Countdown(BattleArena.getSelf(),(long)params.getSecondsTillStart(),
                 (long)params.getAnnouncementInterval(), this);
@@ -150,7 +144,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         callEvent(new EventStartEvent(this,teams));
     }
 
-    protected void setEventResult(CompetitionResult result, boolean announce) {
+    protected void setEventResult(MatchResult result, boolean announce) {
         if (announce){
             if (result.hasVictor()){
                 mc.sendEventVictory(result.getVictors(), result.getLosers());
@@ -279,7 +273,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
             return js;
         }
         AbstractJoinHandler.TeamJoinResult tjr = teamJoinHandler.joiningTeam(tqo);
-        switch(tjr.status){
+        switch(tjr.joinStatus){
             case ADDED_TO_EXISTING: /* drop down into added */
             case ADDED:
                 for (ArenaPlayer player: tqo.getTeam().getPlayers()){
@@ -425,43 +419,32 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
     @Override
     public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {/* do nothing */}
-
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer player) {/* do nothing */}
-
     @Override
     public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {/* do nothing */}
-
     @Override
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {/* do nothing */}
-
     @Override
     public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
         player.removeCompetition(this);
     }
-
     @Override
     public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPostEnter(ArenaPlayer player,ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
-
     @Override
     public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler( priority=EventPriority.MONITOR )
     public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
         if (hasPlayer(event.getPlayer())) {
             event.addMessage(MessageHandler.getSystemMessage("you_left_event", this.getName()));

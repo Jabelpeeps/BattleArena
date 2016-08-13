@@ -3,7 +3,6 @@ package mc.alk.arena.serializers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,7 +59,7 @@ import mc.alk.util.SerializerUtil;
  *
  */
 public class ConfigSerializer extends BaseConfig {
-    final Plugin plugin;
+    static Plugin plugin;
     final String name;
 
     public ConfigSerializer(Plugin _plugin, File configFile, String _name) {
@@ -70,12 +69,14 @@ public class ConfigSerializer extends BaseConfig {
     }
 
     public MatchParams loadMatchParams() throws ConfigException, InvalidOptionException {
-        return ConfigSerializer.loadMatchParams(plugin, this, name);
+        return ConfigSerializer.loadMatchParams( this, name);
     }
 
-    public static MatchParams loadMatchParams(Plugin plugin, BaseConfig config, String name)
-            throws ConfigException, InvalidOptionException {
+    public static MatchParams loadMatchParams( BaseConfig config, String name )
+                                                            throws ConfigException, InvalidOptionException {
+        
         ConfigurationSection cs = config.getConfig();
+        
         if (config.getConfigurationSection(name) != null) {
             cs = config.getConfigurationSection(name);
         }
@@ -86,16 +87,16 @@ public class ConfigSerializer extends BaseConfig {
         if (at == null && !name.equalsIgnoreCase("tourney"))
             throw new ConfigException("Could not parse arena type. Valid types. " + ArenaType.getValidList());
 
-        return loadMatchParams(plugin, at, name, cs);
+        return loadMatchParams( at, name, cs);
     }
 
-    public static MatchParams loadMatchParams(Plugin plugin, ArenaType at, String name, ConfigurationSection cs)
-            throws ConfigException, InvalidOptionException {
-        return loadMatchParams(plugin,at,name,cs,false);
+    public static MatchParams loadMatchParams( ArenaType at, String name, ConfigurationSection cs)
+                                                            throws ConfigException, InvalidOptionException {
+        return loadMatchParams( at, name, cs, false );
     }
 
-    public static MatchParams loadMatchParams(Plugin plugin, ArenaType at, String name,
-                                              ConfigurationSection cs, boolean isNonBaseConfig) throws ConfigException, InvalidOptionException {
+    public static MatchParams loadMatchParams( ArenaType at, String name, ConfigurationSection cs, boolean isNonBaseConfig ) 
+                                                            throws ConfigException, InvalidOptionException {
 
         MatchParams mp = at != null ? new MatchParams(at) : new MatchParams();
         
@@ -156,7 +157,7 @@ public class ConfigSerializer extends BaseConfig {
                 for (String s : teamKeys) {
                     try {
                         Integer index = Integer.valueOf(s.substring(4)) - 1;
-                        MatchParams p = loadMatchParams(plugin, null, s, teamcs.getConfigurationSection(s), true);
+                        MatchParams p = loadMatchParams( null, s, teamcs.getConfigurationSection(s), true );
                         p.setParent(mp);
                         teamParams.put(index, p);
                     } catch (Exception e) {
@@ -238,11 +239,13 @@ public class ConfigSerializer extends BaseConfig {
                 if (prevOptions != null) {
                     if (tops == null){
                         tops = prevOptions;
-                    }else {
+                    }
+                    else {
                         tops.addOptions(prevOptions);
                     }
                 }
-            } catch (Exception e){
+            } 
+            catch (Exception e){
                 Log.err("Invalid Option was not added!!! transition= " + cstate);
                 Log.printStackTrace(e);
                 continue;
@@ -260,12 +263,14 @@ public class ConfigSerializer extends BaseConfig {
                 StateOptions cancelOps = new StateOptions(tops);
                 allTops.addStateOptions(MatchState.ONCANCEL, cancelOps);
                 if (Defaults.DEBUG_TRACE) Log.info("[ARENA] transition= " + MatchState.ONCANCEL +" "+cancelOps);
-            } else if (cstate == MatchState.ONLEAVE){
+            } 
+            else if (cstate == MatchState.ONLEAVE){
                 if (tops.hasOption(TransitionOption.TELEPORTOUT)){
                     tops.removeOption(TransitionOption.TELEPORTOUT);
                     Log.warn("You should never use the option teleportOut inside of onLeave!");
                 }
-            } else if (cstate == MatchState.DEFAULTS){
+            } 
+            else if (cstate == MatchState.DEFAULTS){
                 if (cs.getBoolean("duelOnly", false)){ /// for backwards compatibility
                     tops.addOption(TransitionOption.DUELONLY);}
             }
@@ -656,7 +661,8 @@ public class ConfigSerializer extends BaseConfig {
             ArenaClass ac = ArenaClassController.getClass(className);
             if (whichTeam.equalsIgnoreCase("default")){
                 team = ArenaClass.DEFAULT;
-            } else {
+            } 
+            else {
                 try {
                     team = Integer.valueOf(whichTeam.replaceAll("team", "")) - 1;
                 } catch(Exception e){
@@ -685,7 +691,8 @@ public class ConfigSerializer extends BaseConfig {
             final String disguiseName = cs.getString(whichTeam);
             if (whichTeam.equalsIgnoreCase("default")){
                 team = Integer.MAX_VALUE;
-            } else {
+            } 
+            else {
                 try {
                     team = Integer.valueOf(whichTeam.replaceAll("team", "")) - 1;
                 } catch(Exception e){
@@ -864,12 +871,8 @@ public class ConfigSerializer extends BaseConfig {
         StateGraph alltops = params.getArenaStateGraph();
         if (alltops != null) {
             Map<CompetitionState, StateOptions> transitions =
-                    new TreeMap<>(new Comparator<CompetitionState>() {
-                        @Override
-                        public int compare(CompetitionState o1, CompetitionState o2) {
-                            return o1.globalOrdinal() - o2.globalOrdinal();
-                        }
-                    });
+                    new TreeMap<>( (o1, o2) -> { return o1.globalOrdinal() - o2.globalOrdinal(); } );
+            
             transitions.putAll(alltops.getAllOptions());
             for (CompetitionState ms : transitions.keySet()) {
                 try {
@@ -892,9 +895,9 @@ public class ConfigSerializer extends BaseConfig {
                             }
                         }
                     }
-                    /// transition map
+                    
                     Map<String, Object> tmap = new LinkedHashMap<>();
-                    ops = new TreeMap<>(ops); /// try to maintain some ordering
+                    ops = new TreeMap<>(ops); 
                     for (TransitionOption to : ops.keySet()) {
                         try {
                             String s;
@@ -943,7 +946,7 @@ public class ConfigSerializer extends BaseConfig {
         }
 
         //		main.set("options", map);
-        params.setParent(parent); ///reset the parent
+        params.setParent(parent); 
     }
 
     public static List<String> getModuleList(Collection<ArenaModule> modules) {

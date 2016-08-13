@@ -12,19 +12,19 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.scoreboardapi.SAPIFactory;
 import mc.alk.scoreboardapi.SEntry;
 import mc.alk.scoreboardapi.SObjective;
 import mc.alk.scoreboardapi.SScoreboard;
 import mc.alk.scoreboardapi.STeam;
-import mc.alk.scoreboardapi.ScoreboardAPI;
 
 public class ArenaScoreboard implements SScoreboard {
     final protected SScoreboard board;
 
     public ArenaScoreboard(String scoreboardName) {
-        this.board = (Defaults.TESTSERVER || !Defaults.USE_SCOREBOARD) ?
-                ScoreboardAPI.createSAPIScoreboard(getPlugin(), scoreboardName) :
-                ScoreboardAPI.createScoreboard(getPlugin(), scoreboardName);
+        this.board = (Defaults.TESTSERVER 
+                || !Defaults.USE_SCOREBOARD) ? SAPIFactory.createSAPIScoreboard(getPlugin(), scoreboardName) 
+                                             : SAPIFactory.createScoreboard(getPlugin(), scoreboardName);
     }
 
     public ArenaObjective createObjective(String id, String criteria, String displayName) {
@@ -44,28 +44,19 @@ public class ArenaScoreboard implements SScoreboard {
     }
 
     public STeam addTeam(ArenaTeam team) { return null;}
-
-    public void addedToTeam(STeam team, ArenaPlayer player){/* do nothing*/}
-
+    public void addedToTeam(STeam team, ArenaPlayer player){ }
     public STeam addedToTeam(ArenaTeam team, ArenaPlayer player) {return null;}
-
     public STeam removeTeam(ArenaTeam team) {return null;}
-
     public STeam removedFromTeam(ArenaTeam team, ArenaPlayer player) {return null;}
-
-    public void removedFromTeam(STeam team, ArenaPlayer player){/* do nothing */}
-
-    public void setDead(ArenaTeam t, ArenaPlayer p) {/* do nothing */}
-
-    public void leaving(ArenaTeam t, ArenaPlayer player) {/* do nothing */}
+    public void removedFromTeam(STeam team, ArenaPlayer player){ }
+    public void setDead(ArenaTeam t, ArenaPlayer p) { }
+    public void leaving(ArenaTeam t, ArenaPlayer player) { }
 
     public void addObjective(ArenaObjective scores) {
-        this.registerNewObjective(scores);
+        registerNewObjective(scores);
     }
 
-    public List<STeam> getTeams() {
-        return null;
-    }
+    public List<STeam> getTeams() { return null; }
 
     @Override
     public SObjective registerNewObjective(String objectiveName,
@@ -236,7 +227,7 @@ public class ArenaScoreboard implements SScoreboard {
     }
 
     public void setObjectiveScoreboard(ArenaObjective arenaObjective) {
-        arenaObjective.setScoreBoard(board);
+        arenaObjective.setScoreboard(board);
     }
 
     public void setPoints(ArenaObjective objective, ArenaTeam team, int points) {

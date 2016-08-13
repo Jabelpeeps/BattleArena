@@ -20,10 +20,8 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.exceptions.InvalidEventException;
 
 
-public class BAEventController implements Listener{
-	/// A map of all of our events
-	private Map<String, Map<EventState,List<AbstractComp>>> allEvents =
-			Collections.synchronizedMap(new HashMap<String,Map<EventState,List<AbstractComp>>>());
+public class BAEventController implements Listener {
+	private Map<String, Map<EventState,List<AbstractComp>>> allEvents = Collections.synchronizedMap(new HashMap<>());
 
 	public static class SizeEventPair{
 		public Integer nEvents = 0;
@@ -55,7 +53,8 @@ public class BAEventController implements Listener{
 	}
 
 	public AbstractComp getEvent(ArenaPlayer p) {
-		/// Really??? I need a triply nested loop??  maybe ArenaPlayers can have a sense of which event has them...
+	    
+		/// maybe ArenaPlayers can have a sense of which event has them...
 		for (Map<EventState,List<AbstractComp>> map : allEvents.values()){
 			for (List<AbstractComp> list: map.values()){
 				for (AbstractComp event: list){

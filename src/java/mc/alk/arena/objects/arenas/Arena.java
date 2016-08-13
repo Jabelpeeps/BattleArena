@@ -10,6 +10,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.competition.TransitionController;
@@ -44,10 +46,10 @@ public class Arena extends AreaContainer {
     protected Location joinloc;
     protected Map<Long, TimedSpawn> timedSpawns; /// Item/mob/other spawn events
     protected SpawnController spawnController;
-    protected Match match;
-    protected RoomContainer spectate;
-    protected RoomContainer waitroom;
-    protected RoomContainer visitorRoom;
+    @Getter @Setter protected Match match;
+    @Getter @Setter protected RoomContainer spectatorRoom;
+    @Getter @Setter protected RoomContainer waitroom;
+    @Getter @Setter protected RoomContainer visitorRoom;
     @Persist
     protected WorldGuardRegion wgRegion;
 
@@ -304,20 +306,6 @@ public class Arena extends AreaContainer {
     }
 
     /**
-     * Set the name of this arena
-     * @param arenaName name
-     */
-    @Override
-    public void setName(String arenaName) {this.name = arenaName;}
-
-    /**
-     * Get the name of this arena
-     * @return name
-     */
-    @Override
-    public String getName() { return name; }
-
-    /**
      * Return the waitroom spawn locations
      * @return list of location
      */
@@ -425,20 +413,6 @@ public class Arena extends AreaContainer {
     }
 
     /**
-     * Set which match this arena belongs to
-     */
-    public void setMatch(Match arenaMatch) {
-        this.match = arenaMatch;
-    }
-
-    /**
-     * Get which match this arena belongs to
-     */
-    public Match getMatch() {
-        return match;
-    }
-
-    /**
      * set the winning team, this will also cause the match to be ended
      * @param team ArenaTeam
      */
@@ -453,17 +427,6 @@ public class Arena extends AreaContainer {
     protected void setWinner(ArenaPlayer player) {
         match.setVictor(player);
     }
-
-//    /**
-//     * Use the more generic getState instead
-//     * Get the current state of the match
-//     * @return current match state
-//     */
-//    @Override
-//    @Deprecated
-//    public MatchState getMatchState(){
-//        return match.getMatchState();
-//    }
 
     @Override
     /**
@@ -566,7 +529,6 @@ public class Arena extends AreaContainer {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -590,7 +552,7 @@ public class Arena extends AreaContainer {
             return false;
         if ((waitroom == null || !waitroom.hasSpawns()) && _params1.needsWaitroom())
             return false;
-        if ((spectate == null || !spectate.hasSpawns()) && _params1.needsSpectate())
+        if ((spectatorRoom == null || !spectatorRoom.hasSpawns()) && _params1.needsSpectate())
             return false;
         return true;
     }
@@ -608,6 +570,7 @@ public class Arena extends AreaContainer {
         }
         return reasons;
     }
+    
     public boolean withinDistance(Location location, double distance){
         for (List<SpawnLocation> list: spawns){
             for (SpawnLocation l: list){
@@ -626,7 +589,7 @@ public class Arena extends AreaContainer {
         if (tops != null){
             if (matchParams.needsWaitroom() && (waitroom == null || !waitroom.hasSpawns()))
                 reasons.add("Needs a waitroom but none has been provided");
-            if (matchParams.needsSpectate() && (spectate == null || !spectate.hasSpawns()))
+            if (matchParams.needsSpectate() && (spectatorRoom == null || !spectatorRoom.hasSpawns()))
                 reasons.add("Needs a spectator room but none has been provided");
             if (matchParams.needsLobby() && (!RoomController.hasLobby(matchParams.getType())))
                 reasons.add("Needs a lobby but none has been provided");
@@ -668,13 +631,12 @@ public class Arena extends AreaContainer {
         sb.append( "&eteamSpawnLocs=&b" + getSpawnLocationString() + "\n" );
         if (waitroom != null) 
             sb.append( "&ewrSpawnLocs=&b" + waitroom.getSpawnLocationString() + "\n" );
-        if (spectate != null) 
-            sb.append( "&espectateSpawnLocs=&b" + spectate.getSpawnLocationString() + "\n" );
+        if (spectatorRoom != null) 
+            sb.append( "&espectateSpawnLocs=&b" + spectatorRoom.getSpawnLocationString() + "\n" );
         if (timedSpawns != null)
             sb.append( "&e#item/mob spawns:&6" + timedSpawns.size() + "\n" );
         return sb.toString();
     }
-
 
     private ChatColor getColor(Object o) {
         return o == null ? ChatColor.GOLD : ChatColor.WHITE;
@@ -684,7 +646,6 @@ public class Arena extends AreaContainer {
      * return arena summary string (includes bukkit coloring)
      * @return summary
      */
-    @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public String toSummaryString(){
         StringBuilder sb = new StringBuilder("&4" + name);
         if (params != null){
@@ -693,7 +654,7 @@ public class Arena extends AreaContainer {
                     "&2, nTeams:"+getColor(params.getArenaNTeams()) + params.getNTeams());
         }
 
-        sb.append("&2 #spawns:&f" +spawns.size() +"&2 1stSpawn:&f");
+        sb.append( "&2 #spawns:&f" + spawns.size() + "&2 1stSpawn:&f" );
         if (!spawns.isEmpty()){
             SpawnLocation l = spawns.get(0).get(0);
             sb.append("["+ Util.getLocString(l)+"] ");
@@ -708,29 +669,6 @@ public class Arena extends AreaContainer {
             spawnController = new SpawnController(timedSpawns);
         }
         return spawnController;
-    }
-
-    public void setWaitRoom(RoomContainer waitroom) {
-        this.waitroom = waitroom;
-    }
-
-    public void setSpectatorRoom(RoomContainer spectate) {
-        this.spectate = spectate;
-    }
-
-    public RoomContainer getWaitroom() {
-        return waitroom;
-    }
-
-    public RoomContainer getVisitorRoom() {
-        return visitorRoom;
-    }
-
-    public void setVisitorRoom(RoomContainer rc) {
-        this.visitorRoom = rc;
-    }
-    public RoomContainer getSpectatorRoom() {
-        return spectate;
     }
 
     public RoomContainer getLobby() {
@@ -751,7 +689,7 @@ public class Arena extends AreaContainer {
             return false;
         else if ( mp.needsWaitroom() && (waitroom == null || !waitroom.isOpen() || waitroom.getSpawns().isEmpty()) )
             return false;
-        else if ( mp.needsSpectate() && (spectate== null || !spectate.isOpen() || spectate.getSpawns().isEmpty()) )
+        else if ( mp.needsSpectate() && (spectatorRoom== null || !spectatorRoom.isOpen() || spectatorRoom.getSpawns().isEmpty()) )
             return false;
         else if ( mp.needsLobby()){
             RoomContainer lobby = RoomController.getLobby(getArenaType());
@@ -772,9 +710,9 @@ public class Arena extends AreaContainer {
                     "&cWaitroom is not open!";
         else if ( mp.needsWaitroom() && waitroom.getSpawns().isEmpty() )
             return "&cYou need to set a spawn point for the waitroom!";
-        else if ( mp.needsSpectate() && spectate == null )
+        else if ( mp.needsSpectate() && spectatorRoom == null )
             return "&cYou need to create a spectator area!";
-        else if ( mp.needsSpectate() && spectate.getSpawns().isEmpty() )
+        else if ( mp.needsSpectate() && spectatorRoom.getSpawns().isEmpty() )
             return "&cYou need to set a spawn point for the spectate area!";
         else if ( mp.needsLobby() && getLobby()==null )
             return "&cYou need to create a lobby!";

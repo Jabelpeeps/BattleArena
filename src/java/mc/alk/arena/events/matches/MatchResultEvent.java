@@ -1,38 +1,23 @@
 package mc.alk.arena.events.matches;
 
-import mc.alk.arena.competition.Match;
-import mc.alk.arena.objects.CompetitionResult;
 import org.bukkit.event.Cancellable;
 
+import lombok.Getter;
+import lombok.Setter;
+import mc.alk.arena.competition.Match;
+import mc.alk.arena.objects.MatchResult;
+
 public class MatchResultEvent extends MatchEvent implements Cancellable{
-    CompetitionResult matchResult;
-	boolean cancelled;
+    @Getter @Setter MatchResult matchResult;
+	@Getter @Setter boolean cancelled;
 	final boolean matchEnding;
 
-	public MatchResultEvent(Match match, CompetitionResult matchResult) {
+	public MatchResultEvent(Match match, MatchResult _matchResult) {
 		super(match);
-		this.matchResult = matchResult;
+		matchResult = _matchResult;
 		matchEnding = !match.alwaysOpen();
 	}
-
-	public CompetitionResult getMatchResult() {
-		return matchResult;
-	}
-
-	public void setMatchResult(CompetitionResult matchResult) {
-		this.matchResult = matchResult;
-	}
-
-	@Override
-    public boolean isCancelled() {
-		return cancelled;
-	}
-
-	@Override
-    public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
-
+	
 	public boolean isMatchEnding(){
 		return matchEnding && !cancelled;
 	}

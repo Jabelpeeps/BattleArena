@@ -29,9 +29,9 @@ public class SAPIScoreboard implements SScoreboard{
 
 	@Override
     public SObjective registerNewObjective(SObjective obj) {
-		objectives.put(obj.getID().toUpperCase(), obj);
+		objectives.put(obj.getId().toUpperCase(), obj);
 		if (obj.getScoreboard() == null || !obj.getScoreboard().equals(this)){
-			obj.setScoreBoard(this);
+			obj.setScoreboard(this);
 		}
 		if (obj.getDisplaySlot() != null)
 			setDisplaySlot(obj.getDisplaySlot(),obj,false,true);

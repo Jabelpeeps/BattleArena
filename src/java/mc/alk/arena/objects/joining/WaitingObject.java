@@ -2,6 +2,7 @@ package mc.alk.arena.objects.joining;
 
 import java.util.Collection;
 
+import lombok.Getter;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -15,21 +16,23 @@ import mc.alk.arena.objects.options.TransitionOption;
 
 public class WaitingObject {
     protected boolean joinable = true;
-    protected final AbstractJoinHandler jh;
-    protected final MatchParams params;
-    protected final QueueObject originalQueuedObject;
-    protected final Arena arena;
+    protected final AbstractJoinHandler joinHandler;
+    @Getter protected final MatchParams params;
+    @Getter protected final QueueObject originalQueuedObject;
+    @Getter protected final Arena arena;
 
     public WaitingObject(QueueObject qo) throws NeverWouldJoinException {
-        this.params = qo.getMatchParams();
-        this.originalQueuedObject = qo;
-        this.arena = qo.getJoinOptions().getArena();
-        if (qo instanceof MatchTeamQObject){
-            this.jh = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams(), qo.getTeams());
-            this.joinable = false;
-        } else {
-            this.jh = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams());
-            this.joinable = true;
+        params = qo.getMatchParams();
+        originalQueuedObject = qo;
+        arena = qo.getJoinOptions().getArena();
+        
+        if (qo instanceof MatchTeamQObject) {
+            joinHandler = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams(), qo.getTeams());
+            joinable = false;
+        } 
+        else {
+            joinHandler = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams());
+            joinable = true;
         }
     }
 
@@ -40,39 +43,27 @@ public class WaitingObject {
                         params.matches(qo.getJoinOptions()));
     }
     public AbstractJoinHandler.TeamJoinResult join(TeamJoinObject qo) {
-        return jh.joiningTeam(qo);
+        return joinHandler.joiningTeam(qo);
     }
 
     public boolean hasEnough() {
-        return jh.hasEnough(params.getAllowedTeamSizeDifference());
+        return joinHandler.hasEnough(params.getAllowedTeamSizeDifference());
     }
 
     public boolean isFull() {
-        return jh.isFull();
-    }
-
-    public MatchParams getParams() {
-        return params;
-    }
-
-    public Arena getArena() {
-        return arena;
+        return joinHandler.isFull();
     }
 
     public Collection<ArenaPlayer> getPlayers() {
-        return jh.getPlayers();
+        return joinHandler.getPlayers();
     }
 
     public JoinOptions getJoinOptions() {
-        return this.originalQueuedObject.getJoinOptions();
+        return originalQueuedObject.getJoinOptions();
     }
 
     public Collection<ArenaListener> getArenaListeners(){
-        return this.originalQueuedObject.getListeners();
-    }
-
-    public QueueObject getOriginalQueuedObject() {
-        return originalQueuedObject;
+        return originalQueuedObject.getListeners();
     }
 
     @Override

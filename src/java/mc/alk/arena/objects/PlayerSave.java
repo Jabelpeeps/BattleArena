@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.listeners.BAPlayerListener;
@@ -18,10 +20,10 @@ import mc.alk.arena.serializers.InventorySerializer;
 import mc.alk.util.EffectUtil;
 import mc.alk.util.ExpUtil;
 import mc.alk.util.InventoryUtil;
+import mc.alk.util.InventoryUtil.PInv;
 import mc.alk.util.Log;
 import mc.alk.util.PermissionsUtil;
 import mc.alk.util.PlayerUtil;
-import mc.alk.util.InventoryUtil.PInv;
 
 /**
  * @author alkarin
@@ -29,188 +31,55 @@ import mc.alk.util.InventoryUtil.PInv;
 public class PlayerSave {
     final ArenaPlayer player;
 
-    Integer experience;
+    @Getter @Setter Integer exp;
 
-    Double health;
-    Double healthp;
-    Integer hunger;
-    Integer magic;
-    Double magicp;
-    PInv items;
-    PInv matchItems;
-    GameMode gamemode;
+    @Getter @Setter Double health;
+    @Getter @Setter Double healthp;
+    @Getter @Setter Integer hunger;
+    @Getter @Setter Integer magic;
+    @Getter @Setter Double magicp;
+    @Getter @Setter PInv items;
+    @Getter PInv matchItems;
+    @Getter @Setter GameMode gamemode;
+    @Getter @Setter Boolean godmode;
+    @Getter @Setter Location location;
+    @Getter @Setter Collection<PotionEffect> effects;
+    @Getter @Setter Boolean flight;
+    @Getter @Setter String arenaClass;
+    @Getter @Setter String oldTeam;
+    @Getter private Object scoreboard;
+    @Getter @Setter Double money;
 
-    Boolean godmode;
-
-    Location location;
-
-    Collection<PotionEffect> effects;
-
-    Boolean flight;
-    String arenaClass;
-    String oldTeam;
-    private Object scoreboard;
-    Double money;
-
-    public PlayerSave(ArenaPlayer player) {
-        this.player = player;
+    public PlayerSave(ArenaPlayer _player) {
+        player = _player;
     }
-
     public String getName() {
         return player.getName();
     }
 
-    public Integer getExp() {
-        return experience;
-    }
-
-    public void setExp(Integer exp) {
-        this.experience = exp;
-    }
-
-    public Double getHealth() {
-        return health;
-    }
-
-    public void setHealth(Double health) {
-        this.health = health;
-    }
-
-    public Double getHealthp() {
-        return healthp;
-    }
-
-    public void setHealthp(Double healthp) {
-        this.healthp = healthp;
-    }
-
-    public Integer getHunger() {
-        return hunger;
-    }
-
-    public void setHunger(Integer hunger) {
-        this.hunger = hunger;
-    }
-
-    public Integer getMagic() {
-        return magic;
-    }
-
-    public void setMagic(Integer magic) {
-        this.magic = magic;
-    }
-
-    public Double getMagicp() {
-        return magicp;
-    }
-
-    public void setMagicp(Double magicp) {
-        this.magicp = magicp;
-    }
-
-    public PInv getItems() {
-        return items;
-    }
-
-    public void setItems(PInv items) {
-        this.items = items;
-    }
-
-    public GameMode getGamemode() {
-        return gamemode;
-    }
-
-    public void setGamemode(GameMode gamemode) {
-        this.gamemode = gamemode;
-    }
-
-    public Boolean getGodmode() {
-        return godmode;
-    }
-
-    public void setGodmode(Boolean godmode) {
-        this.godmode = godmode;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Collection<PotionEffect> getEffects() {
-        return effects;
-    }
-
-    public void setEffects(Collection<PotionEffect> effects) {
-        this.effects = effects;
-    }
-
-    public Boolean getFlight() {
-        return flight;
-    }
-
-    public void setFlight(Boolean flight) {
-        this.flight = flight;
-    }
-
-    public String getArenaClass() {
-        return arenaClass;
-    }
-
-    public void setArenaClass(String arenaClass) {
-        this.arenaClass = arenaClass;
-    }
-
-    public String getOldTeam() {
-        return oldTeam;
-    }
-
-    public void setOldTeam(String oldTeam) {
-        this.oldTeam = oldTeam;
-    }
-
-    public Double getMoney() {
-        return money;
-    }
-
-    public void setMoney(Double money) {
-        this.money = money;
-    }
-
-
-    public PInv getMatchItems() {
-        return matchItems;
-    }
-
     public int storeExperience() {
         Player p = player.getPlayer();
-        int exp = ExpUtil.getTotalExperience(p);
-        if (exp == 0)
+        int _exp = ExpUtil.getTotalExperience(p);
+        if (_exp == 0)
             return 0;
-        experience = experience == null ? exp : experience + exp;
+        exp = exp == null ? _exp : exp + _exp;
         ExpUtil.setTotalExperience(p, 0);
-        try {
-            //noinspection deprecation
-            p.updateInventory();
-        } catch (Exception e) {/* do nothing */}
-        return exp;
+ 
+        p.updateInventory();
+        return _exp;
     }
 
     public void restoreExperience() {
-        if (experience==null)
-            return;
-        Player p = player.getPlayer();
-        ExpUtil.setTotalExperience(p.getPlayer(), experience);
-        experience=null;
+        if (exp == null) return;
+        
+        ExpUtil.setTotalExperience(player.getPlayer(), exp);
+        exp = null;
     }
 
     public Integer removeExperience() {
-        Integer exp = experience;
-        experience = null;
-        return exp;
+        Integer _exp = exp;
+        exp = null;
+        return _exp;
     }
 
     public void storeHealth() {
@@ -292,18 +161,16 @@ public class PlayerSave {
     }
 
     public void storeItems() {
-        if (items != null)
-            return;
-//        if (Defaults.DEBUG_STORAGE) Log.info("storing items for = " + name +" contains=" + itemmap.containsKey(name));
-        InventoryUtil.closeInventory(player.getPlayer());
+        if (items != null) return;
+        
+        player.getPlayer().closeInventory();
         items = new PInv(player.getInventory());
         InventorySerializer.saveInventory(player.getUniqueId(), items);
     }
 
     public void restoreItems() {
-        //        if (Defaults.DEBUG_STORAGE)  Log.info("   "+p.getName()+" psc contains=" + itemmap.containsKey(p.getName()) +"  dead=" + p.isDead()+" online=" + p.isOnline());
-        if (items ==null)
-            return;
+        if (items ==null) return;
+        
         InventoryUtil.addToInventory(player.getPlayer(), items);
         items = null;
     }
@@ -316,11 +183,10 @@ public class PlayerSave {
 
     public void storeMatchItems() {
         final UUID id = player.getUniqueId();
-//        if (Defaults.DEBUG_STORAGE) Log.info("storing in match items for = " + name +" contains=" + matchitemmap.containsKey(name));
-        InventoryUtil.closeInventory(player.getPlayer());
+        player.getPlayer().closeInventory();
         final PInv pinv = new PInv(player.getInventory());
+        
         if (matchItems == null) {
-            /// on the first entry, lets log that to disk
             InventorySerializer.saveInventory(id, pinv);
         }
         matchItems = pinv;
@@ -328,8 +194,8 @@ public class PlayerSave {
     }
 
     public void restoreMatchItems() {
-        if (matchItems==null)
-            return;
+        if (matchItems==null) return;
+        
         InventoryUtil.addToInventory(player.getPlayer(), matchItems);
         matchItems = null;
     }
@@ -341,38 +207,32 @@ public class PlayerSave {
     }
 
     public void storeGamemode() {
-//        if (Defaults.DEBUG_STORAGE)  Log.info("storing gamemode " + p.getName() +" " + p.getPlayer().getGameMode());
-        if (gamemode !=null)
-            return;
+        if (gamemode !=null) return;
+        
         PermissionsUtil.givePlayerInventoryPerms(player.getPlayer());
         gamemode = player.getPlayer().getGameMode();
     }
 
 
     public void storeFlight() {
-        if (!EssentialsController.enabled() || flight != null){
-            return;}
-//        if (Defaults.DEBUG_STORAGE)  Log.info("storing flight " + p.getName() +" " + p.getPlayer().getGameMode());
-        Boolean b = EssentialsController.isFlying(player);
-        if (b)
+        if (!EssentialsController.enabled() || flight != null) return;
+
+        if (EssentialsController.isFlying(player))
             flight = true;
     }
 
     public void restoreFlight() {
-        if (flight == null)
-            return;
+        if (flight == null) return;
+        
         EssentialsController.setFlight(player.getPlayer(), flight);
         flight = null;
     }
 
 
     public void storeGodmode() {
-        if (!EssentialsController.enabled() || godmode != null){
-            return;
-        }
-//        if (Defaults.DEBUG_STORAGE)  Log.info("storing godmode " + p.getName() +" " + p.getPlayer().getGameMode());
-        Boolean b = EssentialsController.isGod(player);
-        if (b)
+        if (!EssentialsController.enabled() || godmode != null) return;
+
+        if (EssentialsController.isGod(player))
             godmode = true;
     }
 
@@ -412,10 +272,6 @@ public class PlayerSave {
         if (scoreboard != null)
             return;
         scoreboard = PlayerUtil.getScoreboard(player.getPlayer());
-    }
-
-    public Object getScoreboard() {
-        return scoreboard;
     }
 
     public void restoreScoreboard() {

@@ -1,11 +1,11 @@
 package mc.alk.arena.competition;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
@@ -197,7 +197,7 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.ADDPERMS)){ addPerms(player, mo.getAddPerms(), 0);}
             if (mo.hasOption(TransitionOption.GIVECLASS) && player.getCurrentClass() == null){
                 final ArenaClass ac = getArenaClass(mo,teamIndex);
-                if (ac != null && ac.valid()) { 
+                if (ac != null && ac.isValid()) { 
                     if (mo.hasAnyOption(TransitionOption.WOOLTEAMS, TransitionOption.ALWAYSWOOLTEAMS)) 
                         TeamUtil.setTeamHead(teamIndex, player); 
                     if (armorTeams){

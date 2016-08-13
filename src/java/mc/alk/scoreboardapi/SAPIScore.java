@@ -1,34 +1,15 @@
 package mc.alk.scoreboardapi;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * @author alkarin
  */
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class SAPIScore {
     SEntry entry;
     int score;
-    public SAPIScore(){
-
-    }
-    public SAPIScore(SEntry entry, int score) {
-        this.entry = entry;
-        this.score = score;
-    }
-
-    public SEntry getEntry() {
-        return entry;
-    }
-
-    public void setEntry(SEntry entry) {
-        this.entry = entry;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-
 }

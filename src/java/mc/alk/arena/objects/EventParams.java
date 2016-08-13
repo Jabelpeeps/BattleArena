@@ -1,15 +1,16 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.objects.arenas.ArenaType;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Setter;
+import mc.alk.arena.objects.arenas.ArenaType;
+
 
 public class EventParams extends MatchParams{
-	Integer secondsTillStart;
-	Integer announcementInterval;
-	List<String> openOptions;
+    @Setter Integer secondsTillStart;
+	@Setter Integer announcementInterval;
+	@Setter List<String> playerOpenOptions;
 	EventParams eparent;
 
 	public EventParams(MatchParams mp) {
@@ -23,21 +24,21 @@ public class EventParams extends MatchParams{
         super.copy(ap);
         if (ap instanceof EventParams){
             EventParams ep = (EventParams) ap;
-            this.secondsTillStart = ep.secondsTillStart;
-            this.announcementInterval = ep.announcementInterval;
-            this.eparent = ep.eparent;
-            if (ep.openOptions != null)
-                this.openOptions = new ArrayList<String>(ep.openOptions);
+            secondsTillStart = ep.secondsTillStart;
+            announcementInterval = ep.announcementInterval;
+            eparent = ep.eparent;
+            if (ep.playerOpenOptions != null)
+                playerOpenOptions = new ArrayList<>(ep.playerOpenOptions);
         }
     }
 
 	@Override
 	public void flatten() {
 		if (eparent != null){
-			if (this.secondsTillStart == null) this.secondsTillStart = eparent.getSecondsTillStart();
-			if (this.announcementInterval == null) this.announcementInterval = eparent.getAnnouncementInterval();
-			if (this.openOptions == null) this.openOptions = eparent.getPlayerOpenOptions();
-			this.eparent = null;
+			if ( secondsTillStart == null)  secondsTillStart = eparent.getSecondsTillStart();
+			if ( announcementInterval == null)  announcementInterval = eparent.getAnnouncementInterval();
+			if ( playerOpenOptions == null)  playerOpenOptions = eparent.getPlayerOpenOptions();
+			 eparent = null;
 		}
 		super.flatten();
 	}
@@ -45,34 +46,21 @@ public class EventParams extends MatchParams{
 	public EventParams(ArenaType at) {
 		super(at);
 	}
-
 	public Integer getSecondsTillStart() {
-        return secondsTillStart ==null && eparent!=null ? eparent.getSecondsTillStart() : secondsTillStart;
+        return secondsTillStart == null && eparent != null ? eparent.getSecondsTillStart() : secondsTillStart;
     }
-
-	public void setSecondsTillStart(Integer secondsTillStart) {
-		this.secondsTillStart = secondsTillStart;
-    }
-
 	public Integer getAnnouncementInterval() {
-        return announcementInterval ==null && eparent!=null ? eparent.getAnnouncementInterval() : announcementInterval;
+        return announcementInterval == null && eparent != null ? eparent.getAnnouncementInterval() : announcementInterval;
 	}
-
-	public void setAnnouncementInterval(Integer announcementInterval) {
-		this.announcementInterval = announcementInterval;
-	}
-
 	@Override
 	public JoinType getJoinType() {
 		return JoinType.JOINPHASE;
 	}
 
-	public void setPlayerOpenOptions(List<String> playerOpenOptions){
-		this.openOptions = playerOpenOptions;
-	}
 	public List<String> getPlayerOpenOptions(){
-		return openOptions != null ? openOptions :
-			(eparent != null ? eparent.getPlayerOpenOptions() : null);
+		return playerOpenOptions != null ? playerOpenOptions 
+		                                 : (eparent != null ? eparent.getPlayerOpenOptions() 
+		                                                    : null);
 	}
 	@Override
 	public void setParent(ArenaParams parent) {

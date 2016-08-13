@@ -72,7 +72,7 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             ArenaTeam oldTeam = addToPreviouslyLeftTeam(team.getPlayers().iterator().next());
             if (oldTeam != null){
                 team.setIndex(oldTeam.getIndex());
-                return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,oldTeam.getMinPlayers() - oldTeam.size(), oldTeam);
+                return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,oldTeam.getMinPlayers() - oldTeam.size());
             }
         }
         /// Try to let them join their specified team if possible
@@ -102,9 +102,9 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             if (ct.size() <= ct.getMaxPlayers()){
                 addTeam(ct);
                 if (ct.size() >= ct.getMinPlayers()) {
-                    return new TeamJoinResult(TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size(), ct);
+                    return new TeamJoinResult(TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size());
                 }
-                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size(), ct);
+                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size());
             }
         }
         /// Try to fit them with an existing team
@@ -117,7 +117,6 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             if (tjr != CANTFIT)
                 return tjr;
         }
-        /// sorry peeps.. full up
         return CANTFIT;
     }
 
@@ -126,10 +125,9 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             team.setIndex(baseTeam.getIndex());
             addToTeam(baseTeam, team.getPlayers());
             if (baseTeam.size() == 0){
-                return new TeamJoinResult(TeamJoinStatus.ADDED, baseTeam.getMinPlayers() - baseTeam.size(),baseTeam);
+                return new TeamJoinResult(TeamJoinStatus.ADDED, baseTeam.getMinPlayers() - baseTeam.size());
             }
-            return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,
-                    baseTeam.getMinPlayers() - baseTeam.size(),baseTeam);
+            return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING, baseTeam.getMinPlayers() - baseTeam.size());
         }
         return CANTFIT;
     }

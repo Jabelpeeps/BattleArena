@@ -1,63 +1,40 @@
 package mc.alk.arena.objects.joining;
 
+import java.util.List;
+
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.Matchup;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-import java.util.List;
-
 public class MatchTeamQObject extends QueueObject{
-	final Matchup matchup;
+	@Getter final Matchup matchup;
 
-	public MatchTeamQObject(Matchup matchup){
-		super(matchup.getJoinOptions());
+	public MatchTeamQObject(Matchup _matchup){
+		super( _matchup.getJoinOptions() );
 //		matchParams = matchup.getMatchParams();
-		this.matchup = matchup;
-		this.priority = matchup.getPriority();
-		for (ArenaTeam t: matchup.getTeams()){
+		matchup = _matchup;
+		priority = _matchup.getPriority();
+		for (ArenaTeam t: _matchup.getTeams()){
 			numPlayers += t.size();
 		}
-        this.listeners = matchup.getArenaListeners();
+        listeners = _matchup.getArenaListeners();
     }
-
+	
 	@Override
-	public Integer getPriority() {
-		return priority;
-	}
-
+	public boolean hasMember(ArenaPlayer p) { return matchup.hasMember(p); }
 	@Override
-	public boolean hasMember(ArenaPlayer p) {
-		return matchup.hasMember(p);
-	}
-
+	public ArenaTeam getTeam(ArenaPlayer p) { return matchup.getTeam(p); }
 	@Override
-	public ArenaTeam getTeam(ArenaPlayer p) {
-		return matchup.getTeam(p);
-	}
-
+	public int size() { return matchup.size(); }
 	@Override
-	public int size() {
-		return matchup.size();
-	}
-
+	public String toString() { return priority + " " + matchup.toString(); }
 	@Override
-	public String toString(){
-		return priority+" " + matchup.toString();
-	}
-
-	@Override
-	public List<ArenaTeam> getTeams() {
-		return matchup.getTeams();
-	}
-
-	public Matchup getMatchup() {
-		return matchup;
-	}
+	public List<ArenaTeam> getTeams() { return matchup.getTeams(); }
 
 	@Override
 	public boolean hasTeam(ArenaTeam team) {
 		List<ArenaTeam> teams = matchup.getTeams();
 		return teams != null && teams.contains(team);
 	}
-
 }

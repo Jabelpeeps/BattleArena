@@ -13,7 +13,7 @@ public interface SEntry {
      * Get the id of this entry (offlineplayer name)
      * @return String
      */
-	public String getID() ;
+	public String getId() ;
 
     /**
      * Get the prefix+displayName+suffix

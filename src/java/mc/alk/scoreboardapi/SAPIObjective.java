@@ -1,30 +1,33 @@
 package mc.alk.scoreboardapi;
 
-import org.bukkit.OfflinePlayer;
-
 import java.util.List;
 import java.util.TreeMap;
 
+import org.bukkit.OfflinePlayer;
+
+import lombok.Getter;
+import lombok.Setter;
+
 public class SAPIObjective implements SObjective{
-    protected final String id;
-    protected String criteria;
+    @Getter protected final String id;
+    @Getter protected String criteria;
     protected String combinedDisplayName;
     protected String displayName;
-    protected String displayNameSuffix;
-    protected String displayNamePrefix;
-    protected SAPIDisplaySlot slot;
+    @Getter protected String displayNameSuffix;
+    @Getter protected String displayNamePrefix;
+    @Getter protected SAPIDisplaySlot displaySlot;
 
-    protected SScoreboard scoreboard;
+    @Getter @Setter protected SScoreboard scoreboard;
 
     /// Used for Team support
-    protected boolean displayPlayers;
-    protected boolean displayTeams;
+    @Getter @Setter protected boolean displayPlayers;
+    @Getter @Setter protected boolean displayTeams;
 
     // 1-1000 scale, not strictly enforced
     // the lower priorities will not be preempted when set
-    int priority;
+    @Getter int priority;
 
-    protected TreeMap<SEntry,SAPIScore> entries = new TreeMap<SEntry,SAPIScore>();
+    protected TreeMap<SEntry,SAPIScore> entries = new TreeMap<>();
 
     public SAPIObjective(String id, String displayName, String criteria) {
         this(id, displayName,criteria,50);
@@ -37,26 +40,7 @@ public class SAPIObjective implements SObjective{
         setDisplayName(displayName);
         displayPlayers = true;
         displayTeams = true;
-        slot = SAPIDisplaySlot.NONE;
-    }
-
-    @Override
-    public SScoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-    @Override
-    public int getPriority(){
-        return priority;
-    }
-
-    @Override
-    public String getID(){
-        return id;
-    }
-
-    public String getCriteria() {
-        return criteria;
+        displaySlot = SAPIDisplaySlot.NONE;
     }
 
     @Override
@@ -76,19 +60,9 @@ public class SAPIObjective implements SObjective{
     }
 
     @Override
-    public String getDisplayNameSuffix() {
-        return displayNameSuffix;
-    }
-
-    @Override
     public void setDisplayNameSuffix(String suffix) {
         this.displayNameSuffix = colorChat(suffix);
         _setDisplayName();
-    }
-
-    @Override
-    public String getDisplayNamePrefix() {
-        return displayNamePrefix;
     }
 
     @Override
@@ -99,35 +73,10 @@ public class SAPIObjective implements SObjective{
 
     @Override
     public void setDisplaySlot(SAPIDisplaySlot slot) {
-        this.slot = slot;
+        this.displaySlot = slot;
         if (scoreboard != null){
             scoreboard.setDisplaySlot(slot, this,true);
         }
-    }
-
-    @Override
-    public SAPIDisplaySlot getDisplaySlot() {
-        return this.slot;
-    }
-
-    @Override
-    public void setDisplayPlayers(boolean display) {
-        this.displayPlayers = display;
-    }
-
-    @Override
-    public void setDisplayTeams(boolean display) {
-        this.displayTeams = display;
-    }
-
-    @Override
-    public boolean isDisplayPlayers(){
-        return this.displayPlayers;
-    }
-
-    @Override
-    public void setScoreBoard(SScoreboard sapiScoreboard) {
-        this.scoreboard = sapiScoreboard;
     }
 
     @Override
@@ -136,7 +85,6 @@ public class SAPIObjective implements SObjective{
         setPoints(getOrCreateSAPIScore(e), points);
         return has;
     }
-
 
     protected boolean setPoints(SAPIScore o, int points) {
         boolean change = o.getScore() != points;
@@ -185,7 +133,7 @@ public class SAPIObjective implements SObjective{
         return entries.containsKey(e) ? entries.get(e).getScore() : -1;
     }
 
-    public static String colorChat(String msg) {return msg.replace('&', (char) 167);}
+    public static String colorChat(String msg) { return msg.replace('&', (char) 167); }
 
     @Override
     public SEntry addEntry(OfflinePlayer p, int points) {
@@ -228,7 +176,6 @@ public class SAPIObjective implements SObjective{
         } else {
             setPoints(getOrCreateSAPIScore(entry), points);
         }
-
         return has;
     }
 
@@ -278,11 +225,6 @@ public class SAPIObjective implements SObjective{
     }
 
     @Override
-    public boolean isDisplayTeams() {
-        return this.displayTeams;
-    }
-
-    @Override
     public boolean contains(SEntry e) {
         return entries.containsKey(e);
     }
@@ -296,7 +238,4 @@ public class SAPIObjective implements SObjective{
         this.combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix,
                 SAPI.MAX_OBJECTIVE_DISPLAYNAME_SIZE);
     }
-
-
-
 }

@@ -1,15 +1,17 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.objects.spawns.EntitySpawn;
-import mc.alk.arena.objects.spawns.SpawnInstance;
-import mc.alk.util.InventoryUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import mc.alk.arena.objects.spawns.EntitySpawn;
+import mc.alk.arena.objects.spawns.SpawnInstance;
+import mc.alk.util.InventoryUtil;
 
 public class ArenaClass {
 	public static final Integer DEFAULT = Integer.MAX_VALUE;
@@ -17,30 +19,23 @@ public class ArenaClass {
 	public static final ArenaClass SELF_CLASS = new ArenaClass("SELFCLASS","selfClass", null, null, null);
 
 	/** Name of the Class*/
-	final String name;
-
+	@Getter final String name;
 	/** DisplayName of the class*/
 	final String displayName;
-
 	/** Items that this class gives*/
-	final List<ItemStack> items;
-
+	@Getter final List<ItemStack> items;
 	/** Effects this class gives*/
-	final List<PotionEffect> effects;
-
+	@Getter final List<PotionEffect> effects;
 	/** Mobs for this class*/
-	List<SpawnInstance> mobs;
-
+	@Getter @Setter List<SpawnInstance> mobs;
 	/** Name of a disguise for this class */
-	String disguiseName;
-
+	@Getter @Setter String disguiseName;
 	/** List of commands to run when class is given */
-	List<CommandLineString> commands;
-        
-        /** List of permission nodes that this class has */
-        List<String> permissions;
-
-	boolean valid = false;
+	@Getter @Setter List<CommandLineString> doCommands;
+    /** List of permission nodes that this class has */
+	@Getter List<String> permissions;
+    
+	@Getter boolean valid = false;
 
     public ArenaClass(String name){
 		this(name,name,new ArrayList<ItemStack>(),new ArrayList<PotionEffect>(),new ArrayList<String>());
@@ -49,8 +44,8 @@ public class ArenaClass {
 
 	public ArenaClass(String name, String displayName, List<ItemStack> items, List<PotionEffect> effects, List<String> perms){
 		this.name = name;
-		CopyOnWriteArrayList<ItemStack> listitems = new CopyOnWriteArrayList<ItemStack>();
-		ArrayList<ItemStack> armoritems = new ArrayList<ItemStack>();
+		CopyOnWriteArrayList<ItemStack> listitems = new CopyOnWriteArrayList<>();
+		ArrayList<ItemStack> armoritems = new ArrayList<>();
 		if (items != null){
 			for (ItemStack is: items){
 				if (InventoryUtil.isArmor(is)){
@@ -69,79 +64,20 @@ public class ArenaClass {
 	}
 
 	/**
-	 * Get the name
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * get the items
-	 * @return List of items
-	 */
-	public List<ItemStack> getItems() {
-		return items;
-	}
-
-	/**
-	 * Get the effects
-	 * @return list of effects
-	 */
-	public List<PotionEffect> getEffects() {
-		return effects;
-	}
-
-	/**
 	 * Get the Display Name
 	 * @return displayName or name if displayName is null
 	 */
 	public String getDisplayName() {
 		return displayName != null ? displayName : name;
 	}
-
-	/**
-	 * Get the disguise name
-	 * @return disguiseName
-	 */
-	public String getDisguiseName() {
-		return disguiseName;
-	}
-
-	/**
-	 * Set the disguise name
-	 * @param disguiseName String
-	 */
-	public void setDisguiseName(String disguiseName) {
-		this.disguiseName = disguiseName;
-	}
-
+	
 	@Override
 	public String toString(){
-        return "[ArenaClass "+getName()+"]";
+        return "[ArenaClass " + getName() + "]";
 	}
-
-	public boolean valid() {
-		return valid;
-	}
-
-	public void setMobs(List<SpawnInstance> mobs) {
-		this.mobs = mobs;
-	}
-
-	public List<SpawnInstance> getMobs(){
-		return mobs;
-	}
-	public List<CommandLineString> getDoCommands(){
-		return this.commands;
-	}
-	public void setDoCommands(List<CommandLineString> commands){
-		this.commands = commands;
-	}
-
 
     public List<SpawnInstance> getMobsClone() {
-        List<SpawnInstance> l = new ArrayList<SpawnInstance>();
+        List<SpawnInstance> l = new ArrayList<>();
         for (SpawnInstance si: mobs){
             if (si instanceof EntitySpawn){
                 l.add(new EntitySpawn((EntitySpawn)si));
@@ -150,9 +86,5 @@ public class ArenaClass {
             }
         }
         return l;
-    }
-    
-    public List<String> getPermissions() {
-        return permissions;
     }
 }

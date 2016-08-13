@@ -34,7 +34,7 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 	}
 
     @Override
-	public String getID() {
+	public String getId() {
 		return idOfflinePlayer.getName();
 	}
 
@@ -97,6 +97,6 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public int compareTo(SEntry o) {
-        return this.getID().compareTo(o.getID());
+        return this.getId().compareTo(o.getId());
     }
 }

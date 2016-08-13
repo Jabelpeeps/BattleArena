@@ -10,7 +10,9 @@ import mc.alk.util.Log;
 
 public class CommandController {
 
-    public static CommandMap getCommandMap() {
+    private static CommandMap commandMap = getCommandMap(); 
+    
+    private static CommandMap getCommandMap() {
 
         Class<?> serverClass = Bukkit.getServer().getClass();
         try {
@@ -26,9 +28,7 @@ public class CommandController {
         }
         return null;
     }
-
-    public static void registerCommand(final Command command) {
-        CommandMap commandMap = getCommandMap();
+    public static void registerCommand(final Command command) {  
         if (commandMap != null) {
             commandMap.register("/", command);
         }

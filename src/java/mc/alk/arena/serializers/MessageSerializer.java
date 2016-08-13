@@ -22,14 +22,10 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 
 
 public class MessageSerializer extends BaseConfig {
-	/// Our default messages
+
 	private static MessageSerializer defaultMessages;
-
-	/// Map of path to options
 	private HashMap<String,MessageOptions> msgOptions = new HashMap<>();
-
     final private static HashMap<String,MessageSerializer> files = new HashMap<>();
-
     final protected MatchParams mp;
 
 	public MessageSerializer(String name, MatchParams params){

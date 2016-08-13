@@ -1,25 +1,27 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.objects.teams.ArenaTeam;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 
+import lombok.Getter;
+import lombok.Setter;
+import mc.alk.arena.objects.teams.ArenaTeam;
+
 /**
  * @author alkarin
  */
-public class MatchResult implements CompetitionResult {
-    Set<ArenaTeam> victors = new HashSet<ArenaTeam>();
-    Set<ArenaTeam> losers = new HashSet<ArenaTeam>();
-    Set<ArenaTeam> drawers = new HashSet<ArenaTeam>();
-    WinLossDraw wld = WinLossDraw.UNKNOWN;
-    SortedMap<Integer, Collection<ArenaTeam>> ranks;
+public class MatchResult {
+    @Getter Set<ArenaTeam> victors = new HashSet<>();
+    @Getter Set<ArenaTeam> losers = new HashSet<>();
+    @Getter Set<ArenaTeam> drawers = new HashSet<>();
+    @Getter WinLossDraw result = WinLossDraw.UNKNOWN;
+    @Getter @Setter SortedMap<Integer, Collection<ArenaTeam>> ranking;
 
     public MatchResult(){}
-    public MatchResult(CompetitionResult r) {
-        this.wld = r.getResult();
+    public MatchResult(MatchResult r) {
+        result = r.getResult();
         victors.addAll(r.getVictors());
         losers.addAll(r.getLosers());
         drawers.addAll(r.getDrawers());
@@ -29,85 +31,41 @@ public class MatchResult implements CompetitionResult {
      * Changes the outcome type of this match to the given type.
      * Example, adding winners to this match will not change the outcome,
      * unless this match is set to a WinLossDraw.WIN
-     * @param wld The WinLossDraw type.
+     * @param _wld The WinLossDraw type.
      */
-    @Override
-    public void setResult(WinLossDraw wld){
-        this.wld = wld;
+    public void setResult(WinLossDraw _wld){
+        result = _wld;
     }
-
-    @Override
     public void setVictor(ArenaTeam vic) {
-        this.victors.clear();
-        this.victors.add(vic);
-        wld = WinLossDraw.WIN;
+        victors.clear();
+        victors.add(vic);
+        result = WinLossDraw.WIN;
     }
-
-    @Override
     public void setVictors(Collection<ArenaTeam> victors) {
-        this.victors.clear();
-        this.victors.addAll(victors);
-        wld = WinLossDraw.WIN;
+        victors.clear();
+        victors.addAll(victors);
+        result = WinLossDraw.WIN;
     }
-
-    @Override
     public void setDrawers(Collection<ArenaTeam> drawers) {
-        this.drawers.clear();
-        this.drawers.addAll(drawers);
-        wld = WinLossDraw.DRAW;
+        drawers.clear();
+        drawers.addAll(drawers);
+        result = WinLossDraw.DRAW;
     }
-
-    @Override
     public void setLosers(Collection<ArenaTeam> losers) {
-        this.losers.clear();
-        this.losers.addAll(losers);
+        losers.clear();
+        losers.addAll(losers);
     }
-
-    @Override
-    public void addLosers(Collection<ArenaTeam> losers) {
-        this.losers.addAll(losers);
-    }
-
-    @Override
-    public void addLoser(ArenaTeam loser) {
-        losers.add(loser);
-    }
-
-    @Override
-    public Set<ArenaTeam> getVictors() {
-        return victors;
-    }
-
-    @Override
-    public Set<ArenaTeam> getLosers() {
-        return losers;
-    }
-
-    @Override
-    public void removeLosers(Collection<ArenaTeam> teams){
-        losers.removeAll(teams);
-    }
-
-    @Override
-    public void removeDrawers(Collection<ArenaTeam> teams){
-        drawers.removeAll(teams);
-    }
-    @Override
-    public void removeVictors(Collection<ArenaTeam> teams){
-        victors.removeAll(teams);
-    }
-
-    @Override
-    public Set<ArenaTeam> getDrawers(){
-        return drawers;
-    }
-
+    public void addLosers(Collection<ArenaTeam> losers) { losers.addAll(losers); }
+    public void addLoser(ArenaTeam loser) { losers.add(loser); }
+    public void removeLosers(Collection<ArenaTeam> teams) { losers.removeAll(teams); }
+    public void removeDrawers(Collection<ArenaTeam> teams) { drawers.removeAll(teams); }
+    public void removeVictors(Collection<ArenaTeam> teams) { victors.removeAll(teams); }
+    
     @Override
     public String toString(){
-        return "[" + wld + ",victor=" + victors + ",losers=" + losers + ",drawers=" + drawers + "]" + toPrettyString();
+        return "[" + result + ",victor=" + victors + ",losers=" + losers + ",drawers=" + drawers + "]" + toPrettyString();
     }
 
-    @Override
     public String toPrettyString() {
         if (victors.isEmpty()){
             return "&eThere are no victors yet";}
@@ -120,43 +78,10 @@ public class MatchResult implements CompetitionResult {
 
         return sb.toString();
     }
-
-    @Override
-    public boolean isUnknown() {
-        return wld == WinLossDraw.UNKNOWN;
-    }
-    @Override
-    public boolean isDraw() {
-        return wld == WinLossDraw.DRAW;
-    }
-    @Override
-    public boolean isWon(){
-        return hasVictor();
-    }
-    @Override
-    public boolean isLost() {
-        return wld == WinLossDraw.LOSS;
-    }
-    @Override
-    public boolean isFinished(){
-        return wld == WinLossDraw.WIN || wld == WinLossDraw.DRAW;
-    }
-    @Override
-    public boolean hasVictor() {
-        return wld == WinLossDraw.WIN;
-    }
-    @Override
-    public WinLossDraw getResult(){
-        return wld;
-    }
-
-    @Override
-    public SortedMap<Integer, Collection<ArenaTeam>> getRanking() {
-        return ranks;
-    }
-
-    @Override
-    public void setRanking(SortedMap<Integer, Collection<ArenaTeam>> ranks) {
-        this.ranks = ranks;
-    }
+    public boolean isUnknown() { return result == WinLossDraw.UNKNOWN; }
+    public boolean isDraw() { return result == WinLossDraw.DRAW; }
+    public boolean isWon(){ return hasVictor(); }
+    public boolean isLost() { return result == WinLossDraw.LOSS; }
+    public boolean isFinished(){ return result == WinLossDraw.WIN || result == WinLossDraw.DRAW; }
+    public boolean hasVictor() { return result == WinLossDraw.WIN; }
 }

@@ -76,7 +76,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
         int matchID = match.getId();
         if (objectives.containsKey(matchID)) {
             printMessage(sender, "You may only have one custom objective per match.");
-            String name = objectives.get(matchID).getID();
+            String name = objectives.get(matchID).getId();
             String msg = "Objective " + name + " will be over written";
             printMessage(sender, msg);
         }

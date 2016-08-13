@@ -1,9 +1,9 @@
 package mc.alk.scoreboardapi;
 
-import org.bukkit.OfflinePlayer;
-
 import java.util.Collection;
 import java.util.Set;
+
+import org.bukkit.OfflinePlayer;
 
 public interface STeam extends SEntry {
 	public void addPlayer(OfflinePlayer p);
@@ -25,5 +25,4 @@ public interface STeam extends SEntry {
 	public String getSuffix();
 
     public int size();
-
 }

@@ -268,7 +268,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
                 TeamJoinResult r = o.join(qo);
 
-                switch (r.status) {
+                switch (r.joinStatus) {
                     case ADDED:
                     case ADDED_TO_EXISTING:
                     case ADDED_STILL_NEEDS_PLAYERS:
@@ -308,11 +308,10 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                         mf = createFoundMatch(jr, o, arena);
                         mf.startMatch();
                         return jr;
-                    } else {
-                        entered = true;
-                        joinHandlers.add(o);
-                        jr.status = JoinResult.JoinStatus.ADDED_TO_QUEUE;
                     }
+                    entered = true;
+                    joinHandlers.add(o);
+                    jr.status = JoinResult.JoinStatus.ADDED_TO_QUEUE;
                 } catch (NeverWouldJoinException e) {
                     e.printStackTrace();
                 }
@@ -393,8 +392,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         WaitingObject wo = inQueue.remove(player.getUniqueId());
         if (wo != null) {
             if (leaveJoinHandler) {
-                wo.jh.leave(player);
-                if (wo.jh.getnPlayers() == 0) {
+                wo.joinHandler.leave(player);
+                if (wo.joinHandler.getNPlayers() == 0) {
                     synchronized (joinHandlers) {
                         joinHandlers.remove(wo);
                     }
@@ -415,7 +414,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         mf.arena = arena;
         mf.wo = o;
         mf.params = o.getParams();
-        mf.joinHandler = o.jh;
+        mf.joinHandler = o.joinHandler;
         if (jr != null){
             jr.status = JoinResult.JoinStatus.STARTED_NEW_GAME;
             jr.params = o.getParams();
@@ -508,9 +507,9 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         synchronized(delayedReadyMatches){
             for (List<FoundMatch> list : delayedReadyMatches.values()){
                 for (FoundMatch fm: list) {
-                    teams.addAll(fm.wo.jh.getTeams());
+                    teams.addAll(fm.wo.joinHandler.getTeams());
                     for (ArenaPlayer ap : fm.wo.getPlayers()) {
-                        fm.wo.jh.leave(ap);
+                        fm.wo.joinHandler.leave(ap);
                         players.put(ap, fm.wo);
                     }
                 }
@@ -519,9 +518,9 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
         synchronized(joinHandlers) {
             for (WaitingObject o : joinHandlers) {
-                teams.addAll(o.jh.getTeams());
+                teams.addAll(o.joinHandler.getTeams());
                 for (ArenaPlayer ap : o.getPlayers()) {
-                    o.jh.leave(ap);
+                    o.joinHandler.leave(ap);
                     players.put(ap, o);
                 }
             }
@@ -639,7 +638,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                     sb.append(" fs=").append((t.time - System.currentTimeMillis()) / 1000);
                 sb.append("------\n");
 
-                for (ArenaTeam at : o.jh.getTeams()) {
+                for (ArenaTeam at : o.joinHandler.getTeams()) {
                     sb.append("  t ").append(at).append(" - ").append(at.getId()).append("\n");
                 }
             }
@@ -651,7 +650,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                     sb.append("  ------ o ").append(fm.wo.hashCode()).append(" - ").
                             append(fm.wo.params.getDisplayName()).append(" - ").
                             append(fm.wo.getArena() != null ? fm.wo.getArena().getName() : "null").append("------\n");
-                    for (ArenaTeam at : fm.wo.jh.getTeams()) {
+                    for (ArenaTeam at : fm.wo.joinHandler.getTeams()) {
                         sb.append("  t ").append(at).append(" - ").append(at.getId()).append("\n");
                     }
                 }
@@ -665,7 +664,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         synchronized (joinHandlers) {
             for (WaitingObject o : joinHandlers) {
                 if (params.matches(o.getParams())) {
-                    for (ArenaTeam at : o.jh.getTeams()) {
+                    for (ArenaTeam at : o.joinHandler.getTeams()) {
                         players.addAll(at.getPlayers());
                     }
                 }
@@ -687,7 +686,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         List<ArenaPlayer> players = new ArrayList<>();
         synchronized (joinHandlers) {
             for (WaitingObject o : joinHandlers) {
-                for (ArenaTeam at : o.jh.getTeams()) {
+                for (ArenaTeam at : o.joinHandler.getTeams()) {
                     players.addAll(at.getPlayers());
                 }
             }

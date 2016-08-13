@@ -331,7 +331,7 @@ public class BattleArenaController implements ArenaListener, Listener{
             if (tjh == null)
                 continue;
             AbstractJoinHandler.TeamJoinResult tjr = tjh.joiningTeam(tqo);
-            switch (tjr.status) {
+            switch (tjr.joinStatus) {
                 case ADDED:
                 case ADDED_TO_EXISTING:
                 case ADDED_STILL_NEEDS_PLAYERS:

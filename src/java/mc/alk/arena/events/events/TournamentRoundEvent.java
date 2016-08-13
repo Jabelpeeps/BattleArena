@@ -1,5 +1,6 @@
 package mc.alk.arena.events.events;
 
+import lombok.Getter;
 import mc.alk.arena.competition.AbstractComp;
 
 /**
@@ -7,15 +8,10 @@ import mc.alk.arena.competition.AbstractComp;
  */
 public class TournamentRoundEvent extends EventEvent {
 
-    final int round;
+    @Getter final int round;
 
-    public TournamentRoundEvent(AbstractComp event, int round){
+    public TournamentRoundEvent(AbstractComp event, int _round){
         super(event);
-        this.round = round;
+        round = _round;
     }
-
-    public int getRound() {
-        return round;
-    }
-
 }

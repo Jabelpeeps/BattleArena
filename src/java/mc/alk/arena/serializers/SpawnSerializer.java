@@ -1,5 +1,18 @@
 package mc.alk.arena.serializers;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.SpawnController;
 import mc.alk.arena.objects.options.SpawnOptions;
@@ -13,33 +26,23 @@ import mc.alk.util.EntityUtil;
 import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 public class SpawnSerializer {
 
     public YamlConfiguration config = new YamlConfiguration();
-    File f = new File(BattleArena.getSelf().getDataFolder() + "/spawns.yml");
+    File file = new File(BattleArena.getSelf().getDataFolder() + "/spawns.yml");
 
     public void setConfig(File f) {
-        this.f = f;
+        file = f;
         config = new YamlConfiguration();
         loadAll();
     }
 
     public void loadAll() {
+ 
         try {
-            config.load(f);
-        } catch (Exception e) {
-            Log.printStackTrace(e);
+            config.load(file);
+        } catch ( IOException | InvalidConfigurationException e ) {
+            e.printStackTrace();
         }
 
         ConfigurationSection as = config.getConfigurationSection("spawnGroups");
@@ -58,11 +61,8 @@ public class SpawnSerializer {
     }
 
     private static SpawnGroup parseSpawnGroup(ConfigurationSection cs) {
-        if (cs == null) {
-            // System.out.println("parsing spawn group cs=" + cs);
-            return null;
-        }
-        // System.out.println("parsing spawn group " + cs.getName());
+        if (cs == null) return null;
+
         List<SpawnInstance> spawns = getSpawnList(cs);
         SpawnGroup sg = new SpawnGroup(cs.getName());
         sg.addSpawns(spawns);
@@ -70,142 +70,144 @@ public class SpawnSerializer {
     }
 
     public static ArrayList<SpawnInstance> getSpawnList(ConfigurationSection cs) {
-// System.out.println("getSpawnList cs=" + cs.getName() +"   curpath=" + cs.getCurrentPath());
-        ArrayList<SpawnInstance> spawns = new ArrayList<SpawnInstance>();
-        try {
-            Set<String> keys = cs.getKeys(false);
-            for (String key : keys) {
-                List<SpawnInstance> sis = parseSpawnable(convertToStringList(cs, key));
-                if (sis != null) {
-                    for (SpawnInstance si : sis) {
-                        spawns.add(si);
-                    }
+
+        ArrayList<SpawnInstance> spawns = new ArrayList<>();
+        Set<String> keys = cs.getKeys(false);
+        
+        for (String key : keys) {
+            List<SpawnInstance> sis = parseSpawnable(convertToStringList(cs, key));
+            
+            if (sis != null) {
+                for (SpawnInstance si : sis) {
+                    spawns.add(si);
                 }
             }
-        } catch (Exception e) {
-            Log.warn(cs.getCurrentPath() + " could not be parsed in config.yml");
-            Log.printStackTrace(e);
         }
         return spawns;
     }
 
     public static List<String> convertToStringList(ConfigurationSection cs, String key) {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         args.add(key);
         args.addAll(convertToStringList(cs.getString(key)));
         return args;
     }
 
     public static List<String> convertToStringList(String str) {
-        return new ArrayList<String>(Arrays.asList(str.split(" ")));
+        return new ArrayList<>(Arrays.asList(str.split(" ")));
     }
 
     public static List<SpawnInstance> parseSpawnable(List<String> args) {
         final String key = args.get(0);
         StringBuilder sb = new StringBuilder(key);
-        List<SpawnInstance> spawns = new ArrayList<SpawnInstance>();
+        List<SpawnInstance> spawns = new ArrayList<>();
         for (int i = 1; i < args.size(); i++) {
             sb.append(" ").append(args.get(i));
         }
         final String value = sb.toString();
+ 
+        SpawnInstance sg = SpawnController.getSpawnable(key);
+        if (sg != null) {
+            int number = 1;
+            try {
+                number = Integer.parseInt(args.get(1));
+            } catch ( NumberFormatException e ) { }
+            
+            for (int i = 0; i < number; i++) {
+                spawns.add(sg);
+            }
+            return spawns;
+        }
+        int number = 1;
         try {
-            SpawnInstance sg = SpawnController.getSpawnable(key);
-            if (sg != null) {
-                int number = 1;
+            number = Integer.parseInt(value);
+        } catch ( NumberFormatException e) { }
+
+        ItemStack is = InventoryUtil.parseItem( value );
+        EntityType et = EntityUtil.parseEntityType(key);
+
+       if (is != null && et != null) {
+            int keysize = key.length();
+            int isizedif = Math.abs(is.getType().name().length() - keysize);
+            int esizedif = Math.abs(et.getName().length() - keysize);
+            if (isizedif <= esizedif) {
+                spawns.add(new ItemSpawn(is));
+            } 
+            else {
                 try {
-                    number = Integer.parseInt(args.get(1));
-                } catch (Exception e) {
-                }
+                    number = Integer.parseInt(args.get(args.size() - 1));
+                } catch ( NumberFormatException e ) { }
+                
+                spawns.add(new EntitySpawn(et, number));
+            }
+            return spawns;
+       } 
+       else if (is != null) {
+            spawns.add(new ItemSpawn(is));
+            return spawns;
+       } 
+       else if (et != null) {
+            try {
+                number = Integer.parseInt(args.get(args.size() - 1));
+            } catch ( NumberFormatException e ) { }
+            
+            spawns.add(new EntitySpawn(et, number));
+            return spawns;
+       } 
+       else {
+            String split[] = key.split(":");
+            sg = SpawnController.getSpawnable(split[0]);
+            number = 1;
+            try {
+                number = Integer.valueOf(split[1]);
+            } catch ( NumberFormatException e ) { }
+            
+            if (sg != null) {
                 for (int i = 0; i < number; i++) {
                     spawns.add(sg);
                 }
                 return spawns;
             }
-            int number = 1;
-            try {
-                number = Integer.parseInt(value);
-            } catch (Exception e) {
-            }
-// System.out.println(InventoryUtil.isItem(key)+" is item " + InventoryUtil.isItem(key+":" + value) +"     key=" + key+" value=" + value);
-            ItemStack is = InventoryUtil.parseItem(value);
-            EntityType et = EntityUtil.parseEntityType(key);
-// System.out.println("is = " + InventoryUtil.getItemString(is) +"   et=" + et);
-            if (is != null && et != null) {
-                int keysize = key.length();
-                int isizedif = Math.abs(is.getType().name().length() - keysize);
-                int esizedif = Math.abs(et.getName().length() - keysize);
-                if (isizedif <= esizedif) {
-                    spawns.add(new ItemSpawn(is));
-                } else {
-                    try {
-                        number = Integer.parseInt(args.get(args.size() - 1));
-                    } catch (Exception e) {
-                    }
-                    spawns.add(new EntitySpawn(et, number));
-                }
-                return spawns;
-            } else if (is != null) {
-                spawns.add(new ItemSpawn(is));
-                return spawns;
-            } else if (et != null) {
-                try {
-                    number = Integer.parseInt(args.get(args.size() - 1));
-                } catch (Exception e) {
-                }
-                spawns.add(new EntitySpawn(et, number));
-                return spawns;
-            } else {
-                String split[] = key.split(":");
-                sg = SpawnController.getSpawnable(split[0]);
-                number = 1;
-                try {
-                    number = Integer.valueOf(split[1]);
-                } catch (Exception e) {
-                }
-                if (sg != null) {
-                    for (int i = 0; i < number; i++) {
-                        spawns.add(sg);
-                    }
-                    return spawns;
-                }
-            }
-        } catch (Exception e) {
         }
+        
         return null;
     }
 
     public static TimedSpawn parseSpawn(String[] args) {
-        List<String> spawnArgs = new ArrayList<String>();
+        List<String> spawnArgs = new ArrayList<>();
         // List<EditOption> optionArgs = new ArrayList<EditOption>();
         Integer fs = 0; /// first spawn time
         Integer rs = -1; /// Respawn time
         Integer ds = -1; /// Despawn time
+        
         for (int i = 1; i < args.length; i++) {
+            
             String arg = args[i];
             if (arg.contains("=")) {
                 String as[] = arg.split("=");
                 Integer time = null;
                 try {
                     time = Integer.valueOf(as[1]);
-                } catch (Exception e) {
-                }
+                } catch ( NumberFormatException e ) { }
+                
                 if (as[0].equalsIgnoreCase("fs")) {
                     fs = time;
-                } else if (as[0].equalsIgnoreCase("rs") || as[0].equalsIgnoreCase("rt")) {
+                } 
+                else if (as[0].equalsIgnoreCase("rs") || as[0].equalsIgnoreCase("rt")) {
                     rs = time;
-                } else if (as[0].equalsIgnoreCase("ds")) {
+                } 
+                else if (as[0].equalsIgnoreCase("ds")) {
                     ds = time;
                 }
-            } else {
-                spawnArgs.add(arg);
-            }
+            } 
+            else spawnArgs.add(arg);
         }
+        
         int number = -1;
         if (spawnArgs.size() > 1) {
             try {
                 number = Integer.parseInt(spawnArgs.get(spawnArgs.size() - 1));
-            } catch (Exception e) {
-            }
+            } catch ( NumberFormatException e ) { }
         }
         if (number == -1) {
             spawnArgs.add("1");

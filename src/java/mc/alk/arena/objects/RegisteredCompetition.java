@@ -1,5 +1,9 @@
 package mc.alk.arena.objects;
 
+import org.bukkit.plugin.Plugin;
+
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.executors.CustomCommandExecutor;
@@ -9,38 +13,16 @@ import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.util.Log;
 
-import org.bukkit.plugin.Plugin;
-
 public class RegisteredCompetition {
-	final Plugin plugin;
-	final String competitionName;
-	ConfigSerializer configSerializer;
-	ArenaSerializer arenaSerializer;
-	CustomCommandExecutor customExecutor;
+	@Getter final Plugin plugin;
+	@Getter final String competitionName;
+	@Getter @Setter ConfigSerializer configSerializer;
+	@Getter @Setter ArenaSerializer arenaSerializer;
+	@Getter @Setter CustomCommandExecutor customExecutor;
 
-	public RegisteredCompetition(Plugin plugin, String competitionName){
-		this.plugin = plugin;
-		this.competitionName = competitionName;
-	}
-
-	public ConfigSerializer getConfigSerializer() {
-		return configSerializer;
-	}
-
-	public void setConfigSerializer(ConfigSerializer serializer) {
-		this.configSerializer = serializer;
-	}
-
-	public String getCompetitionName() {
-		return competitionName;
-	}
-
-	public ArenaSerializer getArenaSerializer() {
-		return arenaSerializer;
-	}
-
-	public void setArenaSerializer(ArenaSerializer arenaSerializer) {
-		this.arenaSerializer = arenaSerializer;
+	public RegisteredCompetition(Plugin _plugin, String _competitionName){
+		plugin = _plugin;
+		competitionName = _competitionName;
 	}
 
 	public void reload(){
@@ -50,18 +32,11 @@ public class RegisteredCompetition {
 		reloadMessages();
 	}
 
-	private void reloadMessages(){
-		/// Reload messages
-		MessageSerializer.reloadConfig(competitionName);
-	}
+	private void reloadMessages() { MessageSerializer.reloadConfig(competitionName); }
 
-	public MessageSerializer getMessageSerializer(){
-		return MessageSerializer.getMessageSerializer(competitionName);
-	}
+	public MessageSerializer getMessageSerializer(){ return MessageSerializer.getMessageSerializer(competitionName); }
 
-	private void reloadExecutors(){
-		/* TODO allow them to switch executors restart */
-	}
+	private void reloadExecutors(){ /* TODO allow them to switch executors restart */ }
 
 	private void reloadArenas(){
 		BattleArenaController ac = BattleArena.getBAController();
@@ -76,7 +51,6 @@ public class RegisteredCompetition {
 	private void reloadConfigType() {
 		configSerializer.reloadFile();
 		try {
-			/// The config serializer will also deal with MatchParams registration and aliases
 			configSerializer.loadMatchParams();
 		} catch (Exception e) {
 			Log.printStackTrace(e);
@@ -87,16 +61,5 @@ public class RegisteredCompetition {
 
 	public void saveParams(MatchParams params){
 		configSerializer.save(params);
-	}
-
-	public Plugin getPlugin(){
-		return plugin;
-	}
-
-	public CustomCommandExecutor getCustomExecutor() {
-		return customExecutor;
-	}
-	public void setCustomExeuctor(CustomCommandExecutor customExecutor){
-		this.customExecutor = customExecutor;
 	}
 }

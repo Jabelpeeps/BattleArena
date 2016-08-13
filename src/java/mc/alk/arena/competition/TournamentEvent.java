@@ -19,6 +19,7 @@ import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.bukkit.util.ChatPaginator;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.BattleArenaController;
@@ -30,7 +31,7 @@ import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
 import mc.alk.arena.events.matches.MatchCreatedEvent;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.CompetitionResult;
+import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.EventState;
 import mc.alk.arena.objects.LocationType;
@@ -56,7 +57,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     public long timeBetweenRounds;
 
     int curRound = -1;
-    int nrounds = -1;
+    @Getter int nrounds = -1;
     boolean preliminary_round = false;
     ArrayList<ArenaTeam> aliveTeams = new ArrayList<>();
     ArrayList<ArenaTeam> competingTeams = new ArrayList<>();
@@ -195,7 +196,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             return;
         }
         incompleteMatchups.remove(m);
-        CompetitionResult nmr = createNewMatchResult(am);
+        MatchResult nmr = createNewMatchResult(am);
         if (nmr.getVictors().isEmpty()) { 
             return;
         }
@@ -214,7 +215,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 HashSet<ArenaTeam> losers = new HashSet<>(competingTeams);
                 losers.remove(victor);
                 Set<ArenaTeam> victors = new HashSet<>(Arrays.asList(victor));
-                CompetitionResult result = new MatchResult();
+                MatchResult result = new MatchResult();
                 result.setVictors(victors);
                 setEventResult(result,true);
                 TransitionController.transition(am, TournamentTransition.FIRSTPLACE, victors, false);
@@ -229,9 +230,9 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         }
     }
 
-    private CompetitionResult createNewMatchResult(Match match) {
-        CompetitionResult r = match.getResult();
-        CompetitionResult nmr;
+    private MatchResult createNewMatchResult(Match match) {
+        MatchResult r = match.getResult();
+        MatchResult nmr;
         if (r.isDraw() || r.isUnknown()) { /// match was a draw, pick a random lucky winner
             nmr = createRandomWinner(r.getDrawers(), match);
             nmr.addLosers(r.getLosers());
@@ -247,8 +248,8 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         return nmr;
     }
 
-    private CompetitionResult createRandomWinner(Collection<ArenaTeam> randos, Match match) {
-        CompetitionResult mr = new MatchResult();
+    private MatchResult createRandomWinner(Collection<ArenaTeam> randos, Match match) {
+        MatchResult mr = new MatchResult();
         ArenaTeam victor = null;
 
         List<ArenaTeam> ls = new ArrayList<>();
@@ -309,7 +310,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         Matchup m;
         curRound++;
         incompleteMatchups.clear();
-        Round tr = new Round(curRound);
+        Round tr = new Round();
         rounds.add(tr);
         int nRounds = calcNRounds(teams.size()) + 1;
         int minTeams = params.getMinTeams();
@@ -353,7 +354,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         Matchup m;
         curRound++;
         incompleteMatchups.clear();
-        Round tr = new Round(curRound);
+        Round tr = new Round();
         rounds.add(tr);
         int minTeams = params.getMinTeams();
         int size = aliveTeams.size();
@@ -435,9 +436,15 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     @Override
-    public void broadcast(String msg){for (ArenaTeam t : competingTeams){t.sendMessage(msg);}}
+    public void broadcast(String msg) { 
+        for (ArenaTeam t : competingTeams)
+            t.sendMessage(msg);
+    }
 
-    public void broadcastAlive(String msg){for (ArenaTeam t : aliveTeams){t.sendMessage(msg);}}
+    public void broadcastAlive(String msg){
+        for (ArenaTeam t : aliveTeams)
+            t.sendMessage(msg);
+    }
 
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer ap) {
@@ -462,16 +469,12 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             if (t.size() > 0)
                 size++;
         }
-        int nrounds = calcNRounds(size);
-        int idealteam = (int) Math.pow(params.getMinTeams(), nrounds);
-        if (nrounds > 1 && size % idealteam == 0){
+        int calcNrounds = calcNRounds(size);
+        int idealteam = (int) Math.pow(params.getMinTeams(), calcNrounds);
+        if (calcNrounds > 1 && size % idealteam == 0){
             MessageUtil.broadcastMessage(Log.colorChat(params.getPrefix()+"&6" + size +" "+MessageUtil.getTeamsOrPlayers(teams.size())+
-                    "&e have joined, Current tournament will have &6" + nrounds+"&e rounds"));
+                    "&e have joined, Current tournament will have &6" + calcNrounds+"&e rounds"));
         }
-    }
-
-    public int getNrounds() {
-        return nrounds;
     }
 
     private int calcNRounds(int size){
@@ -504,29 +507,15 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     @Override
-    public EventState getState() {
-        return null;
-    }
-
+    public EventState getState() { return null; }
     @Override
-    public boolean isHandled(ArenaPlayer player) {
-        return false;
-    }
-
+    public boolean isHandled(ArenaPlayer player) { return false; }
     @Override
-    public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) {
-        return false;
-    }
-
+    public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) { return false; }
     @Override
-    public SpawnLocation getSpawn(int index, boolean random) {
-        return null;
-    }
-
+    public SpawnLocation getSpawn(int index, boolean random) { return null; }
     @Override
-    public LocationType getLocationType() {
-        return LocationType.ARENA;
-    }
+    public LocationType getLocationType() { return LocationType.ARENA; }
 
     /**
      * Show Results from the previous Event
@@ -551,7 +540,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             boolean useMatchups = round.getMatchups().size() > 1;
             for (Matchup m: round.getMatchups()){
                 if (useMatchups) sb.append("&4Matchup :");
-                CompetitionResult result = m.getResult();
+                MatchResult result = m.getResult();
                 if (result == null || result.getVictors() == null){
                     for (ArenaTeam t: m.getTeams()){
                         sb.append(t.getTeamSummary()).append(" "); }

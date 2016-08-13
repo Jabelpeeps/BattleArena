@@ -1,52 +1,36 @@
 package mc.alk.arena.objects.joining;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TeamJoinObject extends QueueObject{
-	final ArenaTeam team;
+	@Getter final ArenaTeam team;
 
-	public TeamJoinObject(ArenaTeam team, MatchParams params, JoinOptions joinOptions) {
-		super(joinOptions, params);
-		this.team = team;
-		priority = team.getPriority();
-		numPlayers += team.size();
-	}
-
-	public ArenaTeam getTeam() {
-		return team;
+	public TeamJoinObject(ArenaTeam _team, MatchParams params, JoinOptions options) {
+		super(options, params);
+		team = _team;
+		priority = _team.getPriority();
+		numPlayers += _team.size();
 	}
 
 	@Override
-	public Integer getPriority() {
-		return priority;
-	}
+	public boolean hasMember(ArenaPlayer p) { return team.hasMember(p); }
 	@Override
-	public boolean hasMember(ArenaPlayer p) {
-		return team.hasMember(p);
-	}
+	public ArenaTeam getTeam(ArenaPlayer p) { return team.hasMember(p) ? team : null; }
 	@Override
-	public ArenaTeam getTeam(ArenaPlayer p) {
-		return team.hasMember(p) ? team : null;
-	}
+	public int size() { return team.size(); }
 	@Override
-	public int size() {
-		return team.size();
-	}
-
-	@Override
-	public String toString(){
-		return team.getPriority()+" " + team.toString()+":" + team.getId();
-	}
+	public String toString() { return team.getPriority() + " " + team.toString() + ":" + team.getId(); }
 
 	@Override
 	public List<ArenaTeam> getTeams() {
-		ArrayList<ArenaTeam> teams = new ArrayList<ArenaTeam>(1);
+		ArrayList<ArenaTeam> teams = new ArrayList<>(1);
 		teams.add(team);
 		return teams;
 	}
@@ -63,7 +47,5 @@ public class TeamJoinObject extends QueueObject{
 		return false;
 	}
 
-	public boolean hasStartPerms() {
-		return false;
-	}
+	public boolean hasStartPerms() { return false; }
 }

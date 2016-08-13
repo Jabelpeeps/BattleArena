@@ -1,5 +1,11 @@
 package mc.alk.arena.controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import mc.alk.arena.controllers.containers.LobbyContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -9,16 +15,10 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public enum RoomController {
     INSTANCE;
 
-    final Map<ArenaType,LobbyContainer> lobbies = new HashMap<ArenaType,LobbyContainer>();
+    final Map<ArenaType,LobbyContainer> lobbies = new HashMap<>();
 
     private RoomContainer getOrCreate(ArenaType type) {
         LobbyContainer lobby = lobbies.get(type);
@@ -91,7 +91,7 @@ public enum RoomController {
 
     public static void updateArenaParams(Arena arena) {
         MatchParams arenaParams = arena.getParams();
-        List<RoomContainer> rcs = new ArrayList<RoomContainer>();
+        List<RoomContainer> rcs = new ArrayList<>();
         rcs.add(arena.getWaitroom());
         rcs.add(arena.getSpectatorRoom());
         rcs.add(arena.getVisitorRoom());
@@ -112,14 +112,16 @@ public enum RoomController {
         }
         if (rc != null)
             return rc;
+        
         MatchParams ap = new MatchParams(arena.getArenaType());
         ap.setParent(arena.getParams());
         String name;
+        
         switch(locationType){
             case WAITROOM:
                 name = "wr_" + arena.getName() + "";
                 rc = new RoomContainer(name, ap, locationType);
-                arena.setWaitRoom(rc);
+                arena.setWaitroom(rc);
                 break;
             case SPECTATE:
                 name = "s_" + arena.getName() + "";

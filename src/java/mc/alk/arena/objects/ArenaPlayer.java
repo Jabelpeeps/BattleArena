@@ -11,9 +11,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.PlayerInventory;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.containers.AreaContainer;
-import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.spawns.EntitySpawn;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnInstance;
@@ -27,7 +28,6 @@ public class ArenaPlayer {
     
     static int count = 0;
     final int id = count++;
-
     /**
      * Which competitions is the player inside
      * This can be up to 2, in cases of a tournament or a reserved arena event
@@ -35,42 +35,31 @@ public class ArenaPlayer {
      * The stack order is the order in which they joined, the top being the most recent
      */
     final Stack<Competition> competitions = new Stack<>();
-
-    Arena arena;
-
     /** Which class did the player pick during the competition */
-    ArenaClass preferredClass;
-
+    @Getter @Setter ArenaClass preferredClass;
     /** Which class is the player currently */
-    ArenaClass currentClass;
-
+    @Getter @Setter ArenaClass currentClass;
     /** The players old location, from where they were first teleported*/
-    SpawnLocation oldLocation;
-
+    @Getter SpawnLocation oldLocation;
     /** The players team, *this is not their self formed team* */
-    ArenaTeam arenaTeam;
-
+    @Setter ArenaTeam team;
     /** The current location of the player (in arena, lobby, etc)*/
-    ArenaLocation curLocation = new ArenaLocation(AreaContainer.HOMECONTAINER, null , LocationType.HOME);
-
-    List<SpawnInstance> mobs;
-
+    @Getter @Setter ArenaLocation curLocation = new ArenaLocation(AreaContainer.HOMECONTAINER, null , LocationType.HOME);
+    @Setter List<SpawnInstance> mobs;
     /** Has the player specified they are "ready" by clicking a block or sign */
-    boolean isReady;
-
-    final PlayerMetaData meta = new PlayerMetaData();
-    final UUID uuid;
-    Player player;
-
-    LivingEntity curTarget;
+    @Getter @Setter boolean isReady;
+    @Getter final PlayerMetaData metaData = new PlayerMetaData();
+    @Getter final UUID uniqueId;
+    @Getter Player player;
+    @Getter LivingEntity target;
 
     public ArenaPlayer( Player _player ) {
         player = _player;
-        uuid = _player.getUniqueId();
+        uniqueId = _player.getUniqueId();
     }
 
     public ArenaPlayer( UUID _uuid ) {
-        uuid = _uuid;
+        uniqueId = _uuid;
         player = Bukkit.getPlayer( _uuid );
     }
 
@@ -84,7 +73,6 @@ public class ArenaPlayer {
         }
     }
     
-    public Player getPlayer() { return player; }
     public String getName() { return player.getName(); }  
     public boolean isOnline() { return player.isOnline(); }
     public double getHealth() { return player.getHealth(); }
@@ -98,13 +86,6 @@ public class ArenaPlayer {
     public PlayerInventory getInventory() { return player.getInventory(); }
     public boolean hasPermission(String perm) { return player.hasPermission(perm); }
 
-    
-    public boolean isReady() { return isReady; }
-    public void setReady(boolean _isReady) { isReady = _isReady; }
-    public ArenaClass getCurrentClass() { return currentClass; }
-    public void setCurrentClass(ArenaClass arenaClass) { currentClass = arenaClass; }
-    public ArenaClass getPreferredClass() { return preferredClass; }
-    public void setPreferredClass(ArenaClass arenaClass) { preferredClass = arenaClass; }
 
     public int getLevel() {
         return (HeroesController.enabled()) ? HeroesController.getLevel(player) : player.getLevel();
@@ -129,12 +110,10 @@ public class ArenaPlayer {
      * @return Team, or null if they are not inside a competition
      */
     public ArenaTeam getTeam() {
-        if (arenaTeam != null)
-            return arenaTeam;
+        if (team != null)
+            return team;
         return competitions.isEmpty() ? null : competitions.peek().getTeam(this);
     }
-
-    public void setTeam(ArenaTeam team) { arenaTeam = team; }
 
     /**
      * Sets the players oldLocation to the current spot ONLY if not already set
@@ -145,19 +124,12 @@ public class ArenaPlayer {
     }
 
     public void clearOldLocation() { oldLocation = null; }
-    public SpawnLocation getOldLocation() { return oldLocation; }
-    public void setCurLocation(ArenaLocation type){ curLocation = type; }
-    public ArenaLocation getCurLocation(){ return curLocation; }
 
     public void despawnMobs(){
         if (mobs != null){
             for (SpawnInstance es: mobs){
                 es.despawn();}
         }
-    }
-
-    public void setMobs(List<SpawnInstance> _mobs){
-        mobs = _mobs;
     }
 
     public void spawnMobs(){
@@ -173,14 +145,8 @@ public class ArenaPlayer {
         }
     }
 
-    public PlayerMetaData getMetaData() { return meta; }
-
-//    public ArenaStat getStat(MatchParams type) {
-//        return TrackerController.loadRecord(type, this);
-//    }
-
     public Player regetPlayer() {
-        player = ServerUtil.findPlayer( uuid );
+        player = ServerUtil.findPlayer( uniqueId );
         return player;        
     }
 
@@ -189,12 +155,8 @@ public class ArenaPlayer {
         return "[" + this.getName() + "]";
     }
 
-    public UUID getUniqueId() {
-        return uuid;
-    }
-
     public void setTarget(LivingEntity entity) {
-        curTarget = entity;
+        target = entity;
         if (mobs == null) {
             return;
         }
@@ -203,10 +165,6 @@ public class ArenaPlayer {
                 ((EntitySpawn) es).setTarget(entity);
             }
         }
-    }
-
-    public LivingEntity getTarget() {
-        return curTarget;
     }
 
     @Override

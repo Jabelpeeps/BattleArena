@@ -1,29 +1,30 @@
 package mc.alk.arena.objects;
 
-import mc.alk.arena.objects.options.DuelOptions;
-import mc.alk.arena.objects.options.DuelOptions.DuelOption;
-import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.Setter;
+import mc.alk.arena.objects.options.DuelOptions;
+import mc.alk.arena.objects.options.DuelOptions.DuelOption;
+import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.teams.TeamFactory;
+
 public class Duel {
 
-    final MatchParams mp;
+    @Getter final MatchParams matchParams;
+    @Getter final ArenaTeam challengerTeam;
+    final HashMap<ArenaPlayer, Boolean> challengedPlayers = new HashMap<>();
+    @Getter final DuelOptions options;
+    @Getter @Setter Double totalMoney = null;
 
-    final ArenaTeam challenger;
-    final HashMap<ArenaPlayer, Boolean> challengedPlayers = new HashMap<ArenaPlayer, Boolean>();
-    final DuelOptions options;
-    Double totalMoney = null;
-
-    public Duel(MatchParams mp, ArenaTeam challenger, DuelOptions options) {
-        this.mp = mp;
-        this.challenger = challenger;
-        this.options = options;
-        for (ArenaPlayer ap : options.getChallengedPlayers()) {
+    public Duel(MatchParams mp, ArenaTeam challenger, DuelOptions _options) {
+        matchParams = mp;
+        challengerTeam = challenger;
+        options = _options;
+        for ( ArenaPlayer ap : _options.getChallengedPlayers() ) {
             challengedPlayers.put(ap, false);
         }
     }
@@ -33,19 +34,11 @@ public class Duel {
     }
 
     public boolean hasChallenger(ArenaPlayer player) {
-        return challenger.hasMember(player);
+        return challengerTeam.hasMember(player);
     }
 
     public void accept(ArenaPlayer player) {
         challengedPlayers.put(player, true);
-    }
-
-    public Double getTotalMoney() {
-        return totalMoney;
-    }
-
-    public void setTotalMoney(Double totalMoney) {
-        this.totalMoney = totalMoney;
     }
 
     public boolean isReady() {
@@ -57,16 +50,8 @@ public class Duel {
         return true;
     }
 
-    public ArenaTeam getChallengerTeam() {
-        return challenger;
-    }
-
     public ArenaTeam makeChallengedTeam() {
-        return TeamFactory.createCompositeTeam(1, mp, challengedPlayers.keySet());
-    }
-
-    public MatchParams getMatchParams() {
-        return mp;
+        return TeamFactory.createCompositeTeam(1, matchParams, challengedPlayers.keySet());
     }
 
     public Collection<ArenaPlayer> getChallengedPlayers() {
@@ -77,14 +62,10 @@ public class Duel {
         return options.getOptionValue(option);
     }
 
-    public DuelOptions getOptions() {
-        return options;
-    }
-
     public Set<ArenaPlayer> getAllPlayers() {
-        HashSet<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+        HashSet<ArenaPlayer> players = new HashSet<>();
         players.addAll(challengedPlayers.keySet());
-        players.addAll(challenger.getPlayers());
+        players.addAll(challengerTeam.getPlayers());
         return players;
     }
 }

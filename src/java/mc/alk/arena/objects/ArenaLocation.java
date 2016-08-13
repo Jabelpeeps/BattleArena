@@ -1,34 +1,21 @@
 package mc.alk.arena.objects;
 
+import org.bukkit.Location;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.util.SerializerUtil;
 
-import org.bukkit.Location;
-
+@AllArgsConstructor
 public class ArenaLocation {
-	final PlayerHolder ph;
-	Location location;
-	final LocationType type;
+    @Getter final PlayerHolder playerHolder;
+	@Getter @Setter Location location;
+	@Getter final LocationType type;
 
-	public ArenaLocation(PlayerHolder ph, Location location, LocationType type){
-		this.ph = ph;
-		this.location = location;
-		this.type = type;
-	}
-	public LocationType getType() {
-		return this.type;
-	}
-	public Location getLocation(){
-		return this.location;
-	}
-	public void setLocation(Location location){
-		this.location = location;
-	}
-	public PlayerHolder getPlayerHolder(){
-		return ph;
-	}
 	@Override
 	public String toString(){
-		return "[LocationType loc="+SerializerUtil.getLocString(location) +" type="+type+"]";
+		return "[LocationType loc=" + SerializerUtil.getLocString(location) + " type=" + type + "]";
 	}
 }

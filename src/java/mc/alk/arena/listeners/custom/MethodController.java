@@ -302,36 +302,27 @@ public class MethodController {
 
     @SuppressWarnings({"unchecked"})
     private static void addMethods(Class<? extends ArenaListener> alClass){
-        HashMap<Class<? extends Event>,List<ArenaEventMethod>> bukkitTypeMap =
-                new HashMap<>();
-        HashMap<Class<? extends BAEvent>, List<ArenaEventMethod>> matchTypeMap =
-                new HashMap<>();
+        
+        HashMap<Class<? extends Event>,List<ArenaEventMethod>> bukkitTypeMap = new HashMap<>();
+        HashMap<Class<? extends BAEvent>, List<ArenaEventMethod>> matchTypeMap = new HashMap<>();
 
         Method[] methodArray = alClass.getMethods();
 
         for (Method method : methodArray){
-            
-            MatchState beginState, endState, cancelState;
-            boolean needsPlayer;
-            final String entityMethod;
-            boolean supressCastWarnings;
-            boolean suppressWarnings;
-            ArenaEventPriority priority;
-            EventPriority bukkitPriority;
 
             ArenaEventHandler aeh = method.getAnnotation(ArenaEventHandler.class);
             
             if (aeh == null) continue;
 
-            beginState = aeh.begin();
-            endState = aeh.end();
-            cancelState = MatchState.NONE;
-            needsPlayer = aeh.needsPlayer();
-            entityMethod = aeh.entityMethod();
-            supressCastWarnings = aeh.suppressCastWarnings();
-            suppressWarnings = aeh.suppressWarnings();
-            bukkitPriority = aeh.bukkitPriority();
-            priority = aeh.priority();
+            MatchState beginState = aeh.begin();
+            MatchState endState = aeh.end();
+            MatchState cancelState = MatchState.NONE;
+            boolean needsPlayer = aeh.needsPlayer();
+            final String entityMethod = aeh.entityMethod();
+            boolean supressCastWarnings = aeh.suppressCastWarnings();
+            boolean suppressWarnings = aeh.suppressWarnings();
+            EventPriority bukkitPriority = aeh.bukkitPriority();
+            ArenaEventPriority priority = aeh.priority();
 
             /// Make sure there is some sort of bukkit bukkitEvent here
             Class<?>[] classes = method.getParameterTypes();
@@ -342,7 +333,7 @@ public class MethodController {
 
             Class<? extends Event> bukkitEvent = (Class<? extends Event>)classes[0];
             boolean baEvent = BAEvent.class.isAssignableFrom(bukkitEvent);
-            //			MatchState beginState = meh.begin(),endState = meh.end(), cancelState=MatchState.NONE;
+
             boolean needsTeamOrPlayer;
             Method getPlayerMethod = null;
             Method getLivingMethod = null;

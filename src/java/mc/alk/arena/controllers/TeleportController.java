@@ -28,7 +28,6 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.plugins.CombatTagUtil;
 import mc.alk.arena.plugins.EssentialsController;
 import mc.alk.arena.plugins.VanishNoPacketInterface;
-import mc.alk.util.InventoryUtil;
 import mc.alk.util.Log;
 import mc.alk.util.PermissionsUtil;
 
@@ -57,7 +56,7 @@ public class TeleportController implements Listener {
             Location loc = location.clone();
             loc.setY(loc.getY() + Defaults.TELEPORT_Y_OFFSET);
             /// Close their inventory so they arent taking things in/out
-            InventoryUtil.closeInventory(player);
+            player.closeInventory();
             player.setFireTicks(0);
             arenaPlayer.despawnMobs();
 

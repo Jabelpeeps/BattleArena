@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.joining.scoreboard.CutoffScoreboard;
@@ -27,13 +29,13 @@ import mc.alk.util.Log;
 
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     
-    public static final TeamJoinResult CANTFIT = new TeamJoinResult(TeamJoinStatus.CANT_FIT,-1,null);
+    public static final TeamJoinResult CANTFIT = new TeamJoinResult( TeamJoinStatus.CANT_FIT, -1 );
     final MatchParams matchParams;
-    final List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
+    @Getter final List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
     final int minTeams,maxTeams;
-    Competition competition;
+    @Setter Competition competition;
     WaitingScoreboard scoreboard;
-    int nPlayers;
+    @Getter int nPlayers;
 
     public Collection<ArenaPlayer> getPlayers() {
         List<ArenaPlayer> players = new ArrayList<>();
@@ -66,34 +68,30 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         scoreboard.setRemainingSeconds(seconds);
     }
 
-
     public static enum TeamJoinStatus{
         ADDED, CANT_FIT, ADDED_TO_EXISTING, ADDED_STILL_NEEDS_PLAYERS
     }
 
-    public static class TeamJoinResult{
-        final public TeamJoinStatus status;
-        final public int remaining;
-        final public ArenaTeam team;
+    public static class TeamJoinResult {
+        @Getter final public TeamJoinStatus joinStatus;
+        @Getter final public int remaining;
 
-        public TeamJoinResult(TeamJoinStatus status, int remaining, ArenaTeam team){
-            this.status = status; this.remaining = remaining; this.team = team;}
-        public TeamJoinStatus getEventType(){ return status;}
-        public int getRemaining(){return remaining;}
+        public TeamJoinResult(TeamJoinStatus status, int _remaining ) {
+            joinStatus = status; remaining = _remaining; }
     }
 
-    public AbstractJoinHandler(MatchParams params, Competition competition, List<ArenaTeam> teams) {
-        this.matchParams = params;
-        this.minTeams = params.getMinTeams();
-        this.maxTeams = params.getMaxTeams();
+    public AbstractJoinHandler(MatchParams params, Competition _competition, List<ArenaTeam> _teams) {
+        matchParams = params;
+        minTeams = params.getMinTeams();
+        maxTeams = params.getMaxTeams();
 
-        setCompetition(competition);
-        if (Defaults.USE_SCOREBOARD && SAPI.hasBukkitScoreboard())
-            initWaitingScoreboard(teams);
+        setCompetition( _competition );
+        if ( Defaults.USE_SCOREBOARD && SAPI.hasBukkitScoreboard() )
+            initWaitingScoreboard(_teams);
     }
 
     private void initWaitingScoreboard(List<ArenaTeam> startingTeams) {
-        List<ArenaTeam> teams = new ArrayList<>();
+        List<ArenaTeam> tems = new ArrayList<>();
         try {
             if (maxTeams <= 16) {
                 int needed = 0;
@@ -106,31 +104,28 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
                             optional += team.getMaxPlayers() < 1000 ? team.getMaxPlayers() - team.getMinPlayers() : 1000;
                         }
                     }
-                    teams.add(team);
+                    tems.add(team);
                 }
                 if (needed + optional <= 16) {
-                    scoreboard = new FullScoreboard(matchParams, teams);
+                    scoreboard = new FullScoreboard(matchParams, tems);
                     return;
                 }
             }
         } catch (Throwable e) {
             Log.printStackTrace(e);
         }
-        scoreboard = new CutoffScoreboard(matchParams, teams);
+        scoreboard = new CutoffScoreboard(matchParams, tems);
     }
 
     public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
-
-    public void setCompetition(Competition comp) {
-        competition = comp;
-    }
 
     public void transferOldScoreboards(SScoreboard newScoreboard){
         if (scoreboard == null)
             return;
         SAPIFactory.transferOldScoreboards(
-                scoreboard.getScoreboard()!=null ? scoreboard.getScoreboard().getBScoreboard() : scoreboard.getScoreboard()
-                , newScoreboard);
+                scoreboard.getScoreboard() != null ? scoreboard.getScoreboard().getBScoreboard() 
+                                                   : scoreboard.getScoreboard()
+                , newScoreboard );
     }
 
     protected ArenaTeam addToPreviouslyLeftTeam(ArenaPlayer player) {
@@ -147,7 +142,6 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         }
         return null;
     }
-
 
     @Override
     public void addToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
@@ -306,14 +300,6 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
                 return false;}
         }
         return true;
-    }
-
-    public List<ArenaTeam> getTeams() {
-        return teams;
-    }
-
-    public int getnPlayers() {
-        return nPlayers;
     }
 
     @Override

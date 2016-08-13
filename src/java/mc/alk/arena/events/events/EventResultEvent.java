@@ -1,16 +1,13 @@
 package mc.alk.arena.events.events;
 
+import lombok.Getter;
 import mc.alk.arena.competition.AbstractComp;
-import mc.alk.arena.objects.CompetitionResult;
+import mc.alk.arena.objects.MatchResult;
 
 public class EventResultEvent extends EventEvent {
-	final CompetitionResult result;
-	public EventResultEvent(AbstractComp event, CompetitionResult result) {
+	@Getter final MatchResult result;
+	public EventResultEvent(AbstractComp event, MatchResult _result) {
 		super(event);
-		this.result = result;
-	}
-
-	public CompetitionResult getResult(){
-		return result;
+		result = _result;
 	}
 }

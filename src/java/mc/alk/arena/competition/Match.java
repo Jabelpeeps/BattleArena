@@ -51,7 +51,6 @@ import mc.alk.arena.events.prizes.ArenaWinnersPrizeEvent;
 import mc.alk.arena.events.teams.TeamDeathEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
-import mc.alk.arena.objects.CompetitionResult;
 import mc.alk.arena.objects.CompetitionSize;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.ContainerState;
@@ -113,7 +112,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     final List<VictoryCondition> vcs = new ArrayList<>();
     MatchResult matchResult; 
 
-    final StateGraph tops; /// Our match options for this arena match
+    final StateGraph tops; 
     final PlayerStoreController psc = new PlayerStoreController(); 
 
     Set<MatchState> waitRoomStates = null; 
@@ -222,23 +221,13 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         alwaysOpen = params.isAlwaysOpen();
         neededTeams = alwaysOpen ? 0 : params.getMinTeams();
 
-        individualWins = tops.hasOptionAt(MatchState.DEFAULTS, TransitionOption.INDIVIDUALWINS) || alwaysOpen;
+        individualWins = tops.hasOptionAt( MatchState.DEFAULTS, TransitionOption.INDIVIDUALWINS) || alwaysOpen;
 
         if ( tops.hasAnyOption( TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTLOBBY,
                                 TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTMAINLOBBY,
                                 TransitionOption.TELEPORTCOURTYARD ) ) {
             waitRoomStates = new HashSet<>(
-                    tops.getMatchStateRange( TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTIN ) );
-            waitRoomStates.addAll(
-                    tops.getMatchStateRange( TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTIN ) );
-            waitRoomStates.addAll(
                     tops.getMatchStateRange( TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTIN ) );
-            waitRoomStates.addAll(
-                    tops.getMatchStateRange( TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTIN ) );
-            waitRoomStates.addAll(
-                    tops.getMatchStateRange( TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTIN ) );
-            waitRoomStates.addAll(
-                    tops.getMatchStateRange( TransitionOption.TELEPORTCOURTYARD, TransitionOption.TELEPORTIN ) );
             
             if ( waitRoomStates.isEmpty() ) 
                 waitRoomStates = null;
@@ -618,7 +607,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         }
     }
 
-    class MatchVictory implements Runnable{
+    class MatchVictory implements Runnable {
         final Match am;
         MatchVictory(Match _am){ am = _am; }
 
@@ -651,7 +640,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         }
     }
 
-    void givePrizes( Match am, CompetitionResult result ) {
+    void givePrizes( Match am, MatchResult result ) {
         
         if ( result.getLosers() != null && !result.getLosers().isEmpty() ) {
             

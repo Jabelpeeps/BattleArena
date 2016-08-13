@@ -237,8 +237,8 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
 	@Override
-	public String getID() {
-		return o.getID();
+	public String getId() {
+		return o.getId();
 	}
 
 	@Override
@@ -277,8 +277,8 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
 	@Override
-	public void setScoreBoard(SScoreboard scoreboard) {
-		o.setScoreBoard(scoreboard);
+	public void setScoreboard(SScoreboard scoreboard) {
+		o.setScoreboard(scoreboard);
 		scoreboard.registerNewObjective(this);
 	}
 

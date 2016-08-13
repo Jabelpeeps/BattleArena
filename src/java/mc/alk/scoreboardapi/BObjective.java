@@ -22,7 +22,6 @@ public class BObjective extends SAPIObjective{
     TreeSet<SAPIScore> scores;
     Set<SEntry> cur15 = new HashSet<>();
     int worst = Integer.MAX_VALUE;
-//    static ScoreboardHandler handler = new ScoreboardHandler();
 
     public BObjective(SScoreboard board, String id,String displayName, String criteria) {
         this(board,id,displayName,criteria,50);
@@ -35,14 +34,14 @@ public class BObjective extends SAPIObjective{
     public BObjective(SScoreboard board, String id,String displayName, String criteria, int priority) {
         super(id,displayName, criteria,priority);
         if (board != null)
-            setScoreBoard(board);
+            setScoreboard(board);
         scores = new TreeSet<>(new Comparator<SAPIScore>() {
             @Override
             public int compare(SAPIScore o1, SAPIScore o2) {
                 int c = o2.getScore() - o1.getScore();
                 if (c != 0)
                     return c;
-                return o1.getEntry().getID().compareTo(o2.getEntry().getID());
+                return o1.getEntry().getId().compareTo(o2.getEntry().getId());
             }
         });
     }
@@ -80,10 +79,10 @@ public class BObjective extends SAPIObjective{
     }
 
     @Override
-    public void setScoreBoard(SScoreboard board) {
+    public void setScoreboard(SScoreboard board) {
         if (!(board instanceof BScoreboard))
             throw new IllegalStateException("To use BukkitObjectives you must use BukkitScoreboards");
-        super.setScoreBoard(board);
+        super.setScoreboard(board);
 
         o = ((BScoreboard)board).board.getObjective(id);
         if (o == null)
@@ -276,7 +275,7 @@ public class BObjective extends SAPIObjective{
                     if (score.getScore() != 0){
                         if (e instanceof BukkitTeam){
                             BukkitTeam bt = ((BukkitTeam)e);
-                            sb.append("&e ").append(e.getID()).append(" : ").append(e.getDisplayName()).append(" = ").
+                            sb.append("&e ").append(e.getId()).append(" : ").append(e.getDisplayName()).append(" = ").
                                     append(score.getScore()).append("  &eteamMembers=\n");
                             for (OfflinePlayer p : bt.getPlayers()){
                                 SEntry ep = this.getScoreboard().getOrCreateEntry(p);
@@ -286,7 +285,7 @@ public class BObjective extends SAPIObjective{
                                         append(o.getScore(p).getScore()).append("\n");
                             }
                         } else {
-                            sb.append("&6 ").append(e.getID()).append(" : ").append(e.getDisplayName()).append(" = ").
+                            sb.append("&6 ").append(e.getId()).append(" : ").append(e.getDisplayName()).append(" = ").
                                     append(score.getScore()).append("\n");
                         }
                     } else {
@@ -298,14 +297,14 @@ public class BObjective extends SAPIObjective{
         if (!skipped.isEmpty()){
             sb.append(" &cSkipped Entries: ");
             for (SEntry e: skipped){
-                sb.append("&6 ").append(e.getID()).append(":").
+                sb.append("&6 ").append(e.getId()).append(":").
                         append(e.getDisplayName()).append("&e,");}
             sb.append("\n");
         }
         if (!zeroes.isEmpty()){
             sb.append(" &eZero Entries: ");
             for (SEntry e: zeroes){
-                sb.append("&6 '").append(e.getID()).append("':'").
+                sb.append("&6 '").append(e.getId()).append("':'").
                         append(e.getDisplayName()).append("'&e,");}
             sb.append("\n");
         }

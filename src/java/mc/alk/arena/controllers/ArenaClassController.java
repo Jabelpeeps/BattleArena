@@ -1,6 +1,5 @@
 package mc.alk.arena.controllers;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -117,7 +117,7 @@ public class ArenaClassController {
 
 
     public static boolean changeClass(Player p, PlayerHolder am, final ArenaClass ac) {
-        if (ac == null || !ac.valid()) /// Not a valid class
+        if (ac == null || !ac.isValid()) /// Not a valid class
             return false;
         if (!p.hasPermission("arena.class.use."+ac.getName().toLowerCase())){
             MessageUtil.sendSystemMessage(p, "class_no_perms", ac.getDisplayName());
