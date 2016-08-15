@@ -45,6 +45,7 @@ import mc.alk.arena.events.ArenaCreateEvent;
 import mc.alk.arena.events.ArenaDeleteEvent;
 import mc.alk.arena.events.players.ArenaPlayerJoinEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
+import mc.alk.arena.events.players.ArenaPlayerLeaveEvent.QuitReason;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaClass;
@@ -108,26 +109,23 @@ public class BAExecutor extends CustomCommandExecutor {
     Set<String> disabled = new HashSet<>();
 
     final TeamController teamc;
-    final EventController ec;
     final DuelController dc;
     final WatchController watchController;
 
     public BAExecutor() {
         super();
-        this.ec = BattleArena.getEventController();
         this.teamc = BattleArena.getTeamController();
         this.dc = BattleArena.getDuelController();
         this.watchController = BattleArena.getSelf().getWatchController();
     }
 
     @MCCommand( cmds = {"enable"}, admin = true, perm = "arena.enable", usage = "enable" )
-    public boolean arenaEnable(CommandSender sender, MatchParams mp,
-            String[] args) {
+    public boolean arenaEnable(CommandSender sender, MatchParams mp, String[] args) {
+        
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-            Set<String> set = new HashSet<>(); // / Since some commands
-            // have aliases.. we
-            // just want the
-            // original name
+            
+            Set<String> set = new HashSet<>(); 
+
             for (MatchParams param : ParamController.getAllParams()) {
                 disabled.remove(param.getName());
                 set.add(param.getName());
@@ -143,8 +141,8 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     @MCCommand( cmds = {"disable"}, admin = true, perm = "arena.enable", usage = "disable" )
-    public boolean arenaDisable(CommandSender sender, MatchParams mp,
-            String[] args) {
+    public boolean arenaDisable(CommandSender sender, MatchParams mp, String[] args) {
+        
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
             Set<String> set = new HashSet<>(); 
             
@@ -187,12 +185,15 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     public boolean join(ArenaPlayer player, final MatchParams omp, String args[], boolean adminJoin) {
+        
         JoinOptions jp;
         try {
             jp = JoinOptions.parseOptions(omp, player, Arrays.copyOfRange(args, 1, args.length));
-        } catch (InvalidOptionException e) {
+        } 
+        catch (InvalidOptionException e) {
             return MessageUtil.sendMessage(player, e.getMessage());
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             Log.printStackTrace(e);
             return MessageUtil.sendMessage(player, e.getMessage());
         }
@@ -200,37 +201,34 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     public boolean join(ArenaPlayer player, final MatchParams omp, JoinOptions jp, boolean adminJoin) {
-        /// Make sure we have Match Options
+
         final StateGraph ops = omp.getStateGraph();
         if (ops == null) {
             return MessageUtil.sendMessage(player, "&cThis match type has no valid options, contact an admin to fix");
         }
 
-        /// Check if this match type is disabled
         if (isDisabled(player.getPlayer(), omp) && !PermissionsUtil.isAdmin(player.getPlayer())) {
             return true;
         }
 
-        /// Check Perms
         if (!adminJoin && !PermissionsUtil.hasMatchPerm(player.getPlayer(), omp, "join")) {
             return sendSystemMessage(player, "no_join_perms", omp.getCommand());
         }
-        /// Can the player add this match/event at this moment?
+
         if (!canJoin(player)) {
             return true;
         }
-        /// Call the joining event
+
         ArenaPlayerJoinEvent event = new ArenaPlayerJoinEvent(player);
         event.callEvent();
         if (event.isCancelled()) {
-            //noinspection SimplifiableIfStatement
+
             if (event.getMessage() != null && !event.getMessage().isEmpty()) {
                 return MessageUtil.sendMessage(player, event.getMessage());
             }
             return true;
         }
 
-        /// Get or Make a team for the Player
         ArenaTeam t = teamc.getSelfFormedTeam(player);
         if (t == null) {
             t = TeamController.createTeam(omp, player);
@@ -242,8 +240,8 @@ public class BAExecutor extends CustomCommandExecutor {
         }
 
         MatchParams mp = jp.getMatchParams();
-        /// Check to make sure at least one arena can be joined at some time
         Arena arena = ac.getArenaByMatchParams(jp);
+        
         if (arena == null) {
             if (!jp.hasWantedTeamSize()) {
                 arena = ac.getArenaByNearbyMatchParams(jp);
@@ -320,6 +318,7 @@ public class BAExecutor extends CustomCommandExecutor {
                 vars, "server_joined_the_queue", mp.getPrefix(),
                 player.getDisplayName(), jr.playersInQueue, neededPlayers));
         String sysmsg;
+        
         switch (jr.status) {
             case ADDED_TO_EXISTING_MATCH:
                 if (t.size() == 1) {
@@ -355,65 +354,65 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     public static String constructMessage(MatchParams mp, long millisRemaining, int playersInQ, Integer position) {
+        
         StringBuilder msg = new StringBuilder();
         if (millisRemaining <= 0) {
             String max = mp.getMaxPlayers() == ArenaSize.MAX ? "\u221E" : mp.getMaxPlayers() + "";
             msg.append("\n").append(MessageHandler.getSystemMessage("match_starts_immediately",
                     mp.getMinPlayers() - playersInQ, playersInQ, max));
-        } else {
+        } 
+        else {
             if (mp.getMaxPlayers() == CompetitionSize.MAX) {
                 if (playersInQ < mp.getMinPlayers()) {
-                    msg.append("\n").append(MessageHandler.getSystemMessage(
-                            "match_starts_players_or_time2",
-                            TimeUtil.convertMillisToString(millisRemaining),
-                            mp.getMinPlayers() - playersInQ));
-                } else if (playersInQ < mp.getMaxPlayers()) {
-                    msg.append("\n").append(MessageHandler.getSystemMessage(
-                            "match_starts_when_time",
-                            TimeUtil.convertMillisToString(millisRemaining)));
-                } else {
-                    msg.append("\n").append(MessageHandler.getSystemMessage("you_start_when_free"));
+                    msg.append("\n").append( MessageHandler.getSystemMessage( "match_starts_players_or_time2", 
+                            TimeUtil.convertMillisToString(millisRemaining), mp.getMinPlayers() - playersInQ));
+                } 
+                else if (playersInQ < mp.getMaxPlayers()) {
+                    msg.append("\n").append( MessageHandler.getSystemMessage(
+                            "match_starts_when_time", TimeUtil.convertMillisToString(millisRemaining)));
+                } 
+                else {
+                    msg.append("\n").append( MessageHandler.getSystemMessage("you_start_when_free") );
                 }
-            } else if (mp.getMinPlayers() == mp.getMaxPlayers() ) {
+            } 
+            else if (mp.getMinPlayers() == mp.getMaxPlayers() ) {
                 if (playersInQ < mp.getMinPlayers()) {
-                    msg.append("\n").append(MessageHandler.getSystemMessage(
-                            "match_starts_immediately",
-                            mp.getMaxPlayers() - playersInQ,
-                            playersInQ,
-                            mp.getMinPlayers()));
-                } else {
-                    msg.append("\n").append(MessageHandler.getSystemMessage("you_start_when_free"));
+                    msg.append("\n").append( MessageHandler.getSystemMessage( "match_starts_immediately",
+                            mp.getMaxPlayers() - playersInQ, playersInQ, mp.getMinPlayers()));
+                } 
+                else {
+                    msg.append("\n").append( MessageHandler.getSystemMessage("you_start_when_free"));
                 }
-            } else {
+            } 
+            else {
                 if (playersInQ < mp.getMinPlayers()) {
-                    msg.append("\n").append(MessageHandler.getSystemMessage(
-                            "match_starts_players_or_time",
-                            mp.getMaxPlayers() - playersInQ,
-                            TimeUtil.convertMillisToString(millisRemaining),
+                    msg.append("\n").append( MessageHandler.getSystemMessage( "match_starts_players_or_time",
+                            mp.getMaxPlayers() - playersInQ, TimeUtil.convertMillisToString(millisRemaining),
                             mp.getMinPlayers()));
-                } else if (playersInQ < mp.getMaxPlayers()) {
-                    msg.append("\n").append(MessageHandler.getSystemMessage(
-                            "match_starts_players_or_time3",
-                            mp.getMaxPlayers() - playersInQ,
-                            TimeUtil.convertMillisToString(millisRemaining)));
-                } else {
+                } 
+                else if (playersInQ < mp.getMaxPlayers()) {
+                    msg.append("\n").append( MessageHandler.getSystemMessage( "match_starts_players_or_time3",
+                            mp.getMaxPlayers() - playersInQ, TimeUtil.convertMillisToString(millisRemaining)));
+                } 
+                else {
                     if (position == null) {
                         msg.append("\n").append(MessageHandler.getSystemMessage("you_start_when_free"));
-                    } else {
+                    } 
+                    else {
                         msg.append("\n").append(MessageHandler.getSystemMessage("you_start_when_free_pos", position));
                     }
                 }
             }
-
         }
-
         return msg.toString();
     }
 
     protected boolean isDisabled(CommandSender sender, MatchParams mp) {
         if (disabled.contains(mp.getName())) {
+            
             sendSystemMessage(sender, "match_disabled", mp.getName());
             final String enabled = ParamController.getAvaibleTypes(disabled);
+            
             if (enabled.isEmpty()) {
                 return sendSystemMessage(sender, "all_disabled");
             }
@@ -422,13 +421,14 @@ public class BAExecutor extends CustomCommandExecutor {
         return false;
     }
 
-    @MCCommand(cmds = {"leave", "l"}, usage = "leave", helpOrder = 2)
+    @MCCommand( cmds = {"leave", "l"}, usage = "leave", helpOrder = 2 )
     public boolean leave(ArenaPlayer p, MatchParams mp) {
         return leave(p, mp, false);
     }
 
-    @MCCommand(cmds = {"switch"}, perm = "arena.switch")
+    @MCCommand( cmds = {"switch"}, perm = "arena.switch" )
     public boolean switchTeam(ArenaPlayer p, MatchParams mp, String teamStr) {
+        
         Integer index = TeamUtil.getFromHumanTeamIndex(teamStr);
         if (index == null) {
             return MessageUtil.sendMessage(p, "&cBad team index");
@@ -437,6 +437,7 @@ public class BAExecutor extends CustomCommandExecutor {
         ArenaLocation loc = p.getCurLocation();
         PlayerHolder ph = loc.getPlayerHolder();
         Competition c = p.getCompetition();
+        
         if (c == null && (ph == null || loc.getType() == LocationType.HOME)) {
             if (ac.isInQue(p)) {
                 JoinOptions jo = p.getMetaData().getJoinOptions();
@@ -445,18 +446,22 @@ public class BAExecutor extends CustomCommandExecutor {
                     return MessageUtil.sendMessage(p, "&eSwitched to team &6" + index);
                 }
             }
-        } else if (c == null) {
+        } 
+        else if (c == null) {
             if (ph instanceof RoomContainer) {
                 /// they are not in a match, but are in the waitroom beforehand
 
-            } else {
+            } 
+            else {
                 /// They aren't in anywhere
             }
-        } else { /// they are in a competition
+        } 
+        else { /// they are in a competition
             if (c instanceof Match) {
                 AbstractJoinHandler tjh = ((Match) c).getTeamJoinHandler();
                 tjh.switchTeams(p, index, true);
-            } else {
+            } 
+            else {
                 /// Not a match (like a tournament), they can't switch
             }
         }
@@ -469,8 +474,7 @@ public class BAExecutor extends CustomCommandExecutor {
             return true;
         }
 
-        ArenaPlayerLeaveEvent event = new ArenaPlayerLeaveEvent(p, p.getTeam(),
-                ArenaPlayerLeaveEvent.QuitReason.QUITCOMMAND);
+        ArenaPlayerLeaveEvent event = new ArenaPlayerLeaveEvent(p, p.getTeam(), QuitReason.QUITCOMMAND);
         event.callEvent();
         if (event.getMessages() != null && !event.getMessages().isEmpty()) {
             MessageUtil.sendMessage(event.getPlayer(), event.getMessages());
@@ -491,7 +495,8 @@ public class BAExecutor extends CustomCommandExecutor {
     // new PlayerReadyEvent(player,player.isReady()).callEvent();
     // return true;
     // }
-    @MCCommand(cmds = {"cancel"}, admin = true, usage = "cancel <arenaname or player>")
+    
+    @MCCommand( cmds = {"cancel"}, admin = true, usage = "cancel <arenaname or player>" )
     public boolean arenaCancel(CommandSender sender, MatchParams params, String[] args) {
         if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
             return cancelAll(sender);
@@ -506,8 +511,7 @@ public class BAExecutor extends CustomCommandExecutor {
                     ac.addArena(arena);
                 }
             }
-            return MessageUtil.sendMessage(sender, "&2You have canceled the matches for &6"
-                    + params.getType());
+            return MessageUtil.sendMessage(sender, "&2You have canceled the matches for &6" + params.getType());
         }
         if (args.length < 2) {
             return MessageUtil.sendMessage(sender, "cancel <arenaname or player>");
@@ -526,8 +530,7 @@ public class BAExecutor extends CustomCommandExecutor {
             return MessageUtil.sendMessage(sender, "&cArena " + arenaName + " not found");
         }
         if (ac.cancelMatch(arena)) {
-            return MessageUtil.sendMessage(sender,
-                    "&2You have canceled the match in arena &6" + arenaName);
+            return MessageUtil.sendMessage(sender, "&2You have canceled the match in arena &6" + arenaName);
         }
         return MessageUtil.sendMessage(sender, "&cError cancelling arena match");
     }
@@ -612,8 +615,8 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     @MCCommand(cmds = {"rank"}, helpOrder = 4)
-    public boolean rankOther(CommandSender sender, MatchParams mp,
-            OfflinePlayer player) {
+    public boolean rankOther(CommandSender sender, MatchParams mp, OfflinePlayer player) {
+        
         if (!TrackerController.hasInterface(mp)) {
             return MessageUtil.sendMessage(sender, "&cThere is no tracking for " + mp.getName());
         }
@@ -655,13 +658,10 @@ public class BAExecutor extends CustomCommandExecutor {
             return MessageUtil.sendMessage(sender, "&eThere is no tracking for " + mp.getName());
         }
 
-        final String teamSizeStr = (mp.getMinTeamSize() > 1 ? "teamSize=&6"
-                + mp.getMinTeamSize() : "");
-        final String arenaString = mp.getType().toPrettyString(
-                mp.getMinTeamSize(), mp.getMaxTeamSize());
+        final String teamSizeStr = (mp.getMinTeamSize() > 1 ? "teamSize=&6" + mp.getMinTeamSize() : "");
+        final String arenaString = mp.getType().toPrettyString( mp.getMinTeamSize(), mp.getMaxTeamSize());
 
-        final String headerMsg = "&4Top {x} Gladiators in &6" + arenaString
-                + "&e " + teamSizeStr;
+        final String headerMsg = "&4Top {x} Gladiators in &6" + arenaString + "&e " + teamSizeStr;
         final String bodyMsg = "&e#{rank}&4 {name} - {wins}:{losses}&6[{ranking}]";
 
         TrackerController sc = new TrackerController(mp);
@@ -687,12 +687,9 @@ public class BAExecutor extends CustomCommandExecutor {
             MessageUtil.sendMessage(sender,
                     "&2You have " + args[0] + "ed a &6" + params.getName()
                     + "&2 inside &6" + arena.getName()
-                    + " &2TeamSize=&6"
-                    + arena.getParams().getTeamSize()
-                    + "&2 #Teams=&6"
-                    + arena.getParams().getNTeams()
-                    + "&2 supporting " + maxPlayers + "&2 at &5"
-                    + arena.getName());
+                    + " &2TeamSize=&6" + arena.getParams().getTeamSize()
+                    + "&2 #Teams=&6" + arena.getParams().getNTeams()
+                    + "&2 supporting " + maxPlayers + "&2 at &5" + arena.getName());
         } catch (InvalidOptionException e) {
             MessageUtil.sendMessage(sender, e.getMessage());
         } catch (Exception e) {
@@ -1661,11 +1658,11 @@ public class BAExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    public void setDisabled(List<String> disabled) {
-        this.disabled.addAll(disabled);
+    public void setDisabled(List<String> _disabled) {
+        disabled.addAll(_disabled);
     }
 
     public Collection<String> getDisabled() {
-        return this.disabled;
+        return disabled;
     }
 }

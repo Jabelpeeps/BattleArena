@@ -6,6 +6,8 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.util.Log;
@@ -19,52 +21,45 @@ public class AnnouncementOptions {
 		public static AnnouncementOption fromName(String str){
 			str = str.toUpperCase();
 			AnnouncementOption ao = null;
-			try{
-				ao = AnnouncementOption.valueOf(str);
-			} catch (Exception e){/* do nothing*/}
-			if (ao != null)
+			try {
+				ao = AnnouncementOption.valueOf(str);				
+			} catch (Exception e){ }
+			
+			if ( ao != null )
 				return ao;
-			if (str.contains("HC") || str.contains("HEROCHAT"))
+			if ( str.contains("HC") || str.contains("HEROCHAT") )
 				return AnnouncementOption.CHANNEL;
 			return null;
 		}
 	}
+	@Setter static AnnouncementOptions defaultOptions;
+	@Setter public static ChatPlugin chatPlugin = null;
+	@Setter public static Chat vaultChat = null;
 
-	static AnnouncementOptions defaultOptions;
-	public static ChatPlugin chatPlugin = null;
-	public static Chat chat = null;
-
-    final Map<MatchState, Map<AnnouncementOption,Object>> matchOptions =
-			new EnumMap<>(MatchState.class);
-    final Map<MatchState, Map<AnnouncementOption,Object>> eventOptions =
-			new EnumMap<>(MatchState.class);
-
-	public static void setPlugin(ChatPlugin plugin) {
-		AnnouncementOptions.chatPlugin = plugin;
-	}
-	public static void setVaultChat(Chat chat) {
-		AnnouncementOptions.chat = chat;
-	}
+    @Getter final Map<MatchState, Map<AnnouncementOption,Object>> matchOptions = new EnumMap<>(MatchState.class);
+    @Getter final Map<MatchState, Map<AnnouncementOption,Object>> eventOptions = new EnumMap<>(MatchState.class);
 
 	public void setBroadcastOption(boolean match, MatchState ms, AnnouncementOption bo, String value) {
+	    
 		Map<MatchState, Map<AnnouncementOption,Object>> options = match ? matchOptions : eventOptions;
 		Map<AnnouncementOption,Object> ops = options.get(ms);
-		if (ops == null){
+		
+		if (ops == null) {
 			ops = new EnumMap<>(AnnouncementOption.class);
 			options.put(ms, ops);
 		}
 		switch (bo){
 		case CHANNEL:
 			if (chatPlugin == null){
-				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel="+value+
-						", will be ignored as a Chat plugin is not enabled. Defaulting to Server Announcement");
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel=" + value +
+						", will be ignored as a Chat plugin is not enabled. Defaulting to Server Announcement" );
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
 			}
 			Channel channel = chatPlugin.getChannel(value);
 			if (channel == null){
-				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel="+value+
-						", will be ignored as channel " + value +" can not be found. Defaulting to Server Announcement");
+				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option channel=" + value +
+						", will be ignored as channel " + value + " can not be found. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
 			}
@@ -75,13 +70,13 @@ public class AnnouncementOptions {
 			break;
 		case WORLD:
 			if (value == null){
-				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option world needs a value. Defaulting to Server Announcement");
+				Log.err(BattleArena.getNameAndVersion() + "config.yml Announcement option world needs a value. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
 			}
 			World w = Bukkit.getWorld(value);
 			if (w == null){
-				Log.err(BattleArena.getNameAndVersion()+"config.yml Announcement option world="+value+
+				Log.err(BattleArena.getNameAndVersion() + "config.yml Announcement option world=" + value +
 						", will be ignored as world " + value +" can not be found. Defaulting to Server Announcement");
 				ops.put(AnnouncementOption.SERVER, null);
 				return;
@@ -92,10 +87,6 @@ public class AnnouncementOptions {
 
 		}
 		ops.put(bo, value);
-	}
-
-	public static void setDefaultOptions(AnnouncementOptions bo) {
-		defaultOptions = bo;
 	}
 
 	public Channel getChannel(boolean match, MatchState state) {
@@ -135,14 +126,4 @@ public class AnnouncementOptions {
 		Map<MatchState, Map<AnnouncementOption,Object>> options = match ? matchOptions : eventOptions;
 		return options.containsKey(state);
 	}
-
-	public Map<MatchState, Map<AnnouncementOption, Object>> getMatchOptions() {
-		return matchOptions;
-	}
-
-	public Map<MatchState, Map<AnnouncementOption, Object>> getEventOptions() {
-		return eventOptions;
-	}
-
-
 }

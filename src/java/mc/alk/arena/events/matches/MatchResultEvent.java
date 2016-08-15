@@ -15,7 +15,7 @@ public class MatchResultEvent extends MatchEvent implements Cancellable{
 	public MatchResultEvent(Match match, MatchResult _matchResult) {
 		super(match);
 		matchResult = _matchResult;
-		matchEnding = !match.alwaysOpen();
+		matchEnding = !match.isAlwaysOpen();
 	}
 	
 	public boolean isMatchEnding(){

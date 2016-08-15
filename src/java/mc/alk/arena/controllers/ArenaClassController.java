@@ -152,8 +152,8 @@ public class ArenaClassController {
             List<ItemStack> items = new ArrayList<>();
             if (chosen.getItems()!=null)
                 items.addAll(chosen.getItems());
-            if (mp != null && mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.GIVEITEMS) &&
-                    mp.getGiveItems(MatchState.ONSPAWN) != null){
+            if (mp != null && mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.GIVEITEMS) 
+                    && mp.getGiveItems(MatchState.ONSPAWN) != null) {
                 items.addAll(mp.getGiveItems(MatchState.ONSPAWN));
             }
             if (Defaults.NEED_SAME_ITEMS_TO_CHANGE_CLASS && !InventoryUtil.sameItems(items, p.getInventory(), woolTeams)){
@@ -162,11 +162,10 @@ public class ArenaClassController {
             }
         }
 
-        if (am != null){
-            am.callEvent(new ArenaPlayerClassSelectedEvent(ac));
-        } else {
-            new ArenaPlayerClassSelectedEvent(ac).callEvent();
-        }
+        if (am != null)
+            am.callEvent(new ArenaPlayerClassSelectedEvent( ap, ac ) );
+        else
+            new ArenaPlayerClassSelectedEvent( ap, ac ).callEvent();
 
         /// Clear their inventory first, then give them the class and whatever items were due to them from the config
         InventoryUtil.clearInventory(p, woolTeams);
@@ -184,20 +183,24 @@ public class ArenaClassController {
             int teamIndex = team == null ? -1 : team.getIndex();
             Color color = armorTeams && teamIndex != -1 ? TeamUtil.getTeamColor(teamIndex) : null;
             List<ItemStack> items = mp.getGiveItems(state);
-            if (items != null){
-                try{ InventoryUtil.addItemsToInventory(p, items, true,color);} catch(Exception e){Log.printStackTrace(e);}}
+            
+            if (items != null)
+                InventoryUtil.addItemsToInventory(p, items, true,color);
+            
             items =mp.getGiveItems(MatchState.ONSPAWN);
-            if (items!=null){
-                try{ InventoryUtil.addItemsToInventory(p, items, true,color);} catch(Exception e){Log.printStackTrace(e);}}
+            
+            if (items!=null)
+                InventoryUtil.addItemsToInventory(p, items, true,color);
 
             /// Deal with effects/buffs
 
             List<PotionEffect> effects = mp.getEffects(state);
-            if (effects!=null){
-                EffectUtil.enchantPlayer(p, effects);}
+            if (effects!=null)
+                EffectUtil.enchantPlayer(p, effects);
+                
             effects = mp.getEffects(MatchState.ONSPAWN);
-            if (effects!=null){
-                EffectUtil.enchantPlayer(p, effects);}
+            if (effects!=null)
+                EffectUtil.enchantPlayer(p, effects);
         }
 
         MessageUtil.sendSystemMessage(p, "class_chosen", ac.getDisplayName());

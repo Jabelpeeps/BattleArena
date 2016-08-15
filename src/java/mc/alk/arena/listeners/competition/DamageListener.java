@@ -27,7 +27,7 @@ public class DamageListener implements ArenaListener{
 		this.holder = holder;
 	}
 
-	@ArenaEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.LOW)
+	@ArenaEventHandler( suppressCastWarnings=true, priority=ArenaEventPriority.LOW)
 	public void onEntityDamageEvent(EntityDamageEvent event) {
         ArenaPlayer damager = null;
         final ArenaPlayer target = 

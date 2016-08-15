@@ -44,11 +44,11 @@ class SpecificArenaPlayerEventListener extends SpecificPlayerEventListener{
 		/// For each of the splisteners methods that deal with this BukkitEvent
 		for(RListener lmethod: lmethods){
 			try {
-                lmethod.getMethod().getMethod().invoke(lmethod.getListener(), event); /// Invoke the listening arenalisteners method
+                lmethod.getMethod().getCallMethod().invoke(lmethod.getListener(), event); /// Invoke the listening arenalisteners method
 			} catch (Exception e){
 				Log.err("["+BattleArena.getNameAndVersion()+" Error] method=" +
-                        lmethod.getMethod().getMethod().getName() +
-                        ",  types.length=" +lmethod.getMethod().getMethod().getParameterTypes().length +
+                        lmethod.getMethod().getCallMethod().getName() +
+                        ",  types.length=" +lmethod.getMethod().getCallMethod().getParameterTypes().length +
                         ",  p=" + p +",  listener="+lmethod);
 				Log.printStackTrace(e);
 			}

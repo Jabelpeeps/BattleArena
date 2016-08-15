@@ -5,8 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MCCommand {
-	/// the cmd and all its aliases, can be blank if you want to do something when they just type
-	/// the command only
+	/// the cmd and all its aliases, can be blank if you want to do something when they just type the command only
     String[] cmds() default {};
 
 	/// subCommands

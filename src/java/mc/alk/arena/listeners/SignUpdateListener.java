@@ -1,7 +1,5 @@
 package mc.alk.arena.listeners;
 
-import java.util.Comparator;
-
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,18 +11,15 @@ import mc.alk.arena.events.players.ArenaPlayerEnterQueueEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveQueueEvent;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.joining.ArenaMatchQueue;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
 import mc.alk.util.MapOfTreeSet;
 import mc.alk.util.MessageUtil;
 
-public class SignUpdateListener implements Listener{
+public class SignUpdateListener implements Listener {
+    
     MapOfTreeSet<String,ArenaCommandSign> arenaSigns =
-            new MapOfTreeSet<>(ArenaCommandSign.class, new Comparator<ArenaCommandSign>(){
-                @Override
-                public int compare(ArenaCommandSign o1, ArenaCommandSign o2) {
-                    return o1.hashCode() - o2.hashCode();
-                }
-            });
+            new MapOfTreeSet<>(ArenaCommandSign.class,  ( o1, o2 ) -> { return o1.hashCode() - o2.hashCode(); });
 
 
     private String getMatchState(String str){
@@ -102,7 +97,7 @@ public class SignUpdateListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onArenaPlayerLeaveQueueEvent(ArenaPlayerLeaveQueueEvent event){
         if (event.getArena() == null) return;
-        int size = event.getPlayersInArenaQueue(event.getArena());
+        int size = ArenaMatchQueue.getPlayersInArenaQueue( event.getArena() );
         setPeopleInQueue(event.getArena(), size,
                 event.getParams().getMinPlayers(),
                 event.getParams().getMaxPlayers());

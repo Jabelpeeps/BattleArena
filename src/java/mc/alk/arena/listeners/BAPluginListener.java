@@ -139,7 +139,7 @@ public class BAPluginListener implements Listener {
         if (AnnouncementOptions.chatPlugin == null) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("Herochat");
             if (plugin != null) {
-                AnnouncementOptions.setPlugin(new HerochatPlugin());
+                AnnouncementOptions.setChatPlugin(new HerochatPlugin());
                 Log.info("[BattleArena] Herochat detected, adding channel options");
             }
         }
@@ -166,10 +166,10 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadMcMMO() {
-        if (!McMMOController.enabled()) {
+        if (!McMMOController.isEnabled()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin("mcMMO");
             if (plugin != null) {
-                McMMOController.setEnable(true);
+                McMMOController.setEnabled(true);
                 Log.info("[BattleArena] mcMMO detected. Implementing disabled skills options");
             }
         }
@@ -255,7 +255,7 @@ public class BAPluginListener implements Listener {
                 }
             }
             /// Load Vault chat
-            if (AnnouncementOptions.chat == null) {
+            if (AnnouncementOptions.vaultChat == null) {
                 try {
                     RegisteredServiceProvider<Chat> provider = Bukkit.getServer().
                             getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);

@@ -10,7 +10,7 @@ import mc.alk.util.MessageUtil;
 
 public class DuelExecutor extends BAExecutor{
 	@Override
-	@MCCommand(cmds = {}, min=1, helpOrder = 10)
+	@MCCommand( cmds = {}, min = 1, helpOrder = 10 )
 	public boolean duel(ArenaPlayer player, MatchParams mp, String args[]) {
 		String newargs[] = new String[args.length+1];
 		for (int i=0;i<args.length;i++){

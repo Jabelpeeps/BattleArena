@@ -1,43 +1,34 @@
 package mc.alk.arena.listeners.custom;
 
+import java.util.Comparator;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventMethod;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 
-import java.util.Comparator;
-
+@AllArgsConstructor
 class RListener {
-    final private ArenaListener al;
+    @Getter final private ArenaListener listener;
     final private ArenaEventMethod mem;
 
-	public RListener(ArenaListener spl, ArenaEventMethod mem) {
-		this.al = spl;
-		this.mem = mem;
+
+	public boolean hasSpecificPlayerMethod(){
+		return mem.hasSpecificPlayerMethod();
 	}
 
-	public boolean isSpecificPlayerMethod(){
-		return mem.isSpecificPlayerMethod();
+	public boolean hasSpecificArenaPlayerMethod(){
+		return mem.hasSpecificArenaPlayerMethod();
 	}
 
-	public boolean isSpecificArenaPlayerMethod(){
-		return mem.isSpecificArenaPlayerMethod();
-	}
+	public ArenaEventMethod getMethod() { return mem; }
 
-	public ArenaEventMethod getMethod() {
-		return mem;
-	}
-
-	public ArenaListener getListener() {
-		return al;
-	}
-
-	public ArenaEventPriority getPriority() {
-		return mem.getPriority();
-	}
+	public ArenaEventPriority getPriority() { return mem.getPriority(); }
 
 	@Override
 	public String toString(){
-		return "["+this.al.getClass().getSimpleName()+" : " + this.mem +"]";
+		return "["+this.listener.getClass().getSimpleName()+" : " + this.mem +"]";
 	}
 
 	public static class RListenerPriorityComparator implements Comparator<RListener>{
@@ -47,7 +38,7 @@ class RListener {
 			if (c != 0)
 				return c;
 			if (o1.getListener() == o2.getListener()){
-				return o1.getMethod().getMethod().getName().compareTo(o2.getMethod().getMethod().getName());}
+				return o1.getMethod().getCallMethod().getName().compareTo(o2.getMethod().getCallMethod().getName());}
 			return o1.getListener().getClass().toString().compareTo(o2.getListener().getClass().toString());
 		}
 	}

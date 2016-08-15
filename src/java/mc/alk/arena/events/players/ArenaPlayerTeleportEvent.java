@@ -1,5 +1,6 @@
 package mc.alk.arena.events.players;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.LocationType;
@@ -8,47 +9,21 @@ import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class ArenaPlayerTeleportEvent extends ArenaPlayerEvent{
-	final ArenaTeam team;
-	final ArenaLocation src;
-	final ArenaLocation dest;
-	final TeleportDirection direction;
-	final ArenaType arenaType;
+    @Getter final ArenaTeam team;
+    @Getter final ArenaLocation srcLocation;
+    @Getter final ArenaLocation destLocation;
+	@Getter final TeleportDirection direction;
+	@Getter final ArenaType arenaType;
 
-	public ArenaPlayerTeleportEvent(ArenaType at, ArenaPlayer arenaPlayer, ArenaTeam team,
-			ArenaLocation src, ArenaLocation dest, TeleportDirection direction) {
+	public ArenaPlayerTeleportEvent(ArenaType at, ArenaPlayer arenaPlayer, ArenaTeam _team,
+			                        ArenaLocation src, ArenaLocation dest, TeleportDirection _direction) {
 		super(arenaPlayer);
-		this.arenaType = at;
-		this.team = team;
-		this.src = src;
-		this.dest = dest;
-		this.direction = direction;
+		arenaType = at;
+		team = _team;
+		srcLocation = src;
+		destLocation = dest;
+		direction = _direction;
 	}
-
-	public ArenaType getArenaType(){
-		return arenaType;
-	}
-
-	public ArenaTeam getTeam() {
-		return team;
-	}
-
-	public TeleportDirection getDirection(){
-		return direction;
-	}
-
-	public LocationType getSrcType(){
-		return src.getType();
-	}
-
-	public LocationType getDestType(){
-		return dest.getType();
-	}
-
-	public ArenaLocation getSrcLocation() {
-		return src;
-	}
-
-	public ArenaLocation getDestLocation() {
-		return dest;
-	}
+	public LocationType getSrcType(){ return srcLocation.getType(); }
+	public LocationType getDestType(){ return destLocation.getType(); }
 }

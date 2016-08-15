@@ -29,9 +29,7 @@ import mc.alk.util.MapOfTreeSet;
  */
 class SpecificPlayerEventListener extends BaseEventListener {
     /** map of player to listeners listening for that player */
-    final protected MapOfTreeSet<UUID,RListener> listeners =
-            new MapOfTreeSet<>(RListener.class,
-                    new RListenerPriorityComparator());
+    final protected MapOfTreeSet<UUID,RListener> listeners = new MapOfTreeSet<>(RListener.class, new RListenerPriorityComparator());
 
     /** The method which will return a Player if invoked */
     final Method getPlayerMethod;
@@ -39,13 +37,14 @@ class SpecificPlayerEventListener extends BaseEventListener {
     /**
      * Construct a listener to listen for the given bukkit event
      * @param bukkitEvent : which event we will listen for
-     * @param getPlayerMethod : a method which when not null and invoked will return a Player
+     * @param _getPlayerMethod : a method which when not null and invoked will return a Player
      */
     public SpecificPlayerEventListener(final Class<? extends Event> bukkitEvent,
-                                       EventPriority bukkitPriority, Method getPlayerMethod) {
-        super(bukkitEvent, bukkitPriority);
-        if (Defaults.DEBUG_EVENTS) Log.info("Registering GenericPlayerEventListener for type " + bukkitEvent +" pm="+getPlayerMethod);
-        this.getPlayerMethod = getPlayerMethod;
+                                       EventPriority _bukkitPriority, Method _getPlayerMethod) {
+        super(bukkitEvent, _bukkitPriority);
+        if (Defaults.DEBUG_EVENTS) 
+            Log.info("Registering GenericPlayerEventListener for type " + bukkitEvent +" pm="+_getPlayerMethod);
+        getPlayerMethod = _getPlayerMethod;
     }
 
     /**
@@ -79,10 +78,12 @@ class SpecificPlayerEventListener extends BaseEventListener {
      * @param players the players
      */
     public void addListener(RListener rl, Collection<UUID> players) {
-        if (Defaults.DEBUG_EVENTS) Log.info("--adding listener   players="+players+" listener="+rl + "  " +
-                ((players != null && rl.isSpecificPlayerMethod()) ? " MatchListener" : " SpecificPlayerListener" ));
-        for (UUID player: players){
-            addSPListener(player, rl);}
+        if (Defaults.DEBUG_EVENTS) 
+            Log.info( "--adding listener   players=" + players + " listener=" + rl + "  " +
+                ((players != null && rl.hasSpecificPlayerMethod()) ? " MatchListener" 
+                                                                  : " SpecificPlayerListener" ));
+        for (UUID player: players)
+            addSPListener(player, rl);
     }
 
     /**
@@ -126,8 +127,9 @@ class SpecificPlayerEventListener extends BaseEventListener {
      */
     public boolean removeSPListener(UUID p, RListener spl) {
         final boolean removed = listeners.removeValue(p,spl);
-        if (removed && !hasListeners() && isListening()){
-            stopListening();}
+        
+        if (removed && !hasListeners() && isListening())
+            stopListening();
         return removed;
     }
 
@@ -138,18 +140,18 @@ class SpecificPlayerEventListener extends BaseEventListener {
      */
     @Override
     public void invokeEvent(Event event){
-        /// Need special handling of Methods that have 2 entities involved,
-        /// as either entity may be in a match
+        /// Need special handling of Methods that have 2 entities involved, as either entity may be in a match
         /// These currently use getClass() for speed and the fact that there aren't bukkit
-        /// subclasses at this point.  These would need to change to instanceof if subclasses are
-        /// created
+        /// subclasses at this point.  These would need to change to instanceof if subclasses are created
         if (event.getClass() == EntityDamageByEntityEvent.class){
             doEntityDamageByEntityEvent((EntityDamageByEntityEvent)event);
             return;
-        } else if (event.getClass() == EntityDeathEvent.class){
+        } 
+        else if (event.getClass() == EntityDeathEvent.class){
             doEntityDeathEvent((EntityDeathEvent)event);
             return;
-        } else if (event instanceof EntityDamageEvent){
+        } 
+        else if (event instanceof EntityDamageEvent){
             doEntityDamageEvent((EntityDamageEvent)event);
             return;
         }
@@ -162,15 +164,16 @@ class SpecificPlayerEventListener extends BaseEventListener {
 
     private void doMethods(final Event event, final Player p) {
         RListener[] lmethods = listeners.getSafe( p.getUniqueId() );
-        if (lmethods == null){
-            return;}
+        if (lmethods == null) return;
+        
         /// For each of the splisteners methods that deal with this BukkitEvent
         for(RListener lmethod: lmethods){
             try {
-                lmethod.getMethod().getMethod().invoke(lmethod.getListener(), event); /// Invoke the listening arenalisteners method
-            } catch (Exception e){
-                Log.err("["+BattleArena.getNameAndVersion()+" Error] method=" + lmethod.getMethod().getMethod() +
-                        ",  types.length=" +lmethod.getMethod().getMethod().getParameterTypes().length +
+                lmethod.getMethod().getCallMethod().invoke(lmethod.getListener(), event); 
+            } 
+            catch (Exception e){
+                Log.err("["+BattleArena.getNameAndVersion()+" Error] method=" + lmethod.getMethod().getCallMethod() +
+                        ",  types.length=" +lmethod.getMethod().getCallMethod().getParameterTypes().length +
                         ",  p=" + p +",  listener="+lmethod);
                 Log.printStackTrace(e);
             }
@@ -204,9 +207,9 @@ class SpecificPlayerEventListener extends BaseEventListener {
         }
 
         Player player = null;
-        if (event.getDamager() instanceof Projectile){ /// we have some sort of projectile, maybe shot by a player?
+        if (event.getDamager() instanceof Projectile){ 
             Projectile proj = (Projectile) event.getDamager();
-            if (proj.getShooter() instanceof Player){ /// projectile was shot by a player
+            if (proj.getShooter() instanceof Player){ 
                 player= (Player) proj.getShooter();
             }
         }

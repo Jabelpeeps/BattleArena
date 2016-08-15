@@ -5,100 +5,57 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
+import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 
 
-/**
- *
- * @author alkarin
- *
- */
 abstract class GeneralEventListener extends BaseEventListener  {
-    /** Set of arena listeners */
-    final public EnumMap<ArenaEventPriority, Map<RListener,Integer>> listeners =
-            new EnumMap<>(ArenaEventPriority.class);
 
+    @Getter final public EnumMap<ArenaEventPriority, Map<RListener, Integer>> listeners = new EnumMap<>(ArenaEventPriority.class);
     protected volatile RListener[] handlers = null;
 
-    public GeneralEventListener(Class<? extends Event> bukkitEvent, EventPriority bukkitPriority) {
-        super(bukkitEvent, bukkitPriority);
+    public GeneralEventListener(Class<? extends Event> _bukkitEvent, EventPriority _bukkitPriority) {
+        super(_bukkitEvent, _bukkitPriority);
     }
 
-
-    /**
-     * Does this event even have any listeners
-     * @return true if there are listeners, false otherwise
-     */
     @Override
-    public boolean hasListeners(){
-        return !listeners.isEmpty();
-    }
+    public boolean hasListeners(){ return !listeners.isEmpty(); }
+    public void addListener(RListener rl) { addMatchListener(rl); }
 
-    /**
-     * Get the set of arena listeners
-     * @return map of listeners
-     */
-    public EnumMap<ArenaEventPriority, Map<RListener,Integer>> getListeners(){
-        return listeners;
-    }
-
-    /**
-     * Add a player listener to this bukkit event
-     * @param rl RListener
-     */
-    public void addListener(RListener rl) {
-        addMatchListener(rl);
-    }
-
-    /**
-     * remove a player listener from this bukkit event
-     * @param rl RListener
-     */
     public synchronized void removeListener(RListener rl) {
-        if (Defaults.DEBUG_EVENTS) System.out.println("    removing listener listener="+rl);
+        if (Defaults.DEBUG_EVENTS) Log.info( "    removing listener listener=" + rl );
         removeMatchListener(rl);
     }
 
     @Override
     public synchronized void removeAllListeners(RListener rl) {
-        if (Defaults.DEBUG_EVENTS) System.out.println("    removing all listeners  listener="+rl);
+        if (Defaults.DEBUG_EVENTS) Log.info( "    removing all listeners  listener=" + rl );
         removeMatchListener(rl);
     }
 
-    /**
-     * add an arena listener to this bukkit event
-     *
-     * @param listener RListener
-     */
     protected abstract void addMatchListener(RListener listener);
-
-    /**
-     * remove an arena listener to this bukkit event
-     * @param listener RListener
-     * @return whether listener was found and removed
-     */
     protected abstract boolean removeMatchListener(RListener listener);
 
-
     protected synchronized void bake() {
-        if (handlers != null) return;
+        
+        if ( handlers != null ) return;
+        
         List<RListener> entries = new ArrayList<>();
-        for (Map.Entry<ArenaEventPriority,Map<RListener,Integer>> entry : listeners.entrySet()){
-            entries.addAll(entry.getValue().keySet());}
-        handlers = entries.toArray(new RListener[entries.size()]);
+        
+        for ( Map.Entry<ArenaEventPriority, Map<RListener,Integer>> entry : listeners.entrySet() ) {
+            entries.addAll( entry.getValue().keySet() ); 
+        }
+        handlers = entries.toArray( new RListener[entries.size()] );
     }
 
-    /**
-     * Bake code from Bukkit
-     * @return array of listeners
-     */
     public RListener[] getRegisteredListeners() {
-        RListener[] handlers;
-        while ((handlers = this.handlers) == null) bake(); // This prevents fringe cases of returning null
-        return handlers;
+        RListener[] handlersArray;
+        while (( handlersArray = handlers ) == null) bake(); // This prevents fringe cases of returning null
+        return handlersArray;
     }
 }

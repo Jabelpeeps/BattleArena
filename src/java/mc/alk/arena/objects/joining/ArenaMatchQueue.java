@@ -105,12 +105,9 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return inQueueForArena.containsKey(arena) ? inQueueForArena.get(arena) : 0;
     }
 
+    public enum QueueType { GAME, ARENA }
 
-    public enum QueueType{
-        GAME,ARENA
-    }
-
-    public static class IdTime{
+    public static class IdTime {
         public Countdown c;
         public Long time;
     }
@@ -124,12 +121,14 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         public Match startMatch() {
             incNumberOpenMatches(params.getType());
             if (wo != null)
-                removeTimer(wo); /// get rid of any timers
+                removeTimer(wo); 
+
             final Match m = new ArenaMatch(arena, params, wo != null ? wo.getArenaListeners() : null);
             final boolean hasJoinHandler = joinHandler != null && joinHandler.getTeams() != null;
             final boolean timedStart = wo != null && wo.createsOnJoin() && wo.getParams().getForceStartTime() > 0;
-            if (hasJoinHandler) {
-                m.hookTeamJoinHandler(joinHandler);}
+            if (hasJoinHandler) 
+                m.hookTeamJoinHandler(joinHandler);
+                
             MatchCreatedEvent mce = new MatchCreatedEvent(m, wo);
             m.callEvent(mce);
 
@@ -140,17 +139,11 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             if (timedStart){
                 m.setTimedStart(wo.getParams().getForceStartTime(), 30);}
 
-            Scheduler.scheduleSynchronousTask(new Runnable() {
-                @Override
-                public void run() {
-                    if (hasJoinHandler) {
-                        removeFromQueue(joinHandler);}
+            Scheduler.scheduleSynchronousTask( 
+                    () -> { if ( hasJoinHandler )  removeFromQueue(joinHandler);
 
-                    if (!timedStart){ /// Start now
-                        m.run();}
-                }
-
-            });
+                            if ( !timedStart )  m.run();
+                    });
             return m;
         }
 
@@ -164,7 +157,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
     }
 
-
     public void add(Arena arena) {
         synchronized(arenaqueue) {
             ArenaQueue aq = arenaqueue.get(arena.getArenaType());
@@ -176,8 +168,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
         forceStart(arena.getParams(), true);
     }
-
-
 
     private void addReadyMatch(JoinResult jr,  WaitingObject o, Arena arena) {
         addReadyMatch(createFoundMatch(jr, o, arena));
@@ -200,7 +190,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                     match.startMatch();
                 }
             }
-        } else{
+        } 
+        else {
             match.startMatch();
         }
     }
@@ -478,27 +469,11 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
     }
 
-
-    public boolean isInQue(ArenaPlayer p) {
-        return inQueue.containsKey(p.getUniqueId());
-    }
-
-    public boolean isInQue(UUID id) {
-        return inQueue.containsKey(id);
-    }
-
-
-    public WaitingObject getQueueObject(ArenaPlayer p) {
-        return inQueue.get(p.getUniqueId());
-    }
-
-    public void stop() {
-        suspend.set(true);
-    }
-
-    public void resume() {
-        suspend.set(false);
-    }
+    public boolean isInQue(ArenaPlayer p) { return inQueue.containsKey(p.getUniqueId()); }
+    public boolean isInQue(UUID id) { return inQueue.containsKey(id); }
+    public WaitingObject getQueueObject(ArenaPlayer p) { return inQueue.get(p.getUniqueId()); }
+    public void stop() { suspend.set(true); }
+    public void resume() { suspend.set(false); }
 
     public  Collection<ArenaTeam> purgeQueue(){
         List<ArenaTeam> teams = new ArrayList<>();
@@ -818,23 +793,25 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     class AnnounceInterval {
-        AnnounceInterval(final ArenaMatchQueue amq, final WaitingObject wo, IdTime idt, final long timeMillis){
+        
+        AnnounceInterval(final ArenaMatchQueue amq, final WaitingObject wo, IdTime idt, final long timeMillis) {
+            
             final Countdown c = new Countdown(BattleArena.getSelf(),
-                    timeMillis/1000, 30L, new Countdown.CountdownCallback(){
-                @Override
-                public boolean intervalTick(int secondsRemaining) {
-                    if (secondsRemaining > 0 || secondsRemaining < 0){
-                        Set<ArenaPlayer> players = new HashSet<>();
-                        players.addAll(wo.getPlayers());
-                        String msg = BAExecutor.constructMessage(wo.getParams(), secondsRemaining * 1000L, players.size(), null);
-                        MessageUtil.sendMessage(players, msg);
-                    } else {
-                        if (!amq.forceStart(wo, null, true) && wo.getParams().isCancelIfNotEnoughPlayers()) {
+                    timeMillis/1000, 30L, 
+                    ( secondsRemaining ) -> {
+                        if (secondsRemaining > 0 || secondsRemaining < 0) {
+                            
+                            Set<ArenaPlayer> players = new HashSet<>();
+                            players.addAll(wo.getPlayers());
+                            String msg = BAExecutor.constructMessage(
+                                    wo.getParams(), secondsRemaining * 1000L, players.size(), null );
+                            MessageUtil.sendMessage( players, msg );
+                        } 
+                        else if (!amq.forceStart(wo, null, true) && wo.getParams().isCancelIfNotEnoughPlayers()) {
                             amq.remove(wo);
                         }
-                    }
-                    return true;
-                }
+                        return true;
+                
             });
             c.setCancelOnExpire(false);
             idt.c = c;

@@ -51,7 +51,7 @@ public class ListenerAdder {
             holder.addArenaListener( new ItemPickupListener( holder ) );
         if ( tops.hasAnyOption( TransitionOption.POTIONDAMAGEON ) )
             holder.addArenaListener( new PotionListener( holder ) );
-        if ( McMMOController.enabled() && McMMOController.hasDisabledSkills() )
+        if ( McMMOController.isEnabled() && McMMOController.hasDisabledSkills() )
             holder.addArenaListener( McMMOController.createNewListener() );
         if ( tops.getAllOptions().containsKey( MatchState.ONKILL ) ) 
             holder.addArenaListener( new ArenaPlayerKillListener( holder.getParams() ) );

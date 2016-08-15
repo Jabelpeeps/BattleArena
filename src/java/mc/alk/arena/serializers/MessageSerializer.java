@@ -26,17 +26,18 @@ public class MessageSerializer extends BaseConfig {
 	private static MessageSerializer defaultMessages;
 	private HashMap<String,MessageOptions> msgOptions = new HashMap<>();
     final private static HashMap<String,MessageSerializer> files = new HashMap<>();
-    final protected MatchParams mp;
+    final protected MatchParams matchParams;
 
 	public MessageSerializer(String name, MatchParams params){
-		mp = params;
-		if (name == null)
-			return;
+		matchParams = params;
+		
+		if (name == null) return;
+		
 		MessageSerializer ms = files.get(name.toUpperCase());
-		if (ms != null){
-			this.config = ms.config;
-			this.file = ms.file;
-			this.msgOptions = ms.msgOptions;
+		if ( ms != null ) {
+			config = ms.config;
+			file = ms.file;
+			msgOptions = ms.msgOptions;
 		}
 	}
 
@@ -111,7 +112,7 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public static void setDefaultConfig(MessageSerializer messageSerializer) {
-		MessageSerializer.defaultMessages = messageSerializer;
+		defaultMessages = messageSerializer;
 	}
 
 	public static String colorChat(String msg) {return msg.replace('&', '\167');}
@@ -196,7 +197,7 @@ public class MessageSerializer extends BaseConfig {
 	public void sendAddedToTeam(ArenaTeam team, ArenaPlayer player) {
 		Message message = getNodeMessage("common.added_to_team");
 		Set<MessageOption> ops = message.getOptions();
-		MessageFormatter msgf = new MessageFormatter(this, mp, 1, message, ops);
+		MessageFormatter msgf = new MessageFormatter(this, matchParams, 1, message, ops);
 		msgf.formatTeamOptions(team, false);
 		msgf.formatPlayerOptions(player);
 		team.sendToOtherMembers(player,msgf.getFormattedMessage(message));
@@ -212,7 +213,7 @@ public class MessageSerializer extends BaseConfig {
 
 		List<ArenaTeam> teams = new ArrayList<>();
 		teams.add(team);
-		MessageFormatter msgf = new MessageFormatter(this, mp, teams.size(), message, ops);
+		MessageFormatter msgf = new MessageFormatter(this, matchParams, teams.size(), message, ops);
 		msgf.formatCommonOptions(teams);
 		for (ArenaTeam t: teams){
 			msgf.formatTeamOptions(t,false);

@@ -248,10 +248,6 @@ public class WorldGuardController {
         return hasRegion( region.getWorldName(), region.getID() );
     }
 
-//    public boolean hasRegion( World world, String id ) {
-//        return wgp.getRegionContainer().get( world ).hasRegion(id);
-//    }
-
     public static boolean hasRegion(String world, String id) {
         World w = Bukkit.getWorld( world );
         
@@ -263,10 +259,6 @@ public class WorldGuardController {
     public static ProtectedRegion updateProtectedRegion(Player p, String id) throws Exception {
         return createRegion(p, id);
     }
-
-//    public ProtectedRegion createProtectedRegion(Player p, String id) throws Exception {
-//        return createRegion(p, id);
-//    }
 
     public static ProtectedRegion createRegion( Player p, String id ) throws Exception {
         Selection sel = WorldEditUtil.getSelection(p);
@@ -317,10 +309,6 @@ public class WorldGuardController {
         }
     }
 
-//    public boolean isLeavingArea(final Location from, final Location to, final ArenaRegion region) {
-//        return isLeavingArea( from, to, Bukkit.getWorld(region.getWorldName()), region.getID() );
-//    }
-
     public static boolean isLeavingArea(final Location from, final Location to, final World w, String id) {
         ProtectedRegion pr = getRegion(w, id);
         return  pr != null
@@ -331,15 +319,6 @@ public class WorldGuardController {
     public static boolean setFlag(WorldGuardRegion region, String flag, boolean enable) {
         return setFlag( region.getRegionWorld(), region.getID(), flag, enable );
     }
-
-//    public Flag<?> getWGFlag(String flagString) {
-//        for ( Flag<?> f : DefaultFlag.getFlags() ) {
-//            if ( f.getName().equalsIgnoreCase( flagString ) ) {
-//                return f;
-//            }
-//        }
-//        throw new IllegalStateException("Worldguard flag " + flagString + " not found");
-//    }
 
     public static StateFlag getStateFlag(String flagString) {
         for ( Flag<?> f : DefaultFlag.getFlags() ) {
@@ -369,21 +348,6 @@ public class WorldGuardController {
         }
         return true;
     }
-
-//    public boolean allowEntry(Player player, String regionWorld, String id) {
-//        World w = Bukkit.getWorld( regionWorld );
-//        
-//        if ( w == null ) return false;
-//        
-//        ProtectedRegion pr = getRegion( w, id );
-//        
-//        if ( pr == null ) return false;
-//
-//        DefaultDomain dd = pr.getMembers();
-//        dd.addPlayer(player.getName());
-//        pr.setMembers(dd);
-//        return true;
-//    }
 
     public static boolean addMember(String playerName, WorldGuardRegion region) {
         return addMember(playerName, region.getRegionWorld(), region.getID());
@@ -420,14 +384,6 @@ public class WorldGuardController {
         pr.setMembers( dd );
         return true;
     }
-    
-//    protected void printError(LocalPlayer player, String msg) {
-//        
-//        if ( player == null )
-//            System.out.println(msg);
-//        else 
-//            player.printError(msg);
-//    }
 
     public boolean contains(Location location, WorldGuardRegion region) {
         ProtectedRegion pr = getRegion(region.getWorldName(), region.getID());

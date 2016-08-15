@@ -10,5 +10,4 @@ public class ArenaDrawersPrizeEvent extends ArenaPrizeEvent {
 	public ArenaDrawersPrizeEvent(Competition competition, Collection<ArenaTeam> teams) {
 		super(competition, teams);
 	}
-
 }

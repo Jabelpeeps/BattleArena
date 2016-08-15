@@ -231,7 +231,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     private MatchResult createNewMatchResult(Match match) {
-        MatchResult r = match.getResult();
+        MatchResult r = match.getMatchResult();
         MatchResult nmr;
         if (r.isDraw() || r.isUnknown()) { /// match was a draw, pick a random lucky winner
             nmr = createRandomWinner(r.getDrawers(), match);

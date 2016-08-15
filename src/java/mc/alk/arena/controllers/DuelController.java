@@ -110,7 +110,7 @@ public class DuelController implements ArenaListener {
         if (d == null) {
             return;
         }
-        MatchResult mr = match.getResult();
+        MatchResult mr = match.getMatchResult();
 
         Double money = (Double) d.getDuelOptionValue(DuelOption.MONEY);
         Double rake = (Double) d.getDuelOptionValue(DuelOption.RAKE);

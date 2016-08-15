@@ -12,9 +12,9 @@ public @interface ArenaEventHandler {
 	MatchState begin() default MatchState.NONE;
 	MatchState end() default MatchState.NONE;
 	ArenaEventPriority priority() default ArenaEventPriority.NORMAL;
+    EventPriority bukkitPriority() default EventPriority.HIGHEST;
 	boolean needsPlayer() default true;
-	String entityMethod() default "";
     boolean suppressCastWarnings() default false;
-    boolean suppressWarnings() default false;
-	EventPriority bukkitPriority() default EventPriority.HIGHEST;
+//  boolean suppressWarnings() default false;
+//  String entityMethod() default "";
 }

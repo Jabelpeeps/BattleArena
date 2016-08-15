@@ -86,7 +86,7 @@ class ArenaEventListener extends GeneralEventListener {
             if (!listeners.contains(rl.getListener()))
                 continue;
             try {
-                rl.getMethod().getMethod().invoke(rl.getListener(), event); /// Invoke the listening arenalisteners method
+                rl.getMethod().getCallMethod().invoke(rl.getListener(), event); /// Invoke the listening arenalisteners method
             } catch (Exception e){
                 Log.printStackTrace(e);
             }
@@ -98,7 +98,7 @@ class ArenaEventListener extends GeneralEventListener {
         /// For each ArenaListener class that is listening
         for (RListener rl: getRegisteredListeners()){
             try {
-                rl.getMethod().getMethod().invoke(rl.getListener(), event); /// Invoke the listening arenalisteners method
+                rl.getMethod().getCallMethod().invoke(rl.getListener(), event); /// Invoke the listening arenalisteners method
             } catch (Exception e){
                 Log.printStackTrace(e);
             }

@@ -3,7 +3,6 @@ package mc.alk.arena.executors;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +21,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import com.garbagemule.MobArena.ArenaPlayer;
+
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import mc.alk.arena.BattleArena;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;
@@ -30,48 +33,48 @@ import mc.alk.util.ServerUtil;
 public abstract class BaseExecutor implements CommandExecutor{
     public static final String version = "2.1.0";
     static final boolean DEBUG = false;
-    private HashMap<String,TreeMap<Integer,MethodWrapper>> methods =
-            new HashMap<>();
-    private HashMap<String,Map<String,TreeMap<Integer,MethodWrapper>>> subCmdMethods =
-            new HashMap<>();
-
-    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<>(2, new Comparator<MethodWrapper>(){
-        @Override
-        public int compare(MethodWrapper mw1, MethodWrapper mw2) {
-            MCCommand cmd1 = mw1.getCommand();
-            MCCommand cmd2 = mw2.getCommand();
-
-            int c = new Float(mw1.getHelpOrder()).compareTo(mw2.getHelpOrder());
-            if (c!=0) return c;
-            c = new Integer(cmd1.order()).compareTo(cmd2.order());
-            return c != 0 ? c : new Integer(cmd1.hashCode()).compareTo(cmd2.hashCode());
-        }
-    });
     static final String DEFAULT_CMD = "_dcmd_";
+    private HashMap<String, TreeMap<Integer, MethodWrapper>> methods = new HashMap<>();
+    private HashMap<String, Map<String, TreeMap<Integer, MethodWrapper>>> subCmdMethods = new HashMap<>();
+    public static final String ONLY_INGAME = ChatColor.RED + "You need to be in game to use this command";
+    static final int LINES_PER_PAGE = 8;
 
+    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<>( 2, 
+            ( mw1, mw2) -> {    MCCommand cmd1 = mw1.getCommand();
+                                MCCommand cmd2 = mw2.getCommand();
+                    
+                                int c = new Float( mw1.getHelpOrder() ).compareTo( mw2.getHelpOrder() );
+                                if (c!=0) return c;
+                                c = new Integer(cmd1.order()).compareTo(cmd2.order());
+                                return c != 0 ? c : new Integer(cmd1.hashCode()).compareTo(cmd2.hashCode());
+                            } );
+    
     /**
      * Custom arguments class so that we can return a modified arguments
      */
-    public static class Arguments{
+    public static class Arguments {
         public Object[] args;
     }
 
-    protected static class MethodWrapper{
-        public MethodWrapper(Object obj, Method method){
-            this.obj = obj; this.method = method;
-        }
+    @RequiredArgsConstructor
+    protected static class MethodWrapper {
 
-        public Object obj; /// Object instance the method belongs to
-        public Method method; /// Method
+        public final Object obj; /// Object instance the method belongs to
+        public final Method method; 
         public String usage;
         Float helpOrder = null;
+        
         public MCCommand getCommand(){
-            return this.method.getAnnotation(MCCommand.class);
+            return method.getAnnotation( MCCommand.class );
         }
+        
         public float getHelpOrder(){
-            return helpOrder != null ?
-                    helpOrder : this.method.getAnnotation(MCCommand.class).helpOrder();
+            return helpOrder != null ? helpOrder 
+                                     : this.method.getAnnotation( MCCommand.class ).helpOrder();
         }
+    }
+    protected BaseExecutor() {
+        addMethods( this, getClass().getMethods() );
     }
 
     /**
@@ -87,31 +90,30 @@ public abstract class BaseExecutor implements CommandExecutor{
         help(sender,command,args);
     }
 
-    protected BaseExecutor(){
-        addMethods(this, getClass().getMethods());
-    }
-
-    protected boolean validCommandSenderClass(Class<?> clazz){
-        return clazz != CommandSender.class || clazz != Player.class;
+    protected boolean validCommandSenderClass(Class<?> clazz) {
+        return CommandSender.class.isAssignableFrom( clazz ) 
+                || ArenaPlayer.class.isAssignableFrom( clazz );
     }
 
     public void addMethods(Object obj, Method[] methodArray){
 
         for (Method method : methodArray){
             MCCommand mc = method.getAnnotation(MCCommand.class);
-            if (mc == null)
-                continue;
+            
+            if (mc == null) continue;
+            
             Class<?> types[] = method.getParameterTypes();
             if (types.length == 0 || !validCommandSenderClass(types[0])){
                 System.err.println("MCCommands must start with a CommandSender,Player, or ArenaPlayer");
                 continue;
             }
             if (mc.cmds().length == 0){ /// There is no subcommand. just the command itself with arguments
-                addMethod(obj, method, mc, DEFAULT_CMD);
-            } else {
+                addMethod( obj, method, mc, DEFAULT_CMD );
+            } 
+            else {
                 /// For each of the cmds, store them with the method
-                for (String cmd : mc.cmds()){
-                    addMethod(obj, method, mc, cmd.toLowerCase());
+                for ( String cmd : mc.cmds() ) {
+                    addMethod( obj, method, mc, cmd.toLowerCase() );
                 }
             }
         }
@@ -202,12 +204,10 @@ public abstract class BaseExecutor implements CommandExecutor{
         return "<string> ";
     }
 
-    public class CommandException{
+    @AllArgsConstructor
+    public class CommandException {
         final IllegalArgumentException err;
         final MethodWrapper mw;
-        public CommandException(IllegalArgumentException err, MethodWrapper mw){
-            this.err = err; this.mw = mw;
-        }
     }
 
     @Override
@@ -289,6 +289,7 @@ public abstract class BaseExecutor implements CommandExecutor{
     }
 
     private void logInvocationError(Exception e, MethodWrapper mwrapper, Arguments newArgs) {
+        
         System.err.println("["+BattleArena.getNameAndVersion()+" Error] "+mwrapper.method +" : " + mwrapper.obj +"  : " + newArgs);
         if (newArgs!=null && newArgs.args != null){
             for (Object o: newArgs.args)
@@ -303,7 +304,6 @@ public abstract class BaseExecutor implements CommandExecutor{
         Log.printStackTrace(e);
     }
 
-    public static final String ONLY_INGAME =ChatColor.RED+"You need to be in game to use this command";
     protected Arguments verifyArgs(MethodWrapper mwrapper, MCCommand cmd, CommandSender sender,
                                    Command command, String label, String[] args, int startIndex) throws IllegalArgumentException{
         if (DEBUG){
@@ -469,7 +469,6 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
 
-    static final int LINES_PER_PAGE = 8;
     public void help(CommandSender sender, Command command, String[] args){
         Integer page = 1;
 
@@ -541,6 +540,4 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
     public static String colorChat(String msg) { return msg.replace('&', (char) 167); }
-
 }
-

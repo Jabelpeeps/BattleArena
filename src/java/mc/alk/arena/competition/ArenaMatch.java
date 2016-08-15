@@ -292,7 +292,7 @@ public class ArenaMatch extends Match {
                         () -> {
                             Integer id = respawnTimer.remove(p.getUniqueId());
                             Bukkit.getScheduler().cancelTask(id);
-                            SpawnLocation spawn = getTeamSpawn( index, 
+                            SpawnLocation spawn = getSpawn( index, 
                                             tops.hasOptionAt( MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN ) );
                             TeleportController.teleport(p.getPlayer(), spawn.getLocation());
                         }, respawnTime * 20 );

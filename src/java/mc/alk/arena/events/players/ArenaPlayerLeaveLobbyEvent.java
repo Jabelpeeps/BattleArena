@@ -1,18 +1,14 @@
 package mc.alk.arena.events.players;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class ArenaPlayerLeaveLobbyEvent extends ArenaPlayerEvent{
-	final ArenaTeam team;
+	@Getter final ArenaTeam team;
 
-	public ArenaPlayerLeaveLobbyEvent(ArenaPlayer arenaPlayer, ArenaTeam team) {
+	public ArenaPlayerLeaveLobbyEvent(ArenaPlayer arenaPlayer, ArenaTeam _team) {
 		super(arenaPlayer);
-		this.team = team;
+		team = _team;
 	}
-
-	public ArenaTeam getTeam() {
-		return team;
-	}
-
 }

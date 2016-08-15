@@ -19,6 +19,8 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
@@ -65,7 +67,6 @@ import mc.alk.arena.objects.arenas.ArenaControllerInterface;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.messaging.Channels;
-import mc.alk.arena.objects.messaging.MatchMessageHandler;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
@@ -101,16 +102,16 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     public enum PlayerState{OUTOFMATCH,INMATCH}
 
-    final MatchParams params; 
-    final Arena arena; 
+    @Getter final MatchParams params; 
+    @Getter final Arena arena; 
     final ArenaControllerInterface arenaInterface; 
 
-    MatchState state = MatchState.NONE;
+    @Getter MatchState state = MatchState.NONE;
 
     /// When did each transition occur
     final Map<MatchState, Long> times = Collections.synchronizedMap(new EnumMap<MatchState,Long>(MatchState.class));
-    final List<VictoryCondition> vcs = new ArrayList<>();
-    MatchResult matchResult; 
+    @Getter final List<VictoryCondition> victoryConditions = new ArrayList<>();
+    @Getter @Setter MatchResult matchResult; 
 
     final StateGraph tops; 
     final PlayerStoreController psc = new PlayerStoreController(); 
@@ -136,7 +137,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     final AtomicBoolean addedVictoryConditions = new AtomicBoolean(false);
     final GameManager gameManager;
-    double prizePoolMoney = 0;
+    @Getter double prizePoolMoney = 0;
 
     /// These get used enough or are useful enough that i'm making variables even though they can be found in match options
     final boolean needsClearInventory, clearsInventory, clearsInventoryOnDeath;
@@ -148,12 +149,12 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     final boolean respawnsWithClass;
     final boolean cancelExpLoss;
     final boolean individualWins;
-    final boolean alwaysOpen;
+    @Getter final boolean alwaysOpen;
 
     int neededTeams; 
     int nLivesPerPlayer = 1; /// This will change as victory conditions are added
-    final ArenaScoreboard scoreboard;
-    MatchMessager mc; 
+    @Getter final ArenaScoreboard scoreboard;
+    @Getter MatchMessager matchMessager; 
     AbstractJoinHandler joinHandler;
     final ArenaObjective defaultObjective;
     ArenaPreviousState oldArenaState;
@@ -182,7 +183,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         
         scoreboard = ScoreboardFactory.createScoreboard( this, params );
 
-        mc = new MatchMessager(this);
+        matchMessager = new MatchMessager(this);
         arena.setMatch(this);
 
         Collection<ArenaModule> modules = params.getModules();
@@ -308,21 +309,20 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             joinHandler.setWaitingScoreboardTime(seconds);
         }
         if ( seconds > 0 ) {
-            mc.sendCountdownTillPrestart(seconds);
+            matchMessager.sendCountdownTillPrestart(seconds);
             startCountdown = new Countdown( BattleArena.getSelf(), 
                                             seconds, 
                                             interval, 
                                             remaining -> {
 
-                                                    if ( state != MatchState.ONOPEN )
-                                                        return false;
+                                                    if ( state != MatchState.ONOPEN ) return false;
                                                     
                                                     if ( remaining == 0 ) {
                                                         if ( checkEnoughTeams( teams, neededTeams ) )
                                                             preStartMatch();
                                                     } 
                                                     else {
-                                                        mc.sendCountdownTillPrestart( remaining );
+                                                        matchMessager.sendCountdownTillPrestart( remaining );
                                                     }
                                                     return true;
                                                 });
@@ -370,9 +370,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         TransitionController.transition( this, MatchState.ONPRESTART, teams, true );
 
         if ( matchPrestarting ) 
-            mc.sendOnPreStartMsg( getNonEmptyTeams() );
+            matchMessager.sendOnPreStartMsg( getNonEmptyTeams() );
         else 
-            mc.sendOnPreStartMsg( getNonEmptyTeams(), Channels.NullChannel );
+            matchMessager.sendOnPreStartMsg( getNonEmptyTeams(), Channels.NullChannel );
     }
 
     private void preStartMatch() {
@@ -462,7 +462,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             callEvent( event );
             TransitionController.transition( this, MatchState.ONSTART, competingTeams, true);
             arenaInterface.onStart();
-            mc.sendOnStartMsg( getNonEmptyTeams() );
+            matchMessager.sendOnStartMsg( getNonEmptyTeams() );
             
             if ( Defaults.USE_SCOREBOARD ) {
                 for ( ArenaPlayer ap : inGamePlayers ) {
@@ -593,9 +593,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             }
 
             if ( result.hasVictor() ) { /// We have a true winner
-                mc.sendOnVictoryMsg(victors, losers);
+                matchMessager.sendOnVictoryMsg(victors, losers);
             } else { /// we have a draw
-                mc.sendOnDrawMessage(drawers,losers);
+                matchMessager.sendOnDrawMessage(drawers,losers);
             }
 
             TransitionController.transition( am, MatchState.ONVICTORY, aTeams, true);
@@ -626,12 +626,12 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
             if ( params.isRated() ) {
                 TrackerController sc = new TrackerController( params );
-                sc.addRecord( victors,losers,drawers,am.getResult().getResult(), params.isTeamRating());
+                sc.addRecord( victors,losers,drawers,am.getMatchResult().getResult(), params.isTeamRating());
             }
             if ( matchResult.hasVictor() ) { /// We have a true winner
-                mc.sendOnVictoryMsg(victors, losers);
+                matchMessager.sendOnVictoryMsg(victors, losers);
             } else { /// we have a draw
-                mc.sendOnDrawMessage(drawers,losers);
+                matchMessager.sendOnDrawMessage(drawers,losers);
             }
             updateBukkitEvents( MatchState.ONVICTORY );
             TransitionController.transition( am, MatchState.ONVICTORY, teams, true );
@@ -700,7 +700,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         @Override
         public void run() {
             transitionTo(MatchState.ONCOMPLETE);
-            if ( Defaults.DEBUG ) Log.info( "Match::MatchCompleted(): " + am.getResult() );
+            if ( Defaults.DEBUG ) Log.info( "Match::MatchCompleted(): " + am.getMatchResult() );
             /// ONCOMPLETE can teleport people out of the arena,
             /// So the order of events is usually
             /// ONCOMPLETE(half of effects) -> ONLEAVE( and all effects) -> ONCOMPLETE( rest of effects)
@@ -920,7 +920,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         
         _addedToTeam(team, player);
 
-        mc.sendAddedToTeam(team,player);
+        matchMessager.sendAddedToTeam(team,player);
         if (!this.isHandled(player))
             joiningOngoing(team, player);
     }
@@ -1186,9 +1186,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&8onPostLeave  t=" + player.getTeam());
     }
 
-    public void setMessageHandler(MatchMessageHandler mc){this.mc.setMessageHandler(mc);}
-    public MatchMessageHandler getMessageHandler(){return mc.getMessageHandler();}
-
     private synchronized void addVictoryConditions(){
         addedVictoryConditions.set(true);
         VictoryCondition vt = VictoryType.createVictoryCondition(this);
@@ -1226,21 +1223,13 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         addVictoryCondition(vt);
     }
 
-//    private boolean hasVictoryConditionType(Class<?> vcClass) {
-//        for (VictoryCondition vc : vcs){
-//            if (vcClass.isAssignableFrom(vc.getClass()))
-//                return true;
-//        }
-//        return false;
-//    }
-
     /**
      * Add Another victory condition to this match
      * @param victoryCondition Victory condition to add
      */
     public void addVictoryCondition(VictoryCondition victoryCondition){
         if (Defaults.DEBUG_TRACE) Log.trace( id, getArena().getName() + " adding vc=" + victoryCondition);
-        vcs.add(victoryCondition);
+        victoryConditions.add(victoryCondition);
         addArenaListener(victoryCondition);
         if (!alwaysOpen && victoryCondition instanceof DefinesNumTeams)
             neededTeams = Math.max(neededTeams, ((DefinesNumTeams)victoryCondition).getNeededNumberOfTeams().max);
@@ -1281,33 +1270,23 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
      * @param victoryCondition VictoryCondition to remove
      */
     public void removeVictoryCondition(VictoryCondition victoryCondition){
-        vcs.remove(victoryCondition);
+        victoryConditions.remove(victoryCondition);
         removeArenaListener(victoryCondition);
     }
 
     public VictoryCondition getVictoryCondition(Class<? extends VictoryCondition> clazz) {
-        for (VictoryCondition vc : vcs){
+        for (VictoryCondition vc : victoryConditions){
             if (vc.getClass() == clazz)
                 return vc;
         }
         return null;
     }
 
-    @Override
-    public Arena getArena() { return arena; }
     public boolean isEnding() { return isWon() || isFinished(); }
     public boolean isFinished() { return state == MatchState.ONCOMPLETE || state == MatchState.ONCANCEL; }
     public boolean isWon() { return state == MatchState.INVICTORY || state == MatchState.ONCOMPLETE || state == MatchState.ONCANCEL;}
     public boolean isStarted() { return state == MatchState.INGAME; }
     public boolean isInWaitRoomState() { return state.ordinal() < MatchState.ONSTART.ordinal(); }
-    @Override
-    public MatchState getState() { return state; }
-
-//    @Override
-//    public MatchState getMatchState(){
-//        /// For backward compatibility, get rid of this as soon as possible
-//        return state == MatchState.INGAME ? MatchState.ONSTART : state;
-//    }
 
     @Override
     protected void transitionTo( CompetitionState _state ) {
@@ -1319,11 +1298,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
 
     @Override
     public Long getTime(CompetitionState _state) { return times.get( _state ); }
-    @Override
-    public MatchParams getParams() { return params; }
-    @Override
-    public List<ArenaTeam> getTeams() { return teams; }
-    
+      
     public List<ArenaTeam> getAliveTeams() {
         List<ArenaTeam> alive = new ArrayList<>();
         for (ArenaTeam t: teams){
@@ -1347,8 +1322,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     public SpawnLocation getTeamSpawn(ArenaTeam team, boolean random){
         return random ? arena.getSpawn( -1, true )
                       : arena.getSpawn( team.getIndex(), false );
-    }
-    public SpawnLocation getTeamSpawn(int index, boolean random){
+    }   
+    @Override
+    public SpawnLocation getSpawn(int index, boolean random) {
         return random ? arena.getSpawn( -1, true )
                       : arena.getSpawn( index, false );
     }
@@ -1361,10 +1337,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                       : arena.getWaitRoomSpawnLoc( index );
     }
 
-    public void setMatchResult(MatchResult result){
-        matchResult = result;
-    }
-
     public void endMatchWithResult(MatchResult result){
         matchResult = result;
         matchWinLossOrDraw(result);
@@ -1374,14 +1346,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         ArenaTeam t = getTeam( p );
         
         if ( t != null ) setVictor( t );
-    }
-
-    /**
-     * Alias for setVictor
-     * @param team ArenaTeam
-     */
-    public synchronized void setWinner(final ArenaTeam team){
-        setVictor(team);
     }
 
     /**
@@ -1427,7 +1391,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         nonEndingMatchWinLossOrDraw(result);
     }
 
-    public MatchResult getResult() { return matchResult; }
     public Set<ArenaTeam> getVictors() { return matchResult.getVictors(); }
     public synchronized Set<ArenaTeam> getLosers() { return matchResult.getLosers(); }
     public Set<ArenaTeam> getDrawers() { return matchResult.getDrawers(); }
@@ -1524,7 +1487,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     public boolean hasTeam(ArenaTeam team) { return teams.contains( team ); }
-    public List<VictoryCondition> getVictoryConditions() { return vcs; }
 
     public void timeExpired() {
         MatchFindCurrentLeaderEvent event = new MatchFindCurrentLeaderEvent(this,teams, true);
@@ -1536,15 +1498,15 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             result = defaultObjective.getMatchResult(this);
         }
 
-        try{mc.sendTimeExpired();}catch(Exception e){Log.printStackTrace(e);}
-        this.endingMatchWinLossOrDraw(result);
+        matchMessager.sendTimeExpired();
+        endingMatchWinLossOrDraw(result);
     }
 
     public void intervalTick(int remaining) {
         MatchFindCurrentLeaderEvent event = new MatchFindCurrentLeaderEvent(this,teams,false);
         callEvent(event);
         callEvent(new MatchTimerIntervalEvent(this, remaining));
-        mc.sendOnIntervalMsg(remaining, event.getCurrentLeaders());
+        matchMessager.sendOnIntervalMsg(remaining, event.getCurrentLeaders());
     }
 
     public void secondTick(int remaining) {
@@ -1609,13 +1571,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         return true;
     }
 
-    public boolean alwaysOpen() { return alwaysOpen; }
-    public ArenaScoreboard getScoreboard() { return scoreboard; }
-
-    @Override
-    public SpawnLocation getSpawn(int index, boolean random) {
-        return getTeamSpawn( index, random );
-    }
     @Override
     public LocationType getLocationType() { return LocationType.ARENA; }
 
@@ -1630,30 +1585,30 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         }
         return players;
     }
-
-    class ArenaPreviousState{
-        final ContainerState waitroomCS;
-        final ContainerState arenaCS;
-        MatchParams params;
-
-        public ArenaPreviousState(Arena arena) {
-            waitroomCS = (arena.getWaitroom()!=null) ? arena.getWaitroom().getContainerState() : null;
-            arenaCS = arena.getContainerState();
-        }
-
-        public void revert(Arena arena) {
-            if(params != null)
-                arena.setParams(params);
-            arena.setContainerState(arenaCS);
-            if (waitroomCS != null && arena.getWaitroom()!=null){
-                arena.getWaitroom().setContainerState(waitroomCS);}
-        }
-    }
+   
     public void setOldArenaParams(MatchParams oldArenaParams) {
         if ( oldArenaState == null ) {
             oldArenaState = new ArenaPreviousState(arena);}
-        oldArenaState.params = oldArenaParams;
+        oldArenaState.matchParams = oldArenaParams;
     }
+    
+   
+    class ArenaPreviousState{
+        final ContainerState waitroomCS;
+        final ContainerState arenaCS;
+        MatchParams matchParams;
 
-    public Double getPrizePoolMoney() { return prizePoolMoney; }
+        public ArenaPreviousState(Arena aren) {
+            waitroomCS = (aren.getWaitroom()!=null) ? aren.getWaitroom().getContainerState() : null;
+            arenaCS = aren.getContainerState();
+        }
+
+        public void revert(Arena aren) {
+            if(matchParams != null)
+                aren.setParams(matchParams);
+            aren.setContainerState(arenaCS);
+            if (waitroomCS != null && aren.getWaitroom()!=null){
+                aren.getWaitroom().setContainerState(waitroomCS);}
+        }
+    }
 }

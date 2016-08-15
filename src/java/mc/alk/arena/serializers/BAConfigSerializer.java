@@ -421,7 +421,7 @@ public class BAConfigSerializer extends BaseConfig {
     }
 
     private void loadMcMMO() {
-        if (McMMOController.enabled()) {
+        if (McMMOController.isEnabled()) {
             /// Look for it in the old location first, config.yml
             ConfigurationSection cs = loadOtherConfigSection(BattleArena.getSelf().getDataFolder()
                     + "/otherPluginConfigs/McMMOConfig.yml");

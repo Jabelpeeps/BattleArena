@@ -43,14 +43,9 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
 
     protected CustomCommandExecutor(){
         super();
-        this.ac = BattleArena.getBAController();
-        this.ec = BattleArena.getEventController();
-        this.aec = BattleArena.getArenaEditor();
-    }
-
-    @Override
-    protected boolean validCommandSenderClass(Class<?> clazz){
-        return super.validCommandSenderClass(clazz) || clazz == ArenaPlayer.class;
+        ac = BattleArena.getBAController();
+        ec = BattleArena.getEventController();
+        aec = BattleArena.getArenaEditor();
     }
 
     protected boolean hasAdminPerms(CommandSender sender){
@@ -95,32 +90,43 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
 
     @Override
     protected Object verifyArg(CommandSender sender, Class<?> clazz, Command command, String[] args,int curIndex, AtomicInteger numUsedStrings) {
-        if (EventParams.class == clazz){
+        if (EventParams.class == clazz) {
             return verifyEventParams(command);
-        } else if (MatchParams.class == clazz){
+        } 
+        else if (MatchParams.class == clazz) {
             return verifyMatchParams(command);
-        } else if (CurrentSelection.class == clazz){
+        } 
+        else if (CurrentSelection.class == clazz) {
             return verifyCurrentSelection(sender);
         }
         if (args[curIndex] == null)
             throw new ArrayIndexOutOfBoundsException();
+        
         numUsedStrings.set(1);
         String string = args[curIndex];
-        if (ArenaPlayer.class == clazz){
+        
+        if (ArenaPlayer.class == clazz) {
             return verifyArenaPlayer(string);
-        } else if (Arena.class.isAssignableFrom(clazz)){
+        } 
+        else if (Arena.class.isAssignableFrom(clazz)) {
             return verifyArena(clazz, string);
-        } else if (ChangeType.class == clazz){
+        } 
+        else if (ChangeType.class == clazz) {
             return verifyChangeType(string);
-        } else if (ParamAlterOptionPair.class == clazz){
+        } 
+        else if (ParamAlterOptionPair.class == clazz) {
             return verifyGameOption(sender,args,curIndex,numUsedStrings);
-        } else if (TransitionOptionTuple.class == clazz){
+        } 
+        else if (TransitionOptionTuple.class == clazz) {
             return verifyTransitionOptionTuple(sender, args, curIndex, numUsedStrings);
-        } else if (ArenaOptionPair.class == clazz){
+        } 
+        else if (ArenaOptionPair.class == clazz) {
             return verifyArenaOptionPair(sender, args, curIndex, numUsedStrings);
-        } else if (TeamIndex.class == clazz){
+        } 
+        else if (TeamIndex.class == clazz) {
             return verifyTeamIndex(string);
-        } else if (SpawnIndex.class == clazz){
+        } 
+        else if (SpawnIndex.class == clazz) {
             return verifySpawnIndex(args, curIndex, numUsedStrings);
         }
         return super.verifyArg(sender, clazz, command, args, curIndex, numUsedStrings);
@@ -150,7 +156,9 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private ArenaOptionPair verifyArenaOptionPair(CommandSender sender, String[] args, int curIndex, AtomicInteger numUsedStrings) {
+        
         ChangeType ct = ChangeType.fromName(args[curIndex]);
+        
         if (ct == null){
             throw new IllegalArgumentException(ChatColor.RED + "Option: &6" + args[curIndex]+
                     "&c does not exist. \n&cValid options are &6"+ChangeType.getValidList());
@@ -187,8 +195,8 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         return aop;
     }
 
-    private TransitionOptionTuple verifyTransitionOptionTuple(
-            CommandSender sender, String[] args, int curIndex, AtomicInteger numUsedStrings) {
+    private TransitionOptionTuple verifyTransitionOptionTuple( CommandSender sender, String[] args, int curIndex, 
+                                                                                    AtomicInteger numUsedStrings) {
         CompetitionState stage = StateController.fromString(args[curIndex]);
         if (stage==null){
             throw new IllegalArgumentException(ChatColor.RED + "You need to specify a Game Stage : [onJoin, onStart,...]");
@@ -242,6 +250,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private ParamAlterOptionPair verifyGameOption(CommandSender sender, String[] args, int curIndex, AtomicInteger numUsedStrings) {
+        
         AlterParamOption go = AlterParamOption.fromString(args[curIndex]);
         if (go==null)
             throw new IllegalArgumentException(ChatColor.RED + "You need to specify a AlterParamOption");
@@ -267,7 +276,6 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         }
         return gop;
     }
-
 
     private CurrentSelection verifyCurrentSelection(CommandSender sender) {
         CurrentSelection cs = aec.getCurrentSelection(sender);

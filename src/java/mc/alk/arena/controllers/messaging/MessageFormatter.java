@@ -1,5 +1,9 @@
 package mc.alk.arena.controllers.messaging;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
+
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.messaging.Message;
@@ -11,10 +15,6 @@ import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.TimeUtil;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
 
 
 /**
@@ -31,22 +31,22 @@ public class MessageFormatter{
 	final Set<MessageOption> ops;
 	final Message msg;
 	final HashMap<Integer,TeamNames> tns;
-	final MatchParams mp;
+	final MatchParams params;
 	final String typeName;
 	final MessageSerializer impl;
 	int commonIndex = 0, teamIndex = 0, curIndex = 0;
 
-	public MessageFormatter(MessageSerializer impl, MatchParams mp, int nTeams, Message message, Set<MessageOption> ops){
-		final int size = ops.size();
+	public MessageFormatter(MessageSerializer _impl, MatchParams mp, int nTeams, Message message, Set<MessageOption> _ops){
+		final int size = _ops.size();
 		searchList = new String[size];
 		replaceList = new String[size];
-		this.msg = message;
-		this.ops = ops;
-		tns = new HashMap<Integer,TeamNames>(nTeams);
-		this.mp = mp;
+		msg = message;
+		ops = _ops;
+		tns = new HashMap<>(nTeams);
+		params = mp;
 		typeName = mp.getType().getName();
 		sc = new TrackerController(mp);
-		this.impl = impl;
+		impl = _impl;
 	}
 
 	public void formatCommonOptions(Collection<ArenaTeam> teams){
@@ -74,14 +74,14 @@ public class MessageFormatter{
 				continue;
 			try{
 				switch(mop){
-				case CMD: replaceList[i] = mp.getCommand(); break;
+				case CMD: replaceList[i] = params.getCommand(); break;
 				case PREFIX:
 				case MATCHPREFIX:
-				case EVENTPREFIX: replaceList[i] = mp.getPrefix();
+				case EVENTPREFIX: replaceList[i] = params.getPrefix();
 					break;
 				case COMPNAME:
 				case EVENTNAME:
-				case MATCHNAME: replaceList[i] = mp.getName();
+				case MATCHNAME: replaceList[i] = params.getName();
 					break;
 				case SECONDS: replaceList[i] = seconds != null ? seconds.toString(): null; break;
 				case TIME: replaceList[i] = seconds != null ? TimeUtil.convertSecondsToString(seconds): null; break;
@@ -104,7 +104,7 @@ public class MessageFormatter{
 					replaceList[i] = formatTeamName(impl.getNodeMessage("common.teamlong"),t2);
 					break;
 				case NTEAMS: replaceList[i] = teams != null ? teams.size()+"" : "0"; break;
-				case PLAYERORTEAM: replaceList[i] = teams!=null? MessageUtil.getTeamsOrPlayers(mp.getMaxTeamSize()) : "teams"; break;
+				case PLAYERORTEAM: replaceList[i] = teams!=null? MessageUtil.getTeamsOrPlayers(params.getMaxTeamSize()) : "teams"; break;
 				case PARTICIPANTS:{
                     if (teams != null){
                         StringBuilder sb = new StringBuilder();

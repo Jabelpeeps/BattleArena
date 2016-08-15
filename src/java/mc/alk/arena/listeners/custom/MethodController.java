@@ -303,7 +303,7 @@ public class MethodController {
     @SuppressWarnings({"unchecked"})
     private static void addMethods(Class<? extends ArenaListener> alClass){
         
-        HashMap<Class<? extends Event>,List<ArenaEventMethod>> bukkitTypeMap = new HashMap<>();
+        HashMap<Class<? extends Event>, List<ArenaEventMethod>> bukkitTypeMap = new HashMap<>();
         HashMap<Class<? extends BAEvent>, List<ArenaEventMethod>> matchTypeMap = new HashMap<>();
 
         Method[] methodArray = alClass.getMethods();
@@ -318,16 +318,16 @@ public class MethodController {
             MatchState endState = aeh.end();
             MatchState cancelState = MatchState.NONE;
             boolean needsPlayer = aeh.needsPlayer();
-            final String entityMethod = aeh.entityMethod();
+//            final String entityMethod = aeh.entityMethod();
             boolean supressCastWarnings = aeh.suppressCastWarnings();
-            boolean suppressWarnings = aeh.suppressWarnings();
+//            boolean suppressWarnings = aeh.suppressWarnings();
             EventPriority bukkitPriority = aeh.bukkitPriority();
             ArenaEventPriority priority = aeh.priority();
 
-            /// Make sure there is some sort of bukkit bukkitEvent here
+            /// Make sure there is some sort of bukkitEvent here
             Class<?>[] classes = method.getParameterTypes();
-            if (classes.length == 0 || !(Event.class.isAssignableFrom(classes[0]))){
-                System.err.println("Bukkit Event was null for method " + method);
+            if ( classes.length == 0 || !Event.class.isAssignableFrom( classes[0] ) ) {
+                Log.info( "Bukkit Event was null for method " + method );
                 continue;
             }
 
@@ -339,46 +339,48 @@ public class MethodController {
             Method getLivingMethod = null;
             Method getEntityMethod = null;
 
-            if (needsPlayer){
+            if ( needsPlayer ){
                 List<Method> playerMethods = new ArrayList<>();
                 List<Method> entityMethods = new ArrayList<>();
 
-                /// From our bukkit bukkitEvent. find any methods that return a Player, HumanEntity, or LivingEntity
-                for (Method m : bukkitEvent.getMethods()){
-                    /// Check first for a specified method
-                    if (!entityMethod.isEmpty() && m.getName().equals(entityMethod)){
-                        getPlayerMethod = m;
-                        break;
-                    }
-                    Type t = m.getReturnType();
-                    if (Player.class.isAssignableFrom((Class<?>) t) ||
-                            HumanEntity.class.isAssignableFrom((Class<?>) t) ||
-                            ArenaPlayer.class.isAssignableFrom((Class<?>) t)){
-                        playerMethods.add(m);
-                        getPlayerMethod = m;
+                /// From our bukkitEvent. find any methods that return a Player, HumanEntity, or LivingEntity
+                for ( Method eachMethod : bukkitEvent.getMethods() ) {
+                    
+//                    /// Check first for a specified method
+//                    if ( !entityMethod.isEmpty() && eachMethod.getName().equals( entityMethod ) ){
+//                        getPlayerMethod = eachMethod;
+//                        break;
+//                    }
+                    
+                    Type t = eachMethod.getReturnType();
+                    if (    Player.class.isAssignableFrom((Class<?>) t) 
+                            || HumanEntity.class.isAssignableFrom((Class<?>) t) 
+                            || ArenaPlayer.class.isAssignableFrom((Class<?>) t) ) {
+                        playerMethods.add( eachMethod );
+                        getPlayerMethod = eachMethod;
                     } 
-                    else if (Entity.class.isAssignableFrom((Class<?>) t)){
-                        entityMethods.add(m);
-                        getLivingMethod = m;
+                    else if ( Entity.class.isAssignableFrom((Class<?>) t) ) {
+                        entityMethods.add( eachMethod );
+                        getLivingMethod = eachMethod;
                     }
                 }
                 /// If we haven't already found the specified player method.. try and get it from our lists
-                if (getPlayerMethod == null){
-                    if (!playerMethods.isEmpty()){
-                        if (playerMethods.size() > 1){
-                            for (Method m : playerMethods){
-                                /// Use the default getPlayer
-                                if (m.getName().equals("getPlayer")){
-                                    System.out.println(alClass+". Method "+method.getName() +" has multiple methods that return a player");
-                                    System.out.println(alClass+". defaulting to getPlayer()");
-                                    System.out.println(alClass + ". To specify use @ArenaEventHandler(entityMethod=\"methodWhichYouWantToUse\")");
-                                    System.out.println(alClass+". to suppress this warning @ArenaEventHandler(suppressWarnings=true)");
-                                    getPlayerMethod = m;
+                if ( getPlayerMethod == null ) {
+                    if ( !playerMethods.isEmpty() ) {
+                        if ( playerMethods.size() > 1){
+                            for ( Method eachMethod : playerMethods ) {
+
+                                if ( eachMethod.getName().equals( "getPlayer" ) ) {
+                                    Log.info( " Class " + alClass.getName() + " has multiple methods that return a player" );
+                                    Log.info( " defaulting to getPlayer()" );
+//                                    Log.info( " To specify use @ArenaEventHandler(entityMethod=\"methodWhichYouWantToUse\")" );
+//                                    Log.info( " to suppress this warning @ArenaEventHandler(suppressWarnings=true)" );
+                                    getPlayerMethod = eachMethod;
                                 }
                             }
-                            if (getPlayerMethod==null){
-                                System.err.println(alClass+". Method "+method.getName() +" has multiple methods that return a player");
-                                System.err.println(alClass+". Use @ArenaEventHandler(entityMethod=\"methodWhichYouWantToUse\")");
+                            if ( getPlayerMethod == null ) {
+                                Log.info( " Class " + alClass.getName() + " has multiple methods that return a player");
+//                                Log.info( " Use @ArenaEventHandler(entityMethod=\"methodWhichYouWantToUse\")" );
                                 return;
                             }
                         } 
@@ -386,18 +388,19 @@ public class MethodController {
                             getPlayerMethod = playerMethods.get(0);
                         }
                     } 
-                    else if (!entityMethods.isEmpty()){
-                        if (bukkitEvent == EntityDeathEvent.class){
+                    else if ( !entityMethods.isEmpty() ) {
+                        if ( bukkitEvent == EntityDeathEvent.class ) {
                             try {
-                                getEntityMethod = EntityDeathEvent.class.getMethod("getEntity");
-                            } catch (Exception e) {
+                                getEntityMethod = EntityDeathEvent.class.getMethod( "getEntity" );
+                            } 
+                            catch (Exception e) {
                                 Log.printStackTrace(e);
                                 continue;
                             }
                         } 
-                        else if (entityMethods.size() > 1 && !EntityDamageEvent.class.isAssignableFrom(bukkitEvent)){
-                            System.err.println(alClass+". Method "+method.getName() +" has multiple methods that return an entity");
-                            System.err.println(alClass+". Use @MatchEventHandler(entityMethod=\"methodWhichYouWantToUse\")");
+                        else if ( entityMethods.size() > 1 && !EntityDamageEvent.class.isAssignableFrom( bukkitEvent ) ) {
+                            Log.info( " Class " + alClass.getName() + " has multiple methods that return an entity" );
+//                            Log.info( " Use @MatchEventHandler(entityMethod=\"methodWhichYouWantToUse\")" );
                             return;
                         } 
                         else {
@@ -409,56 +412,60 @@ public class MethodController {
             }
 
             /// Go over the rest of the parameters to see if we should give a Team or Player
-            for (int i =1;i< classes.length;i++){
-                Class<?> c = classes[i];
-                needsTeamOrPlayer = Player.class.isAssignableFrom(c) || ArenaTeam.class.isAssignableFrom(c);
-                if (!needsTeamOrPlayer){
-                    continue;
-                }
+            for ( int i =1; i < classes.length; i++ ) {
+                Class<?> clazz = classes[i];
+                needsTeamOrPlayer = Player.class.isAssignableFrom( clazz ) || ArenaTeam.class.isAssignableFrom( clazz );
+                
+                if ( !needsTeamOrPlayer ) continue;
 
-                boolean noEntityMethod = getEntityMethod == null && getLivingMethod==null && getPlayerMethod==null;
-                if (noEntityMethod){
-                    System.err.println("[BattleArena] "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
-                            bukkitEvent.getCanonicalName()+"returns no player, and no entities. Class="+alClass);
+                boolean noEntityMethod = getEntityMethod == null 
+                                         && getLivingMethod == null 
+                                         && getPlayerMethod == null;
+                if ( noEntityMethod ) {
+                    Log.info( " Class " + method.getName() + " needs a player or team, but the bukkitEvent " +
+                            bukkitEvent.getCanonicalName() + "returns no player, and no entities. Class=" + alClass);
                     return;
                 } 
-                else if (getLivingMethod != null && !supressCastWarnings && !suppressWarnings){
+                else if (getLivingMethod != null && !supressCastWarnings ) { //&& !suppressWarnings){
                     if (!EntityDamageByEntityEvent.class.isAssignableFrom(bukkitEvent))
-                        Log.warn("[BattleArena] Warning. "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
-                                bukkitEvent.getCanonicalName()+" returns only a living entity. Cast to Player will be attempted at runtime");
+                        Log.warn( "[BattleArena] Warning. " + alClass + ". Method " + method.getName() + 
+                                " needs a player or team, but the bukkitEvent " + bukkitEvent.getCanonicalName() + 
+                                " returns only a living entity. Cast to Player will be attempted at runtime" );
                 } 
-                else if (getEntityMethod != null && !supressCastWarnings && !suppressWarnings){
+                else if (getEntityMethod != null && !supressCastWarnings ) { //&& !suppressWarnings){
                     if (!EntityDamageByEntityEvent.class.isAssignableFrom(bukkitEvent))
-                        Log.warn("[BattleArena] Warning. "+alClass+". Method "+method.getName() +" needs a player or team, but the bukkitEvent "+
-                                bukkitEvent.getCanonicalName()+" returns only an Entity. Cast to Player will be attempted at runtime");
+                        Log.warn( "[BattleArena] Warning. " + alClass + ". Method "+method.getName() + 
+                                " needs a player or team, but the bukkitEvent " + bukkitEvent.getCanonicalName() + 
+                                " returns only an Entity. Cast to Player will be attempted at runtime" );
                 }
             }
 
             if (getPlayerMethod == null) getPlayerMethod = getLivingMethod; /// if playermethod is null maybe we have a living
             if (getPlayerMethod == null) getPlayerMethod = getEntityMethod;/// ok.. maybe at least an entity?
 
-            List<ArenaEventMethod> mths = baEvent ? matchTypeMap.get(bukkitEvent) : bukkitTypeMap.get(bukkitEvent);
-            if (mths == null){
+            List<ArenaEventMethod> mths = baEvent ? matchTypeMap.get(bukkitEvent) 
+                                                  : bukkitTypeMap.get(bukkitEvent);
+            if (mths == null) {
                 mths = new ArrayList<>();
-                if (baEvent){
+                if ( baEvent )
                     matchTypeMap.put((Class<? extends BAEvent>) bukkitEvent, mths);
-                } else {
-                    bukkitTypeMap.put(bukkitEvent, mths);
-                }
+                else 
+                    bukkitTypeMap.put( bukkitEvent, mths );
             }
 
-            if (getPlayerMethod != null){
+            if ( getPlayerMethod != null ) {
                 if (beginState == MatchState.NONE) beginState = MatchState.ONENTER;
                 if (endState == MatchState.NONE) endState = MatchState.ONLEAVE;
                 if (cancelState == MatchState.NONE) cancelState = MatchState.ONCANCEL;
-                mths.add(new ArenaEventMethod(method, bukkitEvent,getPlayerMethod,
-                        beginState, endState,cancelState, priority, bukkitPriority, baEvent ));
-            } else {
+                mths.add( new ArenaEventMethod( method, bukkitEvent, getPlayerMethod,
+                        beginState, endState, cancelState, priority, bukkitPriority, baEvent ));
+            } 
+            else {
                 if (beginState == MatchState.NONE) beginState = MatchState.ONCREATE;
                 if (endState == MatchState.NONE) endState = MatchState.ONFINISH;
                 if (cancelState == MatchState.NONE) cancelState = MatchState.ONCANCEL;
-                mths.add(new ArenaEventMethod(method, bukkitEvent,beginState,
-                        endState,cancelState, priority, bukkitPriority, baEvent));
+                mths.add( new ArenaEventMethod( method, bukkitEvent, beginState,
+                        endState, cancelState, priority, bukkitPriority, baEvent ) );
             }
             Collections.sort( mths, (o1, o2) -> { return o1.getPriority().compareTo( o2.getPriority() ); });
         }
@@ -466,18 +473,22 @@ public class MethodController {
         matchEventMethods.put(alClass, matchTypeMap);
     }
 
-    private boolean removeListener(ArenaListener listener, HashMap<?,List<RListener>> methods){
-        synchronized(methods){
-            for (List<RListener> rls: methods.values()){
+    private boolean removeListener(ArenaListener listener, HashMap<?,List<RListener>> methods) {
+        
+        synchronized( methods ) {
+            
+            for ( List<RListener> rls : methods.values() ) {
                 Iterator<RListener> iter = rls.iterator();
-                while(iter.hasNext()){
+                
+                while( iter.hasNext() ) {
                     RListener rl = iter.next();
-                    if (rl.getListener() == listener){
+                    if ( rl.getListener() == listener ) {
                         iter.remove();
-                        for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
-                            BukkitEventHandler bel = ls.get(rl.getMethod().getBAEvent());
-                            if (bel != null){
-                                bel.removeAllListener(rl);
+                        
+                        for ( HashMap<Type, BukkitEventHandler> ls : bukkitListeners.values() ) {
+                            BukkitEventHandler bel = ls.get( rl.getMethod().getEvent() );
+                            if ( bel != null ) {
+                                bel.removeAllListener( rl );
                             }
                         }
                     }
@@ -494,7 +505,6 @@ public class MethodController {
         return true;
     }
 
-
     public void addListener(ArenaListener listener) {
         listeners.add(listener);
         addAllEvents(listener);
@@ -506,7 +516,7 @@ public class MethodController {
      */
     public void addAllEvents(ArenaListener listener) {
         if (!bukkitEventMethods.containsKey(listener.getClass()) && !matchEventMethods.containsKey(listener.getClass())){
-            MethodController.addMethods(listener.getClass());
+            addMethods(listener.getClass());
         }
         Map<Class<? extends Event>,List<ArenaEventMethod>> map = getBukkitMethods(listener);
         if (map != null){
@@ -530,34 +540,36 @@ public class MethodController {
      */
     @SuppressWarnings("unchecked")
     public void addSpecificEvents(ArenaListener listener, List<Class<? extends Event>> events) {
-        if (!bukkitEventMethods.containsKey(listener.getClass()) && !matchEventMethods.containsKey(listener.getClass())){
-            MethodController.addMethods(listener.getClass());
+        
+        if (    !bukkitEventMethods.containsKey( listener.getClass() ) 
+                && !matchEventMethods.containsKey( listener.getClass() ) ) {
+            addMethods(listener.getClass());
         }
-        Map<Class<? extends Event>,List<ArenaEventMethod>> map = getBukkitMethods(listener);
-        Map<Class<? extends BAEvent>,List<ArenaEventMethod>> map2 = getMatchMethods(listener);
-        for (Class<? extends Event> clazz : events){
-            if (BAEvent.class.isAssignableFrom(clazz)){
-                addBAEventMethod(listener, map2, (Class<? extends BAEvent>) clazz);
-            } else {
-                addEventMethod(listener, map, clazz);
-            }
+        
+        for ( Class<? extends Event> clazz : events ) {
+            
+            if ( BAEvent.class.isAssignableFrom( clazz ) )
+                addBAEventMethod(listener, getMatchMethods(listener), (Class<? extends BAEvent>) clazz);
+            else 
+                addEventMethod(listener, getBukkitMethods(listener), clazz);
         }
     }
 
 
     private void addEventMethod(ArenaListener listener, Map<Class<? extends Event>, List<ArenaEventMethod>> map,
                                 Class<? extends Event> clazz) {
+        
         List<ArenaEventMethod> list = map.get(clazz);
-        if (list == null || list.isEmpty())
-            return;
+        
+        if (list == null || list.isEmpty()) return;
 
         List<RListener> rls = bukkitMethods.get(clazz);
-        if (rls == null){
+        if ( rls == null ) {
             rls = new ArrayList<>();
             bukkitMethods.put(clazz, rls);
         }
-        for (ArenaEventMethod mem: list){
-            rls.add(new RListener(listener, mem));
+        for ( ArenaEventMethod mem : list ) {
+            rls.add(new RListener( listener, mem ) );
         }
         Collections.sort(rls, new RListenerPriorityComparator());
     }
@@ -589,36 +601,20 @@ public class MethodController {
     }
 
     public static boolean showAllListeners(CommandSender sender, String limitToPlayer) {
-        MessageUtil.sendMessage(sender, "&2# &e-!! controller=&5"+controllers.size()+"&e : &5" + controllerCount+"&e !!- &2#");
+        MessageUtil.sendMessage(
+                sender, "&2# &e-!! controller=&5" + controllers.size() + "&e : &5" + controllerCount + "&e !!- &2#");
 
-        //        for (MethodController mc: controllers){
-//            StringBuilder sb = new StringBuilder();
-//            for (ArenaListener al: mc.listeners){
-//                sb.append(al.getClass().getSimpleName()).append(", ");
-//            }
-//            MessageUtil.sendMessage(sender, "&c###### &e----!! controller=&5" + mc.owner + " : " + mc.hashCode() + "&e !!---- &c######  listeners=" + sb.toString());
-//        }
-//		for (MethodController mc: controllers){
-
-        EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> gels = MethodController.getEventListeners();
-
-        //			EnumMap<org.bukkit.event.EventPriority, HashMap<Type, BukkitEventHandler>> gels = mc.getEventListeners();
-//			if (gels.isEmpty())
-//				continue;
-//			StringBuilder sb = new StringBuilder();
-//			for (ArenaListener al: mc.listeners){
-//				sb.append(al.getClass().getSimpleName() +", ");
-//			}
-//			Log.info("&c###### &e----!! controller=&5"+mc.owner+" : " + mc.hashCode()+"&e !!---- &c######  listeners="+sb.toString());
+        EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> gels = getEventListeners();
 
         for (EventPriority bp: gels.keySet()){
             MessageUtil.sendMessage(sender, "&4#### &e----!! Bukkit Priority=&5" + bp + "&e !!---- &4####");
             HashMap<Type, BukkitEventHandler> types = gels.get(bp);
+            
             for (BukkitEventHandler bel: types.values()){
+                
                 if (bel.getSpecificPlayerListener() != null){
-                    MapOfTreeSet<UUID,RListener> lists2 = bel.getSpecificPlayerListener().getListeners();
                     
-//                    String str = StringUtils.join(PlayerController.UUIDToPlayerList(bel.getSpecificPlayerListener().getPlayers()), ", ");
+                    MapOfTreeSet<UUID,RListener> lists2 = bel.getSpecificPlayerListener().getListeners();
                     
                     String str = StringUtils.join(bel.getSpecificPlayerListener().getPlayers(), ", ");
                     String has = bel.hasListeners() ? "&2true" : "&cfalse";
@@ -680,7 +676,7 @@ public class MethodController {
         return true;
     }
 
-    interface BAEventCaller{
+    interface BAEventCaller {
         void callEvent(BAEvent event);
     }
 

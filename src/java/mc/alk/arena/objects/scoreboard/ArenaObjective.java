@@ -27,10 +27,10 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
     final protected ScoreMap<ArenaTeam> teamPoints = new ScoreMap<>();
     final protected ScoreMap<ArenaPlayer> playerPoints = new ScoreMap<>();
-    final protected SObjective o;
+    final protected SObjective objective;
 
 	public ArenaObjective(String name, String criteria) {
-		this(name,criteria,name, SAPIDisplaySlot.SIDEBAR,50);
+		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, 50, 0 );
 	}
 
 	/**
@@ -40,29 +40,28 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	 * @param priority: lower priority means it has precedence
 	 */
 	public ArenaObjective(String name, String criteria, int priority) {
-		this(name,criteria,name,SAPIDisplaySlot.SIDEBAR,priority);
+		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, priority, 0 );
 	}
 
 	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot) {
-		this(name,criteria,displayName,slot, 50);
+		this( name, criteria, displayName, slot, 50, 0 );
 	}
 
 	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot, int priority) {
-		this(name,criteria,displayName,slot, priority,0);
+		this( name, criteria, displayName, slot, priority, 0 );
 	}
 
-	public ArenaObjective(String id, String criteria, String displayName,
-			SAPIDisplaySlot slot, int priority, int points) {
+	public ArenaObjective(String id, String criteria, String displayName, SAPIDisplaySlot slot, int priority, int points) {
 
-		o = (Defaults.TESTSERVER || !Defaults.USE_SCOREBOARD) ?
-                SAPIFactory.createSAPIObjective(id, displayName, criteria, slot, priority) :
-                SAPIFactory.createObjective(id,displayName, criteria,slot, priority);
+		objective = (Defaults.TESTSERVER 
+		        || !Defaults.USE_SCOREBOARD) ? SAPIFactory.createSAPIObjective( id, displayName, criteria, slot, priority ) 
+		                                     : SAPIFactory.createObjective( id, displayName, criteria, slot, priority );
 		if (displayName != null){
 			setDisplayName(displayName);}
 	}
 
 	public void setDisplaySlot(ArenaDisplaySlot sidebar) {
-		o.setDisplaySlot(sidebar.toSAPI());
+		objective.setDisplaySlot(sidebar.toSAPI());
 	}
 
 	public Integer getPoints(ArenaTeam t) {
@@ -80,10 +79,10 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
 	public void setAllPoints(Match match, int points){
 		for (ArenaTeam t: match.getTeams()){
-			if (o.isDisplayTeams()){
+			if (objective.isDisplayTeams()){
 				setPoints(t, points);
 			}
-			if (o.isDisplayPlayers()){
+			if (objective.isDisplayPlayers()){
 				for (ArenaPlayer p : t.getPlayers()){
 					setPoints(p, points);}
 			}
@@ -167,12 +166,12 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
 	public Integer setPoints(ArenaPlayer p, int points) {
-		o.setPoints(p.getName(), points);
+		objective.setPoints(p.getName(), points);
 		return playerPoints.setPoints(p, points);
 	}
 
 	public Integer setPoints(ArenaTeam t, int points) {
-		o.setPoints(t.getIDString(), points);
+		objective.setPoints(t.getIDString(), points);
 		return teamPoints.setPoints(t, points);
 	}
 
@@ -193,173 +192,173 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
 	@Override
 	public void setDisplayName(String displayName) {
-		o.setDisplayName(displayName);
+		objective.setDisplayName(displayName);
 	}
 
     @Override
     public String getDisplayNameSuffix() {
-        return o.getDisplayNameSuffix();
+        return objective.getDisplayNameSuffix();
     }
 
     @Override
 	public void setDisplayNameSuffix(String suffix) {
-		o.setDisplayNameSuffix(suffix);
+		objective.setDisplayNameSuffix(suffix);
 	}
 
     @Override
     public String getDisplayNamePrefix() {
-        return o.getDisplayNamePrefix();
+        return objective.getDisplayNamePrefix();
     }
 
     @Override
     public void setDisplayNamePrefix(String prefix) {
-        o.setDisplayNamePrefix(prefix);
+        objective.setDisplayNamePrefix(prefix);
     }
 
     @Override
 	public boolean setPoints(SEntry entry, int points) {
-		return o.setPoints(entry, points);
+		return objective.setPoints(entry, points);
 	}
 
 	@Override
 	public SAPIDisplaySlot getDisplaySlot() {
-		return o.getDisplaySlot();
+		return objective.getDisplaySlot();
 	}
 
 	@Override
 	public int getPriority() {
-		return o.getPriority();
+		return objective.getPriority();
 	}
 
 	@Override
 	public void setDisplaySlot(SAPIDisplaySlot slot) {
-		o.setDisplaySlot(slot);
+		objective.setDisplaySlot(slot);
 	}
 
 	@Override
 	public String getId() {
-		return o.getId();
+		return objective.getId();
 	}
 
 	@Override
 	public String getDisplayName() {
-		return o.getDisplayName();
+		return objective.getDisplayName();
 	}
 
     @Override
     public String getBaseDisplayName() {
-        return o.getBaseDisplayName();
+        return objective.getBaseDisplayName();
     }
 
     @Override
 	public boolean setTeamPoints(STeam t, int points) {
-		return o.setTeamPoints(t, points);
+		return objective.setTeamPoints(t, points);
 	}
 
 	@Override
 	public boolean setPoints(String id, int points) {
-		return o.setPoints(id, points);
+		return objective.setPoints(id, points);
 	}
 
 	@Override
 	public SEntry addEntry(String id, int points) {
-		return o.addEntry(id, points);
+		return objective.addEntry(id, points);
 	}
 
 	@Override
 	public void setDisplayPlayers(boolean b) {
-		o.setDisplayPlayers(b);
+		objective.setDisplayPlayers(b);
 	}
 
 	@Override
 	public void setDisplayTeams(boolean display) {
-		o.setDisplayTeams(display);
+		objective.setDisplayTeams(display);
 	}
 
 	@Override
 	public void setScoreboard(SScoreboard scoreboard) {
-		o.setScoreboard(scoreboard);
+		objective.setScoreboard(scoreboard);
 		scoreboard.registerNewObjective(this);
 	}
 
     @Override
     public int getPoints(String id) {
-        return o.getPoints(id);
+        return objective.getPoints(id);
     }
 
     @Override
     public int getPoints(SEntry e) {
-        return o.getPoints(e);
+        return objective.getPoints(e);
     }
 
     @Override
 	public String toString(){
-		return o.toString();
+		return objective.toString();
 	}
 
 	@Override
 	public boolean isDisplayTeams() {
-		return o.isDisplayTeams();
+		return objective.isDisplayTeams();
 	}
 
 	@Override
 	public boolean isDisplayPlayers() {
-		return o.isDisplayPlayers();
+		return objective.isDisplayPlayers();
 	}
 
 	@Override
 	public SScoreboard getScoreboard() {
-		return o.getScoreboard();
+		return objective.getScoreboard();
 	}
 
 	@Override
 	public SEntry addEntry(OfflinePlayer player, int points) {
-		return o.addEntry(player, points);
+		return objective.addEntry(player, points);
 	}
 
 	@Override
 	public SEntry removeEntry(OfflinePlayer player) {
-		return o.removeEntry(player);
+		return objective.removeEntry(player);
 	}
 
 	@Override
 	public SEntry removeEntry(String id) {
-		return o.removeEntry(id);
+		return objective.removeEntry(id);
 	}
 
 	@Override
 	public boolean addEntry(SEntry entry, int defaultPoints) {
-		return o.addEntry(entry, defaultPoints);
+		return objective.addEntry(entry, defaultPoints);
 	}
 
 	@Override
 	public SEntry removeEntry(SEntry entry) {
-		return o.removeEntry(entry);
+		return objective.removeEntry(entry);
 	}
 
 	@Override
 	public boolean contains(SEntry e) {
-		return o.contains(e);
+		return objective.contains(e);
 	}
 
 	@Override
 	public STeam addTeam(String id, int points) {
-		return o.addTeam(id, points);
+		return objective.addTeam(id, points);
 	}
 
 	@Override
 	public boolean addTeam(STeam entry, int points) {
-		return o.addTeam(entry, points);
+		return objective.addTeam(entry, points);
 	}
 
     public void setDisplayName(String displayNamePrefix, String displayName, String displayNameSuffix, STeam team){
-        if (o instanceof BObjective) {
-            ((BObjective) o).setDisplayName( String.join( "", displayNamePrefix, displayName,displayNameSuffix ) );
+        if (objective instanceof BObjective) {
+            ((BObjective) objective).setDisplayName( String.join( "", displayNamePrefix, displayName,displayNameSuffix ) );
         }
     }
 
     @Override
     public void initPoints(List<SEntry> entries, List<Integer> points) {
-        o.initPoints(entries, points);
+        objective.initPoints(entries, points);
     }
 }

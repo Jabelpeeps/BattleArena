@@ -54,7 +54,7 @@ public class Arena extends AreaContainer {
     protected WorldGuardRegion wgRegion;
 
     public Arena(){
-        super( "arena",LocationType.ARENA );
+        super( "arena", LocationType.ARENA );
     }
 
     /**
