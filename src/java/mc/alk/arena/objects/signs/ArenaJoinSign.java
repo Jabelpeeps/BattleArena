@@ -27,7 +27,7 @@ class ArenaJoinSign extends ArenaCommandSign{
         JoinOptions jops = joinOptions.clone();
         try {
             jops.setPlayer(player);
-            BattleArena.getBAExecutor().join(player, mp, joinOptions, !Defaults.USE_SIGN_PERMS);
+            BattleArena.getBAExecutor().join(player, matchParams, joinOptions, !Defaults.USE_SIGN_PERMS);
         } catch (InvalidOptionException e) {
             MessageUtil.sendMessage(player, e.getMessage());
         } catch (Exception e) {

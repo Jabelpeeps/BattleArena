@@ -29,27 +29,28 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import lombok.AllArgsConstructor;
 import mc.alk.arena.Defaults;
 
-@SuppressWarnings("deprecation")
 public class InventoryUtil {
 	static final String version = "BA InventoryUtil 2.1.7";
 	static final boolean DEBUG = false;
 
-    public static class Armor{
+	@AllArgsConstructor
+    public static class Armor {
+        final public ArmorType type;
 		final public ArmorLevel level;
-		final public ArmorType type;
-		Armor(ArmorType at, ArmorLevel al){this.level = al; this.type = at;}
 	}
 
 	public static class EnchantmentWithLevel{
 		public EnchantmentWithLevel(){}
-		public EnchantmentWithLevel(boolean all){this.all = all;}
+		public EnchantmentWithLevel(boolean all ){this.all = all;}
 		public Enchantment e;
 		public Integer lvl;
 		boolean all = false;
 		@Override
-		public String toString(){return  (e !=null?e.getName():"null")+":" + lvl;}
+		public String toString(){ return ( e != null ? e.getName() 
+		                                             : "null" ) + ":" + lvl; }
 	}
 
 	public static class PInv {
@@ -73,8 +74,8 @@ public class InventoryUtil {
 		}
 	}
 
-	public enum ArmorLevel{DISGUISE, WOOL,LEATHER,IRON,GOLD,CHAINMAIL,DIAMOND}
-	public enum ArmorType{BOOTS,LEGGINGS,CHEST,HELM}
+	public enum ArmorLevel{ DISGUISE, WOOL, LEATHER, IRON, GOLD, CHAINMAIL, DIAMOND }
+	public enum ArmorType{ BOOTS, LEGGINGS, CHEST, HELM }
 
 	public static Enchantment getEnchantmentByCommonName(String iname){
 		iname = iname.toLowerCase();
@@ -140,47 +141,41 @@ public class InventoryUtil {
         return enc.getName();
 	}
 
-	static final Map<Material,Armor> armor;
+	static final Map<Material,Armor> armors;
 	static {
-		armor = new EnumMap<>(Material.class);
+		armors = new EnumMap<>(Material.class);
 
-	    armor.put( Material.SKULL_ITEM, new Armor(ArmorType.HELM, ArmorLevel.DISGUISE));
-		armor.put(Material.WOOL,new Armor(ArmorType.HELM, ArmorLevel.WOOL));
-		armor.put(Material.LEATHER_HELMET,new Armor(ArmorType.HELM, ArmorLevel.LEATHER));
-		armor.put(Material.IRON_HELMET,new Armor(ArmorType.HELM, ArmorLevel.IRON));
-		armor.put(Material.GOLD_HELMET,new Armor(ArmorType.HELM, ArmorLevel.GOLD));
-		armor.put(Material.DIAMOND_HELMET,new Armor(ArmorType.HELM, ArmorLevel.DIAMOND));
-		armor.put(Material.CHAINMAIL_HELMET,new Armor(ArmorType.HELM, ArmorLevel.CHAINMAIL));
+	    armors.put(Material.SKULL_ITEM, new Armor(ArmorType.HELM, ArmorLevel.DISGUISE));
+		armors.put(Material.WOOL, new Armor(ArmorType.HELM, ArmorLevel.WOOL));
+		armors.put(Material.LEATHER_HELMET, new Armor(ArmorType.HELM, ArmorLevel.LEATHER));
+		armors.put(Material.IRON_HELMET, new Armor(ArmorType.HELM, ArmorLevel.IRON));
+		armors.put(Material.GOLD_HELMET, new Armor(ArmorType.HELM, ArmorLevel.GOLD));
+		armors.put(Material.DIAMOND_HELMET, new Armor(ArmorType.HELM, ArmorLevel.DIAMOND));
+		armors.put(Material.CHAINMAIL_HELMET, new Armor(ArmorType.HELM, ArmorLevel.CHAINMAIL));
 
-		armor.put(Material.LEATHER_CHESTPLATE,new Armor(ArmorType.CHEST,ArmorLevel.LEATHER));
-		armor.put(Material.IRON_CHESTPLATE,new Armor(ArmorType.CHEST,ArmorLevel.IRON));
-		armor.put(Material.GOLD_CHESTPLATE,new Armor(ArmorType.CHEST,ArmorLevel.GOLD));
-		armor.put(Material.DIAMOND_CHESTPLATE,new Armor(ArmorType.CHEST,ArmorLevel.DIAMOND));
-		armor.put(Material.CHAINMAIL_CHESTPLATE,new Armor(ArmorType.CHEST,ArmorLevel.CHAINMAIL));
+		armors.put(Material.LEATHER_CHESTPLATE, new Armor(ArmorType.CHEST,ArmorLevel.LEATHER));
+		armors.put(Material.IRON_CHESTPLATE, new Armor(ArmorType.CHEST,ArmorLevel.IRON));
+		armors.put(Material.GOLD_CHESTPLATE, new Armor(ArmorType.CHEST,ArmorLevel.GOLD));
+		armors.put(Material.DIAMOND_CHESTPLATE, new Armor(ArmorType.CHEST,ArmorLevel.DIAMOND));
+		armors.put(Material.CHAINMAIL_CHESTPLATE, new Armor(ArmorType.CHEST,ArmorLevel.CHAINMAIL));
 
-		armor.put(Material.LEATHER_LEGGINGS,new Armor(ArmorType.LEGGINGS,ArmorLevel.LEATHER));
-		armor.put(Material.IRON_LEGGINGS,new Armor(ArmorType.LEGGINGS,ArmorLevel.IRON));
-		armor.put(Material.GOLD_LEGGINGS,new Armor(ArmorType.LEGGINGS,ArmorLevel.GOLD));
-		armor.put(Material.DIAMOND_LEGGINGS,new Armor(ArmorType.LEGGINGS,ArmorLevel.DIAMOND));
-		armor.put(Material.CHAINMAIL_LEGGINGS,new Armor(ArmorType.LEGGINGS,ArmorLevel.CHAINMAIL));
+		armors.put(Material.LEATHER_LEGGINGS, new Armor(ArmorType.LEGGINGS,ArmorLevel.LEATHER));
+		armors.put(Material.IRON_LEGGINGS, new Armor(ArmorType.LEGGINGS,ArmorLevel.IRON));
+		armors.put(Material.GOLD_LEGGINGS, new Armor(ArmorType.LEGGINGS,ArmorLevel.GOLD));
+		armors.put(Material.DIAMOND_LEGGINGS, new Armor(ArmorType.LEGGINGS,ArmorLevel.DIAMOND));
+		armors.put(Material.CHAINMAIL_LEGGINGS, new Armor(ArmorType.LEGGINGS,ArmorLevel.CHAINMAIL));
 
-		armor.put(Material.LEATHER_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.LEATHER));
-		armor.put(Material.IRON_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.IRON));
-		armor.put(Material.GOLD_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.GOLD));
-		armor.put(Material.DIAMOND_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.DIAMOND));
-		armor.put(Material.CHAINMAIL_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.CHAINMAIL));
+		armors.put(Material.LEATHER_BOOTS, new Armor(ArmorType.BOOTS,ArmorLevel.LEATHER));
+		armors.put(Material.IRON_BOOTS, new Armor(ArmorType.BOOTS,ArmorLevel.IRON));
+		armors.put(Material.GOLD_BOOTS, new Armor(ArmorType.BOOTS,ArmorLevel.GOLD));
+		armors.put(Material.DIAMOND_BOOTS, new Armor(ArmorType.BOOTS,ArmorLevel.DIAMOND));
+		armors.put(Material.CHAINMAIL_BOOTS, new Armor(ArmorType.BOOTS,ArmorLevel.CHAINMAIL));
 	}
 
 	public static int arrowCount(Player p) {
 		return getItemAmount(p.getInventory().getContents(), new ItemStack(Material.ARROW,1));
 	}
 
-    /**
-     * If I have to do too many specific items b/c of 1.2.5 problems should make a more robust method
-     * such as itType along with my own enum
-     * @param type InventoryType
-     * @return whether its an ender chest
-     */
     public static boolean isEnderChest(InventoryType type) {
         return type == InventoryType.ENDER_CHEST;
     }
@@ -190,10 +185,10 @@ public class InventoryUtil {
 	}
 
 	public static boolean isArmor(ItemStack is) {
-		return armor.get(is.getType()) != null;
+		return armors.get(is.getType()) != null;
 	}
 	public static boolean isRealArmor(ItemStack is) {
-		return armor.get(is.getType()) != null && is.getType()!= Material.WOOL;
+		return armors.get(is.getType()) != null && is.getType()!= Material.WOOL;
 	}
 
 	public static boolean hasArmor(Player p) {
@@ -207,7 +202,7 @@ public class InventoryUtil {
 	public static ArmorLevel hasArmorSet(List<ItemStack> inv) {
 		ArmorLevel armorSet[] = new ArmorLevel[4];
 		for (ItemStack is: inv){
-			Armor a = armor.get(is.getType());
+			Armor a = armors.get(is.getType());
 			if (a == null)
 				continue;
 			switch (a.type){
@@ -376,7 +371,7 @@ public class InventoryUtil {
 			boolean update, boolean ignoreCustomHelmet, Color color) {
 		PlayerInventory inv = player.getInventory();
 		Material itemType =itemStack.getType();
-		if (armor.containsKey(itemType)){
+		if (armors.containsKey(itemType)){
 			addArmorToInventory(inv,itemStack,stockAmount,ignoreCustomHelmet, color);
 		} else {
 			addItemToInventory(inv, itemStack,stockAmount);
@@ -394,21 +389,21 @@ public class InventoryUtil {
 		Material itemType =itemStack.getType();
 		boolean isHelmet = false; // armor.get(itemType).type == ArmorType.HELM;
                 try {
-                    isHelmet = armor.get(itemType).type == ArmorType.HELM;
+                    isHelmet = armors.get(itemType).type == ArmorType.HELM;
                 } catch (NullPointerException handled) {
                     isHelmet = false;
                 }
 
-		Armor a = armor.get(itemType);
+		Armor a = armors.get(itemType);
 		final ItemStack oldArmor = getArmorSlot(inv,a.type);
 		boolean empty = (oldArmor == null || oldArmor.getType() == Material.AIR);
-		boolean better = empty || armorSlotBetter(armor.get(oldArmor.getType()), a);
+		boolean better = empty || armorSlotBetter(armors.get(oldArmor.getType()), a);
 
 		if (color != null && a.level == ArmorLevel.LEATHER){
 			setColor(itemStack,color);
 		}
 		if (empty || better){
-			switch (armor.get(itemType).type){
+			switch (armors.get(itemType).type){
 			case HELM:
 				if (empty || !ignoreCustomHelmet)
 					inv.setHelmet(itemStack);
@@ -619,7 +614,7 @@ public class InventoryUtil {
 
 	}
 
-	public static Object getCommonName(ItemStack is) {
+	public static String getCommonName(ItemStack is) {
 		Material mat = is.getType();
 		int datavalue = is.getDurability();
 		if (datavalue > 0){
@@ -887,7 +882,7 @@ public class InventoryUtil {
 	}
 
 	public static boolean isColorable(ItemStack item){
-		Armor a = armor.get(item.getType());
+		Armor a = armors.get(item.getType());
 		return a != null && a.level == ArmorLevel.LEATHER;
 	}
 
@@ -911,7 +906,7 @@ public class InventoryUtil {
 	}
 
 	public static boolean sameMaterial(ArmorLevel lvl, ItemStack is) {
-		Armor a = armor.get(is.getType());
+		Armor a = armors.get(is.getType());
         return a != null && a.level == lvl;
     }
 

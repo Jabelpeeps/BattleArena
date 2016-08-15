@@ -76,5 +76,7 @@ public class SignUtil {
 		Material t = l.getBlock().getType();
 		return t == Material.SIGN || t == Material.SIGN_POST || t==Material.WALL_SIGN ? (Sign)l.getBlock().getState(): null;
 	}
-
+//	public void sendLines(Player player, Sign sign, String[] lines) {
+//        player.sendSignChange( sign.getLocation(), lines );
+//    }
 }

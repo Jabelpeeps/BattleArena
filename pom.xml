@@ -6,7 +6,7 @@
     
     <name>BattleArena</name>
     <groupId>mc.alk</groupId>
-    <artifactId>BattleArena</artifactId>
+    <artifactId>BattleArena-lite</artifactId>
     <packaging>jar</packaging>
     <version>3.9.10.15</version>
     <properties>

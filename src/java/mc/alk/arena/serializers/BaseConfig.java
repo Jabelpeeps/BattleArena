@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import mc.alk.util.Log;
 
 public class BaseConfig { 
-	FileConfiguration config;
+	protected FileConfiguration config;
 	File file = null;
 
     public BaseConfig(){}

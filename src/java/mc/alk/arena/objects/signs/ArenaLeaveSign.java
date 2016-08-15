@@ -17,7 +17,7 @@ class ArenaLeaveSign extends ArenaCommandSign{
 
     @Override
     public void performAction(ArenaPlayer player) {
-        BattleArena.getBAExecutor().leave(player, mp);
+        BattleArena.getBAExecutor().leave(player, matchParams);
     }
 
 

@@ -104,7 +104,7 @@ public class SignUpdateListener implements Listener {
     }
 
     public void addSign(ArenaCommandSign acs) {
-        if (acs.getSign() == null || acs.getOption1() == null){
+        if (acs.getSign() == null || acs.getOptions1() == null){
             return;}
         Arena a = acs.getArena();
         if (a == null)

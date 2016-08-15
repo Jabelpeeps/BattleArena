@@ -233,6 +233,7 @@ public class FileUpdater {
     public static class Version implements Comparable<Object> {
         final static String version ="1.1";
         final String[] parts;
+        
         public Version(Object obj){
             parts = obj.toString().trim().split("\\.");
         }

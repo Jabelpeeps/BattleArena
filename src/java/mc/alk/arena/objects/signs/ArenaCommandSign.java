@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
@@ -19,39 +20,26 @@ import mc.alk.util.SignUtil;
 
 public abstract class ArenaCommandSign implements ConfigurationSerializable{
 
-	final Location location;
-	final MatchParams mp;
-    final String[] options1;
-    final String[] options2;
-    Arena arena;
+    @Getter final Location location;
+	@Getter final MatchParams matchParams;
+	@Getter final String[] options1;
+	@Getter final String[] options2;
+	@Getter Arena arena;
 
-    ArenaCommandSign(Location location, MatchParams mp, String[] op1, String[] op2) {
-		this.mp = mp;
-        this.options1 = Arrays.copyOf(op1, op1.length);
-		this.options2 = Arrays.copyOf(op2, op2.length);
-		this.location = location;
+    ArenaCommandSign(Location loc, MatchParams mp, String[] op1, String[] op2) {
+		matchParams = mp;
+        options1 = Arrays.copyOf(op1, op1.length);
+		options2 = Arrays.copyOf(op2, op2.length);
+		location = loc;
         try {
             JoinOptions joinOptions = JoinOptions.parseOptions(mp, null, op1);
             arena = joinOptions.getArena();
-        } catch (Exception e) {
-            /* do nothing */
-        }
+        } catch (Exception e) { }
     }
 
 	public abstract void performAction(ArenaPlayer player);
-
-	public MatchParams getMatchParams() {
-		return mp;
-	}
-
-    public String[] getOption1(){
-        return options1;
-    }
-
-    public String[] getOption2(){
-        return options2;
-    }
-
+    public abstract String getCommand();
+    
     @Override
 	public Map<String, Object> serialize() {
 		HashMap<String,Object> map = new HashMap<>();
@@ -67,10 +55,6 @@ public abstract class ArenaCommandSign implements ConfigurationSerializable{
 		if (s == null)
 			return null;
         return SignUtil.getArenaCommandSign(s, s.getLines());
-	}
-
-	public Location getLocation() {
-		return location;
 	}
 
 	public Sign getSign() {
@@ -96,11 +80,5 @@ public abstract class ArenaCommandSign implements ConfigurationSerializable{
         } else {
             throw new InvalidOptionException(type + " is not a known sign type");
         }
-    }
-
-    public abstract String getCommand();
-
-    public Arena getArena(){
-        return arena;
     }
 }
