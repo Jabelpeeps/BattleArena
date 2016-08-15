@@ -21,11 +21,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import com.garbagemule.MobArena.ArenaPlayer;
-
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.util.Log;
 import mc.alk.util.MessageUtil;
 import mc.alk.util.ServerUtil;
