@@ -35,13 +35,13 @@ public class EventExecutor extends BAExecutor{
 		controller = BattleArena.getBAEventController();
 	}
 
-	@MCCommand(cmds={"options"},admin=true, usage="options", order=2)
+	@MCCommand( cmds = {"options"}, admin = true, usage = "options", order = 2 )
 	public boolean eventOptions(CommandSender sender,EventParams eventParams) {
 		StateGraph tops = eventParams.getArenaStateGraph();
         return MessageUtil.sendMessage(sender, tops.getOptionString());
 	}
 
-	@MCCommand(cmds={"cancel"},admin=true, order=2)
+	@MCCommand( cmds = {"cancel"}, admin = true, order = 2 )
 	public boolean eventCancel(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
         return event == null || cancelEvent(sender, event);

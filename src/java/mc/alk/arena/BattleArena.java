@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.Getter;
 import mc.alk.arena.controllers.ArenaEditor;
 import mc.alk.arena.controllers.BAEventController;
 import mc.alk.arena.controllers.BattleArenaController;
@@ -66,6 +67,7 @@ import mc.alk.arena.serializers.SpawnSerializer;
 import mc.alk.arena.serializers.StateFlagSerializer;
 import mc.alk.arena.serializers.TeamHeadSerializer;
 import mc.alk.arena.serializers.YamlFileUpdater;
+import mc.alk.tracker.Tracker;
 import mc.alk.util.FileLogger;
 import mc.alk.util.FileUpdater;
 import mc.alk.util.FileUtil;
@@ -76,24 +78,24 @@ public class BattleArena extends JavaPlugin {
 
     static private String pluginname;
     static private String version;
-    static private BattleArena plugin;
+    @Getter static private BattleArena self;
 
     private final static SignUpdateListener signUpdateListener = new SignUpdateListener();
-    private static BattleArenaController arenaController = new BattleArenaController(signUpdateListener);
-    static BAEventController eventController = new BAEventController();
-    private final static TeamController teamController = TeamController.INSTANCE;
-    private final static EventController ec = new EventController();
-    private final static ArenaEditor arenaEditor = new ArenaEditor();
-    private final static DuelController duelController = new DuelController();
-    private static BAExecutor commandExecutor;
-    private ArenaEditorExecutor arenaEditorExecutor;
-    private final BAPlayerListener playerListener = new BAPlayerListener(arenaController);
+    @Getter private static BattleArenaController bAController = new BattleArenaController(signUpdateListener);
+    @Getter static BAEventController bAEventController = new BAEventController();
+    @Getter private final static TeamController teamController = TeamController.INSTANCE;
+    @Getter private final static EventController eventController = new EventController();
+    @Getter private final static ArenaEditor arenaEditor = new ArenaEditor();
+    @Getter private final static DuelController duelController = new DuelController();
+    @Getter private static BAExecutor bAExecutor;
+    @Getter private ArenaEditorExecutor arenaEditorExecutor;
+    private final BAPlayerListener playerListener = new BAPlayerListener(bAController);
     private final BAPluginListener pluginListener = new BAPluginListener();
     private final BASignListener signListener = new BASignListener(signUpdateListener);
-    private final WatchController watchController = new WatchController();
+    @Getter private final WatchController watchController = new WatchController();
 
     private ArenaControllerSerializer arenaControllerSerializer;
-    private static final BAConfigSerializer baConfigSerializer = new BAConfigSerializer();
+    @Getter private static final BAConfigSerializer bAConfigSerializer = new BAConfigSerializer();
     private static final BAClassesSerializer classesSerializer = new BAClassesSerializer();
     private static final EventScheduleSerializer eventSchedulerSerializer = new EventScheduleSerializer();
     private static final SignSerializer signSerializer = new SignSerializer();
@@ -106,7 +108,7 @@ public class BattleArena extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        BattleArena.plugin = this;
+        BattleArena.self = this;
         PluginDescriptionFile pdfFile = this.getDescription();
         BattleArena.pluginname = pdfFile.getName();
         BattleArena.version = pdfFile.getVersion();
@@ -124,6 +126,7 @@ public class BattleArena extends JavaPlugin {
         FileUpdater.makeIfNotExists(new File(dir + "/modules"));
         FileUpdater.makeIfNotExists(new File(dir + "/otherPluginConfigs"));
         FileUpdater.makeIfNotExists(new File(dir + "/victoryConditions"));
+        Tracker.loadConfigs();
 
         for (String c : new String[]{"HeroesConfig", "McMMOConfig", "WorldGuardConfig"}){
             try{
@@ -153,11 +156,11 @@ public class BattleArena extends JavaPlugin {
         /// Set up our messages first before other initialization needs messages
         MessageSerializer defaultMessages = new MessageSerializer("default", null);
         defaultMessages.setConfig(FileUtil.load(clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml"));
-        yfu.updateMessageSerializer(plugin, defaultMessages); /// Update our config if necessary
+        yfu.updateMessageSerializer(self, defaultMessages); /// Update our config if necessary
         defaultMessages.loadAll();
         MessageSerializer.setDefaultConfig(defaultMessages);
 
-        commandExecutor = new BAExecutor();
+        bAExecutor = new BAExecutor();
 
         pluginListener.loadAll(); /// try and load plugins we want
 
@@ -171,9 +174,9 @@ public class BattleArena extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new TeleportController(), this);
         Bukkit.getPluginManager().registerEvents(InArenaListener.INSTANCE, this);
         Bukkit.getPluginManager().registerEvents(signUpdateListener, this);
-        Bukkit.getPluginManager().registerEvents(arenaController, this);
-        Bukkit.getPluginManager().registerEvents(arenaController.getArenaMatchQueue(), this);
-        Bukkit.getPluginManager().registerEvents(eventController, this);
+        Bukkit.getPluginManager().registerEvents(bAController, this);
+        Bukkit.getPluginManager().registerEvents(bAController.getArenaMatchQueue(), this);
+        Bukkit.getPluginManager().registerEvents(bAEventController, this);
         
         /// Register our different Victory Types
         VictoryType.register(LastManStanding.class, this);
@@ -190,14 +193,14 @@ public class BattleArena extends JavaPlugin {
         VictoryType.register(HighestKills.class, this);
 
         /// Load our configs, then arenas
-        baConfigSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/config.yml", "/config.yml"));
+        bAConfigSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/config.yml", "/config.yml"));
         try {
-            YamlFileUpdater.updateBaseConfig(this, baConfigSerializer); /// Update our config if necessary
+            YamlFileUpdater.updateBaseConfig(this, bAConfigSerializer); /// Update our config if necessary
         } catch (Exception e) {
             Log.printStackTrace(e);
         }
 
-        baConfigSerializer.loadDefaults(); /// Load our defaults for BattleArena, has to happen before classes are loaded
+        bAConfigSerializer.loadDefaults(); /// Load our defaults for BattleArena, has to happen before classes are loaded
 
         classesSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/classes.yml", "/default_files/classes.yml")); /// Load classes
         classesSerializer.loadAll();
@@ -213,14 +216,14 @@ public class BattleArena extends JavaPlugin {
         arenaEditorExecutor = new ArenaEditorExecutor();
         
         /// Set our commands
-        getCommand("watch").setExecutor(commandExecutor);
-        getCommand("arenateam").setExecutor(new TeamExecutor(commandExecutor));
+        getCommand("watch").setExecutor(bAExecutor);
+        getCommand("arenateam").setExecutor(new TeamExecutor(bAExecutor));
         getCommand("arenaAlter").setExecutor(arenaEditorExecutor);
         getCommand("battleArena").setExecutor(new BattleArenaExecutor());
         getCommand("battleArenaDebug").setExecutor(new BattleArenaDebugExecutor());
         final EventScheduler es = new EventScheduler();
         getCommand("battleArenaScheduler").setExecutor(new BASchedulerExecutor(es));
-        getCommand("arenaScoreboard").setExecutor(new ScoreboardExecutor(this, arenaController, Defaults.SB_MESSAGES));
+        getCommand("arenaScoreboard").setExecutor(new ScoreboardExecutor(this, bAController, Defaults.SB_MESSAGES));
 
         /// Reload our scheduled events
         eventSchedulerSerializer.setConfig(dir.getPath() + "/saves/scheduledEvents.yml");
@@ -232,27 +235,27 @@ public class BattleArena extends JavaPlugin {
         /// Load Competitions and Arenas after everything is loaded (plugins and worlds)
         /// Other plugins using BattleArena are going to be registering
         /// Lets hold off on loading the scheduled events until those plugins have registered
-        Scheduler.scheduleSynchronousTask(this, () -> {
+        Scheduler.scheduleSynchronousTask( () -> {
 
-                        baConfigSerializer.loadVictoryConditions();
+                        bAConfigSerializer.loadVictoryConditions();
                         /// Load our competitions, has to happen after classes and teams
-                        baConfigSerializer.loadCompetitions(); 
+                        bAConfigSerializer.loadCompetitions(); 
                         
                         /// persist our disabled arena types
                         StateFlagSerializer sfs = new StateFlagSerializer();
                         sfs.setConfig(dir.getPath() + "/saves/state.yml");
-                        commandExecutor.setDisabled(sfs.loadEnabled());
-                        ArenaSerializer.setBAC(arenaController);
+                        bAExecutor.setDisabled(sfs.loadEnabled());
+                        ArenaSerializer.setBAC(bAController);
         
                         sfs.loadLobbyStates(RoomController.getLobbies());
-                        sfs.loadContainerStates(arenaController.getArenas());
+                        sfs.loadContainerStates(bAController.getArenas());
         
                         arenaControllerSerializer.load();
         
                         /// Load up our signs
                         signSerializer.setConfig(dir.getPath() + "/saves/signs.yml");
                         signSerializer.loadAll(signUpdateListener);
-                        signUpdateListener.updateAllSigns();
+//                        signUpdateListener.updateAllSigns(); 
         
                         eventSchedulerSerializer.loadAll();
                         if (Defaults.START_NEXT)
@@ -268,17 +271,18 @@ public class BattleArena extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        arenaController.stop();
+        bAController.stop();
         arenaControllerSerializer.save();
         eventSchedulerSerializer.saveScheduledEvents();
         signSerializer.saveAll(signUpdateListener);
+        Tracker.saveConfig();
         
         /// Save the container states
         StateFlagSerializer sfs = new StateFlagSerializer();
         sfs.setConfig(getDataFolder().getPath() + "/saves/state.yml");
-        sfs.save( commandExecutor.getDisabled(),
+        sfs.save( bAExecutor.getDisabled(),
                   RoomController.getLobbies(),
-                  arenaController.getArenas() );
+                  bAController.getArenas() );
         FileLogger.saveAll();
     }
 
@@ -303,70 +307,6 @@ public class BattleArena extends JavaPlugin {
     }
 
     /**
-     * Return the watch controller
-     * @return WatchController
-     */
-    public WatchController getWatchController() { return watchController; }
-    /**
-     * Return the BattleArena plugin instance
-     *
-     * @return BattleArena
-     */
-    public static BattleArena getSelf() { return plugin; }
-    /**
-     * Return the BattleArenaController, which handles queuing and arenas
-     *
-     * @return BattleArenaController
-     */
-    public static BattleArenaController getBAController() { return arenaController; }
-    /**
-     * Return the BAEventController, which handles Events
-     *
-     * @return BAEventController
-     */
-    public static BAEventController getBAEventController() { return eventController; }
-    /**
-     * Get the TeamController, deals with self made teams
-     *
-     * @return TeamController
-     */
-    public static TeamController getTeamController() { return teamController; }
-    /**
-     * Get the DuelController, deals with who is currently trying to duel other people/teams
-     *
-     * @return DuelController
-     */
-    public static DuelController getDuelController() { return duelController; }
-    /**
-     * Get the EventController, deals with what events can be run
-     *
-     * @return EventController
-     */
-    public static EventController getEventController() { return ec;  }
-    /**
-     * Get the Arena Editor, deals with Altering and changing Arenas
-     *
-     * @return ArenaEditor
-     */
-    public static ArenaEditor getArenaEditor() { return arenaEditor; }
-    /**
-     * Get the BAExecutor, deals with the Arena related commands
-     *
-     * @return BAExecutor
-     */
-    public static BAExecutor getBAExecutor() { return commandExecutor; }
-    /**
-     * The main serializer for the config.yml
-     * @return BAConfigSerializer
-     */
-    public BAConfigSerializer getBAConfigSerializer() { return baConfigSerializer; }
-    /**
-     * Return the Arena Editor Executor
-     * @return ArenaEditorExecutor
-     */
-    public ArenaEditorExecutor getArenaEditorExecutor() { return arenaEditorExecutor; }
-    
-    /**
      * Is the player inside of the BattleArena system
      * This means one of the following
      * Player is in a queue, in a competition, being challenged, inside MobArena,
@@ -378,8 +318,8 @@ public class BattleArena extends JavaPlugin {
      * @param showReasons: if player is in system, show the player a message about how to exit
      * @return true or false: whether they are in the system
      */
-    public static boolean inSystem(Player player, boolean showReasons) {
-        return !getBAExecutor().canJoin(PlayerController.toArenaPlayer(player), showReasons);
+    public static boolean inSystem( Player player, boolean showReasons ) {
+        return !getBAExecutor().canJoin( PlayerController.toArenaPlayer(player), showReasons );
     }
 
     /**
@@ -388,9 +328,10 @@ public class BattleArena extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        baConfigSerializer.loadDefaults();
+        bAConfigSerializer.loadDefaults();
         classesSerializer.loadAll();
         MessageSerializer.loadDefaults();
+        Tracker.loadConfigs();
     }
 
     /**

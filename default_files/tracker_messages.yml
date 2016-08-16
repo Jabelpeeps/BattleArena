@@ -1,0 +1,165 @@
+## Options
+# %k : the killer (can be a player, mob, or environment)
+# %d : the dead player
+# %i : item used to kill the player (if one exists)
+# %n : number (used for streaks, rampages)
+### The list of pvp item deaths is incomplete, feel free to add more
+### color codes
+# &0  Black 
+# &1  Dark Blue
+# &2  Dark Green
+# &3  Dark Aqua
+# &4  Dark Red
+# &5  Purple
+# &6  Orange
+# &7  Grey
+# &8  Dark Grey 
+# &9  Indigo
+# &a  Bright Green
+# &b  Aqua
+# &c  Red
+# &d  Pink
+# &e  Yellow
+# &f  White
+version: 1.0.1
+pve:
+  prefix: "&e[PvE]&f "
+  meleeDeaths:
+    - "&6%d&f was killed by a &6%k&f"
+  rangeDeaths:
+    - "&6%d&f was killed by a &6%k&f"
+  fire: 
+    - "&6%d&f was fried to a crisp"
+    - "&6%d&f burned to death"
+  fire_tick:
+    - "&6%d&f tried to extinguish the flames, but failed"
+  lava:
+    - "&6%d&f was no match for a pool of lava"
+  fall:
+    - "&6%d&f found out what the ground feels like"
+  contact:
+    - "&6%d&f should learn to not jump on a cactus"
+  block_explosion:
+    - "&6%d&f has been shredded by TNT"
+  primedtnt:
+    - "&6%d&f has been shredded by TNT"
+  suffocation:
+    - "&6%d&f ran out of breath"
+  starvation:
+    - "&6%d&f should learn to eat"
+  unknown:
+    - "&6%d&f has died of unknown causes"
+  lightning:
+    - "&6%d&f was struck down by a bolt of lightning"
+  suicide:
+    - "hari kari suited &6%d&f"
+    - "&6%d&f chose the ignoble way out"
+  drowning:
+    - "&6%d&f needs to learn to swim"
+    - "dog paddling wasn't enough for &6%d&f"
+    - "&2water&f was the end of poor &6%d&f"
+  void:
+    - "The &0void&f has claimed &6%d&f"
+  creeper:
+    - "The &2creeper&f blast vaporized &6%d&f"
+  zombie:
+    - "&6%d&f has left this world as a &2zombie"
+    - "&2Zombies&f have devoured &6%d&f"
+    - "The &2zombie&f horde have claimed &6%d&f"
+  skeleton:
+    - "&6%d&f was pierced by a &7skeleton&f arrow"
+    - "&6%d&f was no match for the &7skeleton&f"
+  spider:
+    - "Spiders have drained &6%d&f"
+  cavespider:
+    - "Cavespiders have swarmed &6%d&f"
+  enderdragon:
+    - "The &8ender dragon&f has annihilated &6%d&f"
+  blaze:
+    - "The &4blaze&f has crisped &6%d&f"
+  silverfish:
+    - "&6%d&f was overwhelmed by silverfish"
+  enderman:
+    - "&8Endermen&f have taken &6%d&f to the nether"
+    - '&6%d&f looked into the eyes of the&8Endermen'
+  snowman:
+    - '&8Endermen&f have taken &6%d&f to the nether'
+  ozelot:
+    - 'The cute ocelot showed its power to &6%d&f'
+    - '&6%d&f discovered that ocelots have fangs'
+  anvil:
+    - '&6%d&f was crushed by an anvil'
+    - '&6%d&f found to use anvils, not stand under them'
+  wolf:
+    - "&6%d&f was hunted down by the pack"
+    - "&6%d&f was devored by wolves"
+  giant:
+    - "&6%d&f was smashed by a Giant"
+    - "A giant has flattened &6%d&f"
+  slime:
+    - "&6%d&f was liquified by a &aslime"
+    - "&6%d&f was enveloped by &aslime"
+  ghast:
+    - "&6%d&f was burned by ghasts"
+  pigzombie:
+    - "The PigZombie horde has claimed &6%d&f"
+  lavaslime:
+    - "&6%d&f has been lavaslimed!"
+pvp:
+  prefix: "&4[PvP]&f "
+  meleeDeaths:
+    - "&6%k&f has slain &6%d&f with a &6%i&f!"
+    - "&6%k&f is victorious over &6%d&f!"
+    - "&6%k&f has overpowered &6%d&f in combat!"
+    - "&6%k&f killed &6%d&f with a &6%i&f!"
+    - "&6%k&f's &6%i&f has ended poor &6%d&f!"
+    - "&6%k&f evicerated &6%d&f!"
+    - "&6%k&f had fun slicing and dicing &6%d&f!"
+    - "&6%k&f sent &6%d&f to pay Charon!"
+    - "&6%k&f impaled &6%d&f with a &6%i&f!"
+    - "&6%k&f destroyed &6%d&f!"
+    - "&6%k&f gutted the unfortunate &6%d&f!"
+    - "&6%k&f has sent &6%d&f to the heavenly realm!"
+    - "&6%k&f showed &6%d&f the meaning of pain!"
+    - "&6%k&f split &6%d&f in twain!"
+    - "&6%k&f overcame &6%d&f in battle!"
+    - "&6%k&f defeated &6%d&f in mighty struggle!"
+    - "&6%k&f ended all dreams for &6%d&f!"
+  rangeDeaths:
+    - "&6%k&f has riddled &6%d&f with arrows!"
+    - "With a well aimed shot &6%k&f punctured &6%d&f's heart!"
+  bow:
+    - '&6%k&f feathered &6%d&f with arrows from &e%i &5%l'
+    - '&6%k&fs arrow pierced through &6%d&f with &e%i &5%l'
+  air:
+    - "&6%k&f pummeled &6%d&f with their bare hands!"
+    - "&6%d&f was no match for the combat skills of &6%k&f"
+    - "&6%k&f showed &6%d&f that fists are weapons too"
+    - "&6%k&f fists broke down &6%d&f"
+  diamond_sword:
+    - "&6%k&f sliced through &6%d&f with a &6%i&f"
+    - "&6%k&f's &6%i&f split &6%d&f in two"
+  iron_sword:
+    - "&6%k&f slayed &6%d&f with an &6%i&f"
+  wood_sword:
+    - "&6%k&f hacked &6%d&f to death with a &6%i&f"
+  diamond_axe:
+    - "&6%k&f used &6%d&f as mere lumber"
+    - "&6%k&f cleaved &6%d&f with a &6%i&f"
+
+special:
+  rampage: 
+    default: "&6%k&f has slain &6%d&f on a rampage of &c%n&f kills!!!"
+    "2": "&6%k&f has started a rampage on &6%d&f !!!"
+    "3": "&6%k&f is on a rampage!!!"
+  streak: 
+    default: "&6%k&f has slain &6%d&f in a streak of &c%n&f kills!!!"
+    "10": "&6%k&f is on a killing spree! slaying &6%d&f in a streak of &c%n&f kills!!!"
+    "20": "&6%k&f is unstoppable killing &6%d&f in a streak of &c%n&f kills!!!"
+
+messages:
+  prefix: "&5[Tracker]&f "
+  xBetween: "&cx must be between 1 and %s"
+  recordNotFound: "&cA record for player &6%s&4 couldn't be found"
+  playerNotFound: "&cThe player %s was not found"
+  noRecordsInTable: "&cthere are no records in the &6%s&c table"

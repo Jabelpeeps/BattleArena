@@ -7,38 +7,17 @@ public class BlankArenaStat implements ArenaStat{
 	private BlankArenaStat(){}
 
 	@Override
-    public int getWinsVersus(ArenaStat st2) {
-		return 0;
-	}
-
+    public int getWinsVersus(ArenaStat st2) { return 0; }
 	@Override
-    public int getLossesVersus(ArenaStat st2) {
-		return 0;
-	}
-
+    public int getLossesVersus(ArenaStat st2) { return 0; }
 	@Override
-    public int getWins() {
-		return 0;
-	}
-
+    public int getWins() { return 0; }
 	@Override
-    public int getLosses() {
-		return 0;
-	}
-
+    public int getLosses() { return 0; }
 	@Override
-    public int getRanking() {
-		return 1250;
-	}
-
+    public int getRanking() { return 1250; }
 	@Override
-    public int getRating() {
-		return 1250;
-	}
-
+    public int getRating() { return 1250; }
 	@Override
-	public String getDB() {
-		return "";
-	}
-
+	public String getDB() { return ""; }
 }

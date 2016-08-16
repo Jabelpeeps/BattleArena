@@ -4,7 +4,7 @@ version: ${project.version}
 website: http://dev.bukkit.org/bukkit-plugins/battlearena2/
 description: Arena system for BattleCraft
 authors: [alkarin, Europia79]
-softdepend: [BattleTracker, Essentials, Herochat, Heroes, IcePvPControl, Factions, GroupManager, mcMMO, MultiInv, Multiworld, Multiverse-Core, Multiverse-Inventories, PvPToggle, PvPTime, PvPTimer, SimpleClans, TagAPI, Towny, WorldEdit, WorldGuard, VanishNoPackes, Vault]
+softdepend: [BattleTracker-lite, Essentials, Herochat, Heroes, IcePvPControl, Factions, GroupManager, mcMMO, MultiInv, Multiworld, Multiverse-Core, Multiverse-Inventories, PvPToggle, PvPTime, PvPTimer, SimpleClans, TagAPI, Towny, WorldEdit, WorldGuard, VanishNoPackes, Vault]
 commands:
     arenaScoreboard:
         aliases: [sb]
@@ -13,51 +13,51 @@ commands:
     arenateam:
         aliases: [team,at]
         description: Team commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     arena:
         aliases: [a]
         description: Arena commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     skirmish:
         aliases: [sk]
         description: Skirmish commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     battleground:
         aliases: [bg]
         description: battleground commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     watch:
         description: watch a fight
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     tourney:
         description: Create a tournament
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     colosseum:
         aliases: [col]
         description: colosseum commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     freeforall:
         aliases: [ffa]
         description: join a ffa
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     deathMatch:
         aliases: [dm]
         description: join a dm
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     arenaAlter:
         aliases: [arenaEdit,aa]
     battleArena:
         aliases: [ba]
         description: Admin commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     battleArenaDebug:
         aliases: [bad]
         description: Debugging Commands
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
     battleArenaScheduler:
         aliases: [bas]
         description: Schedule Continuous Events
-        usage: Problem loading plugin, please send errors on startup to alkarin_v
+    battleTracker:
+        aliases: [bt]
+        description: Show help menu
+        usage: /bt
+    btpvp:
+        aliases: [pvp]
+        description: Show how players have matched up
+        usage: /pvp player1 [player2]
+    btpve:
+        aliases: [pve]
+        description: Show how players have matched up vs mobs/environment
+        usage: /pve player1 [player2]
 permissions:
     battlearena.admin:
         default: op

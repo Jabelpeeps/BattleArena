@@ -13,9 +13,9 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 
 public class LobbyContainer extends RoomContainer{
-	Map<ArenaPlayer,Arena> votedFor = new HashMap<ArenaPlayer,Arena>();
-	Map<Arena, Integer> arenaVotes = new ConcurrentHashMap<Arena, Integer>();
-	Set<ArenaPlayer> waitingForMatch = new HashSet<ArenaPlayer>();
+	Map<ArenaPlayer,Arena> votedFor = new HashMap<>();
+	Map<Arena, Integer> arenaVotes = new ConcurrentHashMap<>();
+	Set<ArenaPlayer> waitingForMatch = new HashSet<>();
 
 	public LobbyContainer(String name,LocationType type) {
 		super(name, type);
@@ -31,9 +31,10 @@ public class LobbyContainer extends RoomContainer{
 		}
 
 		Arena a = votedFor.remove(ap);
-		if (a != null){
-			decrementVote(a);}
-		Integer nVotes = incrementVote(arena);
+		if (a != null)
+			decrementVote(a);
+		
+		incrementVote(arena);
 	}
 
 	private Integer incrementVote(Arena arena) {

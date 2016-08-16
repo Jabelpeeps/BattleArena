@@ -230,7 +230,7 @@ public class ArenaAlterController {
                 }
             }
 
-            ConfigurationSection cs = BattleArena.getSelf().getBAConfigSerializer().getWorldGuardConfig();
+            ConfigurationSection cs = BattleArena.getBAConfigSerializer().getWorldGuardConfig();
             if (cs != null && cs.contains("defaultWGFlags")) {
                 cs = cs.getConfigurationSection("defaultWGFlags");
                 Set<String> set = cs.getKeys(false);

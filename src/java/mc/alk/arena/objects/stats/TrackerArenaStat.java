@@ -1,62 +1,35 @@
 package mc.alk.arena.objects.stats;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.tracker.objects.Stat;
 import mc.alk.tracker.objects.VersusRecords.VersusRecord;
 
-public class TrackerArenaStat implements ArenaStat{
-	final Stat stat;
-	final String db;
-
-	public TrackerArenaStat(String db, Stat stat) {
-		this.db = db;
-		this.stat = stat;
-	}
+@AllArgsConstructor
+public class TrackerArenaStat implements ArenaStat {
+    @Getter final String DB;
+	@Getter final Stat stat;
 
 	@Override
 	public int getWinsVersus(ArenaStat ostat) {
-		Stat st2 = ((TrackerArenaStat)ostat).getStat();
-		VersusRecord vs = stat.getRecordVersus(st2);
+		VersusRecord vs = stat.getRecordVersus( ((TrackerArenaStat) ostat).getStat() );
 		return vs == null ? 0 : vs.wins;
 	}
 
 	@Override
 	public int getLossesVersus(ArenaStat ostat) {
-		Stat st2 = ((TrackerArenaStat)ostat).getStat();
-		VersusRecord vs = stat.getRecordVersus(st2);
+		VersusRecord vs = stat.getRecordVersus( ((TrackerArenaStat) ostat).getStat() );
 		return vs == null ? 0 : vs.losses;
 	}
 
 	@Override
-	public int getWins() {
-		return stat.getWins();
-	}
-
+	public int getWins() { return stat.getWins(); }
 	@Override
-	public int getLosses() {
-		return stat.getLosses();
-	}
-
+	public int getLosses() { return stat.getLosses(); }
 	@Override
-	public int getRanking() {
-		return stat.getRating();
-	}
-
+	public int getRanking() { return (int) stat.getRating(); }
 	@Override
-	public int getRating() {
-		return stat.getRating();
-	}
-
-	public Stat getStat(){
-		return stat;
-	}
-
+	public int getRating() { return (int) stat.getRating(); }
 	@Override
-	public String toString(){
-		return stat.toString();
-	}
-
-	@Override
-	public String getDB() {
-		return db;
-	}
+	public String toString() { return stat.toString(); }
 }

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NoArgsConstructor;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
@@ -89,6 +90,7 @@ public class FullScoreboard implements WaitingScoreboard {
                 reqPlaceHolderPlayers.get(teamIndex).size() : 0;
     }
 
+    @NoArgsConstructor
     private class TempEntry{
         String name;
         int points;

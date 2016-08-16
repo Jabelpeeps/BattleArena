@@ -38,7 +38,6 @@ import mc.alk.arena.objects.arenas.ArenaControllerInterface;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.exceptions.MatchCreationException;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.joining.ArenaMatchQueue;
 import mc.alk.arena.objects.joining.MatchTeamQObject;
@@ -61,7 +60,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     final private Map<ArenaType,List<Match>> unfilled_matches =new HashMap<>();
     private Map<String, Arena> allarenas = new ConcurrentHashMap<>();
     final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<>();
-    private final ArenaMatchQueue amq = new ArenaMatchQueue();
+    final ArenaMatchQueue amq = new ArenaMatchQueue();
     final SignUpdateListener signUpdateListener;
 
     final private Map<ArenaType, Arena> fixedArenas = new HashMap<>();
@@ -113,7 +112,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public Match createAndAutoMatch(Arena arena, EventOpenOptions eoo)
-            throws NeverWouldJoinException, IllegalStateException, MatchCreationException {
+                                                throws NeverWouldJoinException, IllegalStateException {
         MatchParams mp = eoo.getParams();
         MatchParams oldArenaParams = arena.getParams();
 

@@ -151,7 +151,7 @@ public class ArenaMatch extends Match {
             }
             /// We can't let them just sit on the respawn screen... schedule them to lose
             /// We will cancel this onRespawn
-            final ArenaMatch am = this;
+//            final ArenaMatch am = this;
             Integer timer = deathTimer.get(target.getUniqueId());
             if (timer != null){
                 Bukkit.getScheduler().cancelTask(timer);

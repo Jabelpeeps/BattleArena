@@ -20,7 +20,6 @@ public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, Cou
         super(match);
     }
 
-    @SuppressWarnings("UnusedParameters")
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onStart(MatchStartEvent event){
         cancelTimers();
@@ -34,7 +33,6 @@ public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, Cou
             cancelTimers();
     }
 
-    @SuppressWarnings("UnusedParameters")
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)
     public void onFinished(MatchFinishedEvent event){
         cancelTimers();

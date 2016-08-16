@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0"?> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <url>http://maven.apache.org</url>
     
-    <name>BattleArena</name>
+    <name>BattleArena-lite</name>
     <groupId>mc.alk</groupId>
     <artifactId>BattleArena-lite</artifactId>
     <packaging>jar</packaging>
@@ -16,8 +16,7 @@
         <build.number>${env.BUILD_NUMBER}</build.number>
 		<craftbukkit.version>1.10.2-R0.1-SNAPSHOT</craftbukkit.version>
     </properties>
-    
-    <!-- Locations for jar repositories -->
+
     <repositories>
         <repository>
             <id>spigot-repo</id>
@@ -55,12 +54,16 @@
         	<id>nametag-repo</id>
         	<url>http://ci.playmc.cc/plugin/repository/everything/</url>
         </repository>
+        <repository>
+            <id>mcMMO-repo</id>
+            <url>http://repo.terrocidepvp.net/artifactory/jenkins/</url>
+        </repository>
     </repositories>
+    
     <dependencies>
-        <!-- Dependencies that have maven repos -->
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>${craftbukkit.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -72,10 +75,29 @@
         </dependency>
         
         <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${craftbukkit.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
             <groupId>org.kitteh</groupId>
             <artifactId>VanishNoPacket</artifactId>
             <version>3.19.2-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -127,14 +149,6 @@
             	</exclusion>
             </exclusions>
         </dependency>
-        
-        <!-- Runtime dependencies -->
-        <dependency>
-            <groupId>mc.alk</groupId>
-            <artifactId>BattleTracker</artifactId>
-            <version>2.5.9.2</version>
-            <scope>provided</scope>
-        </dependency>
        
         <dependency>
             <groupId>LibsDisguises</groupId>
@@ -146,7 +160,7 @@
         <dependency>
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
-            <version>1.4.08-SNAPSHOT</version>
+            <version>1.5.06-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
             	<exclusion>
@@ -219,6 +233,7 @@
             <version>2.8.0</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>mcore</artifactId>
@@ -266,15 +281,21 @@
             <version>1.16.10</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+	        <groupId>commons-dbcp</groupId>
+	        <artifactId>commons-dbcp</artifactId>
+	        <version>1.4</version>
+	        <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 
     <build>
         <finalName>${project.name}.${project.version}-#${build.number}</finalName>
-        <defaultGoal>clean package</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
-<!--         <testSourceDirectory>${basedir}/src/test</testSourceDirectory> -->
-        <!-- Include all the resources we need -->
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>

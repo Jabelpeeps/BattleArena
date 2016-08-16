@@ -130,7 +130,8 @@ public abstract class BaseExecutor implements CommandExecutor{
             mthds.put(order, mw);
             methods.put(cmd, mthds);
             addUsage(mw, mc);
-        } else {
+        } 
+        else {
             Map<String,TreeMap<Integer,MethodWrapper>> basemthds = subCmdMethods.get(cmd);
             if (basemthds == null){
                 basemthds = new HashMap<>();
@@ -250,7 +251,7 @@ public abstract class BaseExecutor implements CommandExecutor{
             mccmd = mwrapper.method.getAnnotation(MCCommand.class);
             final boolean isOp = sender == null || sender.isOp() || sender instanceof ConsoleCommandSender;
 
-            if (mccmd.op() && !isOp || mccmd.admin() ) /// no op, no pass
+            if (( mccmd.op() && !isOp ) || mccmd.admin() ) /// no op, no pass
                 continue;
             Arguments newArgs = null;
             try {
@@ -289,17 +290,17 @@ public abstract class BaseExecutor implements CommandExecutor{
 
     private void logInvocationError(Exception e, MethodWrapper mwrapper, Arguments newArgs) {
         
-        System.err.println("["+BattleArena.getNameAndVersion()+" Error] "+mwrapper.method +" : " + mwrapper.obj +"  : " + newArgs);
+        Log.err( "["+BattleArena.getNameAndVersion()+" Error] "+mwrapper.method +" : " + mwrapper.obj +"  : " + newArgs);
         if (newArgs!=null && newArgs.args != null){
             for (Object o: newArgs.args)
                 System.err.println("[Error] object=" + o);
         }
-        System.err.println("[Error] Cause=" + e.getCause());
+        Log.err( "[Error] Cause=" + e.getCause());
         if (e.getCause() != null){
             e.getCause().printStackTrace();
             Log.printStackTrace(e.getCause());
         }
-        System.err.println("[Error] Trace Continued ");
+        Log.err( "[Error] Trace Continued ");
         Log.printStackTrace(e);
     }
 
@@ -369,7 +370,7 @@ public abstract class BaseExecutor implements CommandExecutor{
                         throw new IllegalArgumentException("Argument " + args[strIndex] + " can not be null");
                     }
                 }
-                if (DEBUG)Log.info("   " + objIndex + " : " + strIndex + "  " +
+                if (DEBUG) Log.info("   " + objIndex + " : " + strIndex + "  " +
                         (args.length > strIndex ? args[strIndex] : null ) + " <-> " + objs[objIndex] +" !!! Cs = " +
                         clazz.getCanonicalName());
                 if (numUsedStrings.get() > 0){

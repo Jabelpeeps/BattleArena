@@ -1,9 +1,5 @@
 package mc.alk.scoreboardapi;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,9 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 public class SAPIScoreboard implements SScoreboard{
-	protected Map<String, SObjective> objectives = new HashMap<String,SObjective>();
-	protected HashMap<SAPIDisplaySlot,SObjective> slots = new HashMap<SAPIDisplaySlot,SObjective>();
+	protected Map<String, SObjective> objectives = new HashMap<>();
+	protected HashMap<SAPIDisplaySlot,SObjective> slots = new HashMap<>();
 	protected final String name;
 	protected Handler handler = new Handler();
     protected final Plugin plugin;
@@ -69,20 +69,19 @@ public class SAPIScoreboard implements SScoreboard{
 		if (!slots.containsKey(slot)){
 			_setDisplaySlot(slot,objective,fromObjective);
 			return true;
-		} else {
-			int opriority = slots.get(slot).getPriority();
-			/// Check to see if we need to move
-			/// if our new objective priority <= oldpriority
-			if (objective.getPriority() <= opriority){
-				SAPIDisplaySlot swapSlot = slot.swap();
-				SObjective movingObjective = slots.get(slot);
-				if (!slots.containsKey(swapSlot) || opriority <= slots.get(swapSlot).getPriority()) {
-					_setDisplaySlot(swapSlot,movingObjective,fromObjective);
-				}
-				_setDisplaySlot(slot,objective,fromObjective);
-				return true;
-			}
 		}
+        int opriority = slots.get(slot).getPriority();
+        /// Check to see if we need to move
+        /// if our new objective priority <= oldpriority
+        if (objective.getPriority() <= opriority){
+        	SAPIDisplaySlot swapSlot = slot.swap();
+        	SObjective movingObjective = slots.get(slot);
+        	if (!slots.containsKey(swapSlot) || opriority <= slots.get(swapSlot).getPriority()) {
+        		_setDisplaySlot(swapSlot,movingObjective,fromObjective);
+        	}
+        	_setDisplaySlot(slot,objective,fromObjective);
+        	return true;
+        }
 		return false;
 	}
 
@@ -189,7 +188,7 @@ public class SAPIScoreboard implements SScoreboard{
 
     @Override
 	public List<SObjective> getObjectives() {
-		return new ArrayList<SObjective>(objectives.values());
+		return new ArrayList<>(objectives.values());
 	}
 
 

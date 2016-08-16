@@ -185,7 +185,7 @@ public class MatchMessager extends MessageSerializer {
         msgf.formatCommonOptions(currentLeaders, remaining);
         msg = msgf.getFormattedMessage(message);
         
-        if (currentLeaders == null || currentLeaders.isEmpty()){
+        if ( currentLeaders.isEmpty()) {
 //          msg = match.getParams().getPrefix()+"&e ends in &4" +timeStr;
         } 
         else if (currentLeaders.size() == 1){

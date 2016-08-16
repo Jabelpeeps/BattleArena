@@ -15,7 +15,6 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.exceptions.InvalidEventException;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.options.EventOpenOptions;
@@ -36,18 +35,11 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
     }
 
     public boolean open(CommandSender sender, EventParams eventParams, String[] args) {
-        try {
-            openIt(sender,eventParams,args);
-        } catch (InvalidEventException e) {
-            MessageUtil.sendMessage(sender,e.getMessage());
-        } catch (Exception e){
-            MessageUtil.sendMessage(sender,e.getMessage());
-            Log.printStackTrace(e);
-        }
+        openIt(sender,eventParams,args);
         return true;
     }
 
-    public AbstractComp openIt(CommandSender sender, EventParams eventParams, String[] args) throws InvalidEventException{
+    public AbstractComp openIt(CommandSender sender, EventParams eventParams, String[] args){
         SizeEventPair result = controller.getUniqueEvent(eventParams);
         AbstractComp event = result.event;
         if (event != null){

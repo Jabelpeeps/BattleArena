@@ -38,8 +38,8 @@ public class SignUpdateListener implements Listener {
         return "";
     }
 
-    private void setPeopleInQueue(Arena arena, int playersInQueue,
-                                  int neededPlayers, int maxPlayers) {
+    private void setPeopleInQueue(Arena arena, int playersInQueue, int neededPlayers, int maxPlayers) {
+        
         ArenaCommandSign[] signLocs = arenaSigns.getSafe(arena.getName());
         if (signLocs == null || signLocs.length == 0){
             return;
@@ -112,8 +112,7 @@ public class SignUpdateListener implements Listener {
         arenaSigns.add(a.getName(), acs);
     }
 
-    public void updateAllSigns() {
-    }
+//    public void updateAllSigns() { }
 
     public MapOfTreeSet<String, ArenaCommandSign> getStatusSigns() {
         return arenaSigns;

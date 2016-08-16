@@ -168,7 +168,7 @@ public class TeleportController implements Listener {
         }, TELEPORT_FIX_DELAY);
     }
 
-    private void updateEntities(final Player tpedPlayer, final List<Player> players, boolean visible) {
+    void updateEntities(final Player tpedPlayer, final List<Player> players, boolean visible) {
         // Hide or show every player to tpedPlayer
         // and hide or show tpedPlayer to every player.
         for (Player player : players) {
@@ -191,7 +191,7 @@ public class TeleportController implements Listener {
         }
     }
 
-    private List<Player> getPlayersWithinDistance(final Player player, final int distance) {
+    List<Player> getPlayersWithinDistance(final Player player, final int distance) {
         List<Player> res = new ArrayList<>();
         final int d2 = distance * distance;
         final UUID uid = player.getWorld().getUID();

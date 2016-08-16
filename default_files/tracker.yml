@@ -1,0 +1,57 @@
+version: 1.0.4
+
+showBukkitPVPMessages: false # turn on and off normal bukkit death messages for pvp
+showBukkitPVEMessages: false # turn on and off normal bukkit death messages for pve
+sendPVPDeathMessages: true # send Custom Messages on PvP deaths
+sendPVEDeathMessages: true # send Custom Messages on PvE deaths
+
+### If server wide PvP or Pve messages are disabled you can turn
+### these to true to allow the killer and the dead person
+### to still see the messages
+sendInvolvedPvPMessages: false
+sendInvolvedPvEMessages: false
+
+### Track Player vs Player stats
+trackPvP: true
+
+### Track Player vs Environment stats
+trackPvE: false
+
+### The default messages when top command is used
+topHeaderMsg: '&4Top &6{interfaceName}&4 {stat} TeamSize:{teamSize}'
+topBodyMsg: '&e#{rank}&4 {name} - {wins}:{losses}&6[{rating}]'
+
+### ignore the following entities when they kill or are killed
+ignoreEntities: []
+
+### ignore the following worlds
+ignoreWorlds: []
+
+### Should we even use leaderboard signs and personal signs?
+useSigns: true
+
+### If showing PvP messages should we use a Herochat channel
+useHeroChat: false
+chatChannel: "Global" ## Which channel to use
+
+msgRadius: 0 ## Set to 0 for global
+
+### If number of seconds between kills is less than
+### this number, show on a rampage message
+rampageTime: 7
+
+### Display a player is on a streak messages every x kills
+streakMessagesEvery: 15
+
+SQLOptions:
+  type: sqlite # sqlite or mysql
+  db: tracker # db name
+  url : "localhost" # ignored if not mysql
+  port : "3306" # ignored if not mysql
+  username: "root"
+  password: ""
+
+## These are the default elo options, they can be overridden by calling plugins
+elo:
+  default: 1250
+  spread: 400

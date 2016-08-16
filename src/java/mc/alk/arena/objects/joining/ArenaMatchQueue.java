@@ -56,7 +56,6 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.exceptions.MatchCreationException;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.options.EventOpenOptions;
 import mc.alk.arena.objects.options.JoinOptions;
@@ -341,7 +340,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
 
-    public Match createMatch(Arena arena, EventOpenOptions eoo) throws MatchCreationException, NeverWouldJoinException {
+    public Match createMatch(Arena arena, EventOpenOptions eoo) throws NeverWouldJoinException {
         FoundMatch mf;
         mf = new FoundMatch();
         mf.arena = arena;
@@ -371,7 +370,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return tjh != null;
     }
 
-    private void removeFromQueue(AbstractJoinHandler joinHandler) {
+    void removeFromQueue(AbstractJoinHandler joinHandler) {
         for (ArenaTeam t : joinHandler.getTeams()) {
             for (ArenaPlayer ap : t.getPlayers()) {
                 removeFromQueue(ap, false);
@@ -421,7 +420,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return forceStart(null, params, needsMinPlayers);
     }
 
-    private boolean forceStart(WaitingObject wo, MatchParams params, boolean needsMinPlayers) {
+    boolean forceStart(WaitingObject wo, MatchParams params, boolean needsMinPlayers) {
         List<FoundMatch> finds = null;
         synchronized (joinHandlers) {
             Iterator<WaitingObject> iter = joinHandlers.iterator();
@@ -462,7 +461,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return finds != null && !finds.isEmpty();
     }
 
-    private void remove(WaitingObject wo) {
+    void remove(WaitingObject wo) {
         synchronized (joinHandlers) {
             joinHandlers.remove(wo);
             removeTimer(wo);
@@ -824,7 +823,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return idt != null && System.currentTimeMillis() - idt.time >= 0;
     }
 
-    private Long removeTimer(WaitingObject wo){
+    Long removeTimer(WaitingObject wo){
         IdTime idt = forceTimers.remove(wo);
         if (idt != null && idt.c != null){
             idt.c.stop();

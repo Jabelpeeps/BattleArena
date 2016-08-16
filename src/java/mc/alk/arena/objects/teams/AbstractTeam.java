@@ -324,7 +324,6 @@ abstract class AbstractTeam implements ArenaTeam{
         this.nameManuallySet = true;
     }
 
-	@SuppressWarnings("SimplifiableIfStatement")
     @Override
 	public boolean equals(Object other) {
 		if (this == other) return true;
