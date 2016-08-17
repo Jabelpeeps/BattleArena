@@ -5,8 +5,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.STeam;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.scoreboardapi.STeam;
 
 import java.util.List;
 

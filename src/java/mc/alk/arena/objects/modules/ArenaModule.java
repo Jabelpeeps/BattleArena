@@ -12,8 +12,8 @@ import org.bukkit.event.Listener;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.arenas.ArenaListener;
-import mc.alk.util.FileUtil;
-import mc.alk.util.Log;
+import mc.alk.arena.util.FileUtil;
+import mc.alk.arena.util.Log;
 
 public abstract class ArenaModule implements Listener, ArenaListener {
 	@Getter private boolean enabled;

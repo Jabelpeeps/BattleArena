@@ -45,14 +45,14 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.scoreboardapi.SEntry;
-import mc.alk.util.CommandUtil;
-import mc.alk.util.Countdown;
-import mc.alk.util.DmgDeathUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PermissionsUtil;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.scoreboardapi.SEntry;
+import mc.alk.arena.util.CommandUtil;
+import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.DmgDeathUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.arena.util.TeamUtil;
 
 
 public class ArenaMatch extends Match {

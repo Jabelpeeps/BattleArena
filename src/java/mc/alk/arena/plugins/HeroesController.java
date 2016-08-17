@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.Log;
-import mc.alk.util.PlayerUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.PlayerUtil;
 
 public class HeroesController {
 	static boolean hasHeroes = false;

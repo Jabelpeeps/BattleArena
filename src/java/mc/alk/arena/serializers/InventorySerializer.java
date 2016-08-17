@@ -21,10 +21,10 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.InventoryUtil.PInv;
-import mc.alk.util.KeyValue;
-import mc.alk.util.Log;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.KeyValue;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 public class InventorySerializer {
 

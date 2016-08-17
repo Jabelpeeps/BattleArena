@@ -26,9 +26,9 @@ import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.serializers.InventorySerializer;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.InventoryUtil.PInv;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 public class BattleArenaExecutor extends CustomCommandExecutor {
 

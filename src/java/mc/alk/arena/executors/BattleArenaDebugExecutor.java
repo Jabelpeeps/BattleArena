@@ -44,15 +44,15 @@ import mc.alk.arena.objects.joining.WaitingObject;
 import mc.alk.arena.objects.spawns.SpawnIndex;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.ExpUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.NotifierUtil;
-import mc.alk.util.SerializerUtil;
-import mc.alk.util.TeamUtil;
-import mc.alk.util.TimingUtil;
-import mc.alk.util.TimingUtil.TimingStat;
+import mc.alk.arena.util.ExpUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.NotifierUtil;
+import mc.alk.arena.util.SerializerUtil;
+import mc.alk.arena.util.TeamUtil;
+import mc.alk.arena.util.TimingUtil;
+import mc.alk.arena.util.TimingUtil.TimingStat;
 
 public class BattleArenaDebugExecutor extends CustomCommandExecutor{
 

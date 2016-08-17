@@ -16,8 +16,8 @@ import mc.alk.arena.controllers.EventScheduler;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.pairs.EventPair;
-import mc.alk.util.Log;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
 
 
 public class EventScheduleSerializer extends BaseConfig {

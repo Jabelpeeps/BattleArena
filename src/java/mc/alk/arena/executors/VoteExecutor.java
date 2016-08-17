@@ -6,8 +6,8 @@ import mc.alk.arena.controllers.containers.LobbyContainer;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PermissionsUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
 
 public class VoteExecutor extends CustomCommandExecutor{
 

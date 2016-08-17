@@ -17,26 +17,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
-import mc.alk.tracker.controllers.ConfigController;
-import mc.alk.tracker.controllers.MessageController;
+import mc.alk.arena.executors.BattleTrackerExecutor;
+import mc.alk.arena.executors.TrackerExecutor;
+import mc.alk.arena.listeners.BTEntityListener;
+import mc.alk.arena.listeners.BTSignListener;
+import mc.alk.arena.serializers.tracker.YamlConfigUpdater;
+import mc.alk.arena.serializers.tracker.YamlMessageUpdater;
 import mc.alk.tracker.controllers.SignController;
-import mc.alk.tracker.controllers.TrackerImpl;
-import mc.alk.tracker.executors.BattleTrackerExecutor;
-import mc.alk.tracker.executors.TrackerExecutor;
-import mc.alk.tracker.listeners.BTEntityListener;
-import mc.alk.tracker.listeners.BTPluginListener;
-import mc.alk.tracker.listeners.SignListener;
+import mc.alk.tracker.controllers.TrackerConfigController;
+import mc.alk.tracker.controllers.TrackerInterface;
+import mc.alk.tracker.controllers.TrackerMessageController;
 import mc.alk.tracker.objects.StatSign;
-import mc.alk.tracker.serializers.SignSerializer;
-import mc.alk.tracker.serializers.YamlConfigUpdater;
-import mc.alk.tracker.serializers.YamlMessageUpdater;
 
 public class Tracker {
 
     static JavaPlugin BA = BattleArena.getSelf();
     final static Map<String, TrackerInterface> interfaces = Collections.synchronizedMap( new ConcurrentHashMap<>() );
     static SignController signController = new SignController();
-    static SignSerializer signSerializer;
     final static String CONFIG = "/tracker.yml";
     final static String MESSAGES = "/tracker_messages.yml";
 
@@ -49,13 +46,10 @@ public class Tracker {
         loadConfigs();
 
         Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
-        Bukkit.getPluginManager().registerEvents(new BTPluginListener(), BA);
 
         BA.getCommand("battleTracker").setExecutor(new BattleTrackerExecutor());
         BA.getCommand("btpvp").setExecutor(new TrackerExecutor(getInterface(Defaults.PVP_INTERFACE)));
         BA.getCommand("btpve").setExecutor(new TrackerExecutor(getInterface(Defaults.PVE_INTERFACE)));
-
-        BTPluginListener.loadPlugins();
     }
 
     public static boolean isEnabled() {
@@ -65,27 +59,25 @@ public class Tracker {
     public static void loadConfigs() {
         
         File data = BA.getDataFolder();      
-        ConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );
-        MessageController.setConfig( load( "/default_files" + MESSAGES, data.getPath() + MESSAGES ) );
+        TrackerConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );
+        TrackerMessageController.setConfig( load( "/default_files" + MESSAGES, data.getPath() + MESSAGES ) );
 
-        ConfigController.loadAll();
-        MessageController.load();
+        TrackerConfigController.loadAll();
+        TrackerMessageController.load();
         
         Scheduler.scheduleSynchronousTask( () -> {
-                signSerializer = new SignSerializer(signController);
-                signSerializer.setConfig( data.getPath() + "/signs.yml" );
-                signSerializer.loadAll();
+                signController.getSerialiser().setConfig( data.getPath() + "/signs.yml" );
+                signController.getSerialiser().loadAll();
         }, 22);
 
         YamlConfigUpdater cu = new YamlConfigUpdater();
-        cu.update(ConfigController.getConfig(), ConfigController.getFile());
+        cu.update(TrackerConfigController.getConfig(), TrackerConfigController.getFile());
 
         YamlMessageUpdater mu = new YamlMessageUpdater();
-        mu.update(MessageController.getConfig(), MessageController.getFile());
-
+        mu.update(TrackerMessageController.getConfig(), TrackerMessageController.getFile());
 
         if (Defaults.USE_SIGNS) {
-            Bukkit.getPluginManager().registerEvents(new SignListener(signController), BA);
+            Bukkit.getPluginManager().registerEvents(new BTSignListener(signController), BA);
             Bukkit.getScheduler().scheduleSyncRepeatingTask(BA, () -> signController.updateSigns(), 20, 1000);
         }
     }
@@ -96,9 +88,8 @@ public class Tracker {
                 ti.flush();
             }
         }
-        /// can happen if tracker never loads properly (like starting and immediately stopping)
-        if (signSerializer != null) {
-            signSerializer.saveAll();
+        if (signController.getSerialiser() != null) {
+            signController.getSerialiser().saveAll();
         }
     }
 
@@ -117,7 +108,7 @@ public class Tracker {
     public static TrackerInterface getInterface(String interfaceName, TrackerOptions trackerOptions) {
         String iname = interfaceName.toLowerCase();
         if (!interfaces.containsKey(iname)) {
-            interfaces.put(iname, new TrackerImpl(interfaceName, trackerOptions));
+            interfaces.put(iname, new TrackerInterface(interfaceName, trackerOptions));
         }
         return interfaces.get(iname);
     }

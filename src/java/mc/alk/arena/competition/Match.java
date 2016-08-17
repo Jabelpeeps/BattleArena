@@ -89,14 +89,14 @@ import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.SEntry;
-import mc.alk.scoreboardapi.SObjective;
-import mc.alk.util.Countdown;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.scoreboardapi.SEntry;
+import mc.alk.arena.scoreboardapi.SObjective;
+import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.TeamUtil;
 
 public abstract class Match extends Competition implements Runnable, ArenaController {
 

@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 public class CommandController {
 

@@ -9,14 +9,14 @@ import org.bukkit.entity.Player;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
-import mc.alk.tracker.controllers.TrackerImpl;
-import mc.alk.tracker.events.MaxRatingChangeEvent;
-import mc.alk.tracker.events.WinStatChangeEvent;
+import mc.alk.arena.events.tracker.MaxRatingChangeEvent;
+import mc.alk.arena.events.tracker.WinStatChangeEvent;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.Util;
+import mc.alk.arena.util.Cache.CacheObject;
+import mc.alk.tracker.controllers.TrackerInterface;
 import mc.alk.tracker.objects.VersusRecords.VersusRecord;
 import mc.alk.tracker.ranking.EloCalculator;
-import mc.alk.util.Cache.CacheObject;
-import mc.alk.util.Log;
-import mc.alk.util.Util;
 
 
 public abstract class Stat extends CacheObject<String, Stat>{
@@ -32,7 +32,7 @@ public abstract class Stat extends CacheObject<String, Stat>{
 	@Getter List<String> members ;
 
 	@Getter VersusRecords recordSet = null;
-	@Setter private TrackerImpl parent;
+	@Setter private TrackerInterface parent;
 
 	@Override
 	public String getKey() {

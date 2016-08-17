@@ -14,10 +14,10 @@ import mc.alk.arena.objects.PlayerSave;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.util.EffectUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.InventoryUtil.PInv;
+import mc.alk.arena.util.EffectUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 public class PlayerStoreController {
     static final PlayerStoreController INSTANCE = new PlayerStoreController();

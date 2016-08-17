@@ -10,7 +10,7 @@ import mc.alk.arena.controllers.containers.LobbyContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.objects.ContainerState;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 import org.bukkit.configuration.ConfigurationSection;
 

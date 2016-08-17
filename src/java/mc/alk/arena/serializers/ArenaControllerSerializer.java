@@ -5,11 +5,11 @@ import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.PlayerRestoreController;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.SerializerUtil;
-import mc.alk.util.Util;
-import mc.alk.util.InventoryUtil.PInv;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
+import mc.alk.arena.util.Util;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;

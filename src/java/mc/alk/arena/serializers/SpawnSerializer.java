@@ -22,9 +22,9 @@ import mc.alk.arena.objects.spawns.ItemSpawn;
 import mc.alk.arena.objects.spawns.SpawnGroup;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
-import mc.alk.util.EntityUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
+import mc.alk.arena.util.EntityUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
 
 public class SpawnSerializer {
 

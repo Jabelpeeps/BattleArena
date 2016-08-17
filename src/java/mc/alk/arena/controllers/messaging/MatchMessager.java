@@ -22,8 +22,8 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.VictoryCondition;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesLeaderRanking;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.TeamUtil;
 
 
 public class MatchMessager extends MessageSerializer {

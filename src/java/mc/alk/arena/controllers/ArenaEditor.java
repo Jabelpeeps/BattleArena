@@ -21,8 +21,8 @@ import mc.alk.arena.objects.spawns.ChestSpawn;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.SpawnSerializer;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PlayerUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PlayerUtil;
 
 public class ArenaEditor implements Listener{
     int nListening=0;

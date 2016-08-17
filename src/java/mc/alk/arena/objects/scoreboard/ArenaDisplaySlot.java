@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.scoreboard;
 
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 
 public enum ArenaDisplaySlot {
 	SIDEBAR, PLAYER_LIST, BELOW_NAME, NONE;

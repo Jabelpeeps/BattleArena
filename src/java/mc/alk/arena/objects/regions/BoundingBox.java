@@ -4,7 +4,7 @@ package mc.alk.arena.objects.regions;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.SerializerUtil;
 
 public class BoundingBox {
 	protected Location lower;

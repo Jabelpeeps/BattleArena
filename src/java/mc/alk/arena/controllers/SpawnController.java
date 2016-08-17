@@ -10,8 +10,8 @@ import org.bukkit.plugin.Plugin;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
-import mc.alk.util.CaseInsensitiveMap;
-import mc.alk.util.Log;
+import mc.alk.arena.util.CaseInsensitiveMap;
+import mc.alk.arena.util.Log;
 
 public class SpawnController {
 

@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.spawns.EntitySpawn;
 import mc.alk.arena.objects.spawns.SpawnInstance;
-import mc.alk.util.InventoryUtil;
+import mc.alk.arena.util.InventoryUtil;
 
 public class ArenaClass {
 	public static final Integer DEFAULT = Integer.MAX_VALUE;

@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
-import mc.alk.util.Log;
-import mc.alk.util.VersionFactory;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.VersionFactory;
 
 /**
  * Stub class for future expansion

@@ -62,8 +62,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import mc.alk.arena.objects.exceptions.RegionNotFound;
 import mc.alk.arena.objects.regions.ArenaRegion;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
-import mc.alk.util.Log;
-import mc.alk.util.VersionFactory;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.VersionFactory;
 
 public class WorldGuardController {
   

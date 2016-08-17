@@ -3,7 +3,7 @@ package mc.alk.arena.objects.spawns;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
-import mc.alk.util.InventoryUtil;
+import mc.alk.arena.util.InventoryUtil;
 
 
 public class ItemSpawn extends SpawnInstance{

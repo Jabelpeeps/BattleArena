@@ -9,7 +9,7 @@ import org.bukkit.event.Event;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 
 /**

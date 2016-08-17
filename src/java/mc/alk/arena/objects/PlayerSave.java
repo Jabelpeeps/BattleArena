@@ -17,13 +17,13 @@ import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.plugins.EssentialsController;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.serializers.InventorySerializer;
-import mc.alk.util.EffectUtil;
-import mc.alk.util.ExpUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.InventoryUtil.PInv;
-import mc.alk.util.Log;
-import mc.alk.util.PermissionsUtil;
-import mc.alk.util.PlayerUtil;
+import mc.alk.arena.util.EffectUtil;
+import mc.alk.arena.util.ExpUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.arena.util.PlayerUtil;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 /**
  * @author alkarin

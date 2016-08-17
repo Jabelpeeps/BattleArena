@@ -15,8 +15,8 @@ import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.util.MessageUtil;
 
 /**
  * Command executor used to modify the Scoreboard of an arena that is in

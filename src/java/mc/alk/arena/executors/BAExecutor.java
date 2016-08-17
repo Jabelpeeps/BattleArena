@@ -89,15 +89,15 @@ import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.MobArenaInterface;
 import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.serializers.ArenaSerializer;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.InventoryUtil.PInv;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.MinMax;
-import mc.alk.util.PermissionsUtil;
-import mc.alk.util.ServerUtil;
-import mc.alk.util.TeamUtil;
-import mc.alk.util.TimeUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.arena.util.ServerUtil;
+import mc.alk.arena.util.TeamUtil;
+import mc.alk.arena.util.TimeUtil;
+import mc.alk.arena.util.InventoryUtil.PInv;
 
 /**
  *

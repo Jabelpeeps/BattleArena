@@ -5,7 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
 
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MessageUtil;
 
 
 public class TeamAppearance {

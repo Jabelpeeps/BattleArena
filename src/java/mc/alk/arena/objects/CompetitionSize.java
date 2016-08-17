@@ -1,6 +1,6 @@
 package mc.alk.arena.objects;
 
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.MinMax;
 
 public interface CompetitionSize {
 	public static final int MAX = Integer.MAX_VALUE;

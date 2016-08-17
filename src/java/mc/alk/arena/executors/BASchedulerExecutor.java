@@ -10,7 +10,7 @@ import mc.alk.arena.controllers.EventScheduler;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.pairs.EventPair;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MessageUtil;
 
 public class BASchedulerExecutor extends CustomCommandExecutor{
 	EventScheduler es;

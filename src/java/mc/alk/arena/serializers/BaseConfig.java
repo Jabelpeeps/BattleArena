@@ -8,7 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 public class BaseConfig { 
 	protected FileConfiguration config;

@@ -1,8 +1,8 @@
 package mc.alk.arena.objects.messaging;
 
 import mc.alk.arena.Defaults;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
 
 /**
  * @author alkarin

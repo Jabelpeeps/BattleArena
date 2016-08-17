@@ -7,8 +7,8 @@ import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.TRANSITION;
 import org.bukkit.GameMode;
 
 import mc.alk.arena.controllers.ArenaClassController;
-import mc.alk.util.EffectUtil;
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.EffectUtil;
+import mc.alk.arena.util.MinMax;
 
 public enum TransitionOption {
     /// Default only Options

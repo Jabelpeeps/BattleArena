@@ -13,8 +13,8 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.joining.ArenaMatchQueue;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
-import mc.alk.util.MapOfTreeSet;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MapOfTreeSet;
+import mc.alk.arena.util.MessageUtil;
 
 public class SignUpdateListener implements Listener {
     

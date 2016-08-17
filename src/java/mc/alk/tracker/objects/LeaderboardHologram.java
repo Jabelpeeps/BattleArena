@@ -7,7 +7,7 @@ import org.bukkit.Location;
 
 import lombok.Getter;
 import lombok.Setter;
-import mc.alk.tracker.TrackerInterface;
+import mc.alk.tracker.controllers.TrackerInterface;
 
 public class LeaderboardHologram extends Hologram {
 	@Getter private String leaderboardName;

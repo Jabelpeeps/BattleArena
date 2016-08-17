@@ -18,8 +18,8 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.plugins.TrackerController;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PermissionsUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
 
 abstract class AbstractTeam implements ArenaTeam{
 	static int count = 0;

@@ -2,7 +2,7 @@ package mc.alk.arena.objects.teams;
 
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.TeamUtil;
 
 import java.util.Set;
 

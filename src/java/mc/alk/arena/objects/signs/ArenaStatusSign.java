@@ -5,7 +5,7 @@ import java.util.Map;
 
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.SerializerUtil;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

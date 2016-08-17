@@ -10,12 +10,12 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.serializers.tracker.SQLInstance;
+import mc.alk.arena.util.Cache;
+import mc.alk.arena.util.Cache.CacheObject;
+import mc.alk.arena.util.Cache.CacheSerializer;
 import mc.alk.tracker.objects.VersusRecords.VersusRecord;
 import mc.alk.tracker.objects.WLTRecord.WLT;
-import mc.alk.tracker.serializers.SQLInstance;
-import mc.alk.util.Cache;
-import mc.alk.util.Cache.CacheObject;
-import mc.alk.util.Cache.CacheSerializer;
 
 public class VersusRecords implements CacheSerializer<List<String>,VersusRecord>{
 	String id;

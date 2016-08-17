@@ -1,7 +1,7 @@
 package mc.alk.arena.objects.messaging.plugins;
 
 import mc.alk.arena.objects.messaging.Channel;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MessageUtil;
 
 public class HerochatChannel implements Channel {
 	com.dthielke.herochat.Channel channel;

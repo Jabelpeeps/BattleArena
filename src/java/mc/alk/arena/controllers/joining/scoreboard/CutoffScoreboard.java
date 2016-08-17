@@ -16,12 +16,12 @@ import mc.alk.arena.objects.scoreboard.ScoreboardFactory;
 import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.scoreboardapi.SEntry;
-import mc.alk.scoreboardapi.STeam;
-import mc.alk.util.Countdown;
-import mc.alk.util.TeamUtil;
-import mc.alk.util.Countdown.CountdownCallback;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.scoreboardapi.SEntry;
+import mc.alk.arena.scoreboardapi.STeam;
+import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.TeamUtil;
+import mc.alk.arena.util.Countdown.CountdownCallback;
 
 public class CutoffScoreboard implements WaitingScoreboard {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();

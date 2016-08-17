@@ -19,7 +19,7 @@ import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.MinMax;
 
 
 public class ArenaParams {

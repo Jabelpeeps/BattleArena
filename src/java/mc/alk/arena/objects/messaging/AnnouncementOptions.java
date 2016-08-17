@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.MatchState;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 import net.milkbowl.vault.chat.Chat;
 
 public class AnnouncementOptions {

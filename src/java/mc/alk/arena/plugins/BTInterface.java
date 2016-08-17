@@ -20,12 +20,12 @@ import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.stats.TrackerArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.util.Log;
 import mc.alk.tracker.Tracker;
-import mc.alk.tracker.TrackerInterface;
+import mc.alk.tracker.controllers.TrackerInterface;
 import mc.alk.tracker.objects.Stat;
 import mc.alk.tracker.objects.StatType;
 import mc.alk.tracker.objects.WLTRecord.WLT;
-import mc.alk.util.Log;
 
 
 public class BTInterface {

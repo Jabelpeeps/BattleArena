@@ -49,8 +49,8 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.plugins.TrackerController;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
 
 public class TournamentEvent extends AbstractComp implements Listener, ArenaListener {
     public long timeBetweenRounds;

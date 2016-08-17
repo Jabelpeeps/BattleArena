@@ -13,7 +13,7 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.TeamUtil;
 
 public class EntitySpawn extends SpawnInstance{
     final private EntityType et;

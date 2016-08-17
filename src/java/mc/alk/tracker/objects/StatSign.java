@@ -9,8 +9,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import mc.alk.util.Log;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
 
 @RequiredArgsConstructor
 public class StatSign implements ConfigurationSerializable{

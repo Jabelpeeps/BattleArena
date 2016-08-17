@@ -12,8 +12,8 @@ import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.CommandLineString;
 import mc.alk.arena.objects.spawns.SpawnInstance;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
 
 public class BAClassesSerializer extends BaseConfig {
 

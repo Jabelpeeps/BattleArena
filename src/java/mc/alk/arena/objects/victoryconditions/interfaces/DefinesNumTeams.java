@@ -1,6 +1,6 @@
 package mc.alk.arena.objects.victoryconditions.interfaces;
 
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.MinMax;
 
 public interface DefinesNumTeams {
 

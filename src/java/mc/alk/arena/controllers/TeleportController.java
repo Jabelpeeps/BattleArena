@@ -28,8 +28,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.plugins.CombatTagUtil;
 import mc.alk.arena.plugins.EssentialsController;
 import mc.alk.arena.plugins.VanishNoPacketInterface;
-import mc.alk.util.Log;
-import mc.alk.util.PermissionsUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.PermissionsUtil;
 
 public class TeleportController implements Listener {
 

@@ -67,12 +67,12 @@ import mc.alk.arena.serializers.SpawnSerializer;
 import mc.alk.arena.serializers.StateFlagSerializer;
 import mc.alk.arena.serializers.TeamHeadSerializer;
 import mc.alk.arena.serializers.YamlFileUpdater;
+import mc.alk.arena.util.FileLogger;
+import mc.alk.arena.util.FileUpdater;
+import mc.alk.arena.util.FileUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
 import mc.alk.tracker.Tracker;
-import mc.alk.util.FileLogger;
-import mc.alk.util.FileUpdater;
-import mc.alk.util.FileUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
 
 public class BattleArena extends JavaPlugin {
 

@@ -23,9 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import mc.alk.arena.objects.YamlSerializable;
 import mc.alk.arena.objects.exceptions.SerializationException;
 import mc.alk.arena.serializers.Persist;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
 
 public class Persistable {
 

@@ -62,12 +62,12 @@ import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.CommandUtil;
-import mc.alk.util.Countdown;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.MinMax;
-import mc.alk.util.PermissionsUtil;
+import mc.alk.arena.util.CommandUtil;
+import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.PermissionsUtil;
 
 
 public class ArenaMatchQueue implements ArenaListener, Listener {

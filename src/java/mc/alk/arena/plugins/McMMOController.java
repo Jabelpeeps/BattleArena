@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.arenas.ArenaListener;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 
 public class McMMOController {

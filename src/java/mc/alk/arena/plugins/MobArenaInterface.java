@@ -1,7 +1,7 @@
 package mc.alk.arena.plugins;
 
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 import org.bukkit.plugin.Plugin;
 

@@ -6,8 +6,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.JoinOptions;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
 
 import org.bukkit.Location;
 

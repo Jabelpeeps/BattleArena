@@ -15,9 +15,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.util.FileUpdater;
-import mc.alk.util.FileUpdater.Version;
-import mc.alk.util.Log;
+import mc.alk.arena.util.FileUpdater;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.FileUpdater.Version;
 
 public class YamlFileUpdater {
     private BufferedReader br = null;

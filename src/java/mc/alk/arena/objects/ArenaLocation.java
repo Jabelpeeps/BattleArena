@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.SerializerUtil;
 
 @AllArgsConstructor
 public class ArenaLocation {

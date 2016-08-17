@@ -30,10 +30,10 @@ import mc.alk.arena.plugins.WorldEditUtil;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.PlayerContainerSerializer;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.TeamUtil;
-import mc.alk.util.Util;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.TeamUtil;
+import mc.alk.arena.util.Util;
 
 public class ArenaAlterController {
 

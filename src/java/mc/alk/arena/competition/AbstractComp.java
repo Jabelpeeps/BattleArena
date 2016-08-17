@@ -48,11 +48,11 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.Countdown;
-import mc.alk.util.Countdown.CountdownCallback;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PermissionsUtil;
+import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.arena.util.Countdown.CountdownCallback;
 
 
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {

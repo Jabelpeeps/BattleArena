@@ -7,7 +7,7 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.UserMap;
 
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 public class EssentialsUtil {
 	static Essentials essentials;

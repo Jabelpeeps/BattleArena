@@ -11,7 +11,7 @@ import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumTeams;
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.MinMax;
 
 public class NTeamsNeeded extends VictoryCondition implements DefinesNumTeams{
 	MinMax neededTeams;

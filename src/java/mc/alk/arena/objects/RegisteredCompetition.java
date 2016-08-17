@@ -11,7 +11,7 @@ import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 public class RegisteredCompetition {
 	@Getter final Plugin plugin;

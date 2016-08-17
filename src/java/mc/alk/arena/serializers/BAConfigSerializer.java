@@ -42,10 +42,10 @@ import mc.alk.arena.objects.victoryconditions.Custom;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.McMMOController;
-import mc.alk.util.FileUtil;
-import mc.alk.util.KeyValue;
-import mc.alk.util.Log;
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.FileUtil;
+import mc.alk.arena.util.KeyValue;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MinMax;
 
 public class BAConfigSerializer extends BaseConfig {
 

@@ -14,7 +14,7 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
-import mc.alk.util.CaseInsensitiveMap;
+import mc.alk.arena.util.CaseInsensitiveMap;
 
 
 public class ParamController {

@@ -6,7 +6,7 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import mc.alk.util.MinMax;
+import mc.alk.arena.util.MinMax;
 
 public class ArenaSize implements CompetitionSize{
 	@Getter @Setter int minTeamSize = 1;

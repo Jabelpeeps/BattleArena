@@ -18,7 +18,7 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.util.InventoryUtil;
+import mc.alk.arena.util.InventoryUtil;
 
 public class StateGraph {
 	final Map<CompetitionState,StateOptions> ops = new HashMap<>();

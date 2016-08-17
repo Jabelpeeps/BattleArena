@@ -11,7 +11,7 @@ import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.plugins.TrackerController;
-import mc.alk.scoreboardapi.SAPIDisplaySlot;
+import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 
 import org.bukkit.configuration.ConfigurationSection;
 

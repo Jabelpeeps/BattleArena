@@ -2,7 +2,7 @@ package mc.alk.arena.controllers;
 
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.TeamUtil;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

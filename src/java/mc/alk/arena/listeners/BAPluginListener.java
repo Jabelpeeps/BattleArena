@@ -22,7 +22,7 @@ import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.plugins.VanishNoPacketInterface;
 import mc.alk.arena.plugins.WorldEditUtil;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 

@@ -12,9 +12,9 @@ import org.bukkit.plugin.EventExecutor;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
-import mc.alk.util.Log;
-import mc.alk.util.TimingUtil;
-import mc.alk.util.TimingUtil.TimingStat;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.TimingUtil;
+import mc.alk.arena.util.TimingUtil.TimingStat;
 
 
 /**

@@ -32,13 +32,13 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.plugins.DisguiseController;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.util.EffectUtil;
-import mc.alk.util.ExpUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.PlayerUtil;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.EffectUtil;
+import mc.alk.arena.util.ExpUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.PlayerUtil;
+import mc.alk.arena.util.TeamUtil;
 
 
 public class TransitionController {

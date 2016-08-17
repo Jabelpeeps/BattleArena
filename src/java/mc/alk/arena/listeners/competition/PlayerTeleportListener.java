@@ -6,7 +6,7 @@ import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MessageUtil;
 
 import org.bukkit.event.player.PlayerTeleportEvent;
 

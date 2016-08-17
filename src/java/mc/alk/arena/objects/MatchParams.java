@@ -16,7 +16,7 @@ import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.util.MessageUtil;
+import mc.alk.arena.util.MessageUtil;
 
 
 public class MatchParams extends ArenaParams implements Comparable<MatchParams>{

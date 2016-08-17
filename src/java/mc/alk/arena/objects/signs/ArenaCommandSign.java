@@ -14,9 +14,9 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.JoinOptions;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.SerializerUtil;
-import mc.alk.util.SignUtil;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.SerializerUtil;
+import mc.alk.arena.util.SignUtil;
 
 public abstract class ArenaCommandSign implements ConfigurationSerializable{
 

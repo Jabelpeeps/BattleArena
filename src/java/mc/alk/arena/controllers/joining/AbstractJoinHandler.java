@@ -22,10 +22,10 @@ import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamHandler;
-import mc.alk.scoreboardapi.SAPI;
-import mc.alk.scoreboardapi.SAPIFactory;
-import mc.alk.scoreboardapi.SScoreboard;
-import mc.alk.util.Log;
+import mc.alk.arena.scoreboardapi.SAPI;
+import mc.alk.arena.scoreboardapi.SAPIFactory;
+import mc.alk.arena.scoreboardapi.SScoreboard;
+import mc.alk.arena.util.Log;
 
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     

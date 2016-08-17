@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.ServerUtil;
+import mc.alk.arena.util.ServerUtil;
 
 public final class PlayerController {
 	private static HashMap<UUID,ArenaPlayer> players = new HashMap<>();

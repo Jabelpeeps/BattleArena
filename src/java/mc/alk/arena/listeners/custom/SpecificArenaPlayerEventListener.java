@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 
 /**

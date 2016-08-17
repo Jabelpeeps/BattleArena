@@ -9,10 +9,10 @@ import org.bukkit.inventory.ItemStack;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.exceptions.ConfigException;
 import mc.alk.arena.objects.teams.TeamAppearance;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MessageUtil;
-import mc.alk.util.TeamUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.TeamUtil;
 
 public class TeamHeadSerializer extends BaseConfig{
 

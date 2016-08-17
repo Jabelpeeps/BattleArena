@@ -11,8 +11,8 @@ import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.util.CaseInsensitiveMap;
-import mc.alk.util.Log;
+import mc.alk.arena.util.CaseInsensitiveMap;
+import mc.alk.arena.util.Log;
 
 public class ArenaType implements Comparable<ArenaType> {
 

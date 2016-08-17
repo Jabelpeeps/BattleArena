@@ -47,11 +47,11 @@ import mc.alk.arena.objects.victoryconditions.OneTeamLeft;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.plugins.BTInterface;
 import mc.alk.arena.plugins.TrackerController;
-import mc.alk.util.EffectUtil;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MinMax;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.EffectUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.SerializerUtil;
 
 /**
  *

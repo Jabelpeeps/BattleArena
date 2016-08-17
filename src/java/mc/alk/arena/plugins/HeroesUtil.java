@@ -20,7 +20,7 @@ import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.util.PlayerUtil;
+import mc.alk.arena.util.PlayerUtil;
 
 public abstract class HeroesUtil {
 	static Heroes heroes = null;

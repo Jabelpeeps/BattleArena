@@ -12,7 +12,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.modules.Grenades;
 import mc.alk.arena.modules.Paintballs;
 import mc.alk.arena.objects.modules.ArenaModule;
-import mc.alk.util.Log;
+import mc.alk.arena.util.Log;
 
 public class ModuleLoader {
 

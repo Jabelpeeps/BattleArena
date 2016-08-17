@@ -49,10 +49,10 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.spawns.SpawnTime;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.util.InventoryUtil;
-import mc.alk.util.Log;
-import mc.alk.util.MinMax;
-import mc.alk.util.SerializerUtil;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.SerializerUtil;
 
 public class ArenaSerializer extends BaseConfig {
     static BattleArenaController arenaController;

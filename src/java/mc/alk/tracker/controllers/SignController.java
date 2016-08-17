@@ -21,23 +21,23 @@ import org.bukkit.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.controllers.Scheduler;
+import mc.alk.arena.serializers.BaseConfig;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.SerializerUtil;
 import mc.alk.tracker.Tracker;
-import mc.alk.tracker.TrackerInterface;
 import mc.alk.tracker.objects.Stat;
 import mc.alk.tracker.objects.StatSign;
 import mc.alk.tracker.objects.StatType;
-import mc.alk.util.SerializerUtil;
 
 public class SignController {
     @Getter final Map<String,StatSign> personalSigns = new ConcurrentHashMap<>();
 	@Getter final Map<String,StatSign> topSigns = new ConcurrentHashMap<>();
 	final Map<String, Map<String,StatSign>> allSigns = new ConcurrentHashMap<>();
 	final Map<String,Integer> prevSignCount = new ConcurrentHashMap<>();
-
+	
+	@Getter SignSerializer serialiser = new SignSerializer(); 
 	boolean updating = false;
-	public SignController(){
-		//		allSigns.put(key, value)
-	}
+	
 	public void addSign(StatSign sign){
 		switch(sign.getSignType()){
 		case TOP:
@@ -105,14 +105,14 @@ public class SignController {
 		if (statsigns == null || statsigns.isEmpty())
 			return;
 
-		Collections.sort(statsigns, ( arg0, arg1 ) -> {
-				if (arg0.getStatType() == null && arg1.getStatType() == null) return 0;
-				else if (arg1.getStatType() == null ) return -1;
-				else if (arg0.getStatType() == null ) return 1;
-				return arg0.getStatType().compareTo(arg1.getStatType());
-		});
-		/// Get the max length we need to query in the database for each stattype
-		/// Once we have found the max, do an async update for the statsigns
+		Collections.sort( statsigns, 
+		        ( arg0, arg1 ) -> {
+        				if (arg0.getStatType() == null && arg1.getStatType() == null) return 0;
+        				else if (arg1.getStatType() == null ) return -1;
+        				else if (arg0.getStatType() == null ) return 1;
+        				return arg0.getStatType().compareTo(arg1.getStatType());
+        		});
+
 		StatType st = statsigns.get(0).getStatType();
 		List<Stat> stats = new ArrayList<>();
 		List<StatSign> update = new ArrayList<>();
@@ -121,17 +121,17 @@ public class SignController {
 		int offset = 0;
 		for (StatSign ss: statsigns){
 			if (ss.getStatType() != st){
-				/// Update signs
+
 				if (st != null)
 					updateSigns(ti,update,max, st,offset++);
-				/// Reset variables
+
 				st = ss.getStatType();
 				stats.clear();
 				update = new ArrayList<>();
 				max =0;
 			}
 			update.add(ss);
-			/// If size != prevsize, they have added or removed signs, coutn as a change
+
 			int size = this.getUpDownCount(ss);
 			Integer prevSize = prevSignCount.get(ss.getLocationString());
 			if (prevSize == null || prevSize != size){
@@ -146,7 +146,7 @@ public class SignController {
 	}
 
 	@AllArgsConstructor
-	class SignResult{
+	class SignResult {
 		final List<Sign> signs;
 		final int statSignIndex;
 	}
@@ -159,65 +159,64 @@ public class SignController {
 		World w = s.getLocation().getWorld();
 		List<Sign> signList = new ArrayList<>();
 		boolean foundUpStatSign = false;
-		/// Search up
+
 		int x = s.getLocation().getBlockX();
 		int y = s.getLocation().getBlockY();
 		int z = s.getLocation().getBlockZ();
 		LinkedList<Sign> upsignList = new LinkedList<>();
 		while ((sign = getSign(w,x,++y,z)) != null){
-			/// another command sign, don't continue
+
 			if (breakLine(sign.getLine(0))){
 				foundUpStatSign = true;
 				break;
 			}
 			upsignList.addFirst(sign);
 		}
-		/// If there isnt a conflicting sign above, then add all those signs as well
+
 		if (!foundUpStatSign){
 			signList.addAll(upsignList);}
 
-		/// Add self
 		int originalSignIndex = signList.size();
 		signList.add(s);
 
 		sign = null;
-		/// Search down
+
 		x = s.getLocation().getBlockX();
 		y = s.getLocation().getBlockY();
 		z = s.getLocation().getBlockZ();
 		while ((sign = getSign(w,x,--y,z)) != null){
 			String line = sign.getLine(0);
-			/// another command sign, don't continue
-			if (breakLine(line))
-				break;
+
+			if (breakLine(line)) break;
 			signList.add(sign);
 		}
 		return new SignResult(signList,originalSignIndex);
 	}
 
 	private int getUpDownCount(StatSign ss) {
-		Sign s = getSign(ss.getLocation());
-		if (s == null)
-			return 0;
+	    
+		Sign s = getSign( ss.getLocation() );
+		
+		if ( s == null ) return 0;
+		
 		int count = 1;
-
+		
 		World w = s.getLocation().getWorld();
-		/// Search up
 		int x = s.getLocation().getBlockX();
 		int y = s.getLocation().getBlockY();
 		int z = s.getLocation().getBlockZ();
-		while (getSign(w,x,++y,z) != null){
-			count++;}
-
-		/// Search down
-		x = s.getLocation().getBlockX();
-		y = s.getLocation().getBlockY();
-		z = s.getLocation().getBlockZ();
-		while (getSign(w,x,--y,z) != null){
-			count++;}
+		int oldY = y;
+		
+		while ( getSign( w, x, ++y, z ) != null) {
+			count++;
+		}
+		y = oldY;
+		
+		while ( getSign( w, x, --y, z ) != null) {
+			count++;
+		}
 		return count;
 	}
-
 
 	private void updateSigns(final TrackerInterface ti, final List<StatSign> update, final int max, 
 	                                                        final StatType type, final int offset) {	    
@@ -260,9 +259,9 @@ public class SignController {
 					int startIndex = 0;
 					s = signList.get(i);
 					if (i == sr.statSignIndex){
-						s.setLine(0, MessageController.colorChat("[&e"+dbName+"&0]"));
-						s.setLine(1, MessageController.colorChat("["+ss.getStatType().color()+ss.getStatType()+"&0]"));
-						s.setLine(2, MessageController.colorChat("&cNo Records"));
+						s.setLine(0, MessageUtil.colorChat("[&e"+dbName+"&0]"));
+						s.setLine(1, MessageUtil.colorChat("["+ss.getStatType().color()+ss.getStatType()+"&0]"));
+						s.setLine(2, MessageUtil.colorChat("&cNo Records"));
 						startIndex = 2;
 					}
 					for (int j=startIndex;j< 4;j++){
@@ -367,7 +366,7 @@ public class SignController {
 			lines[2] = "&0W/L " + lines[2];
 		lines[3] = "&0Streak: &9" + stat.getStreak() +"";
 		for (int i=0;i<lines.length;i++){
-			lines[i] = MessageController.colorChat(lines[i]);
+			lines[i] = MessageUtil.colorChat(lines[i]);
 		}
         player.sendSignChange( s.getLocation(), lines );
 	}
@@ -375,11 +374,66 @@ public class SignController {
 	public void clearSigns() {
 		topSigns.clear();
 		personalSigns.clear();
-
 	}
 	public void removeSignAt(Location location) {
 		String l = StatSign.getLocationString(location);
 		topSigns.remove(l);
 		personalSigns.remove(l);
+	}
+	
+	public class SignSerializer extends BaseConfig {
+
+	    public void saveAll() {
+	        Map<String,StatSign> map = getTopSigns();
+	        
+	        if ( map != null ) {
+	            List<StatSign> l = new ArrayList<>(map.values());
+	            config.set("topSigns", l);
+	        }
+	        map = getPersonalSigns();
+	        
+	        if ( map != null ) {
+	            List<StatSign> l = new ArrayList<>(map.values());
+	            config.set("personalSigns", l);
+	        }
+	        save();
+	    }
+
+	    public void loadAll(){
+	        String[] types = new String[]{"topSigns","personalSigns"};
+	        clearSigns();
+	        
+	        for ( String type : types ) {
+	            List<?> signs = config.getList(type);
+	            
+	            if (signs == null) continue;
+	            
+	            for (Object o : signs) {
+	                if (o == null || !(o instanceof StatSign)) continue;
+	                
+	                if (!stillSign((StatSign)o)) continue;
+	                
+	                addSign((StatSign) o);
+	            }
+	        }
+	    }
+
+	    private boolean stillSign(StatSign o) {
+	        String l = o.getLocationString();
+	        if (l == null)
+	            return false;
+	        try {
+	            Location loc = SerializerUtil.getLocation(l);
+	            if (loc == null) return false;
+	            
+	            Material mat = loc.getWorld().getBlockAt(loc).getType();
+	            if ( mat != Material.SIGN && mat != Material.SIGN_POST && mat != Material.WALL_SIGN)
+	                return false;
+	        } 
+	        catch( Exception e){
+	            return false;
+	        }
+	        return true;
+	    }
 	}
 }
