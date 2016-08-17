@@ -18,11 +18,13 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericKeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.libs.jline.internal.Log;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.BattleArena;
 
 /**
  *
@@ -599,4 +601,36 @@ public abstract class SQLSerializer{
 	protected Integer getInt(Map<String,Object> map, String key){
 		return Integer.valueOf(map.get(key).toString());
 	}
+
+    public static void configureSQL(SQLSerializer sql, ConfigurationSection cs) {
+    	String type = cs.getString("type");
+    	String url = cs.getString("url");
+    	if (type != null && type.equalsIgnoreCase("sqlite")){
+    		url = BattleArena.getSelf().getDataFolder().toString();
+    	}
+    	SQLSerializer.configureSQL(sql, type, url, cs.getString("db"),
+    			cs.getString("port"), cs.getString("username"), cs.getString("password"));
+    }
+
+    public static void configureSQL(SQLSerializer sql, String type, String urlOrPath,
+    		                            String db, String port, String user, String password) {
+    	if (db != null){
+    		sql.setDB(db);
+    	}
+    	if (type == null || type.equalsIgnoreCase("mysql")){
+    		sql.setType(SQLType.MYSQL);
+    		if (urlOrPath==null) urlOrPath = "localhost";
+    		if (port == null)  port = "3306";
+    		sql.setUrl(urlOrPath);
+    		sql.setPort(port);
+    	} 
+    	else { 
+    		sql.setType(SQLType.SQLITE);
+    		sql.setUrl(urlOrPath);
+    	}
+    	sql.setUsername(user);
+    	sql.setPassword(password);
+    	sql.init();
+    
+    }
 }

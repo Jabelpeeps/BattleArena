@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import lombok.Getter;
 import mc.alk.arena.util.Log;
 import mc.alk.tracker.objects.PlayerStat;
 import mc.alk.tracker.objects.Stat;
@@ -26,17 +27,12 @@ import mc.alk.tracker.objects.WLTRecord.WLT;
 public class SQLInstance extends SQLSerializer {
 	public static final int TEAM_ID_LENGTH = 32;
 	public static final int TEAM_NAME_LENGTH = 48;
-	static public String URL = "localhost";
-	static public String PORT = "3306";
-	static public String USERNAME = "root";
-	static public String PASSWORD = "";
 
-	public String DB = "BattleTracker";
+	
 	public static final String TABLE_PREFIX = "bt_";
-	public final String VERSUS_TABLE_SUFFIX = "_versus";
-	public final String OVERALL_TABLE_SUFFIX = "_overall";
-	public final String INDIVIDUAL_TABLE_SUFFIX = "_tally";
-	public String OVERALL_TABLE, VERSUS_TABLE, INDIVIDUAL_TABLE;
+	public static final String VERSUS_TABLE_SUFFIX = "_versus";
+	public static final String OVERALL_TABLE_SUFFIX = "_overall";
+	public static final String INDIVIDUAL_TABLE_SUFFIX = "_tally";
 	public static final String MEMBER_TABLE = TABLE_PREFIX + "members";
 
 	static final public String NAME = "Name";
@@ -67,46 +63,46 @@ public class SQLInstance extends SQLSerializer {
 	static final public String MEMBERS = "Members";
 	static final public String FLAGS = "Flags";
 
-	String drop_tables;
-
-	String create_individual_table, create_versus_table, create_member_table,create_overall_table;
-	String create_individual_table_idx, create_versus_table_idx, create_member_table_idx,create_overall_table_idx;
+	   
+    static public String URL = "localhost";
+    static public String PORT = "3306";
+    static public String USERNAME = "root";
+    static public String PASSWORD = "";
+    static public String DATABASE = "BattleTracker";
+    
+	String drop_tables, overall_table, versus_table, individual_table;
+	String create_individual_table, create_versus_table, create_member_table, create_overall_table;
+	String create_individual_table_idx, create_versus_table_idx, create_member_table_idx, create_overall_table_idx;
 
 	String get_overall_totals, insert_overall_totals;
 	String get_topx_wins, get_topx_losses, get_topx_ties;
-	String get_topx_streak,get_topx_maxstreak;
+	String get_topx_streak, get_topx_maxstreak;
 	String get_topx_kd, get_topx_elo, get_topx_maxelo;
 	String get_topx_wins_tc, get_topx_losses_tc, get_topx_ties_tc;
-	String get_topx_streak_tc,get_topx_maxstreak_tc;
+	String get_topx_streak_tc, get_topx_maxstreak_tc;
 	String get_topx_kd_tc, get_topx_elo_tc, get_topx_maxelo_tc;
 	String save_ind_record, get_ind_record;
 	String insert_versus_record, get_versus_record;
 	String get_versus_records, getx_versus_records, get_wins_since;
-	String truncate_all_tables;
-	String get_rank;
+	String truncate_all_tables, get_rank;
 
-	public static final String get_members = "select "+NAME+" from " + MEMBER_TABLE + " where " + TEAMID +" = ?";
+	public static final String get_members = "select " + NAME + 
+	                                        " from " + MEMBER_TABLE +
+	                                        " where " + TEAMID + " = ?";
 	String save_members;
 
-	String tableName;
+	@Getter String tableName;
 
-	public SQLInstance(){}
-
-	public void setTable(String tableName) {
-		this.tableName = tableName;
-	}
-	public String getTable(){
-		return tableName;
-	}
+	public SQLInstance( String SQLtable ) { tableName = SQLtable; }
 
 	@Override
 	public boolean init(){
 		super.init();
-		VERSUS_TABLE = TABLE_PREFIX + tableName + VERSUS_TABLE_SUFFIX;
-		OVERALL_TABLE = TABLE_PREFIX + tableName + OVERALL_TABLE_SUFFIX;
-		INDIVIDUAL_TABLE = TABLE_PREFIX + tableName + INDIVIDUAL_TABLE_SUFFIX;
+		versus_table = TABLE_PREFIX + tableName + VERSUS_TABLE_SUFFIX;
+		overall_table = TABLE_PREFIX + tableName + OVERALL_TABLE_SUFFIX;
+		individual_table = TABLE_PREFIX + tableName + INDIVIDUAL_TABLE_SUFFIX;
 
-		create_overall_table = "CREATE TABLE IF NOT EXISTS " + OVERALL_TABLE +" ("+
+		create_overall_table = "CREATE TABLE IF NOT EXISTS " + overall_table + " (" +
 				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 				NAME + " VARCHAR(" + TEAM_NAME_LENGTH +") ,"+
                 WINS + " INTEGER UNSIGNED ," +
@@ -116,13 +112,13 @@ public class SQLInstance extends SQLSerializer {
 				TIES + " INTEGER UNSIGNED," +
 				STREAK + " INTEGER UNSIGNED," +
 				MAXSTREAK + " INTEGER UNSIGNED," +
-				ELO + " INTEGER UNSIGNED DEFAULT " + 1250+"," +
-				MAXELO + " INTEGER UNSIGNED DEFAULT " + 1250+"," +
+				ELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," +
+				MAXELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," +
 				COUNT + " INTEGER UNSIGNED DEFAULT 1," +
 				FLAGS + " INTEGER UNSIGNED DEFAULT 0," +
 				"PRIMARY KEY (" + TEAMID +")) ";
 
-		create_versus_table = "CREATE TABLE IF NOT EXISTS " + VERSUS_TABLE +" ("+
+		create_versus_table = "CREATE TABLE IF NOT EXISTS " + versus_table +" ("+
 				ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 				ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 				WINS + " INTEGER UNSIGNED ," +
@@ -135,38 +131,38 @@ public class SQLInstance extends SQLSerializer {
 				NAME + " VARCHAR(" + MAX_NAME_LENGTH +") NOT NULL ," +
 				"PRIMARY KEY (" + TEAMID +","+NAME+"))";
 
-		get_topx_wins = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
-		get_topx_losses = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
-		get_topx_ties = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+TIES+" DESC LIMIT ? ";
-		get_topx_streak = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+STREAK +" DESC LIMIT ? ";
-		get_topx_maxstreak = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXSTREAK +" DESC LIMIT ? ";
-		get_topx_elo = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+ELO+" DESC LIMIT ? ";
-		get_topx_maxelo = "select * from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
-		get_topx_kd = "select *,(" + WINS + "/" + LOSSES+") as KD from "+OVERALL_TABLE +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
+		get_topx_wins = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
+		get_topx_losses = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
+		get_topx_ties = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+TIES+" DESC LIMIT ? ";
+		get_topx_streak = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+STREAK +" DESC LIMIT ? ";
+		get_topx_maxstreak = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXSTREAK +" DESC LIMIT ? ";
+		get_topx_elo = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+ELO+" DESC LIMIT ? ";
+		get_topx_maxelo = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
+		get_topx_kd = "select *,(" + WINS + "/" + LOSSES+") as KD from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
 
-		get_topx_wins_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
-		get_topx_losses_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
-		get_topx_ties_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+TIES+" DESC LIMIT ? ";
-		get_topx_streak_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+STREAK +" DESC LIMIT ? ";
-		get_topx_maxstreak_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+MAXSTREAK +" DESC LIMIT ? ";
-		get_topx_elo_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+ELO+" DESC LIMIT ? ";
-		get_topx_maxelo_tc = "select * from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
-		get_topx_kd_tc = "select *,(" + WINS + "/" + LOSSES+") as KD from "+OVERALL_TABLE +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
+		get_topx_wins_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
+		get_topx_losses_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
+		get_topx_ties_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+TIES+" DESC LIMIT ? ";
+		get_topx_streak_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+STREAK +" DESC LIMIT ? ";
+		get_topx_maxstreak_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+MAXSTREAK +" DESC LIMIT ? ";
+		get_topx_elo_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+ELO+" DESC LIMIT ? ";
+		get_topx_maxelo_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
+		get_topx_kd_tc = "select *,(" + WINS + "/" + LOSSES+") as KD from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
 
-		get_overall_totals = "select * from " + OVERALL_TABLE + " where " + TEAMID +" = ?";
+		get_overall_totals = "select * from " + overall_table + " where " + TEAMID +" = ?";
 
-		get_versus_record = "select "+WINS+","+LOSSES+","+TIES+" from "+VERSUS_TABLE+" WHERE "+ID1+"=? AND "+ID2+"=?";
+		get_versus_record = "select "+WINS+","+LOSSES+","+TIES+" from "+versus_table+" WHERE "+ID1+"=? AND "+ID2+"=?";
 
-		getx_versus_records = "select * from "+INDIVIDUAL_TABLE+" WHERE ("+ID1+"=? AND "+ID2+"=?) OR ("+ID1+"=? AND "+ID2+"=?) ORDER BY "+DATE+" DESC LIMIT ?";
+		getx_versus_records = "select * from "+individual_table+" WHERE ("+ID1+"=? AND "+ID2+"=?) OR ("+ID1+"=? AND "+ID2+"=?) ORDER BY "+DATE+" DESC LIMIT ?";
 
 
-		get_rank = "select  count(*) from "+OVERALL_TABLE+" where "+ELO+" > ? and "+COUNT+"=?";
+		get_rank = "select  count(*) from "+overall_table+" where "+ELO+" > ? and "+COUNT+"=?";
 
-		get_wins_since = "select * from "+INDIVIDUAL_TABLE+" WHERE ("+ID1+"=? AND WLTIE=1) OR ("+ID2+"=? AND WLTIE=0) AND "+DATE+" >= ? ORDER BY "+DATE+" DESC ";
+		get_wins_since = "select * from "+individual_table+" WHERE ("+ID1+"=? AND WLTIE=1) OR ("+ID2+"=? AND WLTIE=0) AND "+DATE+" >= ? ORDER BY "+DATE+" DESC ";
 
 		switch(type){
 		case MYSQL:
-			create_individual_table = "CREATE TABLE IF NOT EXISTS " + INDIVIDUAL_TABLE +" ("+
+			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table +" ("+
 					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 					ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 					DATE + " DATETIME," +
@@ -175,26 +171,26 @@ public class SQLInstance extends SQLSerializer {
 					"INDEX USING HASH (" + ID1 +"),INDEX USING BTREE (" + DATE +")) ";
 
 			create_member_table_idx = "CREATE INDEX "+MEMBER_TABLE+"_idx ON " +MEMBER_TABLE+" ("+TEAMID+") USING HASH";
-			create_versus_table_idx = "CREATE INDEX "+VERSUS_TABLE+"_idx ON " +VERSUS_TABLE+" ("+ID1+") USING HASH";
+			create_versus_table_idx = "CREATE INDEX "+versus_table+"_idx ON " +versus_table+" ("+ID1+") USING HASH";
 
-			insert_overall_totals = "INSERT INTO "+OVERALL_TABLE+" VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
+			insert_overall_totals = "INSERT INTO "+overall_table+" VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
 					"ON DUPLICATE KEY UPDATE " +
 					WINS + " = VALUES(" + WINS +"), " + LOSSES +"=VALUES(" + LOSSES + "), " + TIES +"=VALUES(" + TIES + "), " +
 					STREAK +"= VALUES(" + STREAK+")," +MAXSTREAK +"= VALUES(" + MAXSTREAK+")," +
 					ELO +"= VALUES(" + ELO + ")," +  MAXELO +"= VALUES(" + MAXELO+"),"+
 					FLAGS+"=VALUES("+FLAGS+")";
 
-			insert_versus_record = "insert into "+VERSUS_TABLE+" VALUES(?,?,?,?,?) " +
+			insert_versus_record = "insert into "+versus_table+" VALUES(?,?,?,?,?) " +
 					"ON DUPLICATE KEY UPDATE " +
 					WINS + " = VALUES(" + WINS +"), " + LOSSES +"=VALUES(" + LOSSES + "), " + TIES +"=VALUES(" + TIES + ")";
 
-			save_ind_record = "insert ignore into "+INDIVIDUAL_TABLE+" VALUES(?,?,?,?)";
+			save_ind_record = "insert ignore into "+individual_table+" VALUES(?,?,?,?)";
 			save_members = "insert ignore into " + MEMBER_TABLE + " VALUES(?,?) ";
-			truncate_all_tables = "truncate table " +OVERALL_TABLE+"; truncate table " + VERSUS_TABLE+"; truncate table "+INDIVIDUAL_TABLE;
+			truncate_all_tables = "truncate table " +overall_table+"; truncate table " + versus_table+"; truncate table "+individual_table;
 
 			break;
 		case SQLITE:
-			create_individual_table = "CREATE TABLE IF NOT EXISTS " + INDIVIDUAL_TABLE +" ("+
+			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table +" ("+
 					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 					ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
 					DATE + " DATETIME," +
@@ -202,31 +198,26 @@ public class SQLInstance extends SQLSerializer {
 					"PRIMARY KEY (" + ID1 +", " + ID2 + "," + DATE + ")) ";
 
 			create_member_table_idx = "CREATE UNIQUE INDEX IF NOT EXISTS "+MEMBER_TABLE+"_idx ON " +MEMBER_TABLE+" ("+TEAMID+")";
-			create_versus_table_idx = "CREATE UNIQUE INDEX IF NOT EXISTS "+VERSUS_TABLE+"_idx ON " +VERSUS_TABLE+" ("+ID1+")";
+			create_versus_table_idx = "CREATE UNIQUE INDEX IF NOT EXISTS "+versus_table+"_idx ON " +versus_table+" ("+ID1+")";
 
-			insert_versus_record = "insert or replace into "+VERSUS_TABLE+" VALUES(?,?,?,?,?)";
+			insert_versus_record = "insert or replace into "+versus_table+" VALUES(?,?,?,?,?)";
 
-			save_ind_record = "insert or ignore into "+INDIVIDUAL_TABLE+" VALUES(?,?,?,?)";
+			save_ind_record = "insert or ignore into "+individual_table+" VALUES(?,?,?,?)";
 
-			insert_overall_totals = "INSERT OR REPLACE INTO "+OVERALL_TABLE+" VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
-
-			//			insert_overall_totals = "INSERT OR REPLACE INTO "+OVERALL_TABLE+" VALUES (?," +
-			//					"(select "+NAME+" from "+OVERALL_TABLE+" where "+TEAMID+"=?),"+
-			//					"?,?,? ,?,? ,?,?,"+
-			//					"(select "+COUNT+" from "+OVERALL_TABLE+" where "+TEAMID+"=?))";
+			insert_overall_totals = "INSERT OR REPLACE INTO "+overall_table+" VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
 
 			save_members = "insert or ignore into " + MEMBER_TABLE + " VALUES(?,?) ";
-			truncate_all_tables = "drop table " +OVERALL_TABLE+"; drop table " + VERSUS_TABLE+"; drop table "+INDIVIDUAL_TABLE;
+			truncate_all_tables = "drop table " +overall_table+"; drop table " + versus_table+"; drop table "+individual_table;
 		}
         if (shouldUpdateTo1point0()){
             updateTo1Point0();}
 //        if (shouldUpdateTo1point1()){
 //            updateTo1Point1();}
 		try {
-			createTable(VERSUS_TABLE, create_versus_table, create_versus_table_idx);
+			createTable(versus_table, create_versus_table, create_versus_table_idx);
 
-			createTable(OVERALL_TABLE, create_overall_table );
-			createTable(INDIVIDUAL_TABLE,create_individual_table,create_individual_table_idx);
+			createTable(overall_table, create_overall_table );
+			createTable(individual_table,create_individual_table,create_individual_table_idx);
 			createTable(MEMBER_TABLE,create_member_table,create_member_table_idx);
 		} catch (Exception e){
 			e.printStackTrace();
@@ -564,9 +555,9 @@ public class SQLInstance extends SQLSerializer {
 	public void deleteTables(){
 		switch (this.getType()){
 		case MYSQL:
-			this.executeUpdate("truncate table " +OVERALL_TABLE);
-			this.executeUpdate("truncate table " +VERSUS_TABLE);
-			this.executeUpdate("truncate table " +INDIVIDUAL_TABLE);
+			this.executeUpdate("truncate table " +overall_table);
+			this.executeUpdate("truncate table " +versus_table);
+			this.executeUpdate("truncate table " +individual_table);
 			break;
 		case SQLITE:
 			this.executeUpdate(truncate_all_tables);
@@ -579,11 +570,11 @@ public class SQLInstance extends SQLSerializer {
 	}
 
 	public int getRecordCount() {
-		return getInteger("select count(*) from " + INDIVIDUAL_TABLE);
+		return getInteger("select count(*) from " + individual_table);
 	}
 
 	public boolean shouldUpdateTo1point0() {
-		return hasTable(OVERALL_TABLE) && !hasColumn(OVERALL_TABLE,FLAGS);
+		return hasTable(overall_table) && !hasColumn(overall_table,FLAGS);
 	}
 //    public boolean shouldUpdateTo1point1() {
 //        return !hasColumn(OVERALL_TABLE,KILLS);
@@ -591,7 +582,7 @@ public class SQLInstance extends SQLSerializer {
 
 	private void updateTo1Point0() {
 		Log.warn("[BattleTracker] updating database to 1.0");
-		String alter = "ALTER TABLE "+OVERALL_TABLE+" ADD "+FLAGS+" INTEGER DEFAULT 0 ";
+		String alter = "ALTER TABLE "+overall_table+" ADD "+FLAGS+" INTEGER DEFAULT 0 ";
 		executeUpdate(alter);
 	}
 //

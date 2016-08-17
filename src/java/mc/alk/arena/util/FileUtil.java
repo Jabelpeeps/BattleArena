@@ -32,7 +32,6 @@ public class FileUtil {
 		return inputStream;
 	}
 
-
 	@SuppressWarnings( "resource" )
     public static InputStream getInputStream(Class<?> clazz, File defaultFile, File defaultPluginFile) {
 		InputStream inputStream = null;

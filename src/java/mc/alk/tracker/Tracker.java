@@ -37,26 +37,21 @@ public class Tracker {
     final static String CONFIG = "/tracker.yml";
     final static String MESSAGES = "/tracker_messages.yml";
 
-    static {
+    public static boolean isEnabled() { return !interfaces.isEmpty(); }
+    
+    public static void loadConfigs() {
+
         File dir = BA.getDataFolder();
         if (!dir.exists())
             dir.mkdirs();
         
         ConfigurationSerialization.registerClass( StatSign.class );
-        loadConfigs();
 
         Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
 
         BA.getCommand("battleTracker").setExecutor(new BattleTrackerExecutor());
         BA.getCommand("btpvp").setExecutor(new TrackerExecutor(getInterface(Defaults.PVP_INTERFACE)));
         BA.getCommand("btpve").setExecutor(new TrackerExecutor(getInterface(Defaults.PVE_INTERFACE)));
-    }
-
-    public static boolean isEnabled() {
-        return !interfaces.isEmpty();
-    }
-    
-    public static void loadConfigs() {
         
         File data = BA.getDataFolder();      
         TrackerConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );

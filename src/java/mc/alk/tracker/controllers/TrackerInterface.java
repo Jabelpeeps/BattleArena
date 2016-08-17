@@ -21,7 +21,7 @@ import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.serializers.tracker.SQLInstance;
-import mc.alk.arena.serializers.tracker.SQLSerializerConfig;
+import mc.alk.arena.serializers.tracker.SQLSerializer;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
 import mc.alk.tracker.TrackerOptions;
@@ -44,10 +44,10 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 
 	@Override
 	public String toString(){
-		StringBuilder sb = new StringBuilder("[TI=");
-		sb.append( SQL != null ? SQL.getTable(): "null" );
-		sb.append("]");
-		return sb.toString();
+		return new StringBuilder( "[TI=" ).append( SQL != null ? SQL.getTableName() 
+		                                                       : "null" )
+		                                  .append( "]" )
+		                                  .toString();
 	}
 
 	public TrackerInterface(String tableName, TrackerOptions options) {
@@ -57,10 +57,9 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 	}
 
 	public TrackerInterface(String type, String db, String urlOrPath, String table, String port, String user, String password) {
-		SQL = new SQLInstance();
-		this.interfaceName = table;
-		SQL.setTable(table);
-		SQLSerializerConfig.configureSQL(SQL,type,urlOrPath,db,port,user,password);
+		SQL = new SQLInstance( table );
+		interfaceName = table;
+		SQLSerializer.configureSQL(SQL,type,urlOrPath,db,port,user,password);
 		cache.setSaveEvery(Defaults.SAVE_EVERY_X_SECONDS *1000);
 
 		EloCalculator ec = new EloCalculator();
@@ -70,10 +69,9 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 	}
 
 	private void initDB(String _tableName) {
-		SQL = new SQLInstance();
-		SQL.setTable(_tableName);
+		SQL = new SQLInstance(_tableName);
 		interfaceName = _tableName;
-		SQLSerializerConfig.configureSQL( SQL, TrackerConfigController.config.getConfigurationSection("SQLOptions"));
+		SQLSerializer.configureSQL( SQL, TrackerConfigController.config.getConfigurationSection("SQLOptions"));
 		cache.setSaveEvery(Defaults.SAVE_EVERY_X_SECONDS *1000);
 	}
 

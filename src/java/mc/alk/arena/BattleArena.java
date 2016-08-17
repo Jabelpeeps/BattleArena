@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -108,14 +107,14 @@ public class BattleArena extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        BattleArena.self = this;
-        PluginDescriptionFile pdfFile = this.getDescription();
-        BattleArena.pluginname = pdfFile.getName();
-        BattleArena.version = pdfFile.getVersion();
+        self = this;
+        PluginDescriptionFile pdfFile = getDescription();
+        pluginname = pdfFile.getName();
+        version = pdfFile.getVersion();
         Log.setLogger(getLogger());
-        Class<?> clazz = this.getClass();
-        ConsoleCommandSender sender = Bukkit.getConsoleSender();
-        MessageUtil.sendMessage(sender, "&4[" + pluginname + "] &6v" + version + "&f enabling!");
+        
+        MessageUtil.sendMessage(
+                Bukkit.getConsoleSender(), "&4[" + pluginname + "] &6v" + version + "&f enabling!");
 
         /// Create our plugin folder if its not there
         final File dir = getDataFolder();
@@ -128,6 +127,8 @@ public class BattleArena extends JavaPlugin {
         FileUpdater.makeIfNotExists(new File(dir + "/victoryConditions"));
         Tracker.loadConfigs();
 
+
+        Class<?> clazz = getClass();       
         for (String c : new String[]{"HeroesConfig", "McMMOConfig", "WorldGuardConfig"}){
             try{
                 String source = "/default_files/otherPluginConfigs/"+c+".yml";
@@ -149,24 +150,20 @@ public class BattleArena extends JavaPlugin {
                 Log.printStackTrace(e);
             }
         }
-        
-        /// For potential updates to default yml files
-        YamlFileUpdater yfu = new YamlFileUpdater(this);
 
-        /// Set up our messages first before other initialization needs messages
         MessageSerializer defaultMessages = new MessageSerializer("default", null);
+        
         defaultMessages.setConfig(FileUtil.load(clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml"));
-        yfu.updateMessageSerializer(self, defaultMessages); /// Update our config if necessary
+        
+        new YamlFileUpdater(this).updateMessageSerializer(self, defaultMessages);
+        
         defaultMessages.loadAll();
         MessageSerializer.setDefaultConfig(defaultMessages);
 
         bAExecutor = new BAExecutor();
-
-        pluginListener.loadAll(); /// try and load plugins we want
-
+        pluginListener.loadAll(); 
         arenaControllerSerializer = new ArenaControllerSerializer();
 
-        // Register our events
         Bukkit.getPluginManager().registerEvents(playerListener, this);
         Bukkit.getPluginManager().registerEvents(pluginListener, this);
         Bukkit.getPluginManager().registerEvents(signListener, this);
@@ -195,7 +192,7 @@ public class BattleArena extends JavaPlugin {
         /// Load our configs, then arenas
         bAConfigSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/config.yml", "/config.yml"));
         try {
-            YamlFileUpdater.updateBaseConfig(this, bAConfigSerializer); /// Update our config if necessary
+            YamlFileUpdater.updateBaseConfig(this, bAConfigSerializer);
         } catch (Exception e) {
             Log.printStackTrace(e);
         }

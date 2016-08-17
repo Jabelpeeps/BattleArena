@@ -17,68 +17,57 @@ import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
+import lombok.AllArgsConstructor;
+
 public class FileUpdater {
 
     File oldFile;
     File backupDir;
-
     Version updateVersion;
     Version oldVersion;
 
-    public static enum SearchType{
-        CONTAINS, MATCHES
-    }
-    public static enum UpdateType{
-        ADDAFTER, REPLACE, DELETE, DELETEALLFROM, ADDBEFORE
-    }
+    public static enum SearchType { CONTAINS, MATCHES }
+    public static enum UpdateType { ADDAFTER, REPLACE, DELETE, DELETEALLFROM, ADDBEFORE }
 
-    public static class Update{
+    @AllArgsConstructor
+    public static class Update {
         public final UpdateType type;
         public final String search;
-        public final String[] updates;
         public final SearchType searchType;
-        public Update(String search, UpdateType type, SearchType searchType, String... strings){
-            this.type = type;
-            this.search = search;
-            this.updates = strings;
-            this.searchType = searchType;
+        public final String[] updates;
+        public Update(String _search, UpdateType _type, SearchType _searchType, String... strings){
+            this( _type, _search, _searchType, strings );
         }
     }
-
     HashMap<String, Update> updates = new HashMap<>();
     HashMap<String, String> replaces = new HashMap<>();
 
-    public FileUpdater(File oldFile, File backupDir, Version newVersion, Version oldVersion){
-        this.oldFile = oldFile.getAbsoluteFile();
-        this.backupDir = backupDir.getAbsoluteFile();
-        this.updateVersion = newVersion;
-        this.oldVersion = oldVersion;
+    public FileUpdater(File _oldFile, File _backupDir, Version newVersion, Version _oldVersion){
+        oldFile = _oldFile.getAbsoluteFile();
+        backupDir = _backupDir.getAbsoluteFile();
+        updateVersion = newVersion;
+        oldVersion = _oldVersion;
     }
 
     public void delete(String str){
         updates.put(str, new Update(str,UpdateType.DELETE, SearchType.MATCHES, ""));
     }
-
     public void addAfter(String str, String...strings){
         updates.put(str, new Update(str,UpdateType.ADDAFTER, SearchType.MATCHES, strings));
     }
-
     public void addBefore(String str, String...strings){
         updates.put(str, new Update(str,UpdateType.ADDBEFORE, SearchType.MATCHES, strings));
     }
-
     public void replace(String str, String...strings){
         updates.put(str, new Update(str,UpdateType.REPLACE, SearchType.MATCHES, strings));
     }
-
     public void deleteAllFrom(String str){
         updates.put(str, new Update(str,UpdateType.DELETEALLFROM, SearchType.MATCHES,""));
     }
-
     public void replaceAll(String string, String string2) {
         replaces.put(string, string2);
     }
-
+    
     public Version update() throws IOException {
         System.out.println("[Plugin Updater] updating " + oldFile.getName() +" from "+ oldVersion+" to " + updateVersion);
         System.out.println("[Plugin Updater] old version backup inside of " + backupDir.getAbsolutePath());
@@ -206,19 +195,16 @@ public class FileUpdater {
     }
 
     public static void deleteIfExists(File file) {
-        if (file.exists()){
-            file.delete();}
+        if (file.exists()) file.delete();
     }
-
     public static void makeIfNotExists(File file) {
-        if (!file.exists()){
-            file.mkdir();}
+        if (!file.exists()) file.mkdir();
     }
 
     public static void moveIfExists(File file, File file2) {
         if (file.exists()){
             try {
-                FileUpdater.renameTo(file,file2);
+                FileUpdater.renameTo(file, file2);
             } catch (IOException e) {
                 e.printStackTrace();
             }
