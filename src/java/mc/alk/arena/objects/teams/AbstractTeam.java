@@ -12,44 +12,46 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PermissionsUtil;
+import mc.alk.tracker.Tracker;
 
 abstract class AbstractTeam implements ArenaTeam{
 	static int count = 0;
-	final int id = count++; 
+	@Getter final int id = count++; 
 
-    final protected Set<ArenaPlayer> players = new HashSet<>();
-    final protected Set<ArenaPlayer> deadplayers = new HashSet<>();
-    final protected Set<ArenaPlayer> leftplayers = new HashSet<>();
+    @Getter final protected Set<ArenaPlayer> players = new HashSet<>();
+    @Getter final protected Set<ArenaPlayer> deadPlayers = new HashSet<>();
+    @Getter final protected Set<ArenaPlayer> leftPlayers = new HashSet<>();
 
 	protected boolean nameManuallySet = false;
 	protected boolean nameChanged = true;
 	protected String name = null; 
 	protected String displayName = null; 
-	protected String scoreboardDisplayName = null; 
+	@Setter protected String scoreboardDisplayName = null; 
 
     final HashMap<ArenaPlayer, Integer> kills = new HashMap<>();
     final HashMap<ArenaPlayer, Integer> deaths = new HashMap<>();
 
 	/// Pickup teams are transient in nature, once the match end they disband
-	protected boolean isPickupTeam = false;
-    int minPlayers = -1;
-    int maxPlayers = -1;
+    @Getter @Setter protected boolean pickupTeam = false;
+    @Getter @Setter int minPlayers = -1;
+    @Getter @Setter int maxPlayers = -1;
     ArenaObjective objective;
-	protected ChatColor color = null;
-	protected ItemStack headItem = null;
-	ArenaStat stat;
-	MatchParams params;
+    @Getter @Setter protected ChatColor teamChatColor = null;
+	@Getter @Setter protected ItemStack headItem = null;
+	@Setter ArenaStat arenaStat;
+	@Getter @Setter MatchParams currentParams;
 
-    int index = -1;
-    String strID = null;
+    @Getter @Setter int index = -1;
+    @Setter String iDString = null;
 
 	/**
 	 * Default Constructor
@@ -87,7 +89,7 @@ abstract class AbstractTeam implements ArenaTeam{
         players.clear();
 		deaths.clear();
 		kills.clear();
-        deadplayers.clear();
+        deadPlayers.clear();
         nameChanged = true;
 	}
 
@@ -101,7 +103,7 @@ abstract class AbstractTeam implements ArenaTeam{
 		for (ArenaPlayer p:players)
 		    list.add(p.getName());
 		
-		for (ArenaPlayer p:leftplayers)
+		for (ArenaPlayer p:leftPlayers)
 		    list.add(p.getName());
 		
 		if (list.size() > 1)
@@ -115,14 +117,9 @@ abstract class AbstractTeam implements ArenaTeam{
 			sb.append(s);
 			first = false;
 		}
-		name= sb.toString();
+		name = sb.toString();
 		nameChanged = false;
 		return name;
-	}
-
-	@Override
-    public Set<ArenaPlayer> getPlayers() {
-		return players;
 	}
 
 	@Override
@@ -136,12 +133,6 @@ abstract class AbstractTeam implements ArenaTeam{
 		}
 		return ps;
 	}
-
-    @Override
-	public Set<ArenaPlayer> getDeadPlayers() {return deadplayers;}
-
-    @Override
-    public Set<ArenaPlayer> getLeftPlayers() {return leftplayers;}
 
     @Override
 	public Set<ArenaPlayer> getLivingPlayers() {
@@ -168,13 +159,9 @@ abstract class AbstractTeam implements ArenaTeam{
 	@Override
     public boolean hasMember(ArenaPlayer p) {return players.contains(p);}
     @Override
-    public boolean hasLeft(ArenaPlayer p) {return leftplayers.contains(p);}
+    public boolean hasLeft(ArenaPlayer p) {return leftPlayers.contains(p);}
 	@Override
-    public boolean hasAliveMember(ArenaPlayer p) {return hasMember(p) && !deadplayers.contains(p);}
-	@Override
-    public boolean isPickupTeam() { return isPickupTeam; }
-	@Override
-    public void setPickupTeam( boolean _isPickupTeam ) { isPickupTeam = _isPickupTeam; }
+    public boolean hasAliveMember(ArenaPlayer p) {return hasMember(p) && !deadPlayers.contains(p);}
 	
 	public void setHealth( int health ) {
 	    for ( ArenaPlayer p: players ) 
@@ -189,28 +176,20 @@ abstract class AbstractTeam implements ArenaTeam{
     public String getName() { return createName(); }
 
 	@Override
-    public void setName(String name) {
-		this.name = name;
-		this.nameManuallySet = true;
+    public void setName(String _name) {
+		name = _name;
+		nameManuallySet = true;
 	}
 
-	/**
-	 * Returns this teams unique ID.
-	 * Team ID is unique to everything, and no two teams will have the same ID.
-	 * This is NOT equivilant to Arena.getMatch().getTeams().indexOf(this)!
-	 */
 	@Override
-    public int getId(){ return id;}
+    public void setAlive() { deadPlayers.clear(); }
 
 	@Override
-    public void setAlive() {deadplayers.clear();}
-
-	@Override
-	public void setAlive(ArenaPlayer player){deadplayers.remove(player);}
+	public void setAlive(ArenaPlayer player){ deadPlayers.remove(player); }
 
 	@Override
     public boolean isDead() {
-		if (deadplayers.size() >= players.size())
+		if (deadPlayers.size() >= players.size())
 			return true;
 		Set<ArenaPlayer> living = getLivingPlayers();
 		if (living.isEmpty())
@@ -290,8 +269,8 @@ abstract class AbstractTeam implements ArenaTeam{
     public boolean killMember(ArenaPlayer p) {
 		if (!hasMember(p))
 			return false;
-		deadplayers.add(p);
-		return deadplayers.size() == players.size();
+		deadPlayers.add(p);
+		return deadPlayers.size() == players.size();
 	}
 
 	@Override
@@ -316,12 +295,12 @@ abstract class AbstractTeam implements ArenaTeam{
 	}
 
 	@Override
-    public String getDisplayName(){return displayName == null ? getName() : displayName;}
+    public String getDisplayName(){ return displayName == null ? getName() : displayName; }
 
 	@Override
     public void setDisplayName(String teamName){
         displayName = teamName;
-        this.nameManuallySet = true;
+        nameManuallySet = true;
     }
 
     @Override
@@ -335,7 +314,7 @@ abstract class AbstractTeam implements ArenaTeam{
 	public int hashCode() { return id;}
 
 	@Override
-	public String toString(){return "["+getDisplayName()+"]";}
+	public String toString(){ return "[" + getDisplayName() + "]"; }
 
 	@Override
     public boolean hasTeam(ArenaTeam team){
@@ -412,14 +391,14 @@ abstract class AbstractTeam implements ArenaTeam{
 	@Override
 	public void addPlayer(ArenaPlayer player) {
 		this.players.add(player);
-		this.leftplayers.remove(player);
+		this.leftPlayers.remove(player);
 		this.nameChanged = true;
 	}
 
 	@Override
 	public boolean removePlayer(ArenaPlayer player) {
-		this.deadplayers.remove(player);
-		this.leftplayers.remove(player);
+		this.deadPlayers.remove(player);
+		this.leftPlayers.remove(player);
 		this.kills.remove(player);
 		this.deaths.remove(player);
 		this.nameChanged = true;
@@ -433,9 +412,9 @@ abstract class AbstractTeam implements ArenaTeam{
     public void playerLeft(ArenaPlayer p) {
 		if (!hasMember(p))
 			return;
-		deadplayers.remove(p);
+		deadPlayers.remove(p);
 		players.remove(p);
-		leftplayers.add(p);
+		leftPlayers.add(p);
 	}
 
 	@Override
@@ -447,8 +426,8 @@ abstract class AbstractTeam implements ArenaTeam{
 	@Override
 	public void removePlayers(Collection<ArenaPlayer> players) {
 		this.players.removeAll(players);
-		this.deadplayers.removeAll(players);
-		this.leftplayers.removeAll(players);
+		this.deadPlayers.removeAll(players);
+		this.leftPlayers.removeAll(players);
 		for (ArenaPlayer ap: players){
 			this.kills.remove(ap);
 			this.deaths.remove(ap);
@@ -459,13 +438,13 @@ abstract class AbstractTeam implements ArenaTeam{
 	@Override
 	public void clear(){
 		this.players.clear();
-		this.deadplayers.clear();
-		this.leftplayers.clear();
+		this.deadPlayers.clear();
+		this.leftPlayers.clear();
 		this.nameManuallySet = false;
 		this.nameChanged = false;
 		this.name = "Empty";
 		this.kills.clear();
-		this.deadplayers.clear();
+		this.deadPlayers.clear();
 	}
 
 	@Override
@@ -482,105 +461,26 @@ abstract class AbstractTeam implements ArenaTeam{
 	}
 
 	@Override
-	public void setTeamChatColor(ChatColor color) {
-		this.color = color;
-	}
-
-	@Override
-	public ChatColor getTeamChatColor() {
-		return color;
-	}
-
-	@Override
 	public String getIDString(){
-		return strID == null ? String.valueOf(id) : strID;
-	}
-
-	@Override
-	public void setScoreboardDisplayName(String name){
-		this.scoreboardDisplayName = name;
+		return iDString == null ? String.valueOf(id) : iDString;
 	}
 
 	@Override
 	public String getScoreboardDisplayName(){
 		if (scoreboardDisplayName != null)
 			return scoreboardDisplayName;
-		String name = getDisplayName();
-		return name.length() > Defaults.MAX_SCOREBOARD_NAME_SIZE ? name.substring(0,Defaults.MAX_SCOREBOARD_NAME_SIZE) : name;
+		String _name = getDisplayName();
+		return _name.length() > Defaults.MAX_SCOREBOARD_NAME_SIZE ? _name.substring(0,Defaults.MAX_SCOREBOARD_NAME_SIZE) 
+		                                                          : _name;
 	}
 
 	@Override
-    public ItemStack getHeadItem(){
-		return this.headItem;
-	}
-
-	@Override
-    public void setHeadItem(ItemStack item){
-		this.headItem = item;
-	}
-
-	@Override
-	public MatchParams getCurrentParams() {
-		return params;
-	}
-
-	@Override
-	public void setCurrentParams(MatchParams params) {
-		this.params = params;
-	}
-
-	@Override
-	public void setArenaStat(ArenaStat stat){
-		this.stat = stat;
-	}
-
-	@Override
-	public ArenaStat getStat(){
-		return TrackerController.loadRecord(getCurrentParams(), this);
-//		return stat;
+	public ArenaStat getStat() {
+		return getStat( getCurrentParams() );
 	}
 
 	@Override
 	public ArenaStat getStat(MatchParams params){
-		return TrackerController.loadRecord(params, this);
-//		return stat;
+        return Tracker.getInterface( params ).getTeamRecord( name );
 	}
-
-    @Override
-    public int getMinPlayers() {
-        return minPlayers;
-    }
-
-    @Override
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-
-    @Override
-    public void setMinPlayers(int num) {
-        this.minPlayers = num;
-    }
-
-    @Override
-    public void setMaxPlayers(int num) {
-        this.maxPlayers = num;
-    }
-
-
-    @Override
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public void setIDString(String id) {
-        this.strID = id;
-    }
 }
-

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 
-public class TeamStat extends Stat implements Comparable<TeamStat>{
+public class TeamStat extends Stat implements Comparable<Stat>{
 
 	public TeamStat(){ }
 

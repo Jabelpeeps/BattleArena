@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import lombok.Getter;
+import mc.alk.arena.serializers.tracker.SQLSerializer.RSCon;
 import mc.alk.arena.util.Log;
 import mc.alk.tracker.objects.PlayerStat;
 import mc.alk.tracker.objects.Stat;
@@ -24,10 +25,10 @@ import mc.alk.tracker.objects.WLTRecord;
 import mc.alk.tracker.objects.WLTRecord.WLT;
 
 
-public class SQLInstance extends SQLSerializer {
+public class SQLInstance {
 	public static final int TEAM_ID_LENGTH = 32;
 	public static final int TEAM_NAME_LENGTH = 48;
-
+    static public final int MAX_NAME_LENGTH = 16;
 	
 	public static final String TABLE_PREFIX = "bt_";
 	public static final String VERSUS_TABLE_SUFFIX = "_versus";
@@ -92,12 +93,15 @@ public class SQLInstance extends SQLSerializer {
 	String save_members;
 
 	@Getter String tableName;
+	SQLSerializer serial;
 
-	public SQLInstance( String SQLtable ) { tableName = SQLtable; }
+	public SQLInstance( String SQLtableName, SQLSerializer serialiser ) { 
+	    tableName = SQLtableName;
+	    serial = serialiser;
+	}
 
-	@Override
-	public boolean init(){
-		super.init();
+	public boolean init() {
+	    
 		versus_table = TABLE_PREFIX + tableName + VERSUS_TABLE_SUFFIX;
 		overall_table = TABLE_PREFIX + tableName + OVERALL_TABLE_SUFFIX;
 		individual_table = TABLE_PREFIX + tableName + INDIVIDUAL_TABLE_SUFFIX;
@@ -160,7 +164,7 @@ public class SQLInstance extends SQLSerializer {
 
 		get_wins_since = "select * from "+individual_table+" WHERE ("+ID1+"=? AND WLTIE=1) OR ("+ID2+"=? AND WLTIE=0) AND "+DATE+" >= ? ORDER BY "+DATE+" DESC ";
 
-		switch(type){
+		switch( serial.getType() ) {
 		case MYSQL:
 			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table +" ("+
 					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
@@ -209,17 +213,18 @@ public class SQLInstance extends SQLSerializer {
 			save_members = "insert or ignore into " + MEMBER_TABLE + " VALUES(?,?) ";
 			truncate_all_tables = "drop table " +overall_table+"; drop table " + versus_table+"; drop table "+individual_table;
 		}
+		
         if (shouldUpdateTo1point0()){
             updateTo1Point0();}
 //        if (shouldUpdateTo1point1()){
 //            updateTo1Point1();}
 		try {
-			createTable(versus_table, create_versus_table, create_versus_table_idx);
-
-			createTable(overall_table, create_overall_table );
-			createTable(individual_table,create_individual_table,create_individual_table_idx);
-			createTable(MEMBER_TABLE,create_member_table,create_member_table_idx);
-		} catch (Exception e){
+			serial.createTable(versus_table, create_versus_table, create_versus_table_idx);
+			serial.createTable(overall_table, create_overall_table );
+			serial.createTable(individual_table,create_individual_table,create_individual_table_idx);
+			serial.createTable(MEMBER_TABLE,create_member_table,create_member_table_idx);
+		} 
+		catch (Exception e){
 			e.printStackTrace();
 			return false;
 		}
@@ -230,37 +235,54 @@ public class SQLInstance extends SQLSerializer {
 		if (x <= 0){
 			x = Integer.MAX_VALUE;}
 		RSCon rscon = null;
-		if (teamcount == null){
+		
+		if (teamcount == null) {
 			switch(statType){
-			case WINS: case KILLS: rscon = executeQuery(get_topx_wins,x);break;
-			case LOSSES: case DEATHS: rscon = executeQuery(get_topx_losses,x); break;
-			case TIES: rscon = executeQuery(get_topx_ties,x); break;
-			case RATING: case RANKING: rscon = executeQuery(get_topx_elo,x); break;
-			case MAXRATING: case MAXRANKING: rscon = executeQuery(get_topx_maxelo,x); break;
-			case STREAK: rscon = executeQuery(get_topx_streak,x); break;
-			case MAXSTREAK: rscon = executeQuery(get_topx_maxstreak,x); break;
-			case WLRATIO: case KDRATIO: rscon = executeQuery(get_topx_kd,x); break;
-			default:
+			    case WINS: case KILLS: 
+			        rscon = serial.executeQuery(get_topx_wins,x);break;
+    			case LOSSES: case DEATHS: 
+    			    rscon = serial.executeQuery(get_topx_losses,x); break;
+    			case TIES: 
+    			    rscon = serial.executeQuery(get_topx_ties,x); break;
+    			case RATING: case RANKING: 
+    			    rscon = serial.executeQuery(get_topx_elo,x); break;
+    			case MAXRATING: case MAXRANKING: 
+    			    rscon = serial.executeQuery(get_topx_maxelo,x); break;
+    			case STREAK: 
+    			    rscon = serial.executeQuery(get_topx_streak,x); break;
+    			case MAXSTREAK: 
+    			    rscon = serial.executeQuery(get_topx_maxstreak,x); break;
+    			case WLRATIO: case KDRATIO: 
+    			    rscon = serial.executeQuery(get_topx_kd,x); break;
+    			default:
 			}
-		} else {
+		} 
+		else {
 			switch(statType){
-			case WINS: case KILLS: rscon = executeQuery(get_topx_wins_tc,teamcount,x);break;
-			case LOSSES: case DEATHS: rscon = executeQuery(get_topx_losses_tc,teamcount,x); break;
-			case TIES: rscon = executeQuery(get_topx_ties_tc,teamcount,x); break;
-			case RATING: case RANKING: rscon = executeQuery(get_topx_elo_tc,teamcount,x); break;
-			case MAXRATING: case MAXRANKING: rscon = executeQuery(get_topx_maxelo_tc,teamcount,x); break;
-			case STREAK: rscon = executeQuery(get_topx_streak_tc,teamcount,x); break;
-			case MAXSTREAK: rscon = executeQuery(get_topx_maxstreak_tc,teamcount,x); break;
-			case WLRATIO: case KDRATIO: rscon = executeQuery(get_topx_kd_tc,teamcount,x); break;
-			default:
+    			case WINS: case KILLS: 
+    			    rscon = serial.executeQuery(get_topx_wins_tc,teamcount,x);break;
+    			case LOSSES: case DEATHS: 
+    			    rscon = serial.executeQuery(get_topx_losses_tc,teamcount,x); break;
+    			case TIES: 
+    			    rscon = serial.executeQuery(get_topx_ties_tc,teamcount,x); break;
+    			case RATING: case RANKING: 
+    			    rscon = serial.executeQuery(get_topx_elo_tc,teamcount,x); break;
+    			case MAXRATING: case MAXRANKING: 
+    			    rscon = serial.executeQuery(get_topx_maxelo_tc,teamcount,x); break;
+    			case STREAK: 
+    			    rscon = serial.executeQuery(get_topx_streak_tc,teamcount,x); break;
+    			case MAXSTREAK: 
+    			    rscon = serial.executeQuery(get_topx_maxstreak_tc,teamcount,x); break;
+    			case WLRATIO: case KDRATIO: 
+    			    rscon = serial.executeQuery(get_topx_kd_tc,teamcount,x); break;
+    			default:
 			}
 		}
-
 		return rscon == null ? null : createStatList(rscon);
 	}
 
 	public Integer getRanking(int rating, int teamSize) {
-		Integer rank = getInteger(get_rank, rating, teamSize);
+		Integer rank = serial.getInteger(get_rank, rating, teamSize);
 		return rank != null ? rank + 1: null;
 	}
 
@@ -278,30 +300,29 @@ public class SQLInstance extends SQLSerializer {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			closeConnection(rscon);
+		    serial.closeConnection(rscon);
 		}
 		return stats;
 	}
 
 	public Stat getRecord(String key) {
-		RSCon rscon = executeQuery(get_overall_totals, key);
+		RSCon rscon = serial.executeQuery(get_overall_totals, key);
 		try {
 			ResultSet rs = rscon.rs;
-			//			System.out.println("rscon & rs " + rscon +"  " + rs);
-			while (rs.next()){
+
+			while (rs.next()) {
 				return createStat(rscon);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			closeConnection(rscon);
+		    serial.closeConnection(rscon);
 		}
 		return null;
 	}
 
 	private Stat createStat(RSCon rscon) throws SQLException{
 		ResultSet rs = rscon.rs;
-		Stat ts = null;
 		String id = rs.getString(TEAMID);
 		String name= rs.getString(NAME);
 		int kills = rs.getInt(WINS);
@@ -313,7 +334,10 @@ public class SQLInstance extends SQLSerializer {
 		int maxElo = rs.getInt(MAXELO);
 		int count = rs.getInt(COUNT);
 		int flags = rs.getInt(FLAGS);
-		if (DEBUG) System.out.println("name =" + name + " id=" + id +" ranking=" + elo +" count="+count);
+		if (SQLSerializer.DEBUG) 
+		    System.out.println("name =" + name + " id=" + id +" ranking=" + elo +" count="+count);
+
+        Stat ts;
 		if (count == 1){
 			ts = new PlayerStat(id);
 		} else {
@@ -326,7 +350,7 @@ public class SQLInstance extends SQLSerializer {
 			HashSet<String> players = new HashSet<>();
 			RSCon rscon2 = null;
 			try{
-				rscon2 = executeQuery(rscon.con, true, TIMEOUT, get_members, id);
+				rscon2 = serial.executeQuery(rscon.con, true, SQLSerializer.TIMEOUT, get_members, id);
 				ResultSet rs2 = rscon2.rs;
 				while (rs2.next()){
 					players.add(rs2.getString(NAME));
@@ -334,7 +358,7 @@ public class SQLInstance extends SQLSerializer {
 
 				((TeamStat)ts).setMembers(players);
 			} finally{
-				closeConnection(rscon2);
+			    serial.closeConnection(rscon2);
 			}
 		} else {
 		}
@@ -347,7 +371,7 @@ public class SQLInstance extends SQLSerializer {
 		ts.setMaxStreak(maxStreak);
 		ts.setMaxRating(maxElo);
 		ts.setFlags(flags);
-		if (DEBUG) System.out.println("stat = " + ts);
+		if (SQLSerializer.DEBUG) System.out.println("stat = " + ts);
 		return ts;
 	}
 	public void save(Stat stat) {
@@ -356,7 +380,7 @@ public class SQLInstance extends SQLSerializer {
 
 	public void saveAll(Stat... stats) {
 		saveTotals(stats);
-		/// Now Save members
+
 		for (Stat stat: stats){
 			try{
 				/// We only need to save the members if they exceed the id length, which turns the id into a hash
@@ -368,7 +392,7 @@ public class SQLInstance extends SQLSerializer {
 					saveMembers(stat.getStrID(), members);
 
 				VersusRecords rs = stat.getRecordSet();
-				if (DEBUG) System.out.println("SaveVersusRecords " + rs);
+				if (SQLSerializer.DEBUG) System.out.println("SaveVersusRecords " + rs);
 				if (rs != null){
 					rs.flushOverallRecords();
 					//					saveOverallRecords(rs.getOverallRecords());
@@ -386,7 +410,7 @@ public class SQLInstance extends SQLSerializer {
 	public boolean saveIndividualRecords(String id, HashMap<String, List<WLTRecord>> indRecords) {
 		if (indRecords == null || indRecords.isEmpty())
 			return true;
-		if (DEBUG) System.out.println("SaveIndividual " + id);
+		if (SQLSerializer.DEBUG) System.out.println("SaveIndividual " + id);
 		List<List<Object>> batch = new ArrayList<>();
 		for (String oid : indRecords.keySet()){
 			HashSet<Timestamp> times = new HashSet<>();
@@ -410,7 +434,7 @@ public class SQLInstance extends SQLSerializer {
 			}
 		}
 		try {
-			executeBatch(save_ind_record, batch);
+		    serial.executeBatch(save_ind_record, batch);
 		} catch (Exception e){
 			return false;
 		}
@@ -421,7 +445,7 @@ public class SQLInstance extends SQLSerializer {
 		if (stats == null || stats.length==0)
 			return;
 		List<List<Object>> batch = new ArrayList<>();
-		if (DEBUG) System.out.println("saveTotals ");
+		if (SQLSerializer.DEBUG) System.out.println("saveTotals ");
 
 		for (Stat stat: stats){
 			/// The "name" is just a comma delimited list of ids in the simple case, we can reconstruct it from the members
@@ -436,7 +460,7 @@ public class SQLInstance extends SQLSerializer {
 					stat.getMaxRating(), stat.getCount(), stat.getFlags()}));
 		}
 		try{
-			executeBatch(insert_overall_totals, batch);
+		    serial.executeBatch(insert_overall_totals, batch);
 		} catch (Exception e){
 			System.err.println("ERROR SAVING TOTALS");
 			e.printStackTrace();
@@ -450,17 +474,17 @@ public class SQLInstance extends SQLSerializer {
 	public void saveMembers(String strid, List<String> players) {
 		if (players == null)
 			return ;
-		if (DEBUG) Log.info( "SaveMember " + strid +"  players=" + players);
+		if (SQLSerializer.DEBUG) Log.info( "SaveMember " + strid +"  players=" + players);
 		List<List<Object>> batch = new ArrayList<>();
 		for (String player: players){
 			batch.add(Arrays.asList(new Object[]{strid,player}));
 		}
-		executeBatch(save_members,batch);
+		serial.executeBatch(save_members,batch);
 	}
 
 	public VersusRecord getVersusRecord(String id, String opponentId) {
 		VersusRecord or = null;
-		List<Object> objs = getObjects(get_versus_record, id, opponentId);
+		List<Object> objs = serial.getObjects(get_versus_record, id, opponentId);
 		if (objs != null && !objs.isEmpty()){
 			or = new VersusRecord(id,opponentId);
 			or.wins = Integer.valueOf(objs.get(0).toString());
@@ -485,7 +509,7 @@ public class SQLInstance extends SQLSerializer {
 	public List<WLTRecord> getVersusRecords(String id, String opponentId, int x) {
 		if (x <= 0){
 			x = Integer.MAX_VALUE;}
-		RSCon rscon = executeQuery(getx_versus_records,id,opponentId,opponentId, id, x);
+		RSCon rscon = serial.executeQuery(getx_versus_records,id,opponentId,opponentId, id, x);
 		List<WLTRecord> list = new ArrayList<>();
 		if (rscon != null){
 			try {
@@ -504,7 +528,7 @@ public class SQLInstance extends SQLSerializer {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally{
-				closeConnection(rscon);
+			    serial.closeConnection(rscon);
 			}
 		}
 		return list;
@@ -515,7 +539,7 @@ public class SQLInstance extends SQLSerializer {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date(time);
 		String datestr = dateFormat.format(date);
-		rscon = executeQuery(get_wins_since,id,id, datestr);
+		rscon = serial.executeQuery(get_wins_since,id,id, datestr);
 		List<WLTRecord> list = new ArrayList<>();
 		if (rscon != null){
 			try {
@@ -529,7 +553,7 @@ public class SQLInstance extends SQLSerializer {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally{
-				closeConnection(rscon);
+			    serial.closeConnection(rscon);
 			}
 		}
 		return list;
@@ -538,7 +562,8 @@ public class SQLInstance extends SQLSerializer {
 	public void realsaveVersusRecords(Collection<VersusRecord> types) {
 		if (types==null) return;
 		
-		if (DEBUG) Log.info( "saveOverallRecords types=" + types +"  size=" +(types != null ? types.size():0));
+		if (SQLSerializer.DEBUG) 
+		    Log.info( "saveOverallRecords types=" + types +"  size=" +(types != null ? types.size():0));
 		
 		List<List<Object>> batch = new ArrayList<>();
 		
@@ -549,18 +574,18 @@ public class SQLInstance extends SQLSerializer {
 			
 			batch.add(Arrays.asList(new Object[]{or.ids.get(0),or.ids.get(1),or.wins,or.losses,or.ties}));
 		}
-		executeBatch(insert_versus_record,batch);
+		serial.executeBatch(insert_versus_record,batch);
 	}
 
 	public void deleteTables(){
-		switch (this.getType()){
+		switch (serial.getType()){
 		case MYSQL:
-			this.executeUpdate("truncate table " +overall_table);
-			this.executeUpdate("truncate table " +versus_table);
-			this.executeUpdate("truncate table " +individual_table);
+		    serial.executeUpdate("truncate table " +overall_table);
+		    serial.executeUpdate("truncate table " +versus_table);
+		    serial.executeUpdate("truncate table " +individual_table);
 			break;
 		case SQLITE:
-			this.executeUpdate(truncate_all_tables);
+		    serial.executeUpdate(truncate_all_tables);
 			/// For SQLite, need to drop the tables and recreate them
 			init();
 			break;
@@ -570,20 +595,20 @@ public class SQLInstance extends SQLSerializer {
 	}
 
 	public int getRecordCount() {
-		return getInteger("select count(*) from " + individual_table);
+		return serial.getInteger("select count(*) from " + individual_table);
 	}
 
 	public boolean shouldUpdateTo1point0() {
-		return hasTable(overall_table) && !hasColumn(overall_table,FLAGS);
+		return serial.hasTable( overall_table ) && !serial.hasColumn( overall_table, FLAGS );
 	}
 //    public boolean shouldUpdateTo1point1() {
 //        return !hasColumn(OVERALL_TABLE,KILLS);
 //    }
 
 	private void updateTo1Point0() {
-		Log.warn("[BattleTracker] updating database to 1.0");
-		String alter = "ALTER TABLE "+overall_table+" ADD "+FLAGS+" INTEGER DEFAULT 0 ";
-		executeUpdate(alter);
+		Log.warn( "[BattleTracker] updating database to 1.0" );
+		String alter = "ALTER TABLE " + overall_table + " ADD " + FLAGS + " INTEGER DEFAULT 0 ";
+		serial.executeUpdate( alter );
 	}
 //
 //    private void updateTo1Point1() {

@@ -5,7 +5,6 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.objects.MatchResult;
-import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
@@ -16,8 +15,9 @@ import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.scoreboardapi.SObjective;
 import mc.alk.arena.scoreboardapi.STeam;
 import mc.alk.arena.util.Countdown;
-import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.Countdown.CountdownCallback;
+import mc.alk.arena.util.MessageUtil;
+import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit, CountdownCallback {
 
@@ -55,7 +55,7 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
             return false;
         if (remaining <= 0) {
             MatchResult cr = new MatchResult();
-            cr.setResult(WinLossDraw.LOSS);
+            cr.setResult(WLT.LOSS);
             cr.addLoser(team);
             match.endMatchWithResult(cr);
         }

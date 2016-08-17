@@ -10,11 +10,12 @@ import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TimeUtil;
+import mc.alk.tracker.Tracker;
+import mc.alk.tracker.controllers.TrackerInterface;
 
 
 /**
@@ -26,7 +27,7 @@ import mc.alk.arena.util.TimeUtil;
 public class MessageFormatter{
 	final String[] searchList;
 	final String[] replaceList;
-	final TrackerController sc;
+	final TrackerInterface sc;
 
 	final Set<MessageOption> ops;
 	final Message msg;
@@ -45,7 +46,7 @@ public class MessageFormatter{
 		tns = new HashMap<>(nTeams);
 		params = mp;
 		typeName = mp.getType().getName();
-		sc = new TrackerController(mp);
+		sc = Tracker.getInterface( mp );
 		impl = _impl;
 	}
 

@@ -26,7 +26,6 @@ import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Defaults;
 import mc.alk.tracker.Tracker;
-import mc.alk.tracker.TrackerOptions;
 import mc.alk.tracker.controllers.TrackerConfigController;
 import mc.alk.tracker.controllers.TrackerController;
 import mc.alk.tracker.controllers.TrackerInterface;
@@ -48,16 +47,14 @@ public class BTEntityListener implements Listener {
 	TrackerInterface worldTi;
 	int count = 0;
 
-	class RampageStreak{
+	class RampageStreak {
 		Long time; int nkills;
 		public RampageStreak(Long t, int nk){this.time = t; this.nkills = nk;}
 	}
 
 	public BTEntityListener() {
-		TrackerOptions to = new TrackerOptions();
-		to.setSaveIndividualRecords(true);
-		playerTi = Tracker.getInterface(Defaults.PVP_INTERFACE,to);
-		worldTi = Tracker.getInterface(Defaults.PVE_INTERFACE);
+		playerTi = Tracker.getPVPInterface();
+		worldTi = Tracker.getPVEInterface();
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

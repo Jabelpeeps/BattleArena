@@ -46,7 +46,6 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.OneTeamLeft;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.plugins.BTInterface;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
@@ -369,14 +368,7 @@ public class ConfigSerializer extends BaseConfig {
         
         if (dbName != null) {
             mp.setTableName(dbName);
-            if (TrackerController.enabled()){
-                try{
-                    if (!BTInterface.addBTI(mp)){
-                        Log.err("Couldn't add tracker interface");}
-                } catch (Exception e){
-                    Log.err("Couldn't add tracker interface");
-                }
-            }
+            BTInterface.addBTI(mp);          
         }
         if (cs.contains("overrideBattleTracker")){
             mp.setUseTrackerPvP(cs.getBoolean("overrideBattleTracker", true));
@@ -386,11 +378,10 @@ public class ConfigSerializer extends BaseConfig {
         }
         if (!isNonBaseConfig || cs.contains("useTrackerMessages"))
             mp.setUseTrackerMessages(cs.getBoolean("useTrackerMessages", false));
+        
         if (cs.contains("teamRating")){
             mp.setUseTeamRating(cs.getBoolean("teamRating",false));}
-        //		mp.set
-        //		mp.setOverrideBTMessages(cs.getBoolean(path))
-        /// What is the default rating for this match type
+
         if (cs.contains("rated"))
             mp.setRated(cs.getBoolean("rated", true));
     }
@@ -399,7 +390,6 @@ public class ConfigSerializer extends BaseConfig {
         if (cs.contains("gameSize") || isArena){
             cs = cs.getConfigurationSection("gameSize");}
 
-        /// Number of teams and team sizes
         if (!isArena || (cs != null && cs.contains("teamSize"))) {
             mp.setTeamSize(MinMax.valueOf(cs.getString("teamSize", "1+")));
         }

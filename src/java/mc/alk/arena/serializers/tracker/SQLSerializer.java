@@ -26,13 +26,8 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.BattleArena;
 
-/**
- *
- * @author Alkarin
- *
- */
-public abstract class SQLSerializer{
-	static public final String version = "1.3.2";
+public class SQLSerializer {
+	static public final String version = "1.5";
 
 	static protected final boolean DEBUG = false;
 	static final boolean DEBUG_UPDATE = false;
@@ -45,19 +40,16 @@ public abstract class SQLSerializer{
 	 *
 	 */
 	@AllArgsConstructor @Getter
-	public static enum SQLType{
+	public enum SQLType {
 		MYSQL( "MySQL", "com.mysql.jdbc.Driver" ), 
 		SQLITE( "SQLite", "org.sqlite.JDBC" );
 	    @Getter String name, driver;
 	};
 	
-	static public final int MAX_NAME_LENGTH = 16;
-
 	private DataSource ds ;
 
 	@Getter protected String DB = "minecraft";
 	@Getter @Setter protected SQLType type = SQLType.MYSQL;
-
 	@Getter @Setter protected String url = "localhost";
 	@Getter @Setter protected String port = "3306";
 	@Getter @Setter protected String username = "root";
@@ -67,10 +59,10 @@ public abstract class SQLSerializer{
 
 	public void setDB(String dB) {
 		DB = dB;
-		create_database = "CREATE DATABASE IF NOT EXISTS `" + DB+ "`";
+		create_database = "CREATE DATABASE IF NOT EXISTS `" + DB + "`";
 	}
 
-	protected class RSCon{
+	protected class RSCon {
 		public ResultSet rs;
 		public Connection con;
 	}
@@ -117,7 +109,7 @@ public abstract class SQLSerializer{
 		try {con.close();} catch (SQLException e) {e.printStackTrace();}
 	}
 
-    protected boolean init() {
+    private void init() {
 		try {
 			Class.forName(type.getDriver());
 			if (DEBUG) Log.info( "Got Driver " + type.getDriver());
@@ -125,7 +117,7 @@ public abstract class SQLSerializer{
 		catch (ClassNotFoundException e1) {
 			Log.error( "Failed getting driver " + type.getDriver());
 			e1.printStackTrace();
-			return false;
+			return;
 		}
 		String connectionString = null, datasourceString = null;
 		final int minIdle;
@@ -148,7 +140,7 @@ public abstract class SQLSerializer{
 
 		ds = setupDataSource( datasourceString, username, password, minIdle, maxActive );
 		
-		if ( ds == null ) return false;		
+		if ( ds == null ) return;		
 		if ( DEBUG ) Log.info( "Connection to database succeeded." );
 
 		if ( type == SQLType.MYSQL ){
@@ -162,14 +154,12 @@ public abstract class SQLSerializer{
 			catch (SQLException e) {
 				Log.error( "Failed creating db: " + strStmt );
 				e.printStackTrace();
-				return false;
 			} 
 		}
-		return true;
 	}
 
-	public static DataSource setupDataSource(String connectURI, String username, String password, 
-	                                                                    int minIdle, int maxActive) {
+	public static DataSource setupDataSource( String connectURI, String username, String password, 
+	                                                                    int minIdle, int maxActive ) {
 
 	    GenericObjectPool.Config poolConf = new GenericObjectPool.Config();
 	    poolConf.lifo = false;
@@ -187,7 +177,7 @@ public abstract class SQLSerializer{
 		return new PoolingDataSource( factory.getPool() );
 	}
 
-	protected boolean createTable(String tableName, String sql_create_table,String... sql_updates) {
+	protected boolean createTable( String tableName, String sql_create_table,String... sql_updates ) {
 	    
 		boolean exists = false;
 		if ( type == SQLType.SQLITE ) {
@@ -254,24 +244,24 @@ public abstract class SQLSerializer{
 	protected Boolean hasColumn(String table, String column){
 		String stmt = null;
 		Boolean b = null;
+		
 		switch (type){
-		case MYSQL:
-			stmt = "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? " +
-				"AND TABLE_NAME = ? AND COLUMN_NAME = ?";
-			b = getBoolean(true, 2, stmt, DB,table,column);
-			return b == null ? false : b;
-		case SQLITE:
-			/// After hours, I have discovered that SQL can NOT bind tables...
-			/// so explicitly put in the table.
-			/// UPDATE: on windows machines you need to explicitly put in the column too...
-			stmt = "SELECT COUNT("+column+") FROM '"+table+"'";
-			try {
-				b = getBoolean(false,2, stmt);
-				/// if we got any non error response... we have the table
-				return b == null ? false : true;
-			} catch (Exception e){
-				return false;
-			}
+		
+		    case MYSQL:
+    			stmt = "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? " +
+    				"AND TABLE_NAME = ? AND COLUMN_NAME = ?";
+    			b = getBoolean(true, 2, stmt, DB,table,column);
+    			return b == null ? false : b;
+    		
+    		case SQLITE:
+    			stmt = "SELECT COUNT("+column+") FROM '"+table+"'";
+    			try {
+    				b = getBoolean(false,2, stmt);
+    				/// if we got any non error response... we have the table
+    				return b == null ? false : true;
+    			} catch (Exception e){
+    				return false;
+    			}
 		}
 		return false;
 	}
@@ -602,35 +592,41 @@ public abstract class SQLSerializer{
 		return Integer.valueOf(map.get(key).toString());
 	}
 
-    public static void configureSQL(SQLSerializer sql, ConfigurationSection cs) {
-    	String type = cs.getString("type");
-    	String url = cs.getString("url");
-    	if (type != null && type.equalsIgnoreCase("sqlite")){
-    		url = BattleArena.getSelf().getDataFolder().toString();
+    public void configureSQL( ConfigurationSection cs ) {
+        
+    	String _type = cs.getString("type");
+    	String _url = cs.getString("url");
+    	
+    	if ( _type != null && _type.equalsIgnoreCase("sqlite") ) {
+    		_url = BattleArena.getSelf().getDataFolder().toString();
     	}
-    	SQLSerializer.configureSQL(sql, type, url, cs.getString("db"),
-    			cs.getString("port"), cs.getString("username"), cs.getString("password"));
+    	configureSQL( _type, _url, cs.getString("db"),
+    			                   cs.getString("port"), 
+    			                   cs.getString("username"), 
+    			                   cs.getString("password"));
     }
 
-    public static void configureSQL(SQLSerializer sql, String type, String urlOrPath,
-    		                            String db, String port, String user, String password) {
-    	if (db != null){
-    		sql.setDB(db);
+    public void configureSQL( String _type, String urlOrPath,
+    		                            String db, String _port, String user, String _password) {
+    	if ( db != null ) {
+    		setDB( db );
     	}
-    	if (type == null || type.equalsIgnoreCase("mysql")){
-    		sql.setType(SQLType.MYSQL);
-    		if (urlOrPath==null) urlOrPath = "localhost";
-    		if (port == null)  port = "3306";
-    		sql.setUrl(urlOrPath);
-    		sql.setPort(port);
+    	if ( _type == null || _type.equalsIgnoreCase( "mysql" ) ) {
+    	    
+    		type = SQLType.MYSQL;
+    		
+    		if ( urlOrPath == null ) urlOrPath = "localhost";
+    		if ( _port == null )  _port = "3306";
+    		
+    		url = urlOrPath;
+    		port = _port;
     	} 
     	else { 
-    		sql.setType(SQLType.SQLITE);
-    		sql.setUrl(urlOrPath);
+    		type = SQLType.SQLITE;
+    		url = urlOrPath;
     	}
-    	sql.setUsername(user);
-    	sql.setPassword(password);
-    	sql.init();
-    
+    	username = user;
+    	password = _password;
+    	init();
     }
 }

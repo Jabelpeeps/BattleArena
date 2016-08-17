@@ -24,7 +24,7 @@ public class WLTRecord {
 	}
 	
 	public enum WLT {
-	    LOSS, WIN, TIE;
+	    UNKNOWN, LOSS, WIN, TIE;
 
 	    public static WLT valueOf(int value) {
 	        if (value >= WLT.values().length || value < 0)
@@ -34,9 +34,10 @@ public class WLTRecord {
 
 	    public WLT reverse() {
 	        switch(this){
-	        case LOSS: return WIN;
-	        case WIN : return LOSS;
-	        case TIE: return TIE;
+    	        case LOSS: return WIN;
+    	        case WIN : return LOSS;
+    	        case TIE: return TIE;
+    	        case UNKNOWN: return UNKNOWN;                    
 	        }
 	        return null;
 	    }

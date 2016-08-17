@@ -24,7 +24,7 @@ import mc.alk.arena.serializers.tracker.SQLInstance;
 import mc.alk.arena.serializers.tracker.SQLSerializer;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
-import mc.alk.tracker.TrackerOptions;
+import mc.alk.tracker.EloCalculator;
 import mc.alk.tracker.objects.PlayerStat;
 import mc.alk.tracker.objects.Stat;
 import mc.alk.tracker.objects.StatChange;
@@ -32,13 +32,11 @@ import mc.alk.tracker.objects.StatType;
 import mc.alk.tracker.objects.TeamStat;
 import mc.alk.tracker.objects.WLTRecord;
 import mc.alk.tracker.objects.WLTRecord.WLT;
-import mc.alk.tracker.ranking.EloCalculator;
-import mc.alk.tracker.ranking.RatingCalculator;
 
 public class TrackerInterface implements CacheSerializer<String,Stat>{
 	Cache<String, Stat> cache = new Cache<>(this);
 	boolean trackIndividual = false;
-	@Getter RatingCalculator ratingCalculator;
+	@Getter EloCalculator ratingCalculator;
 	@Getter SQLInstance SQL = null;
 	@Getter String interfaceName;
 
@@ -50,29 +48,18 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		                                  .toString();
 	}
 
-	public TrackerInterface(String tableName, TrackerOptions options) {
-		initDB(tableName);
-		ratingCalculator = options.getRatingCalculator();
-		trackIndividual = options.savesIndividualRecords();
-	}
-
-	public TrackerInterface(String type, String db, String urlOrPath, String table, String port, String user, String password) {
-		SQL = new SQLInstance( table );
-		interfaceName = table;
-		SQLSerializer.configureSQL(SQL,type,urlOrPath,db,port,user,password);
-		cache.setSaveEvery(Defaults.SAVE_EVERY_X_SECONDS *1000);
-
-		EloCalculator ec = new EloCalculator();
-		ec.setDefaultRating(1250);
-		ec.setEloSpread(400);
-		ratingCalculator = ec;
-	}
-
-	private void initDB(String _tableName) {
-		SQL = new SQLInstance(_tableName);
-		interfaceName = _tableName;
-		SQLSerializer.configureSQL( SQL, TrackerConfigController.config.getConfigurationSection("SQLOptions"));
-		cache.setSaveEvery(Defaults.SAVE_EVERY_X_SECONDS *1000);
+	public TrackerInterface( String tableName, boolean saveIndividualRecords ) {
+	      
+        SQLSerializer serial = new SQLSerializer();
+        serial.configureSQL( TrackerConfigController.config.getConfigurationSection( "SQLOptions" ) );
+        SQL = new SQLInstance( tableName, serial );
+        interfaceName = tableName;     
+        cache.setSaveEvery( Defaults.SAVE_EVERY_X_SECONDS *1000 );
+        
+		ratingCalculator = new EloCalculator();
+		ratingCalculator.setDefaultRating((float) TrackerConfigController.getDouble( "elo.default",1250 ) );
+		ratingCalculator.setEloSpread((float) TrackerConfigController.getDouble( "elo.spread",400 ) );
+		trackIndividual = saveIndividualRecords;
 	}
 
 	@Override
@@ -119,11 +106,12 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		addStatRecord(team1,team2,wlt,true);
 	}
 
-	private void addStatRecord(final Stat team1, final Stat team2,
-			final WLT wlt, final boolean changeWinLossRecords){
+	private void addStatRecord(final Stat team1, final Stat team2, final WLT wlt, final boolean changeWinLossRecords) {
+	    
 		if (cache.contains(team1) && cache.contains(team2)){
 			_addStatRecord(new StatChange(team1,team2,wlt,changeWinLossRecords));
-		} else {
+		} 
+		else {
 			Scheduler.scheduleAsynchronousTask( 
 			        () -> _addStatRecord( new StatChange( team1,team2,wlt,changeWinLossRecords) ) );
 		}
@@ -485,4 +473,16 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 	}
 
 	public boolean isModified() { return cache.isModified(); }
+
+    public String getRankMessage(OfflinePlayer player) {
+        Stat stat = loadRecord(player);
+        if (stat == null){
+            return "&eCouldn't find stats for player " + player.getName();}
+        Integer rank = getRank(player.getName());
+        if (rank == null)
+            rank = -1;
+        return "&eRank:&6" + rank + "&e (&4" + stat.getWins() + "&e:&8" + stat.getLosses() + "&e)&6[" + stat.getRating() + 
+                        "]&e" + ". Highest &6[" + stat.getMaxRating() + "]&e Longest Streak &b" + stat.getMaxStreak();
+    }
+
 }

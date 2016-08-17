@@ -61,7 +61,6 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaControllerInterface;
 import mc.alk.arena.objects.arenas.ArenaListener;
@@ -86,8 +85,8 @@ import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumLivesPerPlaye
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumTeams;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
+import mc.alk.arena.plugins.BTInterface;
 import mc.alk.arena.plugins.HeroesController;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.scoreboardapi.SEntry;
@@ -97,6 +96,9 @@ import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
+import mc.alk.tracker.Tracker;
+import mc.alk.tracker.controllers.TrackerInterface;
+import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public abstract class Match extends Competition implements Runnable, ArenaController {
 
@@ -588,13 +590,14 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                                        "  drawers=" + drawers + " " + matchResult + 
                                        " secondsToLoot=" + params.getSecondsToLoot() );
             if ( params.isRated() ) {
-                TrackerController sc = new TrackerController( params );
-                sc.addRecord( victors, losers, drawers, result.getResult(), params.isTeamRating() );
+                TrackerInterface sc = Tracker.getInterface( params );
+                BTInterface.addRecord( sc, victors, losers, drawers, result.getResult(), params.isTeamRating() );
             }
 
-            if ( result.hasVictor() ) { /// We have a true winner
+            if ( result.hasVictor() ) { 
                 matchMessager.sendOnVictoryMsg(victors, losers);
-            } else { /// we have a draw
+            } 
+            else { 
                 matchMessager.sendOnDrawMessage(drawers,losers);
             }
 
@@ -625,12 +628,13 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                                        " secondsToLoot=" + params.getSecondsToLoot() );
 
             if ( params.isRated() ) {
-                TrackerController sc = new TrackerController( params );
-                sc.addRecord( victors,losers,drawers,am.getMatchResult().getResult(), params.isTeamRating());
+                TrackerInterface sc = Tracker.getInterface( params );
+                BTInterface.addRecord( sc, victors,losers,drawers,am.getMatchResult().getResult(), params.isTeamRating());
             }
-            if ( matchResult.hasVictor() ) { /// We have a true winner
+            if ( matchResult.hasVictor() ) { 
                 matchMessager.sendOnVictoryMsg(victors, losers);
-            } else { /// we have a draw
+            } 
+            else { 
                 matchMessager.sendOnDrawMessage(drawers,losers);
             }
             updateBukkitEvents( MatchState.ONVICTORY );
@@ -1055,8 +1059,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                 scoreboard.setEntryNameSuffix(e, "(" + nLivesPerPlayer + ")");
         }
         if (!params.getUseTrackerPvP()){
-            TrackerController.stopTracking(player);
-            TrackerController.stopTrackingMessages(player);
+            TrackerInterface sc = Tracker.getInterface( params );
+            sc.stopTracking(player.getName());
+            sc.stopMessages(player.getName());
         }
         if (woolTeams && team !=null && team.getIndex()!=-1){
             TeamUtil.setTeamHead(team.getIndex(), player); // give wool heads
@@ -1118,8 +1123,9 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         player.removeCompetition(this);
         player.reset(); /// reset the players
         if (!params.getUseTrackerPvP()){
-            TrackerController.resumeTracking(player);
-            TrackerController.resumeTrackingMessages(player);
+            TrackerInterface sc = Tracker.getInterface( params );
+            sc.resumeTracking(player.getName());
+            sc.resumeMessages(player.getName());
         }
         if (t != null){
             if (this.woolTeams)
@@ -1368,19 +1374,19 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             ArrayList<ArenaTeam> losers= new ArrayList<>(teams);
             losers.removeAll(winningTeams);
             matchResult.addLosers(losers);
-            matchResult.setResult(WinLossDraw.WIN);
+            matchResult.setResult(WLT.WIN);
             endMatchWithResult(matchResult);
         }
     }
 
     public synchronized void setDraw(){
-        matchResult.setResult(WinLossDraw.DRAW);
+        matchResult.setResult(WLT.TIE);
         matchResult.setDrawers(teams);
         endMatchWithResult(matchResult);
     }
 
     public synchronized void setLosers(){
-        matchResult.setResult(WinLossDraw.LOSS);
+        matchResult.setResult(WLT.LOSS);
         matchResult.setLosers(teams);
         endMatchWithResult(matchResult);
     }
@@ -1402,7 +1408,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         boolean b = gm.isHandled(player);
         return isInMatch(player) || b;
     }
-
 
     protected Set<ArenaPlayer> checkReady(final ArenaTeam t, StateOptions mo) {
         Set<ArenaPlayer> alive = new HashSet<>();

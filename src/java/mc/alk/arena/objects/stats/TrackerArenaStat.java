@@ -29,7 +29,7 @@ public class TrackerArenaStat implements ArenaStat {
 	@Override
 	public int getRanking() { return (int) stat.getRating(); }
 	@Override
-	public int getRating() { return (int) stat.getRating(); }
+	public float getRating() { return (int) stat.getRating(); }
 	@Override
 	public String toString() { return stat.toString(); }
 }

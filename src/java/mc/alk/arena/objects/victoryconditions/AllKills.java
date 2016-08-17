@@ -1,26 +1,27 @@
 package mc.alk.arena.objects.victoryconditions;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeMap;
+
+import org.bukkit.configuration.ConfigurationSection;
+
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
-import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-
-import org.bukkit.configuration.ConfigurationSection;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeMap;
+import mc.alk.tracker.Tracker;
+import mc.alk.tracker.controllers.TrackerInterface;
+import mc.alk.tracker.objects.WLTRecord.WLT;
 public class AllKills extends VictoryCondition implements ScoreTracker {
     final ArenaObjective kills;
-    final TrackerController sc;
+    final TrackerInterface sc;
     final ConfigurationSection section;
 
     public AllKills(Match match, ConfigurationSection section) {
@@ -32,7 +33,7 @@ public class AllKills extends VictoryCondition implements ScoreTracker {
                 SAPIDisplaySlot.SIDEBAR, 60);
         boolean isRated = match.getParams().isRated();
         boolean soloRating = !match.getParams().isTeamRating();
-        sc = (isRated && soloRating) ? new TrackerController(match.getParams()): null;
+        sc = (isRated && soloRating) ? Tracker.getInterface( match.getParams() ) : null;
     }
 
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)
@@ -41,7 +42,7 @@ public class AllKills extends VictoryCondition implements ScoreTracker {
         kills.addPoints(event.getPlayer(), points);
         kills.addPoints(event.getTeam(), points);
         if (sc != null)
-            sc.addRecord(event.getPlayer(), event.getTarget(), WinLossDraw.WIN);
+            sc.addPlayerRecord(event.getPlayer().getName(),event.getTarget().getName(), WLT.WIN);
     }
 
     @ArenaEventHandler(priority = ArenaEventPriority.LOW)

@@ -17,7 +17,7 @@ public class BlankArenaStat implements ArenaStat{
 	@Override
     public int getRanking() { return 1250; }
 	@Override
-    public int getRating() { return 1250; }
+    public float getRating() { return 1250; }
 	@Override
 	public String getDB() { return ""; }
 }

@@ -8,6 +8,7 @@ import java.util.SortedMap;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.tracker.objects.WLTRecord.WLT;
 
 /**
  * @author alkarin
@@ -16,7 +17,7 @@ public class MatchResult {
     @Getter Set<ArenaTeam> victors = new HashSet<>();
     @Getter Set<ArenaTeam> losers = new HashSet<>();
     @Getter Set<ArenaTeam> drawers = new HashSet<>();
-    @Getter WinLossDraw result = WinLossDraw.UNKNOWN;
+    @Getter WLT result = WLT.UNKNOWN;
     @Getter @Setter SortedMap<Integer, Collection<ArenaTeam>> ranking;
 
     public MatchResult(){}
@@ -33,23 +34,23 @@ public class MatchResult {
      * unless this match is set to a WinLossDraw.WIN
      * @param _wld The WinLossDraw type.
      */
-    public void setResult(WinLossDraw _wld){
+    public void setResult(WLT _wld){
         result = _wld;
     }
     public void setVictor(ArenaTeam vic) {
         victors.clear();
         victors.add(vic);
-        result = WinLossDraw.WIN;
+        result = WLT.WIN;
     }
     public void setVictors(Collection<ArenaTeam> victors) {
         victors.clear();
         victors.addAll(victors);
-        result = WinLossDraw.WIN;
+        result = WLT.WIN;
     }
     public void setDrawers(Collection<ArenaTeam> drawers) {
         drawers.clear();
         drawers.addAll(drawers);
-        result = WinLossDraw.DRAW;
+        result = WLT.TIE;
     }
     public void setLosers(Collection<ArenaTeam> losers) {
         losers.clear();
@@ -78,10 +79,10 @@ public class MatchResult {
 
         return sb.toString();
     }
-    public boolean isUnknown() { return result == WinLossDraw.UNKNOWN; }
-    public boolean isDraw() { return result == WinLossDraw.DRAW; }
+    public boolean isUnknown() { return result == WLT.UNKNOWN; }
+    public boolean isDraw() { return result == WLT.TIE; }
     public boolean isWon(){ return hasVictor(); }
-    public boolean isLost() { return result == WinLossDraw.LOSS; }
-    public boolean isFinished(){ return result == WinLossDraw.WIN || result == WinLossDraw.DRAW; }
-    public boolean hasVictor() { return result == WinLossDraw.WIN; }
+    public boolean isLost() { return result == WLT.LOSS; }
+    public boolean isFinished(){ return result == WLT.WIN || result == WLT.TIE; }
+    public boolean hasVictor() { return result == WLT.WIN; }
 }

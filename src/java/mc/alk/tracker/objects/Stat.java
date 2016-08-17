@@ -11,21 +11,22 @@ import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.events.tracker.MaxRatingChangeEvent;
 import mc.alk.arena.events.tracker.WinStatChangeEvent;
+import mc.alk.arena.objects.stats.ArenaStat;
+import mc.alk.arena.util.Cache.CacheObject;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.Util;
-import mc.alk.arena.util.Cache.CacheObject;
+import mc.alk.tracker.EloCalculator;
 import mc.alk.tracker.controllers.TrackerInterface;
 import mc.alk.tracker.objects.VersusRecords.VersusRecord;
-import mc.alk.tracker.ranking.EloCalculator;
 
 
-public abstract class Stat extends CacheObject<String, Stat>{
+public abstract class Stat extends CacheObject<String, Stat> implements ArenaStat {
     @Getter protected String strID = null;
 	@Getter protected String name;
 	@Getter protected float rating = EloCalculator.DEFAULT_ELO;
 	@Getter protected float maxRating = rating;
-	@Getter protected int wins = 0, losses= 0, ties = 0;
-	@Getter protected int streak = 0, maxStreak =0;
+	@Getter protected int wins = 0, losses = 0, ties = 0;
+	@Getter protected int streak = 0, maxStreak = 0;
 	@Getter protected int count = 1; /// How many members are in the team
 	@Getter boolean hidden = false;
 
@@ -92,14 +93,10 @@ public abstract class Stat extends CacheObject<String, Stat>{
 	public boolean equals( Object obj ) {
 		if(this == obj) return true;
 		if((obj == null) || (obj.getClass() != this.getClass())) return false;
-		TeamStat test = (TeamStat)obj;
+		Stat test = (Stat)obj;
 		return compareTo(test) == 0;
 	}
-
-	/**
-	 * Teams are ordered list of strings
-	 */
-	public int compareTo(TeamStat o) {
+	public int compareTo(Stat o) {
 		return strID.compareTo(o.strID);
 	}
 
@@ -159,6 +156,15 @@ public abstract class Stat extends CacheObject<String, Stat>{
 		return getRecord().getRecordVersus(stat.getStrID());
 	}
 
+    @Override
+    public int getWinsVersus(ArenaStat stat) {
+        return getRecordVersus( (Stat) stat ).wins;
+    }
+	@Override
+    public int getLossesVersus(ArenaStat stat) {
+	    return getRecordVersus( (Stat) stat ).losses;
+	}
+    
 	protected void createName(){
 		if (name != null && !name.isEmpty()) return;
 		
@@ -226,5 +232,12 @@ public abstract class Stat extends CacheObject<String, Stat>{
 	public enum SpecialType {
 	    STREAK, RAMPAGE
 	}
-
+    @Override
+    public int getRanking() {
+        return 0;
+    }
+    @Override
+    public String getDB() {
+        return parent.getInterfaceName();
+    }
 }

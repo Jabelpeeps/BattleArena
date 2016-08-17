@@ -7,6 +7,7 @@ import java.util.Set;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.controllers.Scheduler;
+import mc.alk.arena.objects.stats.BlankArenaStat;
 
 
 public class TrackerController {
@@ -15,7 +16,8 @@ public class TrackerController {
 
 	public static boolean dontTrack(Player target) { return dontTrack.contains(target.getName()); }
 	public static boolean dontTrack(String target) { return dontTrack.contains(target); }
-
+	public static final BlankArenaStat BLANK_STAT = BlankArenaStat.BLANK_STAT;
+	
 	public static void stopTracking(final String playername,boolean now){
 		if (now) 
 			dontTrack.add(playername);

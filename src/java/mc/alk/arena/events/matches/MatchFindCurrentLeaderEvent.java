@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.MatchResult;
-import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public class MatchFindCurrentLeaderEvent extends MatchEvent {
     @Getter final List<ArenaTeam> teams;
@@ -34,15 +34,15 @@ public class MatchFindCurrentLeaderEvent extends MatchEvent {
 	}
 	public void setCurrentLeader(ArenaTeam currentLeader) {
 		result.setVictor(currentLeader);
-		result.setResult(WinLossDraw.WIN);
+		result.setResult(WLT.WIN);
 	}
 	public void setCurrentLeaders(Collection<ArenaTeam> currentLeaders) {
 		result.setVictors(currentLeaders);
-		result.setResult(WinLossDraw.WIN);
+		result.setResult(WLT.WIN);
 	}
 	public void setCurrentDrawers(Collection<ArenaTeam> currentLeaders) {
 		result.setDrawers(currentLeaders);
-		result.setResult(WinLossDraw.DRAW);
+		result.setResult(WLT.TIE);
 	}
 	public void setCurrentLosers(Collection<ArenaTeam> currentLosers) {
 		result.setLosers(currentLosers);

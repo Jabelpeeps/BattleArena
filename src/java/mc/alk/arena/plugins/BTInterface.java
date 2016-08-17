@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,12 +15,12 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.WinLossDraw;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.stats.TrackerArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 import mc.alk.tracker.Tracker;
+import mc.alk.tracker.controllers.TrackerController;
 import mc.alk.tracker.controllers.TrackerInterface;
 import mc.alk.tracker.objects.Stat;
 import mc.alk.tracker.objects.StatType;
@@ -62,27 +61,19 @@ public class BTInterface {
 		return db != null && btis.containsKey(db);
 	}
 
-	public static void addRecord(TrackerInterface bti, Set<ArenaTeam> victors,Set<ArenaTeam> losers,
-			Set<ArenaTeam> drawers, WinLossDraw wld, boolean teamRating) {
-		if (victors != null){
+	public static void addRecord(TrackerInterface bti, Set<ArenaTeam> victors, Set<ArenaTeam> losers,
+			                        Set<ArenaTeam> drawers, WLT wld, boolean teamRating) {
+		if (victors != null) {
 			Set<ArenaPlayer> winningPlayers = new HashSet<>();
 			for (ArenaTeam w : victors){
 				winningPlayers.addAll(w.getPlayers());
 			}
-			WLT wlt = getWLT(wld);
-			addRecord(bti,winningPlayers, losers,wlt, teamRating);
+			addRecord( bti, winningPlayers, losers, wld, teamRating );
 		}
 	}
-	public static WLT getWLT(WinLossDraw wld){
-		switch(wld){
-		case WIN: return WLT.WIN;
-		case LOSS: return WLT.LOSS;
-		case DRAW: return WLT.TIE;
-		default: return WLT.WIN;
-		}
-	}
+
 	public static void addRecord(TrackerInterface bti, Set<ArenaPlayer> players, Collection<ArenaTeam> losers,
-			WLT win, boolean teamRating) {
+			                                                    WLT win, boolean teamRating) {
 		if (bti == null)
 			return;
 		try{
@@ -96,7 +87,8 @@ public class BTInterface {
 				for (Player p: losingPlayers){
 					if (Defaults.DEBUG_TRACKING) Log.info("BA Debug: loser = "+p.getName());}
 				bti.addTeamRecord(winningPlayers, losingPlayers, WLT.WIN);
-			} else {
+			} 
+			else {
 				Collection<Collection<Player>> plosers = new ArrayList<>();
 				for (ArenaTeam t: losers){
 					plosers.add(t.getBukkitPlayers());
@@ -115,15 +107,9 @@ public class BTInterface {
 		if (Defaults.DEBUG) Log.info("adding BTI for " + pi +"  " + dbName);
 		TrackerInterface bti = btis.get(dbName);
 		if (bti == null){
-			/// Try to first the interface from our existing ones
+
 			bti = currentInterfaces.get(dbName);
-			if (bti==null){ /// no current interface, do we even have the BattleTracker plugin?
-				battleTracker = (Tracker) Bukkit.getPluginManager().getPlugin("BattleTracker");
-				if (battleTracker == null) {
-					/// Well BattleTracker obviously isnt enabled.. not much we can do about that
-					return false;
-				}
-				/// yay, we have it, now get our interface
+			if (bti==null){ 
 				bti = Tracker.getInterface(dbName);
 				currentInterfaces.put(dbName, bti);
 				if (aBTI == null)
@@ -136,28 +122,28 @@ public class BTInterface {
 
 	public static void resumeTracking(ArenaPlayer p) {
 		if (aBTI != null)
-			aBTI.resumeTracking(p.getName());
+		    TrackerController.resumeTracking(p.getName());
 	}
 	public static void stopTracking(ArenaPlayer p) {
 		if (aBTI != null)
-			aBTI.stopTracking(p.getName());
+		    TrackerController.stopTracking( p.getName() );
 	}
 	public static void resumeTrackingMessages(ArenaPlayer p) {
 		if (aBTI != null)
-			aBTI.resumeMessages(p.getName());
+		    TrackerController.resumeAnnouncing(p.getName());
 	}
-
 	public static void stopTrackingMessages(ArenaPlayer p) {
 		if (aBTI != null)
-			aBTI.stopMessages(p.getName());
+		    TrackerController.stopAnnouncing(p.getName());
 	}
+
 	public static void resumeTracking(Set<Player> players) {
 		if (aBTI != null)
-			aBTI.resumeTracking(players);
+		    TrackerController.resumeTracking(players);
 	}
 	public static void stopTracking(Set<Player> players) {
 		if (aBTI != null)
-			aBTI.stopTracking(players);
+		    TrackerController.stopTracking(players);
 	}
 
 	public Integer getElo(ArenaTeam t) {
@@ -194,17 +180,6 @@ public class BTInterface {
 		return st == null ? TrackerController.BLANK_STAT : new TrackerArenaStat(dbName, st);
 	}
 
-	public String getRankMessage(OfflinePlayer player) {
-		Stat stat = loadRecord(player);
-		if (stat == null){
-			return "&eCouldn't find stats for player " + player.getName();}
-		Integer rank = ti.getRank(player.getName());
-		if (rank == null)
-			rank = -1;
-		return "&eRank:&6"+rank+"&e (&4"+stat.getWins()+"&e:&8"+stat.getLosses()+"&e)&6["+stat.getRating()+"]&e" +
-				". Highest &6["+ stat.getMaxRating()+"]&e Longest Streak &b"+stat.getMaxStreak();
-	}
-
 	public boolean setRating(OfflinePlayer player, Integer elo) {
 		return ti.setRating(player, elo);
 	}
@@ -218,27 +193,27 @@ public class BTInterface {
 		battleTracker = (Tracker) plugin;
 	}
 
-	public static void addRecord(MatchParams mp, ArenaPlayer victor,ArenaPlayer loser, WinLossDraw wld) {
-		TrackerInterface bti = BTInterface.getInterface(mp);
-		if (bti != null ){
-			switch (wld){
-			case DRAW:
-				break;
-			case LOSS:
-				break;
-			case UNKNOWN:
-				break;
-			case WIN:
-				break;
-			default:
-				break;
-			}
-			bti.addPlayerRecord(victor.getName(), loser.getName(), getWLT(wld));
-		}
-	}
+//	public static void addRecord(MatchParams mp, ArenaPlayer victor,ArenaPlayer loser, WLT wld) {
+//		TrackerInterface bti = BTInterface.getInterface(mp);
+//		if (bti != null ){
+//			switch (wld){
+//			case TIE:
+//				break;
+//			case LOSS:
+//				break;
+//			case UNKNOWN:
+//				break;
+//			case WIN:
+//				break;
+//			default:
+//				break;
+//			}
+//			bti.addPlayerRecord(victor.getName(), loser.getName(), wld);
+//		}
+//	}
 
-	public static void addRecord(MatchParams mp, Set<ArenaTeam> victors,
-			Set<ArenaTeam> losers, Set<ArenaTeam> drawers, WinLossDraw wld, boolean teamRating) {
+	public static void addRecord(MatchParams mp, Set<ArenaTeam> victors, Set<ArenaTeam> losers, 
+	                                        Set<ArenaTeam> drawers, WLT wld, boolean teamRating) {
 		TrackerInterface bti = BTInterface.getInterface(mp);
 		if (bti != null ){
 			try{

@@ -18,7 +18,6 @@ import mc.alk.arena.plugins.FactionsController;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.McMMOController;
 import mc.alk.arena.plugins.MobArenaInterface;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.plugins.VanishNoPacketInterface;
 import mc.alk.arena.plugins.WorldEditUtil;
 import mc.alk.arena.plugins.WorldGuardController;
@@ -35,9 +34,7 @@ public class BAPluginListener implements Listener {
 
     @EventHandler
     public void onPluginEnable(PluginEnableEvent event) {
-        if (event.getPlugin().getName().equalsIgnoreCase("BattleTracker")) {
-            loadBattleTracker();
-        } else if (event.getPlugin().getName().equalsIgnoreCase("CombatTag")) {
+        if (event.getPlugin().getName().equalsIgnoreCase("CombatTag")) {
             loadCombatTag();
         } else if (event.getPlugin().getName().equalsIgnoreCase("Essentials")) {
             loadEssentials();
@@ -73,7 +70,6 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadAll() {
-        loadBattleTracker();
         loadCombatTag();
         loadEssentials();
         loadFactions();
@@ -90,17 +86,6 @@ public class BAPluginListener implements Listener {
         loadVanishNoPacket();
         loadVault();
         loadOthers();
-    }
-
-    public void loadBattleTracker() {
-        if (!TrackerController.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("BattleTracker");
-            if (plugin != null) {
-                TrackerController.setPlugin(plugin);
-            } else {
-                Log.info("[BattleArena] BattleTracker not detected, not tracking wins");
-            }
-        }
     }
 
     public void loadCombatTag() {

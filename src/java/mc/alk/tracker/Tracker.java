@@ -1,9 +1,6 @@
 package mc.alk.tracker;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,8 +18,10 @@ import mc.alk.arena.executors.BattleTrackerExecutor;
 import mc.alk.arena.executors.TrackerExecutor;
 import mc.alk.arena.listeners.BTEntityListener;
 import mc.alk.arena.listeners.BTSignListener;
+import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.serializers.tracker.YamlConfigUpdater;
 import mc.alk.arena.serializers.tracker.YamlMessageUpdater;
+import mc.alk.arena.util.FileUtil;
 import mc.alk.tracker.controllers.SignController;
 import mc.alk.tracker.controllers.TrackerConfigController;
 import mc.alk.tracker.controllers.TrackerInterface;
@@ -47,22 +46,21 @@ public class Tracker {
         
         ConfigurationSerialization.registerClass( StatSign.class );
 
-        
-        File data = BA.getDataFolder();      
-        TrackerConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );
-        TrackerMessageController.setConfig( load( "/default_files" + MESSAGES, data.getPath() + MESSAGES ) );
+        String dataDir = BA.getDataFolder().getPath();      
+        TrackerConfigController.setConfig( FileUtil.load( dataDir + CONFIG, "/default_files" + CONFIG ) );
+        TrackerMessageController.setConfig( FileUtil.load( dataDir + MESSAGES, "/default_files" + MESSAGES ) );
 
         TrackerConfigController.loadAll();
         TrackerMessageController.load();
         
         Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
 
-        BA.getCommand("battleTracker").setExecutor(new BattleTrackerExecutor());
-        BA.getCommand("btpvp").setExecutor(new TrackerExecutor(getInterface(Defaults.PVP_INTERFACE)));
-        BA.getCommand("btpve").setExecutor(new TrackerExecutor(getInterface(Defaults.PVE_INTERFACE)));
+        BA.getCommand("battleTracker").setExecutor( new BattleTrackerExecutor() );
+        BA.getCommand("btpvp").setExecutor( new TrackerExecutor( getPVPInterface() ) );
+        BA.getCommand("btpve").setExecutor( new TrackerExecutor( getPVEInterface() ) );
         
         Scheduler.scheduleSynchronousTask( () -> {
-                signController.getSerialiser().setConfig( data.getPath() + "/signs.yml" );
+                signController.getSerialiser().setConfig( dataDir + "/signs.yml" );
                 signController.getSerialiser().loadAll();
         }, 22);
 
@@ -73,16 +71,15 @@ public class Tracker {
         mu.update(TrackerMessageController.getConfig(), TrackerMessageController.getFile());
 
         if (Defaults.USE_SIGNS) {
-            Bukkit.getPluginManager().registerEvents(new BTSignListener(signController), BA);
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(BA, () -> signController.updateSigns(), 20, 1000);
+            Bukkit.getPluginManager().registerEvents( new BTSignListener( signController ), BA );
+            Bukkit.getScheduler().scheduleSyncRepeatingTask( BA, () -> signController.updateSigns(), 20, 1000 );
         }
     }
 
     public static void saveConfig() {
         synchronized (interfaces) {
-            for (TrackerInterface ti : interfaces.values()) {
+            for ( TrackerInterface ti : interfaces.values() ) 
                 ti.flush();
-            }
         }
         if (signController.getSerialiser() != null) {
             signController.getSerialiser().saveAll();
@@ -90,48 +87,33 @@ public class Tracker {
     }
 
     public static TrackerInterface getPVPInterface() {
-        return getInterface(Defaults.PVP_INTERFACE, new TrackerOptions());
+        return getInterface(Defaults.PVP_INTERFACE, true);
     }
 
     public static TrackerInterface getPVEInterface() {
-        return getInterface(Defaults.PVE_INTERFACE, new TrackerOptions());
+        return getInterface(Defaults.PVE_INTERFACE, false);
     }
 
     public static TrackerInterface getInterface(String interfaceName) {
-        return getInterface(interfaceName, new TrackerOptions());
+        return getInterface( interfaceName, false );
     }
 
-    public static TrackerInterface getInterface(String interfaceName, TrackerOptions trackerOptions) {
+    public static TrackerInterface getInterface( MatchParams params ) {
+        return getInterface( params.getName(), true );
+    }
+    
+    private static TrackerInterface getInterface(String interfaceName, boolean saveIndividualRecords) {
         String iname = interfaceName.toLowerCase();
         if (!interfaces.containsKey(iname)) {
-            interfaces.put(iname, new TrackerInterface(interfaceName, trackerOptions));
+            interfaces.put(iname, new TrackerInterface(interfaceName, saveIndividualRecords));
         }
         return interfaces.get(iname);
     }
 
     public static boolean hasInterface(String interfaceName) {
-        String iname = interfaceName.toLowerCase();
-        return interfaces.containsKey(iname);
+        return interfaces.containsKey( interfaceName.toLowerCase() );
     }
-
     public static Collection<TrackerInterface> getAllInterfaces() {
         return new ArrayList<>(interfaces.values());
-    }
-    
-    public static File load(String default_file, String config_file) {
-        File file = new File(config_file);
-        if (!file.exists()){ /// Create a new file from our default example
-            try{
-                InputStream inputStream = BA.getClass().getResourceAsStream(default_file);
-                OutputStream out=new FileOutputStream(config_file);
-                byte buf[]=new byte[1024];
-                int len;
-                while((len=inputStream.read(buf))>0){
-                    out.write(buf,0,len);}
-                out.close();
-                inputStream.close();
-            } catch (Exception e){ }
-        }
-        return file;
     }
 }

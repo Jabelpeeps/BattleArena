@@ -9,6 +9,6 @@ public interface ArenaStat {
 	public int getWins();
 	public int getLosses();
 	public int getRanking();
-	public int getRating();
+	public float getRating();
 	public String getDB();
 }

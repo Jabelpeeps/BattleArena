@@ -31,7 +31,7 @@ public class VersusRecords implements CacheSerializer<List<String>,VersusRecord>
 	}
 
 	public static class VersusRecord extends CacheObject<List<String>,VersusRecord>{
-		public int wins,losses, ties;
+		public int wins, losses, ties;
 		final public List<String> ids = new ArrayList<>(2);
 		public VersusRecord(String id1, String id2){
 			ids.add(id1); ids.add(id2);

@@ -17,17 +17,17 @@ class CompositeTeam extends AbstractTeam{
 
 	public CompositeTeam() {
 		super();
-		isPickupTeam = true;
+		pickupTeam = true;
 	}
 
 	protected CompositeTeam(ArenaPlayer ap) {
 		super(ap);
-		isPickupTeam = true;
+		pickupTeam = true;
 	}
 
 	protected CompositeTeam(Collection<ArenaPlayer> players) {
 		super(players);
-		isPickupTeam = true;
+		pickupTeam = true;
 	}
 
 	protected CompositeTeam(ArenaTeam team) {
@@ -37,7 +37,7 @@ class CompositeTeam extends AbstractTeam{
 
 	protected CompositeTeam(Set<ArenaPlayer> tplayers) {
 		super(tplayers);
-		isPickupTeam=true;
+		pickupTeam=true;
 	}
 
 	public void addTeam(ArenaTeam t) {

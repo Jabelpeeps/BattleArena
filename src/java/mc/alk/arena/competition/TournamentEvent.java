@@ -48,9 +48,10 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.plugins.TrackerController;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
+import mc.alk.tracker.Tracker;
+import mc.alk.tracker.controllers.TrackerInterface;
 
 public class TournamentEvent extends AbstractComp implements Listener, ArenaListener {
     public long timeBetweenRounds;
@@ -119,13 +120,13 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 Log.colorChat( params.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
 
         TreeMap<Double,ArenaTeam> sortTeams = new TreeMap<>(Collections.reverseOrder());
-        TrackerController sc = new TrackerController(params);
+        TrackerInterface sc = Tracker.getInterface( params );
 
         for (ArenaTeam t: teams) {
             if (t.size() <= 0) {
                 continue;
             }
-            ArenaStat stat = sc.loadRecord(t);
+            ArenaStat stat = sc.getTeamRecord(t.getName());
             Double elo = (double) stat.getRating();
             while (sortTeams.containsKey(elo)) {
                 elo += 0.0001;
@@ -408,13 +409,13 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 t.sendMessage("&4["+strround+"]&e You have a &5bye&e this round");
             }
         }
-        TrackerController sc = new TrackerController(params);
+        TrackerInterface sc = Tracker.getInterface( params );
         final String prefix = params.getPrefix();
         if (tr.getMatchups().size() <= 8){
             for (Matchup m: tr.getMatchups()){
                 List<String> names = new ArrayList<>();
                 for (ArenaTeam t: m.getTeams()){
-                    ArenaStat st = sc.loadRecord(t);
+                    ArenaStat st = sc.getTeamRecord(t.getName());
                     names.add("&8"+t.getDisplayName()+"&6["+st.getRating()+"]");
                 }
                 String msg = "&e"+ strround +": " + StringUtils.join(names, " vs ");

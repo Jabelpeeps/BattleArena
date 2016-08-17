@@ -54,7 +54,7 @@ public class ListenerAdder {
         if ( McMMOController.isEnabled() && McMMOController.hasDisabledSkills() )
             holder.addArenaListener( McMMOController.createNewListener() );
         if ( tops.getAllOptions().containsKey( MatchState.ONKILL ) ) 
-            holder.addArenaListener( new ArenaPlayerKillListener( holder.getParams() ) );
+            holder.addArenaListener( new ArenaPlayerKillListener() );
         
         if ( tops.hasAnyOption( TransitionOption.WGNOLEAVE ) ) {
             ArenaRegion region = null;

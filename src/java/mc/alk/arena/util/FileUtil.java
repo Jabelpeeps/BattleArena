@@ -86,7 +86,10 @@ public class FileUtil {
 		return hasResource;		
 	}
 
-	public static File load(Class<?> clazz, String config_file, String default_file) {
+	public static File load( String config_file, String default_file ) {
+	    return load( BattleArena.class, config_file, default_file );
+	}
+	public static File load(Class<?> clazz, String config_file, String default_file ) {
 	    
 		File file = new File( config_file );
 		
