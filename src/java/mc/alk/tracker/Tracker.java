@@ -33,13 +33,14 @@ import mc.alk.tracker.serializers.YamlMessageUpdater;
 
 public class Tracker {
 
-    static JavaPlugin BA;
+    static JavaPlugin BA = BattleArena.getSelf();
     final static Map<String, TrackerInterface> interfaces = Collections.synchronizedMap( new ConcurrentHashMap<>() );
     static SignController signController = new SignController();
     static SignSerializer signSerializer;
+    final static String CONFIG = "/tracker.yml";
+    final static String MESSAGES = "/tracker_messages.yml";
 
     static {
-        BA = BattleArena.getSelf();
         File dir = BA.getDataFolder();
         if (!dir.exists())
             dir.mkdirs();
@@ -63,14 +64,16 @@ public class Tracker {
     
     public static void loadConfigs() {
         
-        ConfigController.setConfig( load( "/default_files/config.yml", 
-                                          BA.getDataFolder().getPath() + "/tracker.yml" ) );
-        MessageController.setConfig( load( "/default_files/messages.yml", 
-                                           BA.getDataFolder().getPath() + "/tracker_messages.yml" ) );
+        File data = BA.getDataFolder();      
+        ConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );
+        MessageController.setConfig( load( "/default_files" + MESSAGES, data.getPath() + MESSAGES ) );
 
+        ConfigController.loadAll();
+        MessageController.load();
+        
         Scheduler.scheduleSynchronousTask( () -> {
                 signSerializer = new SignSerializer(signController);
-                signSerializer.setConfig( BA.getDataFolder().getPath() + "/signs.yml" );
+                signSerializer.setConfig( data.getPath() + "/signs.yml" );
                 signSerializer.loadAll();
         }, 22);
 
@@ -80,8 +83,6 @@ public class Tracker {
         YamlMessageUpdater mu = new YamlMessageUpdater();
         mu.update(MessageController.getConfig(), MessageController.getFile());
 
-        ConfigController.loadAll();
-        MessageController.load();
 
         if (Defaults.USE_SIGNS) {
             Bukkit.getPluginManager().registerEvents(new SignListener(signController), BA);

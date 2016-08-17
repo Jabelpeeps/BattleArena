@@ -1,7 +1,6 @@
 package mc.alk.tracker.serializers;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -14,13 +13,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
-import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,11 +61,11 @@ public abstract class SQLSerializer{
 	@Getter @Setter protected String username = "root";
 	@Getter @Setter protected String password = "";
 
-	private String create_database = "CREATE DATABASE IF NOT EXISTS `" + DB+"`";
+	private String create_database = "CREATE DATABASE IF NOT EXISTS `" + DB + "`";
 
 	public void setDB(String dB) {
 		DB = dB;
-		create_database = "CREATE DATABASE IF NOT EXISTS `" + DB+"`";
+		create_database = "CREATE DATABASE IF NOT EXISTS `" + DB+ "`";
 	}
 
 	protected class RSCon{
@@ -117,115 +115,108 @@ public abstract class SQLSerializer{
 		try {con.close();} catch (SQLException e) {e.printStackTrace();}
 	}
 
-	protected boolean init() {
-		Connection con = null;  
+    protected boolean init() {
 		try {
 			Class.forName(type.getDriver());
-			if (DEBUG) System.out.println("Got Driver " + type.getDriver());
-		} catch (ClassNotFoundException e1) {
-			System.err.println("Failed getting driver " + type.getDriver());
+			if (DEBUG) Log.info( "Got Driver " + type.getDriver());
+		} 
+		catch (ClassNotFoundException e1) {
+			Log.error( "Failed getting driver " + type.getDriver());
 			e1.printStackTrace();
 			return false;
 		}
-		String connectionString = null,datasourceString = null;
+		String connectionString = null, datasourceString = null;
 		final int minIdle;
 		final int maxActive;
+		
 		switch(type){
-		case SQLITE:
-			datasourceString = connectionString = "jdbc:sqlite:"+url+"/"+DB+".sqlite";
-			maxActive = 1;
-			minIdle = -1;
-			break;
-		case MYSQL:
-		default:
-			minIdle = 10;
-			maxActive = 20;
-			datasourceString = "jdbc:mysql://"+url+":"+port+"/"+DB+"?autoReconnect=true";
-			connectionString = "jdbc:mysql://"+url+":" + port+"?autoReconnect=true";
-			break;
+    		case SQLITE:
+    			datasourceString = connectionString = "jdbc:sqlite:" + url + "/" + DB + ".sqlite";
+    			maxActive = 1;
+    			minIdle = -1;
+    			break;
+    		case MYSQL:
+    		default:
+    			minIdle = 10;
+    			maxActive = 20;
+    			datasourceString = "jdbc:mysql://" + url + ":" + port + "/" + DB + "?autoReconnect=true";
+    			connectionString = "jdbc:mysql://" + url + ":" + port + "?autoReconnect=true";
+    			break;
 		}
 
-		try {
-			ds = setupDataSource(datasourceString,username,password, minIdle, maxActive );
-			if (DEBUG) System.out.println("Connection attempt to database succeeded.");
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		ds = setupDataSource( datasourceString, username, password, minIdle, maxActive );
+		
+		if ( ds == null ) return false;		
+		if ( DEBUG ) Log.info( "Connection to database succeeded." );
 
-		if (type == SQLType.MYSQL){
+		if ( type == SQLType.MYSQL ){
 			String strStmt = create_database;
-			try {
-				con = DriverManager.getConnection(connectionString, username,password);
-				Statement st = con.createStatement();
-				st.executeUpdate(strStmt);
-				if (DEBUG) System.out.println("Creating db");
-			} catch (SQLException e) {
-				System.err.println("Failed creating db: "  + strStmt);
+			try (   Connection con = ds.getConnection();
+	                Statement st = con.createStatement(); ) {
+			    
+			    st.executeUpdate(strStmt);			    
+				if (DEBUG) Log.info("Creating db");
+			} 
+			catch (SQLException e) {
+				Log.error( "Failed creating db: " + strStmt );
 				e.printStackTrace();
 				return false;
-			} finally{
-				closeConnection(con);
-			}
+			} 
 		}
 		return true;
 	}
 
-	public static DataSource setupDataSource(String connectURI, String username, String password, int minIdle, int maxActive) 
-	                                                                                        throws Exception {
-		GenericObjectPool connectionPool = new GenericObjectPool(null);
+	public static DataSource setupDataSource(String connectURI, String username, String password, 
+	                                                                    int minIdle, int maxActive) {
 
-		if (minIdle != -1)
-			connectionPool.setMinIdle( minIdle );
-		connectionPool.setMaxActive( maxActive );
-		connectionPool.setTestOnBorrow(true); /// test before the connection is made,
-		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI,username, password);
-
-		final boolean defaultReadOnly = false;
-		final boolean defaultAutoCommit = true;
-		final String validationQuery = null;
-		KeyedObjectPoolFactory statementPool = new GenericKeyedObjectPoolFactory(null);
-		PoolableConnectionFactory factory = new PoolableConnectionFactory(connectionFactory, connectionPool,
-				statementPool, validationQuery, defaultReadOnly, defaultAutoCommit);
-		/// validate the connection with this statement (hopefully between this and setTestOnBorrow(true) will
-		/// avoid the previous connection timeouts with mysql
-		factory.setValidationQuery("select 1");
-		PoolingDataSource dataSource = new PoolingDataSource(connectionPool);
-		return dataSource;
+	    GenericObjectPool.Config poolConf = new GenericObjectPool.Config();
+	    poolConf.lifo = false;
+	    poolConf.maxActive = maxActive;
+	    	    
+		if ( minIdle != -1 )
+			poolConf.minIdle = minIdle;
+		
+		PoolableConnectionFactory factory = new PoolableConnectionFactory( 
+		        new DriverManagerConnectionFactory( connectURI,username, password ), 
+		        new GenericObjectPool( null, poolConf ),
+		        new GenericKeyedObjectPoolFactory( null ), 
+				"select 1", false, true);
+	
+		return new PoolingDataSource( factory.getPool() );
 	}
 
 	protected boolean createTable(String tableName, String sql_create_table,String... sql_updates) {
-		/// Check to see if our table exists;
-		Boolean exists;
-		if (type == SQLType.SQLITE){
-			exists = getBoolean("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='"+tableName+"';");
-		} else {
-			List<Object> objs = getObjects("SHOW TABLES LIKE '"+tableName+"';");
-			exists = objs!=null && objs.size() == 1;
+	    
+		boolean exists = false;
+		if ( type == SQLType.SQLITE ) {
+			exists = getBoolean("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';" );
+		} 
+		else {
+			List<Object> objs = getObjects( "SHOW TABLES LIKE '" + tableName + "';" );
+			exists = objs != null && objs.size() == 1;
 		}
-		if (DEBUG) System.out.println("table " + tableName +" exists =" + exists);
+		if (DEBUG) Log.info( "table " + tableName + " exists =" + exists );
 
-		if (exists != null && exists)
-			return true; /// If the table exists nothing left to do
+		if ( exists ) return true; 
 
 		/// Create our table and index
 		String strStmt = sql_create_table;
 		Statement st = null;
 		int result =0;
 		Connection con = null;
-		try{
+		try {
 			con = getConnection();
 		} catch (SQLException e) {
-			System.err.println("Failed in creating Table, null connection. " +strStmt + " result=" + result);
+			Log.error( "Failed in creating Table, null connection. " + strStmt + " result=" + result );
 			e.printStackTrace();
 			return false;
 		}
 		try {
 			st = con.createStatement();
 			result = st.executeUpdate(strStmt);
-			if (DEBUG) System.out.println("Created Table with stmt=" + strStmt);
+			if (DEBUG) Log.info( "Created Table with stmt=" + strStmt);
 		} catch (SQLException e) {
-			System.err.println("Failed in creating Table " +strStmt + " result=" + result);
+		    Log.error( "Failed in creating Table " +strStmt + " result=" + result);
 			e.printStackTrace();
 			closeConnection(con);
 			return false;
@@ -239,9 +230,9 @@ public abstract class SQLSerializer{
 				try {
 					st = con.createStatement();
 					result = st.executeUpdate(strStmt);
-					if (DEBUG) System.out.println("Update Table with stmt=" + strStmt);
+					if (DEBUG) Log.info( "Update Table with stmt=" + strStmt);
 				} catch (SQLException e) {
-					System.err.println("Failed in updating Table " +strStmt + " result=" + result);
+				    Log.error( "Failed in updating Table " +strStmt + " result=" + result);
 					e.printStackTrace();
 					closeConnection(con);
 					return false;
@@ -322,7 +313,7 @@ public abstract class SQLSerializer{
 	 * @return
 	 */
 	protected RSCon executeQuery(Connection con, boolean displayErrors, Integer timeoutSeconds,
-			String strRawStmt, Object... varArgs){
+			                                                String strRawStmt, Object... varArgs){
 		PreparedStatement ps = null;
 		RSCon rscon = null;
 
@@ -392,66 +383,35 @@ public abstract class SQLSerializer{
 	}
 
 	protected void executeBatch(final boolean async, final String updateStatement, final List<List<Object>> batch) {
-		if (async){
-			new Thread(new Runnable(){
-				@Override
-                public void run() {
-					try{
-						executeBatch(updateStatement, batch);
-					} catch (Exception e){
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		} else {
-			try{
-				executeBatch(updateStatement, batch);
-			} catch (Exception e){
-				e.printStackTrace();
-			}
-		}
+		
+	    if (async) 
+			new Thread( () -> executeBatch(updateStatement, batch) ).start();
+		else 
+			executeBatch(updateStatement, batch);
 	}
 
 	protected void executeBatch(String updateStatement, List<List<Object>> batch) {
-		Connection con = null;
-		try {
-			con = getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
-		PreparedStatement ps = null;
-		//		System.out.println("executingBatch = " + updateStatement + "  batch=" + batch);
-		try{con.setAutoCommit(false);} catch(Exception e){e.printStackTrace();}
-		try{ps = con.prepareStatement(updateStatement);} catch(Exception e){e.printStackTrace();}
-		for (List<Object> update: batch){
-			try{
-				for (int i=0;i<update.size();i++){
-					if (DEBUG_UPDATE) System.out.println(i+" = " + update.get(i));
-					ps.setObject(i+1, update.get(i));
-				}
-				if (DEBUG) System.out.println("Executing   =" + ps.toString() +"  raw="+updateStatement);
-				ps.addBatch();
-			} catch(Exception e){
-				System.err.println("statement = " + ps);
-				e.printStackTrace();
+		
+	    try ( Connection con = getConnection(); 
+	          PreparedStatement ps  = con.prepareStatement( updateStatement ); ) {
+	    
+        con.setAutoCommit(false);          
+		
+		for ( List<Object> update: batch ) {
+			for ( int i = 0; i < update.size(); i++ ) {
+				if (DEBUG_UPDATE) Log.info( i + " = " + update.get(i) );
+				
+				ps.setObject( i + 1, update.get(i) );
 			}
+			if (DEBUG) Log.info( "Executing   =" + ps.toString() + "  raw=" + updateStatement );
+			ps.addBatch();			
 		}
-		try{
-			ps.executeBatch();
-			con.commit();
-		} catch(Exception e){
-			System.err.println("statement = " + updateStatement +" preparedStatement="+ps);
-			for (List<Object> objs : batch){
-				for(Object o: objs){
-					System.err.print(o+",");}
-				System.err.println();
-			}
-			e.printStackTrace();
-		} finally {
-			closeConnection(con);
-		}
-
+		ps.executeBatch();
+		con.commit();
+		
+	    } catch ( SQLException e ) {
+	        e.printStackTrace();
+	    } 
 	}
 
 	protected PreparedStatement getStatement(String strRawStmt, Connection con, Object... varArgs){
