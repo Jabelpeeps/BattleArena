@@ -47,11 +47,6 @@ public class Tracker {
         
         ConfigurationSerialization.registerClass( StatSign.class );
 
-        Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
-
-        BA.getCommand("battleTracker").setExecutor(new BattleTrackerExecutor());
-        BA.getCommand("btpvp").setExecutor(new TrackerExecutor(getInterface(Defaults.PVP_INTERFACE)));
-        BA.getCommand("btpve").setExecutor(new TrackerExecutor(getInterface(Defaults.PVE_INTERFACE)));
         
         File data = BA.getDataFolder();      
         TrackerConfigController.setConfig( load( "/default_files" + CONFIG, data.getPath() + CONFIG ) );
@@ -59,6 +54,12 @@ public class Tracker {
 
         TrackerConfigController.loadAll();
         TrackerMessageController.load();
+        
+        Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
+
+        BA.getCommand("battleTracker").setExecutor(new BattleTrackerExecutor());
+        BA.getCommand("btpvp").setExecutor(new TrackerExecutor(getInterface(Defaults.PVP_INTERFACE)));
+        BA.getCommand("btpve").setExecutor(new TrackerExecutor(getInterface(Defaults.PVE_INTERFACE)));
         
         Scheduler.scheduleSynchronousTask( () -> {
                 signController.getSerialiser().setConfig( data.getPath() + "/signs.yml" );

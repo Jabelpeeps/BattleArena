@@ -17,14 +17,14 @@ public class TrackerConfigController {
 	@Getter static YamlConfiguration config = new YamlConfiguration();
 	@Getter static File file = null;
 
-	public static boolean getBoolean(String node) {return config.getBoolean(node, false);}
-	public static boolean getBoolean(String node, boolean b) {return config.getBoolean(node, b);}
+	public static boolean getBoolean(String node) { return config.getBoolean( node, false ); }
+	public static boolean getBoolean(String node, boolean b) { return config.getBoolean( node, b ); }
 	
-	public static  String getString(String node) {return config.getString(node,null);}
-	public static  String getString(String node, String def) {return config.getString(node,def);}
+	public static  String getString(String node) { return config.getString( node, null ); }
+	public static  String getString(String node, String def) { return config.getString( node,def ); }
 	
-	public static int getInt(String node, int i) {return config.getInt(node, i);}
-	public static double getDouble(String node, double d) {return config.getDouble(node, d);}
+	public static int getInt(String node, int i) { return config.getInt( node, i ); }
+	public static double getDouble(String node, double d) { return config.getDouble( node, d ); }
 
 	public static void setConfig(File f){
 		file = f;
