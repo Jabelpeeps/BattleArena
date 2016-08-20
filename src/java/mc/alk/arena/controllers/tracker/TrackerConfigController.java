@@ -1,4 +1,4 @@
-package mc.alk.tracker.controllers;
+package mc.alk.arena.controllers.tracker;
 
 
 import java.io.File;

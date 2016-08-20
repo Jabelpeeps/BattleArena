@@ -12,17 +12,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamAppearance;
 
 public class TeamUtil {
 	static final int NTEAMS = 35;
-	static final List<TeamAppearance> teamHeads = new ArrayList<>();
+	static final List<TeamHead> teamHeads = new ArrayList<>();
 	static final HashMap<String,Integer> map = new HashMap<>();
 
 	public static void removeTeamHead(final int color, Player p) {
@@ -44,7 +44,7 @@ public class TeamUtil {
 	}
 
 	public static ItemStack getTeamHead(int index){
-		return index < teamHeads.size() ? teamHeads.get(index).getItem() : new ItemStack(Material.DIRT);
+		return index < teamHeads.size() ? teamHeads.get(index).getHeadItem() : new ItemStack(Material.DIRT);
 	}
 
 	public static ChatColor getTeamChatColor(int index){
@@ -60,11 +60,11 @@ public class TeamUtil {
     }
 
     public static void setTeamHead(final int index, ArenaPlayer player) {
-		setTeamHead(getTeamHead(index),player);
+		setTeamHead( getTeamHead(index), player );
 	}
 
 	public static void setTeamHead(final ItemStack item, ArenaPlayer player) {
-		setTeamHead(item,player.getPlayer());
+		setTeamHead( item, player.getPlayer() );
 	}
 
 	public static void setTeamHead(ItemStack item, Player p) {
@@ -102,7 +102,7 @@ public class TeamUtil {
         }
     }
 
-    public static void addTeamHead(String name, TeamAppearance th) {
+    public static void addTeamHead(String name, TeamHead th) {
 		teamHeads.add(th);
 		map.put(name.toUpperCase(), teamHeads.size()-1);
 	}
@@ -165,5 +165,38 @@ public class TeamUtil {
                     name.substring(0,Defaults.MAX_SCOREBOARD_NAME_SIZE) : name);
         }
 
+    }
+    public static class TeamHead {
+        @Getter final String name;
+        @Getter final ItemStack headItem;
+        @Getter final ChatColor chatColor;
+        @Getter final DyeColor dyeColor;
+        @Getter final Color color;
+
+        public TeamHead(ItemStack is, String _name, Color _color){
+            headItem = is;
+            name = _name;
+            chatColor = MessageUtil.getFirstColor(_name);
+            color = _color;
+            dyeColor = findDyeColor(_color);
+        }
+
+        private DyeColor findDyeColor(Color _color) {
+            
+            DyeColor closest = DyeColor.WHITE;
+            double min = Float.MAX_VALUE;
+            
+            for (DyeColor dc : DyeColor.values()) {
+                Color c = dc.getColor();
+                double dev = (Math.pow(Math.abs(c.getRed() - _color.getRed()),2)) +
+                        (Math.pow(Math.abs(c.getGreen() - _color.getGreen()),2)) +
+                                (Math.pow(Math.abs(c.getBlue() - _color.getBlue()),2));
+                if (dev < min) {
+                    min = dev;
+                    closest = dc;
+                }
+            }
+            return closest;
+        }
     }
 }

@@ -7,8 +7,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
+import mc.alk.arena.tracker.Tracker;
 
 public class ArenaPlayerKillListener implements ArenaListener {
 

@@ -3,12 +3,15 @@ package mc.alk.arena.util;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.messaging.MessageHandler;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -21,94 +24,77 @@ public class MessageUtil {
 		return msg.contains("§") || msg.contains("&") ? ChatColor.stripColor(msg).replaceAll("(&|§).", "") : msg;}
 
     public static boolean sendSystemMessage(CommandSender p, String nodeString, Object... varArgs) {
-        return sendMessage(p, MessageHandler.getSystemMessage(nodeString,varArgs));
+        return sendMessage(p, MessageHandler.getSystemMessage( nodeString, varArgs ));
     }
-
-    public static boolean sendMessage(CommandSender p, String message){
-		if (message ==null || message.isEmpty()) return true;
-		if (message.contains("\n"))
-			return sendMultilineMessage(p,message);
-		if (p instanceof Player){
-			if (((Player) p).isOnline())
-				p.sendMessage(colorChat(message));
-		} else {
-			p.sendMessage(colorChat(message));
+    
+    public static void sendMessage(Collection<ArenaPlayer> players, String message) {
+        for ( ArenaPlayer ap : players )
+            sendMessage( ap.getPlayer(), message );
+    }
+    public static boolean sendMessage(ArenaPlayer player, String message) {
+         return sendMessage( player.getPlayer(), message );
+    }
+    public static void sendMessage(Set<Player> players, String message) {
+        for (Player each : players){
+            sendMessage( each, message );
+        }
+    }
+    public static boolean sendMessage(CommandSender sender, String message) {
+        
+		if ( message ==null || message.isEmpty() ) {
+		    if ( Defaults.DEBUG ) Log.err( "Attempting to send empty or null string to " + sender.getName() );
+		    return true;
+		}
+		
+        message = colorChat( message.trim() );
+		
+		if ( message.contains("\n") )
+			return sendMultilineMessage( sender, message );
+		
+        return sendLine( sender, message );
+	}
+    
+    public static boolean sendMessage(ArenaPlayer player, List<String> messages) {
+        for ( String line : messages ) {
+            line = colorChat( line.trim() );
+            sendLine( player.getPlayer(), line );
+        }
+        return true;
+    }
+    
+	private static boolean sendMultilineMessage(CommandSender sender, String message) {
+		
+		String[] lines = message.split("\n");
+		
+		for (String line: lines){
+			sendLine( sender, line) ;
 		}
 		return true;
 	}
 
-	public static boolean sendMultilineMessage(CommandSender p, String message){
-		if (message ==null || message.isEmpty()) return true;
-		String[] msgs = message.split("\n");
-		for (String msg: msgs){
-			if (p instanceof Player){
-				if (((Player) p).isOnline())
-					p.sendMessage(colorChat(msg));
-			} else {
-				p.sendMessage(colorChat(msg));
-			}
-		}
-		return true;
+	private static boolean sendLine( CommandSender sender, String message ) {
+	    
+	    if ( sender instanceof Player && ((Player) sender).isOnline() )
+            sender.sendMessage( message );
+	    
+	    else if ( sender instanceof ConsoleCommandSender ) 
+            sender.sendMessage( message );
+	    
+	    return true;
 	}
-
-	public static void sendPlayerMessage(Set<Player> players, String message) {
-		final String msg = colorChat(message);
-		for (Player p: players){
-			p.sendMessage(msg);
-		}
-	}
-
 	public static String minuteOrMinutes(int minutes) { return minutes == 1 ? "minute" : "minutes"; }
 	public static String getTeamsOrPlayers(int teamSize) { return teamSize == 1 ? "players" : "teams"; }
 	public static String teamsOrPlayers(int nPlayersPerTeam){ return nPlayersPerTeam > 1 ? "teams" : "players";} 
 	public static String playerOrPlayers(int n) { return n > 1 ? "players" : "player"; }
 	public static String hasOrHave(int size) { return size == 1 ? "has" : "have"; }
 
-
-	public static boolean sendMessage(final ArenaPlayer player, final String message) {
-		return sendMessage( player.getPlayer(), message );
-	}
-
-	public static boolean sendMessage(final ArenaPlayer player, final List<String> messages) {
-		for ( String s : messages ) {
-			sendMessage( player.getPlayer(), s );
-		}
-		return true;
-	}
-
-	public static void sendMessage(Collection<ArenaPlayer> players, String message) {
-		if (message == null) return;
-		
-		final String msg = colorChat(message.trim());
-		
-		if (msg.isEmpty()) return;
-		
-		for ( ArenaPlayer p : players ) {
-			p.sendMessage(msg);
-		}
-	}
-
-	public static String convertToString(List<String> strs){
-		if (strs == null) return null;
-		
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (String s : strs) {
-			if (!first) sb.append("\n");
-			sb.append(s).append("\n");
-			first = false;
-		}
-		return sb.toString();
-	}
-
 	public static ChatColor getFirstColor(String str) {
 		int index = str.indexOf('§');
 		
-        if (index == -1)
-            index = str.indexOf('&');
+        if ( index == -1 ) index = str.indexOf('&');
         
-        if (index != -1 && str.length() > index+1){
-			ChatColor cc = ChatColor.getByChar(str.charAt(index+1));
+        if ( index != -1 && str.length() > index + 1 ) {
+			ChatColor cc = ChatColor.getByChar( str.charAt( index + 1 ) );
 			if (cc != null)
 				return cc;
 		}
@@ -116,32 +102,27 @@ public class MessageUtil {
 	}
 
 	public static String joinTeams(Collection<ArenaTeam> teams, String joinStr){
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (ArenaTeam t: teams){
-			if (!first) sb.append(joinStr);
-			sb.append(t.getDisplayName());
-			first = false;
+	    StringJoiner joiner = new StringJoiner( joinStr );
+
+		for ( ArenaTeam team : teams ) {
+			joiner.add(team.getDisplayName() );
 		}
-		return sb.toString();
+		return joiner.toString();
 	}
 
 	public static String joinPlayers(Collection<ArenaPlayer> players, String joinStr){
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (ArenaPlayer p : players){
-			if (!first) sb.append(joinStr);
-			else first = false;
-			sb.append(p.getName());
+        StringJoiner joiner = new StringJoiner( joinStr );
+        
+		for ( ArenaPlayer player : players ) {
+			joiner.add(player.getName());
 		}
-		return sb.toString();
+		return joiner.toString();
 	}
 
     public static void broadcastMessage(String message) {
         try {
             Bukkit.broadcastMessage(message);
-        } catch (Throwable e){
-            /* do nothing. This has thrown concurrent errors before*/
-        }
+        } 
+        catch (Throwable e){ }
     }
 }

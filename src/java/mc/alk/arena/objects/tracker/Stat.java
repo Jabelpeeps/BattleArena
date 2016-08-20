@@ -1,4 +1,4 @@
-package mc.alk.tracker.objects;
+package mc.alk.arena.objects.tracker;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,15 +9,15 @@ import org.bukkit.entity.Player;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.tracker.MaxRatingChangeEvent;
 import mc.alk.arena.events.tracker.WinStatChangeEvent;
 import mc.alk.arena.objects.stats.ArenaStat;
+import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.tracker.EloCalculator;
 import mc.alk.arena.util.Cache.CacheObject;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.Util;
-import mc.alk.tracker.EloCalculator;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.VersusRecords.VersusRecord;
 
 
 public abstract class Stat extends CacheObject<String, Stat> implements ArenaStat {

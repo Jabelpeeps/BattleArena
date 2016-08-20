@@ -16,8 +16,8 @@ public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, Cou
     Countdown timer; /// Timer for when victory condition is time based
     int announceInterval;
 
-    public TimeLimit(Match match) {
-        super(match);
+    public TimeLimit(Match _match) {
+        super(_match);
     }
 
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)

@@ -31,143 +31,140 @@ public class Persistable {
 
     public static class NotPersistableException extends Exception{
         private static final long serialVersionUID = 1L;
-        public NotPersistableException(String msg){
-            super(msg);
-        }
+        public NotPersistableException(String msg) { super(msg); }
     }
 
     public static void yamlToObjects(Object object, ConfigurationSection cs){
-        if (cs == null)
-            return;
-        yamlToObjects(object, object.getClass(),cs, null);
+        yamlToObjects( object, object.getClass(), cs, null );
     }
 
-    public static void yamlToObjects(Object object, ConfigurationSection cs, Class<?> onlyCheckClass){
-        if (cs == null)
-            return;
-        yamlToObjects(object, object.getClass(),cs,onlyCheckClass);
+    public static void yamlToObjects(Object object, ConfigurationSection cs, Class<?> onlyCheckClass){     
+        yamlToObjects( object, object.getClass(), cs, onlyCheckClass );
     }
 
     @SuppressWarnings("unchecked")
     private static void yamlToObjects(Object object, Class<?> objectClass, ConfigurationSection cs, Class<?> onlyCheckClass){
-        for(Field field : objectClass.getDeclaredFields()){
+        if (cs == null ) return;
+        
+        for( Field field : objectClass.getDeclaredFields() ){
             Class<?> type = field.getType();
             String name = field.getName();
             Annotation[] annotations = field.getDeclaredAnnotations();
-            for (Annotation a : annotations){
-                if (!(a instanceof Persist || !cs.contains(name))){
-                    continue;
-                }
+            
+            for ( Annotation a : annotations ) {
+                if (!( a instanceof Persist || !cs.contains(name) )) continue;
+                
                 // System.out.println("Type = " + type +"  " + name +"   " + annotations + "   " + cs.getString(name));
                 field.setAccessible(true);
                 try {
                     Object obj = null;
-                    if (type == int.class){
-                        field.setInt(object, cs.getInt(name));
-                    } else if (type == float.class){
-                        field.setFloat(object, (float)cs.getDouble(name));
-                    } else if (type == double.class){
-                        field.setDouble(object, cs.getDouble(name));
-                    } else if (type == long.class){
-                        field.setLong(object, cs.getLong(name));
-                    } else if (type == boolean.class){
-                        field.setBoolean(object, cs.getBoolean(name));
-                    } else if (type == short.class){
-                        field.setShort(object, (short)cs.getInt(name));
-                    } else if (type == byte.class){
-                        field.setByte(object, (byte)cs.getInt(name));
-                    } else if (type == char.class){
+                    if (type == int.class) field.setInt(object, cs.getInt(name));
+                    else if (type == float.class) field.setFloat(object, (float)cs.getDouble(name));
+                    else if (type == double.class) field.setDouble(object, cs.getDouble(name));
+                    else if (type == long.class) field.setLong(object, cs.getLong(name));
+                    else if (type == boolean.class) field.setBoolean(object, cs.getBoolean(name));
+                    else if (type == short.class) field.setShort(object, (short)cs.getInt(name));
+                    else if (type == byte.class) field.setByte(object, (byte)cs.getInt(name));
+                    
+                    else if (type == char.class) {
                         String str = cs.getString(name);
                         if (str != null && !str.isEmpty())
-                            field.setChar(object, str.charAt(0));
-                    } else if (type == Integer.class){
-                        obj = cs.getInt(name);
-                    } else if (type == Float.class){
-                        Double d= cs.getDouble(name);
-                        if (d != null)
-                            obj = new Float(d);
-                    } else if (type == Double.class){
-                        obj = cs.getDouble(name);
-                    } else if (type == Character.class){
+                            field.setChar( object, str.charAt(0) );
+                    } 
+                    else if (type == Integer.class) obj = cs.getInt(name);
+                    else if (type == Float.class)  obj = new Float( cs.getDouble( name ) );
+                    else if (type == Double.class) obj = cs.getDouble(name);
+                    
+                    else if (type == Character.class){
                         String str = cs.getString(name);
                         if (str != null && !str.isEmpty())
                             obj = str.charAt(0);
-                    } else if (type == Byte.class){
-                        Integer i= cs.getInt(name);
+                    } 
+                    else if (type == Byte.class) {
+                        Integer i = cs.getInt(name);
                         obj = i.byteValue();
-                    } else if (type == Short.class){
+                    } 
+                    else if (type == Short.class){
                         Integer i= cs.getInt(name);
                         obj = i.shortValue();
-                    } else if (type == Long.class){
-                        obj = cs.getLong(name);
-                    } else if (type == Boolean.class){
-                        obj = cs.getBoolean(name);
-                    } else if (type == String.class){
-                        obj = cs.getString(name);
-                    } else if (type == Location.class){
-                        String locstr = cs.getString(name);
-                        obj = SerializerUtil.getLocation(locstr);
-                    } else if (type == ItemStack.class){
+                    } 
+                    else if (type == Long.class) obj = cs.getLong(name);
+                    else if (type == Boolean.class) obj = cs.getBoolean(name);
+                    else if (type == String.class) obj = cs.getString(name);
+                    else if (type == Location.class) obj = SerializerUtil.getLocation(cs.getString(name));
+                    
+                    else if (type == ItemStack.class){
                         String str = cs.getString(name);
                         if (str != null)
                             obj = InventoryUtil.parseItem(str);
-                    } else if (List.class.isAssignableFrom(type)){
+                    } 
+                    else if (List.class.isAssignableFrom(type)) {
                         ParameterizedType pt = (ParameterizedType) field.getGenericType();
                         List<?> list = cs.getList(name);
-                        if (list == null)
-                            continue;
+                        
+                        if (list == null) continue;
+                        
                         Type genType = pt.getActualTypeArguments()[0];
                         List<Object> newList = new ArrayList<>();
+                        
                         for (Object o : list){
                             newList.add(yamlToObj(o,genType));
                         }
                         obj = newList;
-                    } else if (Set.class.isAssignableFrom(type)){
+                    } 
+                    else if (Set.class.isAssignableFrom(type)){
                         ParameterizedType pt = (ParameterizedType) field.getGenericType();
                         List<?> list = cs.getList(name);
-                        if (list == null)
-                            continue;
+                        
+                        if (list == null) continue;
+                        
                         Type genType = pt.getActualTypeArguments()[0];
                         Set<Object> newSet = new HashSet<>();
+                        
                         for (Object o : list){
                             newSet.add(yamlToObj(o,genType));
                         }
                         obj = newSet;
-                    } else if (Map.class.isAssignableFrom(type)){
+                    } 
+                    else if (Map.class.isAssignableFrom(type)){
                         ParameterizedType pt = (ParameterizedType) field.getGenericType();
                         ConfigurationSection mapcs = cs.getConfigurationSection(name);
-                        if (mapcs == null)
-                            continue;
-                        Set<String> keyset = mapcs.getKeys(false);
+                        
+                        if (mapcs == null) continue;
+                        
                         Type keyType = pt.getActualTypeArguments()[0];
                         Type mapType = pt.getActualTypeArguments()[1];
                         Map<Object,Object> newMap = new HashMap<>();
-                        for (String key : keyset){
-                            Object k = yamlToObj(key,keyType);
-                            Object v = yamlToObj(mapcs.get(key), mapType);
-                            if (k != null && v != null)
+                        
+                        for ( String key : mapcs.getKeys(false) ){
+                            Object k = yamlToObj( key, keyType );
+                            Object v = yamlToObj( mapcs.get(key), mapType );
+                            if ( k != null && v != null )
                                 newMap.put(k,v);
                         }
                         obj = newMap;
-                    } else if (ConfigurationSerializable.class.isAssignableFrom(type)){
-                        obj = ConfigurationSerialization.deserializeObject((Map<String,Object>)cs.get(name));
-                    } else if (YamlSerializable.class.isAssignableFrom(type)){
+                    } 
+                    else if (ConfigurationSerializable.class.isAssignableFrom(type)){
+                        obj = ConfigurationSerialization.deserializeObject((Map<String,Object>) cs.get(name));
+                    } 
+                    else if (YamlSerializable.class.isAssignableFrom(type)){
                         Object o = cs.get(name);
-                        if (o != null && Map.class.isAssignableFrom(o.getClass())){
+                        
+                        if (o != null && Map.class.isAssignableFrom(o.getClass()))
                             obj = createYamlSerializable(type,(Map<String,Object>)o, cs.getString(name));
-                        } else {
+                        else 
                             obj = createYamlSerializable(type,null, cs.getString(name));
-                        }
-                    } else {
-                        obj = yamlToObj(name,type);
-                    }
+                    } 
+                    else obj = yamlToObj(name,type);
+
                     if (obj != null)
                         field.set(object, obj);
+                    
                 } catch (NotPersistableException e) {
-                    System.err.println(e.getMessage());
-                } catch (Exception e) {
-                    Log.printStackTrace(e);
-                }
+                    Log.err(e.getMessage()); 
+                } catch ( IllegalArgumentException | IllegalAccessException e ) {
+                    e.printStackTrace();
+                } 
             }
         }
         Class<?> superClass = objectClass.getSuperclass();
@@ -178,7 +175,7 @@ public class Persistable {
 
 
     @SuppressWarnings("unchecked")
-    private static Object yamlToObj(Object name, Type type) throws Exception {
+    private static Object yamlToObj(Object name, Type type) throws NotPersistableException {
         if (type == Integer.class){
             return new Integer(name.toString());
         } else if (type == Float.class){
@@ -213,8 +210,8 @@ public class Persistable {
     }
 
     private static Object createYamlSerializable(Class<?> clazz, Map<String,Object> map, String value) {
-        if (clazz == null)
-            return null;
+        if (clazz == null) return null;
+        
         Class<?>[] args = {};
         try {
             Constructor<?> constructor = clazz.getConstructor(args);
@@ -363,7 +360,6 @@ public class Persistable {
 
 
     }
-
 
     private static Object objToYaml(Object obj) {
         if (obj == null)

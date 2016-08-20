@@ -116,7 +116,7 @@ public class TeamExecutor extends CustomCommandExecutor {
 		foundArenaPlayers.add(player);
 		if (Defaults.DEBUG){Log.info(player.getName() + "  players=" + foundArenaPlayers.size());}
 
-		if (!ac.hasArenaSize(foundArenaPlayers.size())){
+		if (!arenaController.hasArenaSize(foundArenaPlayers.size())){
 		    MessageUtil.sendMessage(player,"&6[Warning]&eAn arena for that many players has not been created yet!");
 		}
 		/// Finally ready to create a team

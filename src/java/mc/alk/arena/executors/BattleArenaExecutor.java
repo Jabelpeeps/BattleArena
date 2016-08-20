@@ -27,8 +27,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.serializers.InventorySerializer;
 import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.MessageUtil;
 
 public class BattleArenaExecutor extends CustomCommandExecutor {
 
@@ -96,12 +96,16 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
     }
 
 
-    @MCCommand(cmds = {"version"}, admin = true)
+    @MCCommand( cmds = {"version"}, admin = true )
     public boolean showVersion(CommandSender sender, String[] args) {
-        MessageUtil.sendMessage(sender, "&6" + BattleArena.getNameAndVersion());
-        if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
+        
+        MessageUtil.sendMessage( sender, "&6" + BattleArena.getNameAndVersion() );
+        
+        if ( args.length > 1 && args[1].equalsIgnoreCase("all") ) {
+            
             HashMap<Plugin, List<ArenaType>> map = new HashMap<>();
-            for (ArenaType at : ArenaType.getTypes()) {
+            
+            for ( ArenaType at : ArenaType.getTypes() ) {
                 List<ArenaType> l = map.get(at.getPlugin());
                 if (l == null) {
                     l = new ArrayList<>();
@@ -110,31 +114,31 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
                 l.add(at);
             }
             for (Entry<Plugin, List<ArenaType>> entry : map.entrySet()) {
-                MessageUtil.sendMessage(sender, "&6" + entry.getKey().getName() + " " + entry.getKey().getDescription().getVersion() +
-                        "&e games: &f" + StringUtils.join(entry.getValue(), ", "));
+                MessageUtil.sendMessage( sender, 
+                        "&6" + entry.getKey().getName() + " " + entry.getKey().getDescription().getVersion() +
+                        "&e games: &f" + StringUtils.join(entry.getValue(), ", " ) );
             }
-        } else {
-            MessageUtil.sendMessage(sender, "&2For all game type versions, type &6/ba version all");
-        }
+        } 
+        else MessageUtil.sendMessage(sender, "&2For all game type versions, type &6/ba version all");
         return true;
     }
 
     @MCCommand(cmds = {"reload"}, admin = true, perm = "arena.reload")
     public boolean arenaReload(CommandSender sender) {
         BAEventController baec = BattleArena.getBAEventController();
-        if (ac.hasRunningMatches() || !ac.isQueueEmpty() || baec.hasOpenEvent()) {
+        if (arenaController.hasRunningMatches() || !arenaController.isQueueEmpty() || baec.hasOpenEvent()) {
             MessageUtil.sendMessage(sender, "&cYou can't reload the config while matches are running or people are waiting in the queue");
             return MessageUtil.sendMessage(sender, "&cYou can use &6/arena cancel all&c to cancel all matches and clear queues");
         }
 
-        ac.stop();
+        arenaController.stop();
         /// Get rid of any current players
         PlayerController.clearArenaPlayers();
 
         BattleArena.getSelf().reloadConfig();
         CompetitionController.reloadCompetitions();
 
-        ac.resume();
+        arenaController.resume();
         return MessageUtil.sendMessage(sender, "&6BattleArena&e configuration reloaded");
     }
 
@@ -161,15 +165,15 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(sender, "&2You have kicked &6" + player.getName());
     }
 
-    @MCCommand(cmds = {"stats"}, admin = true, perm = "arena.stats")
-    public boolean stats(CommandSender sender) {
-        return MessageUtil.sendMessage(sender, "&cNot implemented");
-    }
-
-    @MCCommand(cmds = {"setAPIKey"}, admin = true, perm = "arena.api")
-    public boolean setAPIKey(CommandSender sender, String key) {
-        // BattleArena.getSelf().getBattlePluginsAPI().setAPIKey(key);
-        // return sendMessage(sender, "&2Api-Key set to: &e" + key);
-        return MessageUtil.sendMessage(sender, "&2command not yet implemented");
-    }
+//    @MCCommand(cmds = {"stats"}, admin = true, perm = "arena.stats")
+//    public boolean stats(CommandSender sender) {
+//        return MessageUtil.sendMessage(sender, "&cNot implemented");
+//    }
+//
+//    @MCCommand(cmds = {"setAPIKey"}, admin = true, perm = "arena.api")
+//    public boolean setAPIKey(CommandSender sender, String key) {
+//        // BattleArena.getSelf().getBattlePluginsAPI().setAPIKey(key);
+//        // return sendMessage(sender, "&2Api-Key set to: &e" + key);
+//        return MessageUtil.sendMessage(sender, "&2command not yet implemented");
+//    }
 }

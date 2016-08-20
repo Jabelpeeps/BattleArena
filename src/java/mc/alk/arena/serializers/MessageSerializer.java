@@ -1,5 +1,6 @@
 package mc.alk.arena.serializers;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.MemorySection;
 
 import mc.alk.arena.controllers.messaging.MessageFormatter;
@@ -24,16 +24,18 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 public class MessageSerializer extends BaseConfig {
 
 	private static MessageSerializer defaultMessages;
-	private HashMap<String,MessageOptions> msgOptions = new HashMap<>();
-    final private static HashMap<String,MessageSerializer> files = new HashMap<>();
+	private HashMap<String, MessageOptions> msgOptions = new HashMap<>();
+    final private static HashMap<String, MessageSerializer> files = new HashMap<>();
     final protected MatchParams matchParams;
+    protected String name;
 
-	public MessageSerializer(String name, MatchParams params){
+	public MessageSerializer(String _name, MatchParams params){
 		matchParams = params;
 		
-		if (name == null) return;
+		if (_name == null) return;		
+		name = _name;		
+		MessageSerializer ms = files.get( _name.toUpperCase() );
 		
-		MessageSerializer ms = files.get(name.toUpperCase());
 		if ( ms != null ) {
 			config = ms.config;
 			file = ms.file;
@@ -41,6 +43,15 @@ public class MessageSerializer extends BaseConfig {
 		}
 	}
 
+	@Override
+    public BaseConfig setConfig(File _file) {
+	    if ( super.setConfig( _file ) != null ) {
+            files.put( name.toUpperCase(), this );
+            return this;
+	    }
+        return null;	    
+	}
+	
 	public static void addMessageSerializer(String name, MessageSerializer ms){
 		files.put(name.toUpperCase(), ms);
 	}
@@ -49,9 +60,7 @@ public class MessageSerializer extends BaseConfig {
 		return files.get(name.toUpperCase());
 	}
 
-	public void loadAll(){
-		initMessageOptions();
-	}
+	public void loadAll() { initMessageOptions(); }
 
 	public static void reloadConfig(String params) {
 		MessageSerializer ms = files.get(params.toUpperCase());
@@ -62,8 +71,8 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public void initMessageOptions(){
-		if (config == null)
-			return;
+		if (config == null) return;
+		
 		msgOptions.clear();
 		Set<String> keys = config.getKeys(true);
 		keys.remove("version");
@@ -104,7 +113,7 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public static boolean hasMessage(String prefix, String node) {
-		return defaultMessages != null && defaultMessages.contains(prefix + "." + node);
+		return defaultMessages != null && defaultMessages.contains( prefix + "." + node );
 	}
 
 	public static void loadDefaults() {
@@ -115,18 +124,10 @@ public class MessageSerializer extends BaseConfig {
 		defaultMessages = messageSerializer;
 	}
 
-	public static String colorChat(String msg) {return msg.replace('&', '\167');}
-    public static String decolorChat(String msg) {
-        return msg.contains("§") || msg.contains("&") ? ChatColor.stripColor(msg).replaceAll("(&|§).", "") : msg;}
-
 	protected static String getStringPathFromSize(int size) {
-		if (size == 1)
-			return "oneTeam";
-		else if (size == 2){
-			return "twoTeams";
-		} else {
-			return "multipleTeams";
-		}
+		if (size == 1) return "oneTeam";
+		else if (size == 2) return "twoTeams";
+		else  return "multipleTeams";	
 	}
 
 	protected void sendVictory(Channel serverChannel, Collection<ArenaTeam> victors, Collection<ArenaTeam> losers, MatchParams mp, String winnerpath,String loserpath, String serverPath){
@@ -227,5 +228,4 @@ public class MessageSerializer extends BaseConfig {
 			serverChannel.broadcast(msg);
 		}
 	}
-
 }

@@ -8,39 +8,32 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import lombok.Getter;
 import mc.alk.arena.util.Log;
 
 public class BaseConfig { 
-	protected FileConfiguration config;
-	File file = null;
-
-    public BaseConfig(){}
-
-    public BaseConfig( File _file ){
-        setConfig( _file );
-    }
-    
+	@Getter protected FileConfiguration config;
+	@Getter File file = null;
+ 
 	public int getInt(String node,int defaultValue) { return config.getInt(node, defaultValue); }
 	public boolean getBoolean(String node, boolean defaultValue) { return config.getBoolean(node, false); }
 	public double getDouble(String node, double defaultValue) { return config.getDouble(node, defaultValue); }
 	public String getString(String node,String defaultValue) { return config.getString(node, defaultValue); }
 	public ConfigurationSection getConfigurationSection(String node) { return config.getConfigurationSection(node); }
-	public FileConfiguration getConfig() { return config; }
-	public File getFile() { return file; }
-	public boolean setConfig( String _file ) { return setConfig( new File(_file) ); }
+	public BaseConfig setConfig( String _file ) { return setConfig( new File(_file) ); }
 
-	public boolean setConfig(File _file){
+	public BaseConfig setConfig(File _file){
 		file = _file;
 		if (!_file.exists()){
 			try {
 				if (!_file.createNewFile()){
                     Log.err("Couldn't create the config file=" + _file);
-                    return false;
+                    return null;
                 }
 			} catch (IOException e) {
 				Log.err("Couldn't create the config file=" + _file);
 				Log.printStackTrace(e);
-				return false;
+				return null;
 			}
 		}
 
@@ -50,9 +43,9 @@ public class BaseConfig {
 		} catch (Exception e) {
 			Log.err("Couldn't load the config file=" + _file);
 			Log.printStackTrace(e);
-			return false;
+			return null;
 		}
-		return true;
+		return this;
 	}
 
 	public void reloadFile(){

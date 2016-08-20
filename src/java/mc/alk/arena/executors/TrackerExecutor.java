@@ -6,16 +6,16 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import mc.alk.arena.controllers.tracker.TrackerInterface;
+import mc.alk.arena.controllers.tracker.TrackerMessageController;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.objects.tracker.WLTRecord;
+import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TimeUtil;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.controllers.TrackerMessageController;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.StatType;
-import mc.alk.tracker.objects.VersusRecords.VersusRecord;
-import mc.alk.tracker.objects.WLTRecord;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 
 public class TrackerExecutor extends CustomCommandExecutor {

@@ -8,7 +8,7 @@ import java.util.SortedMap;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 
 /**
  * @author alkarin

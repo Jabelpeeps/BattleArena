@@ -1,4 +1,4 @@
-package mc.alk.tracker.objects;
+package mc.alk.arena.objects.tracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,12 +10,12 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLInstance;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheObject;
 import mc.alk.arena.util.Cache.CacheSerializer;
-import mc.alk.tracker.objects.VersusRecords.VersusRecord;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public class VersusRecords implements CacheSerializer<List<String>,VersusRecord>{
 	String id;

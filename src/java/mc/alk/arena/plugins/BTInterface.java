@@ -13,18 +13,18 @@ import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.PlayerController;
+import mc.alk.arena.controllers.tracker.TrackerController;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.stats.TrackerArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Log;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerController;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.StatType;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 
 public class BTInterface {

@@ -16,8 +16,8 @@ import org.bukkit.plugin.Plugin;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.util.FileUpdater;
-import mc.alk.arena.util.Log;
 import mc.alk.arena.util.FileUpdater.Version;
+import mc.alk.arena.util.Log;
 
 public class YamlFileUpdater {
     private BufferedReader br = null;
@@ -41,6 +41,7 @@ public class YamlFileUpdater {
     }
 
     public void updateMessageSerializer(Plugin plugin, MessageSerializer ms) {
+        
         FileConfiguration fc = ms.getConfig();
         configFile = ms.getFile();
         Version version = new Version(fc.getString("version","0"));

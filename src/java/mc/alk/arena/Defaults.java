@@ -8,14 +8,11 @@ import mc.alk.arena.objects.CompetitionSize;
 
 public class Defaults {
 
-    public static boolean REPORT_ERRORS = false;
-
     public static String MONEY_STR = "Gold";
     public static boolean MONEY_SET = false;
     public static final double DEFAULT_ELO = 1250.0;
 
-    /// How long can we keep appending player names together
-    /// before reverting to team 1, team 2, etc
+    /// How long can we keep appending player names together before reverting to team 1, team 2, etc
     public static final int MAX_TEAM_NAME_APPEND = 32;
     public static final int MAX_SCOREBOARD_NAME_SIZE = 16;
 
@@ -25,20 +22,18 @@ public class Defaults {
     /// MATCH OPTIONS
     public static int SECONDS_TILL_MATCH = 15;
     public static int SECONDS_TO_LOOT = 15;
-
     public static int MATCH_TIME = CompetitionSize.MAX; /// matchEndTime
     public static int MATCH_UPDATE_INTERVAL = 30;
     public static int JOIN_CUTOFF_TIME = 15;
 
     public static boolean MATCH_FORCESTART_ENABLED = true;
     public static boolean MATCH_FORCESTART_START_ONJOIN = true;
-    public static int MATCH_FORCESTART_TIME = 60;
+    public static int     MATCH_FORCESTART_TIME = 60;
 
     public static boolean USE_SCOREBOARD = true;
     public static boolean USE_COLORNAMES = true;
 
     public static boolean ANNOUNCE_GIVEN_ITEMS = true;
-
     public static boolean NEED_SAME_ITEMS_TO_CHANGE_CLASS = true;
 
     /// EVENT OPTIONS
@@ -52,8 +47,8 @@ public class Defaults {
     public static final int MAX_REGION_SIZE = 5000000;
 
 	/// DUEL OPTIONS
-    /// 30 minutes before people can duel a players that has rejected it once before
-    public static int DUEL_CHALLENGE_INTERVAL = 60 * 30;
+    /// 30 minutes before people can duel a player who has rejected it earlier
+    public static int     DUEL_CHALLENGE_INTERVAL = 60 * 30;
     public static boolean DUEL_ALLOW_RATED = false;
     public static boolean DUEL_CHALLENGE_ADMINS = false;
 
@@ -63,43 +58,40 @@ public class Defaults {
     /// Scheduled Event Options
     public static boolean START_CONTINUOUS = false;
     public static boolean START_NEXT = false;
-    public static int TIME_BETWEEN_SCHEDULED_EVENTS = 30;
+    public static int     TIME_BETWEEN_SCHEDULED_EVENTS = 30;
     public static boolean SCHEDULER_ANNOUNCE_TIMETILLNEXT = false;
 
-    /// Plugin loads
     /// Workaround for gamemode switching and teleporting
-    public static boolean PLUGIN_MULTI_INV = false; /// workarounds for multiinv and tping
+    public static boolean PLUGIN_MULTI_INV = false; 
     public static boolean PLUGIN_MULITVERSE_INV = false;
     public static boolean PLUGIN_MULITVERSE_CORE = false;
 
-    public static boolean PLUGIN_ANTILOOT = false; /// Workaround for antiloot
+    public static boolean PLUGIN_ANTILOOT = false; 
 
     /// MISC OPTIONS
-    public static int NUM_INV_SAVES = 5; /// number of inventory saves
+    public static int    NUM_INV_SAVES = 5; 
 
-    public static double TELEPORT_Y_OFFSET = 1.0; /// offset for teleportation
+    public static double TELEPORT_Y_OFFSET = 1.0; 
     public static double TELEPORT_Y_VELOCITY = 0.0;
 
     public static Material READY_BLOCK = Material.IRON_BLOCK;
+    
+    public static boolean ITEMS_IGNORE_STACKSIZE = true;
+    public static boolean ITEMS_UNSAFE_ENCHANTMENTS = true;
 
     /// SIGN OPTIONS
     public static final String SIGN_PREFIX = "*";
     public static boolean USE_SIGN_PERMS = false;
 
-    public static boolean ITEMS_IGNORE_STACKSIZE = true;
-    public static boolean ITEMS_UNSAFE_ENCHANTMENTS = true;
-
     /// DEBUG OPTIONS
     public static final boolean DEBUG = true;
-    public static final boolean DEBUGQ = false;
     public static final boolean DEBUG_TRACE = false;
     public static final boolean DEBUG_EVENTS = false;
-    public static final boolean DEBUG_TEVENTS = false;
-    public static final boolean DEBUG_DAMAGE = false;
     public static final boolean DEBUG_SCHEDULER = false;
-    public static boolean TESTSERVER = false;
     public static final boolean TESTSERVER_DEBUG = false;
-    public static final String DEFAULT_CONFIG_NAME = "Default";
+    public static final String  DEFAULT_CONFIG_NAME = "Default";
+    
+    public static boolean TESTSERVER = false;
     public static boolean DEBUG_STRESS = false;
     public static boolean DEBUG_MSGS = false;
     public static boolean DEBUG_COMMANDS = true;
@@ -146,14 +138,11 @@ public class Defaults {
     public static int RADIUS = -1;
 
     /// Message Defaults
-
     public static String MSG_TOP_HEADER = "&4Top &6{interfaceName}&4 {stat} TeamSize:{teamSize}";
     public static String MSG_TOP_BODY = "&e#{rank}&4 {name} - {wins}:{losses}&6[{rating}]";
 
     public static boolean INVOLVED_PVP_MESSAGES = false;
     public static boolean INVOLVED_PVE_MESSAGES = false;
-
-    public static final String ADMIN_PERM = "tracker.admin";
 
     public static boolean USE_SIGNS = true;
 

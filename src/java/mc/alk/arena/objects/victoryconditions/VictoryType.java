@@ -1,20 +1,20 @@
 package mc.alk.arena.objects.victoryconditions;
 
+import java.lang.reflect.Constructor;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
+
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.serializers.BaseConfig;
 import mc.alk.arena.util.CaseInsensitiveMap;
 import mc.alk.arena.util.Log;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
-
-import java.lang.reflect.Constructor;
-
 
 public class VictoryType {
-    final static public CaseInsensitiveMap<VictoryType> types = new CaseInsensitiveMap<VictoryType>();
-    final static public CaseInsensitiveMap<Class<?>> classes = new CaseInsensitiveMap<Class<?>>();
-    final static public CaseInsensitiveMap<BaseConfig> configs = new CaseInsensitiveMap<BaseConfig>();
+    final static public CaseInsensitiveMap<VictoryType> types = new CaseInsensitiveMap<>();
+    final static public CaseInsensitiveMap<Class<?>> classes = new CaseInsensitiveMap<>();
+    final static public CaseInsensitiveMap<BaseConfig> configs = new CaseInsensitiveMap<>();
 
     static int count =0;
     final String name;
@@ -70,9 +70,7 @@ public class VictoryType {
         Constructor<?> constructor = null;
         try {
             constructor = vcClass.getConstructor(Match.class, ConfigurationSection.class);
-        } catch (Exception e){
-            /* say nothing, just try next constructor */
-        }
+        } catch (Exception e) { }
         try {
             if (constructor != null) {
                 Object[] args = {match, config != null ? config.getConfig() : null};

@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.bukkit.configuration.ConfigurationSection;
 
 import mc.alk.arena.competition.Match;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
@@ -14,11 +15,10 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.tracker.Tracker;
 
 public class KillLimit extends VictoryCondition implements ScoreTracker{
     final ArenaObjective kills;
@@ -66,26 +66,21 @@ public class KillLimit extends VictoryCondition implements ScoreTracker{
             }
         }
     }
-
     @Override
     public List<ArenaTeam> getLeaders() {
         return kills.getTeamLeaders();
     }
-
     @Override
     public TreeMap<Integer,Collection<ArenaTeam>> getRanks() {
         return kills.getTeamRanks();
     }
-
     @Override
     public void setScoreBoard(ArenaScoreboard scoreboard) {
         kills.setScoreBoard(scoreboard);
         scoreboard.addObjective(kills);
     }
-
     @Override
     public void setDisplayTeams(boolean display) {
         kills.setDisplayPlayers(display);
     }
-
 }

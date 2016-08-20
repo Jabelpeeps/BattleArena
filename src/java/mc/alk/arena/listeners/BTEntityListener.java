@@ -25,14 +25,14 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Defaults;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerConfigController;
-import mc.alk.tracker.controllers.TrackerController;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.controllers.TrackerMessageController;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.Stat.SpecialType;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.controllers.tracker.TrackerConfigController;
+import mc.alk.arena.controllers.tracker.TrackerController;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
+import mc.alk.arena.controllers.tracker.TrackerMessageController;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.Stat.SpecialType;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
+import mc.alk.arena.tracker.Tracker;
 
 
 public class BTEntityListener implements Listener {

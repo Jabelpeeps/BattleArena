@@ -104,8 +104,6 @@ public class BAConfigSerializer extends BaseConfig {
         
         Set<String> defaultEventTypes = new HashSet<>();
         Collections.addAll( defaultEventTypes, "FreeForAll", "DeathMatch" );
-        
-//        Set<String> exclude = new HashSet<>();
  
         Set<String> allTypes = new HashSet<>(defaultMatchTypes);
         allTypes.addAll(defaultEventTypes);
@@ -117,12 +115,6 @@ public class BAConfigSerializer extends BaseConfig {
 
         /// Load all default types
         for (String comp : allTypes) {
-            /// For some reason this next line is almost directly in APIRegistration and works
-            /// for extensions but not for BattleArena defaults.
-            /// ONLY doesnt work in Windows... odd...
-//            FileUtil.load( BattleArena.getSelf().getClass(),
-//                           dir.getPath() + "/competitions/" + comp + "Config.yml",
-//                           "/default_files/competitions/" + comp + "Config.yml" );
             
             String capComp = StringUtils.capitalize(comp);
             CustomCommandExecutor executor = comp.equalsIgnoreCase("duel") ? new DuelExecutor() : null;
@@ -131,7 +123,6 @@ public class BAConfigSerializer extends BaseConfig {
                                                            new File(compDir + "/" + capComp + "Messages.yml"),
                                                            new File("/default_files/competitions/" + capComp + "Config.yml"),
                                                            new File(dir.getPath() + "/saves/arenas.yml"));
-//            exclude.add(capComp + "Config.yml");
         }
 
         /// These commands arent specified in the config, so manually add.
@@ -142,9 +133,11 @@ public class BAConfigSerializer extends BaseConfig {
         /// And lastly.. add our tournament which is different than the rest
         ArenaType.register("Tourney", Arena.class, plugin);
         
-        File cf = FileUtil.load(BattleArena.getSelf().getClass(), dir.getPath() + "/competitions/TourneyConfig.yml",
-                "/default_files/competitions/TourneyConfig.yml");
-        ConfigSerializer cs = new ConfigSerializer(plugin, cf, "Tourney");
+        File cf = FileUtil.load( BattleArena.getSelf().getClass(), 
+                                 dir.getPath() + "/competitions/TourneyConfig.yml",
+                                 "/default_files/competitions/TourneyConfig.yml" );
+        
+        ConfigSerializer cs = new ConfigSerializer( plugin, cf, "Tourney" );
         MatchParams mp;
         try {
             mp = cs.loadMatchParams();
@@ -192,6 +185,7 @@ public class BAConfigSerializer extends BaseConfig {
 
         Defaults.ANNOUNCE_EVENT_INTERVAL = cs.getInt("eventCountdownInterval", Defaults.ANNOUNCE_EVENT_INTERVAL);
         defaults.setAnnouncementInterval(Defaults.ANNOUNCE_EVENT_INTERVAL);
+        
         if (cs.contains("playerOpenOptions")) {
             defaults.setPlayerOpenOptions(cs.getStringList("playerOpenOptions"));
         }
@@ -223,10 +217,11 @@ public class BAConfigSerializer extends BaseConfig {
         String readyBlock = cs.getString( "readyBlockType", Defaults.READY_BLOCK.name() ).toUpperCase();
         Material value = null;
         try {
-            int x = Integer.valueOf( readyBlock );
+            int x = Integer.parseInt( readyBlock );
             value = Material.getMaterial(x);
-        } catch (NumberFormatException ex) {
-            value = Material.matchMaterial(readyBlock);
+        } 
+        catch (NumberFormatException ex) {
+            value = Material.matchMaterial( readyBlock );
         }
         if (value != null) {
             Defaults.READY_BLOCK = value;
@@ -251,7 +246,8 @@ public class BAConfigSerializer extends BaseConfig {
             try {
                 DuelOptions dop = DuelOptions.parseOptions(list.toArray(new String[list.size()]));
                 DuelOptions.setDefaults(dop);
-            } catch (InvalidOptionException e) {
+            } 
+            catch (InvalidOptionException e) {
                 Log.printStackTrace(e);
             }
         }
@@ -363,31 +359,31 @@ public class BAConfigSerializer extends BaseConfig {
     }
 
     public void loadVictoryConditions() {
+        
         for (VictoryType vt : VictoryType.values()) {
+            
             String name = vt.getName();
             if (name.equalsIgnoreCase("HighestKills")) { /// Old name for PlayerKills
                 name = "PlayerKills";
             }
-            BaseConfig c = loadOtherConfig(BattleArena.getSelf().getDataFolder()
-                    + "/victoryConditions/" + name + ".yml");
-            if (c == null) {
-                continue;
-            }
+            BaseConfig c = loadOtherConfig( BattleArena.getSelf().getDataFolder()  + "/victoryConditions/" + name + ".yml");
+            
+            if (c == null) continue; 
+            
             VictoryType.addConfig(vt, c);
         }
     }
 
-    private BaseConfig loadOtherConfig(String file) {
-        File f = new File(file);
-        if (!f.exists()) /// File not found, get outta here
-        {
-            return null;
-        }
-        return new BaseConfig(f);
+    private BaseConfig loadOtherConfig(String _file) {
+        File f = new File(_file);
+        
+        if (!f.exists()) return null;
+        
+        return new BaseConfig().setConfig( f );
     }
 
-    private ConfigurationSection loadOtherConfigSection(String file) {
-        BaseConfig c = loadOtherConfig(file);
+    private ConfigurationSection loadOtherConfigSection(String _file) {
+        BaseConfig c = loadOtherConfig(_file);
         return c == null ? null : c.getConfig();
     }
 
@@ -403,6 +399,7 @@ public class BAConfigSerializer extends BaseConfig {
     private void loadHeroes() {
         if (HeroesController.enabled()) {
             /// Look for it in the old location first, config.yml
+            
             List<String> disabled = config.getStringList("disabledHeroesSkills");
             if (disabled != null && !disabled.isEmpty()) {
                 HeroesController.addDisabledCommands(disabled);

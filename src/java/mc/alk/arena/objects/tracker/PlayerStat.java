@@ -1,4 +1,4 @@
-package mc.alk.tracker.objects;
+package mc.alk.arena.objects.tracker;
 
 import java.util.ArrayList;
 

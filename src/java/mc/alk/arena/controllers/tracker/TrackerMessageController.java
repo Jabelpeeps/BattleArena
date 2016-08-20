@@ -1,4 +1,4 @@
-package mc.alk.tracker.controllers;
+package mc.alk.arena.controllers.tracker;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
+import mc.alk.arena.objects.tracker.Stat.SpecialType;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.tracker.objects.Stat.SpecialType;
 
 /**
  *

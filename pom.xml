@@ -43,7 +43,7 @@
             <url>http://repo.minelink.net/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>empcraft-repo</id>
+            <id>protocoLib-repo</id>
             <url>http://empcraft.com/maven2/</url>
         </repository>
         <repository>
@@ -71,6 +71,10 @@
             		<groupId>junit</groupId>
             		<artifactId>junit</artifactId>
             	</exclusion>
+            	<exclusion>    
+	            	<groupId>net.md-5</groupId>
+	                <artifactId>bungeecord-chat</artifactId>
+            	</exclusion>
             </exclusions>
         </dependency>
         
@@ -83,6 +87,10 @@
                 <exclusion>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
+                </exclusion>
+                <exclusion>    
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -155,6 +163,27 @@
             <artifactId>LibsDisguises</artifactId>
             <version>9.0.9</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot</artifactId>
+                </exclusion> 
+                <exclusion>
+		            <groupId>com.comphenix.protocol</groupId>
+		            <artifactId>ProtocolLib</artifactId>
+                </exclusion>                            
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
@@ -169,7 +198,7 @@
             	</exclusion>
             </exclusions>
         </dependency>
-        
+
         <dependency>
 		    <groupId>net.minelink</groupId>
 		    <artifactId>CombatTagPlus</artifactId>
@@ -212,10 +241,30 @@
 		            <groupId>net.minelink</groupId>
 		            <artifactId>CombatTagPlusFactions-v1_6</artifactId>		    	
 		    	</exclusion>
+                <exclusion>
+                     <groupId>net.minelink</groupId>
+                     <artifactId>CombatTagPlusFactions-v1_8</artifactId>
+                </exclusion>		    	
+                <exclusion>
+                     <groupId>net.minelink</groupId>
+                     <artifactId>CombatTagPlusFactions-v2_6</artifactId>
+                </exclusion>
 		    	<exclusion>
 		    	     <groupId>net.minelink</groupId>
-           			 <artifactId>CombatTagPlusFactions-v2_6</artifactId>
+           			 <artifactId>CombatTagPlusFactions-v2_7</artifactId>
 		    	</exclusion>
+                <exclusion>
+                     <groupId>net.minelink</groupId>
+                     <artifactId>CombatTagPlusHook</artifactId>
+                </exclusion>
+                <exclusion>
+                     <groupId>net.minelink</groupId>
+                     <artifactId>CombatTagPlusCompat-API</artifactId>
+                </exclusion>		    	
+                <exclusion>
+                    <groupId>net.minelink</groupId>
+                    <artifactId>CombatTagPlusWG-v6</artifactId>             
+                </exclusion>
 		    	<exclusion>
 		            <groupId>net.minelink</groupId>
  		            <artifactId>CombatTagPlusWG-v5</artifactId>		    	

@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaClass;
+import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.signs.ArenaCommandSign;
 import mc.alk.arena.objects.signs.ArenaStatusSign;
 import mc.alk.arena.util.Log;
@@ -140,27 +141,30 @@ public class BASignListener implements Listener{
         }
 
         try{
-            String match = acs.getMatchParams().getName().toLowerCase();
+            MatchParams params = acs.getMatchParams();
+            String match = params.getName().toLowerCase();
             match = Character.toUpperCase(match.charAt(0)) + match.substring(1);
             String str;
-            if (acs.getMatchParams().getSignDisplayName() != null) {
-                str = MessageUtil.colorChat(acs.getMatchParams().getSignDisplayName());
-            } else {
+            if ( params.getSignDisplayName() != null ) {
+                str = MessageUtil.colorChat( params.getSignDisplayName() );
+            } 
+            else {
                 str = MessageUtil.colorChat( "["+
-                        acs.getMatchParams().getColor()+match+"&0]");
+                        MessageUtil.getFirstColor( params.getPrefix() ) + match + "&0]" );
             }
             if (str.length()>15){
                 str = MessageUtil.colorChat( "["+
-                        acs.getMatchParams().getColor()+acs.getMatchParams().getCommand().toLowerCase()+"&0]");
+                        MessageUtil.getFirstColor( params.getPrefix() ) + params.getCommand().toLowerCase()+"&0]");
             }
             event.setLine(0, str);
             String cmd = acs.getCommand();
-            cmd = Character.toUpperCase(cmd.charAt(0)) + cmd.substring(1);
-            event.setLine(1, MessageUtil.colorChat(ChatColor.GREEN+cmd.toLowerCase()) );
+            cmd = Character.toUpperCase( cmd.charAt(0) ) + cmd.substring(1);
+            event.setLine(1, MessageUtil.colorChat( ChatColor.GREEN+cmd.toLowerCase() ) );
             MessageUtil.sendMessage(event.getPlayer(), "&2Arena command sign created");
             sul.addSign(acs);
             signLocs.put(getKey(acs.getLocation()), acs);
-        } catch (Exception e){
+        } 
+        catch (Exception e){
             MessageUtil.sendMessage(event.getPlayer(), "&cError creating Arena Command Sign");
             Log.printStackTrace(e);
             cancelSignPlace(event,block);
@@ -184,14 +188,16 @@ public class BASignListener implements Listener{
         try{
             String match = acs.getType().toLowerCase();
             match = Character.toUpperCase(match.charAt(0)) + match.substring(1);
-            event.setLine(0, MessageUtil.colorChat( ChatColor.GOLD+Defaults.SIGN_PREFIX+
-                    acs.getMatchParams().getColor()+match));
+            
+            event.setLine(0, MessageUtil.colorChat( ChatColor.GOLD + Defaults.SIGN_PREFIX +
+                    MessageUtil.getFirstColor( acs.getMatchParams().getPrefix() ) + match ));
+            
             event.setLine(1, MessageUtil.colorChat( ""));
             acs.setLocation(event.getBlock().getLocation());
 
-//			signController.addStatusSign(acs);
             MessageUtil.sendMessage(event.getPlayer(), "&2Arena status sign created");
-        } catch (Exception e){
+        } 
+        catch (Exception e){
             MessageUtil.sendMessage(event.getPlayer(), "&cError creating Arena Status Sign");
             Log.printStackTrace(e);
             cancelSignPlace(event,block);

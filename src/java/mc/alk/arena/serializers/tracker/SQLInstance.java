@@ -13,16 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 
 import lombok.Getter;
+import mc.alk.arena.objects.tracker.PlayerStat;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.objects.tracker.TeamStat;
+import mc.alk.arena.objects.tracker.VersusRecords;
+import mc.alk.arena.objects.tracker.WLTRecord;
+import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLSerializer.RSCon;
 import mc.alk.arena.util.Log;
-import mc.alk.tracker.objects.PlayerStat;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.StatType;
-import mc.alk.tracker.objects.TeamStat;
-import mc.alk.tracker.objects.VersusRecords;
-import mc.alk.tracker.objects.VersusRecords.VersusRecord;
-import mc.alk.tracker.objects.WLTRecord;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 
 public class SQLInstance {

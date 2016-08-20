@@ -13,14 +13,8 @@ public abstract class VictoryCondition extends ChangeStateCondition  {
 			VictoryType.register(this.getClass(), BattleArena.getSelf());
 		}
 	}
-
 	@Override
-	public String toString(){
-		return getName();
+	public String toString() {
+		return "[VC " + getClass().getSimpleName() + " : " + id + "]";
 	}
-
-	public String getName() {
-		return "[VC "+this.getClass().getSimpleName()+" : " + id+"]";
-	}
-
 }

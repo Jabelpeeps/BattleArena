@@ -41,7 +41,8 @@ public class SpawnSerializer {
  
         try {
             config.load(file);
-        } catch ( IOException | InvalidConfigurationException e ) {
+        } 
+        catch ( IOException | InvalidConfigurationException e ) {
             e.printStackTrace();
         }
 
@@ -77,11 +78,9 @@ public class SpawnSerializer {
         for (String key : keys) {
             List<SpawnInstance> sis = parseSpawnable(convertToStringList(cs, key));
             
-            if (sis != null) {
-                for (SpawnInstance si : sis) {
-                    spawns.add(si);
-                }
-            }
+            if ( sis != null ) 
+                for ( SpawnInstance si : sis ) 
+                    spawns.add( si );          
         }
         return spawns;
     }
@@ -169,70 +168,62 @@ public class SpawnSerializer {
                 return spawns;
             }
         }
-        
         return null;
     }
 
     public static TimedSpawn parseSpawn(String[] args) {
         List<String> spawnArgs = new ArrayList<>();
-        // List<EditOption> optionArgs = new ArrayList<EditOption>();
-        Integer fs = 0; /// first spawn time
-        Integer rs = -1; /// Respawn time
-        Integer ds = -1; /// Despawn time
+        
+        int fs = 0; /// first spawn time
+        int rs = -1; /// Respawn time
+        int ds = -1; /// Despawn time
         
         for (int i = 1; i < args.length; i++) {
             
             String arg = args[i];
-            if (arg.contains("=")) {
+            if ( arg.contains("=") ) {
                 String as[] = arg.split("=");
-                Integer time = null;
+                int time = -1;
                 try {
-                    time = Integer.valueOf(as[1]);
-                } catch ( NumberFormatException e ) { }
+                    time = Integer.parseInt(as[1]);
+                } 
+                catch ( NumberFormatException e ) { }
                 
-                if (as[0].equalsIgnoreCase("fs")) {
-                    fs = time;
-                } 
-                else if (as[0].equalsIgnoreCase("rs") || as[0].equalsIgnoreCase("rt")) {
-                    rs = time;
-                } 
-                else if (as[0].equalsIgnoreCase("ds")) {
-                    ds = time;
-                }
+                if (as[0].equalsIgnoreCase("fs") ) fs = ( time >= 0 ? time : 0 );
+                else if (as[0].equalsIgnoreCase("rs") || as[0].equalsIgnoreCase("rt")) rs = time;
+                else if (as[0].equalsIgnoreCase("ds")) ds = time;
             } 
             else spawnArgs.add(arg);
-        }
-        
+        }       
         int number = -1;
-        if (spawnArgs.size() > 1) {
+        if ( spawnArgs.size() > 1 ) {
             try {
-                number = Integer.parseInt(spawnArgs.get(spawnArgs.size() - 1));
-            } catch ( NumberFormatException e ) { }
+                number = Integer.parseInt( spawnArgs.get(spawnArgs.size() - 1));
+            } 
+            catch ( NumberFormatException e ) { }
         }
         if (number == -1) {
             spawnArgs.add("1");
         }
         List<SpawnInstance> spawn = SpawnSerializer.parseSpawnable(spawnArgs);
-        if (spawn == null) {
-            return null;
-        }
+        
+        if (spawn == null) return null;
+
         SpawnInstance si = spawn.get(0);
-        if (si == null) {
-            return null;
-        }
+        
+        if (si == null) return null;
+
         return new TimedSpawn(fs, rs, ds, si);
     }
 
     public static TimedSpawn createTimedSpawn(SpawnInstance si, SpawnOptions so) {
-        long fs = (Integer) (so.options.containsKey(SpawnOption.FIRST_SPAWN) ? so.options.get(SpawnOption.FIRST_SPAWN) : 0);
-        long rs = (Integer) (so.options.containsKey(SpawnOption.RESPAWN) ? so.options.get(SpawnOption.RESPAWN) : 30);
-        if (fs < 0) {
-            fs = 0;
-        }
-        if (rs <= 0) {
-            rs = -1;
-        }
-        long ds = (Integer) (so.options.containsKey(SpawnOption.DESPAWN) ? so.options.get(SpawnOption.DESPAWN) : -1);
+        long fs = (Long) (so.options.containsKey(SpawnOption.FIRST_SPAWN) ? so.options.get(SpawnOption.FIRST_SPAWN) : 0);
+        long rs = (Long) (so.options.containsKey(SpawnOption.RESPAWN) ? so.options.get(SpawnOption.RESPAWN) : 30);
+        long ds = (Long) (so.options.containsKey(SpawnOption.DESPAWN) ? so.options.get(SpawnOption.DESPAWN) : -1);
+        
+        if (fs < 0) fs = 0;
+        if (rs <= 0) rs = -1;
+        
         return new TimedSpawn(fs, rs, ds, si);
     }
 }

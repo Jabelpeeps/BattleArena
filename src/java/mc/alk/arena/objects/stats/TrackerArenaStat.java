@@ -2,8 +2,8 @@ package mc.alk.arena.objects.stats;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
 
 @AllArgsConstructor
 public class TrackerArenaStat implements ArenaStat {

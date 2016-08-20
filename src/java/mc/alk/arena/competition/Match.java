@@ -34,6 +34,7 @@ import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.controllers.messaging.MatchMessager;
 import mc.alk.arena.controllers.messaging.MessageHandler;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
@@ -74,6 +75,7 @@ import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.scoreboard.ScoreboardFactory;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.objects.victoryconditions.NLives;
 import mc.alk.arena.objects.victoryconditions.NoTeamsLeft;
 import mc.alk.arena.objects.victoryconditions.OneTeamLeft;
@@ -91,14 +93,12 @@ import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.scoreboardapi.SEntry;
 import mc.alk.arena.scoreboardapi.SObjective;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public abstract class Match extends Competition implements Runnable, ArenaController {
 
@@ -1211,7 +1211,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         }
         /// set the number of lives
         Integer nLives = params.getNLives();
-        if (nLives != null && nLives > 0 && !(vt instanceof DefinesNumLivesPerPlayer)){
+        if ( nLives > 0 && !(vt instanceof DefinesNumLivesPerPlayer)){
             addVictoryCondition(new NLives(this, nLives));
         }
 

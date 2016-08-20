@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
-
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.controllers.RoomController;
@@ -16,7 +14,6 @@ import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.arena.util.MessageUtil;
 
 
 public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
@@ -35,18 +32,9 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
 
     MatchParams mparent;
 
-
-    public MatchParams(){
-        super();
-    }
-
-    public MatchParams(ArenaType at) {
-        super(at);
-    }
-
-    public MatchParams(MatchParams mp) {
-        super(mp);
-    }
+    public MatchParams() { super(); }
+    public MatchParams(ArenaType at) { super( at ); }
+    public MatchParams(MatchParams mp) { super( mp ); }
 
     @Override
     public void copy(ArenaParams ap){
@@ -99,13 +87,10 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
     public String getSignDisplayName(){
         return signDisplayName == null && mparent != null ? mparent.getSignDisplayName() : signDisplayName;
     }
-
     @Override
     public int compareTo(MatchParams other) {
-        Integer hash = this.hashCode();
-        return hash.compareTo(other.hashCode());
+        return Integer.compare( hashCode(), other.hashCode() );
     }
-
     public Integer getIntervalTime() {
         return intervalTime == null && mparent != null ? mparent.getIntervalTime() : intervalTime;
     }
@@ -122,16 +107,11 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
         return super.toString() + ",vc=" + victoryType;
     }
 
-    public ChatColor getColor() {
-        return MessageUtil.getFirstColor( getPrefix() );
-    }
-
     public Integer getNConcurrentCompetitions(){
         return numConcurrentCompetitions != null ? numConcurrentCompetitions 
                                                  : (mparent != null ? mparent.getNConcurrentCompetitions() 
                                                                     : null);
     }
-
     public JoinType getJoinType() {
         return JoinType.QUEUE;
     }
@@ -160,13 +140,15 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
 
     @Override
     public boolean valid() {
-        return super.valid() && (!getStateGraph().hasAnyOption(TransitionOption.TELEPORTLOBBY) ||
-                                RoomController.hasLobby(getType()));
+        return  super.valid() 
+                && (    !getStateGraph().hasAnyOption(TransitionOption.TELEPORTLOBBY) 
+                        || RoomController.hasLobby( getType() ) );
     }
 
     @Override
     public Collection<String> getInvalidReasons() {
         List<String> reasons = new ArrayList<>();
+        
         if (getStateGraph().hasAnyOption(TransitionOption.TELEPORTLOBBY) && !RoomController.hasLobby(getType()))
             reasons.add("Needs a Lobby");
         reasons.addAll(super.getInvalidReasons());

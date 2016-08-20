@@ -1,8 +1,8 @@
-package mc.alk.tracker;
+package mc.alk.arena.tracker;
 
 import java.util.Collection;
 
-import mc.alk.tracker.objects.Stat;
+import mc.alk.arena.objects.tracker.Stat;
 
 public class EloCalculator {
 	public static final float MIN_ELO = 100;

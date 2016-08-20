@@ -22,9 +22,9 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.KeyValue;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.InventoryUtil.PInv;
 
 public class InventorySerializer {
 
@@ -144,7 +144,7 @@ public class InventorySerializer {
 		if (!dir.exists()){
 			try {dir.mkdirs();}catch (Exception e){/* do nothing */}
 			}
-		return bs.setConfig(dir.getPath()+"/"+id+".yml") ? bs : null;
+		return bs.setConfig(dir.getPath()+"/"+id+".yml");
 	}
 
 	public static boolean giveInventory(ArenaPlayer player, Integer index, Player other) {

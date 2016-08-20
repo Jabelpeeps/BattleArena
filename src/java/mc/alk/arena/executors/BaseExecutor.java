@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -24,6 +23,7 @@ import org.bukkit.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
@@ -38,15 +38,7 @@ public abstract class BaseExecutor implements CommandExecutor{
     public static final String ONLY_INGAME = ChatColor.RED + "You need to be in game to use this command";
     static final int LINES_PER_PAGE = 8;
 
-    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<>( 2, 
-            ( mw1, mw2) -> {    MCCommand cmd1 = mw1.getCommand();
-                                MCCommand cmd2 = mw2.getCommand();
-                    
-                                int c = new Float( mw1.getHelpOrder() ).compareTo( mw2.getHelpOrder() );
-                                if (c!=0) return c;
-                                c = new Integer(cmd1.order()).compareTo(cmd2.order());
-                                return c != 0 ? c : new Integer(cmd1.hashCode()).compareTo(cmd2.hashCode());
-                            } );
+    protected PriorityQueue<MethodWrapper> usage = new PriorityQueue<>();
     
     /**
      * Custom arguments class so that we can return a modified arguments
@@ -56,37 +48,43 @@ public abstract class BaseExecutor implements CommandExecutor{
     }
 
     @RequiredArgsConstructor
-    protected static class MethodWrapper {
+    protected static class MethodWrapper implements Comparable<MethodWrapper>{
 
-        public final Object obj; /// Object instance the method belongs to
-        public final Method method; 
-        public String usage;
-        Float helpOrder = null;
+        final Object obj; /// Object instance the method belongs to
+        final Method method; 
+        
+        MCCommand command;
+        String usage;
+        Float helpOrder;
         
         public MCCommand getCommand(){
-            return method.getAnnotation( MCCommand.class );
+            if ( command == null )
+                command = method.getAnnotation( MCCommand.class );
+            return command;
         }
-        
+       
         public float getHelpOrder(){
-            return helpOrder != null ? helpOrder 
-                                     : this.method.getAnnotation( MCCommand.class ).helpOrder();
+            if ( helpOrder == null )
+                helpOrder = getCommand().helpOrder();
+            return helpOrder;
+        }
+        @Override
+        public int compareTo( MethodWrapper o ) {
+            int c = Float.compare( getHelpOrder(), o.getHelpOrder() );
+            
+            if ( c != 0 ) return c;
+            
+            MCCommand cmd1 = getCommand();
+            MCCommand cmd2 = o.getCommand();
+            
+            c = Integer.compare( cmd1.order(), cmd2.order() );
+            
+            return c != 0 ? c 
+                          : Integer.compare( cmd1.hashCode(), cmd2.hashCode() );
         }
     }
     protected BaseExecutor() {
         addMethods( this, getClass().getMethods() );
-    }
-
-    /**
-     * When no arguments are supplied, no method is found
-     * What to display when this happens
-     * @param sender the sender
-     */
-    protected void showHelp(CommandSender sender, Command command){
-        showHelp(sender,command,null);
-    }
-
-    protected void showHelp(CommandSender sender, Command command, String[] args){
-        help(sender,command,args);
     }
 
     protected boolean validCommandSenderClass(Class<?> clazz) {
@@ -157,11 +155,11 @@ public abstract class BaseExecutor implements CommandExecutor{
     private void addUsage(MethodWrapper method, MCCommand mc) {
 
         /// save the usages, for showing help messages
-        if (!mc.usage().isEmpty()){
+        if (!mc.usage().isEmpty())
             method.usage = mc.usage();
-        } else { /// Generate an automatic usage string
+        else /// Generate an automatic usage string
             method.usage = createUsage(method.method);
-        }
+        
         usage.add(method);
     }
 
@@ -182,25 +180,17 @@ public abstract class BaseExecutor implements CommandExecutor{
     }
 
     protected String getUsageString(Class<?> clazz) {
-        if (Player.class ==clazz){
-            return "<player> ";
-        } else if (OfflinePlayer.class ==clazz){
-            return "<player> ";
-        } else if (String.class == clazz){
-            return "<string> ";
-        } else if (Integer.class == clazz || int.class == clazz){
-            return "<int> ";
-        } else if (Float.class == clazz || float.class == clazz){
-            return "<number> ";
-        } else if (Double.class == clazz || double.class == clazz){
-            return "<number> ";
-        } else if (Short.class == clazz || short.class == clazz){
-            return "<int> ";
-        } else if (Boolean.class == clazz || boolean.class == clazz){
-            return "<true|false> ";
-        } else if (String[].class == clazz || Object[].class == clazz){
-            return "[string ... ] ";
-        }
+        
+        if (Player.class == clazz) return "<player> ";
+        else if (OfflinePlayer.class == clazz) return "<player> ";
+        else if (String.class == clazz) return "<string> ";
+        else if (Integer.class == clazz || int.class == clazz) return "<int> ";
+        else if (Float.class == clazz || float.class == clazz) return "<number> ";
+        else if (Double.class == clazz || double.class == clazz) return "<number> ";
+        else if (Short.class == clazz || short.class == clazz) return "<int> ";
+        else if (Boolean.class == clazz || boolean.class == clazz) return "<true|false> ";
+        else if (String[].class == clazz || Object[].class == clazz) return "[string ... ] ";
+        
         return "<string> ";
     }
 
@@ -387,11 +377,11 @@ public abstract class BaseExecutor implements CommandExecutor{
                 if (index >= args.length)
                     throw new IllegalArgumentException("String Index out of range. ");
                 if (!args[index].matches("[a-zA-Z0-9_]*")) {
-                    throw new IllegalArgumentException("argument '"+args[index]+"' can only be alphanumeric with underscores");
+                    throw new IllegalArgumentException("argument '" + args[index] + "' can only be alphanumeric with underscores");
                 }
             }
         }
-        return newArgs; /// Success
+        return newArgs; 
     }
 
     protected Object verifySender(CommandSender sender, Class<?> clazz) {
@@ -400,32 +390,26 @@ public abstract class BaseExecutor implements CommandExecutor{
         return sender;
     }
 
-    protected Object verifyArg(CommandSender sender, Class<?> clazz, Command command, String[] args, int curIndex, AtomicInteger numUsedStrings) {
+    protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
+                                            int curIndex, AtomicInteger numUsedStrings) {
         numUsedStrings.set(0);
-        if (Command.class == clazz) {
-            return command;
-        }
+        
+        if ( Command.class == clazz ) return command;
+
         String string = args[curIndex];
-        if (string == null)
-            throw new ArrayIndexOutOfBoundsException();
+        
+        if (string == null) throw new ArrayIndexOutOfBoundsException();
         numUsedStrings.set(1);
-        if (Player.class == clazz) {
-            return verifyPlayer(string);
-        } else if (OfflinePlayer.class == clazz) {
-            return verifyOfflinePlayer(string);
-        } else if (String.class == clazz) {
-            return string;
-        } else if (Integer.class == clazz || int.class == clazz) {
-            return verifyInteger(string);
-        } else if (Boolean.class == clazz || boolean.class == clazz) {
-            return Boolean.parseBoolean(string);
-        } else if (Object.class == clazz) {
-            return string;
-        } else if (Float.class == clazz || float.class == clazz) {
-            return verifyFloat(string);
-        } else if (Double.class == clazz || double.class == clazz) {
-            return verifyDouble(string);
-        }
+        
+        if (Player.class == clazz) return verifyPlayer(string);
+        else if (OfflinePlayer.class == clazz) return verifyOfflinePlayer(string);
+        else if (String.class == clazz) return string;
+        else if (Integer.class == clazz || int.class == clazz) return verifyInteger(string);
+        else if (Boolean.class == clazz || boolean.class == clazz) return Boolean.parseBoolean(string);
+        else if (Object.class == clazz) return string;
+        else if (Float.class == clazz || float.class == clazz) return verifyFloat(string);
+        else if (Double.class == clazz || double.class == clazz) return verifyDouble(string);
+        
         return null;
     }
 
@@ -469,75 +453,88 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
 
-    public void help(CommandSender sender, Command command, String[] args){
-        Integer page = 1;
+    /**
+     * When no arguments are supplied, no method is found
+     * What to display when this happens
+     * @param sender the sender
+     */
+    protected void showHelp(CommandSender sender, Command command){
+        showHelp( sender, command, null );
+    }
 
-        if (args != null && args.length > 1){
-            try{
-                page = Integer.valueOf(args[1]);
-            } catch (Exception e){
-                MessageUtil.sendMessage(sender, ChatColor.RED+" " + args[1] +" is not a number, showing help for page 1.");
+    protected void showHelp(CommandSender sender, Command command, String[] args) {
+        int page = 1;
+
+        if ( args != null && args.length > 1 ) {
+            try {
+                page = Integer.parseInt( args[1] );
+            } 
+            catch ( NumberFormatException e ){
+                MessageUtil.sendMessage( sender, 
+                        ChatColor.RED + " " + args[1] + " is not a number, showing help for page 1." );
+            }
+            if ( page <= 0 ) {
+                MessageUtil.sendMessage( sender, ChatColor.RED + " you can only use values > 0" );
+                return;
             }
         }
-
         List<String> available = new ArrayList<>();
-        List<String> unavailable = new ArrayList<>();
-        List<String> onlyop = new ArrayList<>();
-        Set<Method> dups = new HashSet<>();
-        for (MethodWrapper mw : usage){
-            if (!dups.add(mw.method))
-                continue;
+        List<String> restricted = new ArrayList<>();
+        Set<Method> noDups = new HashSet<>();
+        
+        for ( MethodWrapper mw : usage ) {
+            
+            if ( !noDups.add( mw.method ) ) continue;
+            
             MCCommand cmd = mw.getCommand();
-            final String use = "&6/" + command.getName() +" " + mw.usage;
-            if (cmd.op() && !sender.isOp())
-                onlyop.add(use);
-            else if (cmd.admin() && !sender.isOp())
-                continue;
-            else if (!cmd.perm().isEmpty() && !sender.hasPermission(cmd.perm()))
-                unavailable.add(use);
-            else
-                available.add(use);
-        }
-        int npages = available.size()+unavailable.size();
-        if (sender.isOp())
-            npages += onlyop.size();
-        npages = (int) Math.ceil( (float)npages/LINES_PER_PAGE);
-        if (page > npages || page <= 0){
-            if (npages <= 0){
-                MessageUtil.sendMessage(sender, "&4There are no methods for this command");
-            } else {
-                MessageUtil.sendMessage(sender, "&4That page doesnt exist, try 1-"+npages);
-            }
+            
+            final String usageMsg = "&6/" + command.getName() + " " + mw.usage;
+            
+            if ( cmd.op() && sender.isOp() ) 
+                restricted.add( ChatColor.AQUA + "[OP only] &6" + usageMsg );
+            
+            else if (   cmd.admin() 
+                        && (    sender.hasPermission( Permissions.ADMIN_NODE ) 
+                                || sender.isOp() ) )                        
+                restricted.add( ChatColor.AQUA + "[Admins only] &6" + usageMsg );
+            
+            else if (   cmd.perm().isEmpty() 
+                        || (    !cmd.perm().isEmpty() 
+                                && sender.hasPermission( cmd.perm() ) ) ) 
+                available.add( usageMsg );
+
+        }       
+        if ( sender.isOp() || sender.hasPermission( Permissions.ADMIN_NODE ) )
+            available.addAll( restricted );
+
+        int npages = available.size();
+        
+        npages = (int) Math.ceil( (double) npages / LINES_PER_PAGE ); 
+        
+        if ( npages <= 0 ) {
+            MessageUtil.sendMessage(sender, "&4There are no available sub-commands" );
             return;
         }
-        if (command != null && command.getAliases() != null && !command.getAliases().isEmpty()) {
-            String aliases = StringUtils.join(command.getAliases(),", ");
-            MessageUtil.sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /"+command.getName()+" help <page number>");
-            MessageUtil.sendMessage(sender, "&e    command &6"+command.getName()+"&e has aliases: &6" + aliases);
-        } else {
-            MessageUtil.sendMessage(sender, "&eShowing page &6"+page +"/"+npages +"&6 : /cmd help <page number>");
+        if ( page > npages ) {
+            MessageUtil.sendMessage(sender, "&4That page doesnt exist, try 1-" + npages );
+            return;
         }
-        int i=0;
-        for (String use : available){
-            i++;
-            if (i < (page-1) *LINES_PER_PAGE || i >= page*LINES_PER_PAGE)
-                continue;
-            MessageUtil.sendMessage(sender, use);
+      
+        if ( command != null && command.getAliases() != null && !command.getAliases().isEmpty() ) {
+            
+            String aliases = String.join( ", ", command.getAliases() );
+            MessageUtil.sendMessage(
+                    sender, "&eShowing page &6" + page + "/" + npages + "&6 : /" + command.getName() + " help <page number>");
+            MessageUtil.sendMessage(
+                    sender, "&e    command &6" + command.getName() + "&e has aliases: &6" + aliases );
+        } 
+        else {
+            MessageUtil.sendMessage( sender, "&eShowing page &6" + page + "/" + npages + "&6 : /cmd help <page number>" );
         }
-        for (String use : unavailable){
-            i++;
-            if (i < (page-1) *LINES_PER_PAGE || i >= page *LINES_PER_PAGE)
-                continue;
-            MessageUtil.sendMessage(sender, ChatColor.RED+"[Insufficient Perms] " + use);
-        }
-        if (sender.isOp()){
-            for (String use : onlyop){
-                i++;
-                if (i < (page-1) *LINES_PER_PAGE || i >= page *LINES_PER_PAGE)
-                    continue;
-                MessageUtil.sendMessage(sender, ChatColor.AQUA+"[OP only] &6"+use);
-            }
+        
+        for ( String each : available.subList( LINES_PER_PAGE * ( page - 1 ), 
+                                               Math.min( available.size() -1, page * LINES_PER_PAGE ) ) ) {
+            MessageUtil.sendMessage( sender, each );
         }
     }
-    public static String colorChat(String msg) { return msg.replace('&', (char) 167); }
 }

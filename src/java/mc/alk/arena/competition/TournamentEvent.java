@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -26,6 +25,7 @@ import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.events.TournamentRoundEvent;
 import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
@@ -48,10 +48,9 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerInterface;
 
 public class TournamentEvent extends AbstractComp implements Listener, ArenaListener {
     public long timeBetweenRounds;
@@ -68,22 +67,22 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     Set<Matchup> incompleteMatchups = new HashSet<>();
     final ArrayList<Round> rounds = new ArrayList<>(); 
 
-    public TournamentEvent(EventParams params, EventOpenOptions eoo) throws NeverWouldJoinException {
-        super(params);
+    public TournamentEvent(EventParams _params, EventOpenOptions eoo) throws NeverWouldJoinException {
+        super(_params);
         singleGameParms = new EventParams(eoo.getParams());
         Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
-        timeBetweenRounds = params.getTimeBetweenRounds();
+        timeBetweenRounds = _params.getTimeBetweenRounds();
         ChatColor color = MessageUtil.getFirstColor(singleGameParms.getPrefix());
-        params.setTeamSize(singleGameParms.getTeamSize());
+        _params.setTeamSize(singleGameParms.getTeamSize());
 
-        String str = color + "[" + singleGameParms.getName() + " " + params.getName() + "]";
-        params.setPrefix(str);
+        String str = color + "[" + singleGameParms.getName() + " " + _params.getName() + "]";
+        _params.setPrefix(str);
         singleGameParms.setPrefix(str);
 
-        str = singleGameParms.getName() + " " + params.getName();
-        params.setName(str);
+        str = singleGameParms.getName() + " " + _params.getName();
+        _params.setName(str);
         singleGameParms.setName(str);
-        setTeamJoinHandler(TeamJoinFactory.createTeamJoinHandler(params, this));
+        setTeamJoinHandler(TeamJoinFactory.createTeamJoinHandler(_params, this));
     }
 
     @Override
@@ -208,7 +207,6 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         aliveTeams.removeAll(nmr.getLosers());
 
         if (incompleteMatchups.isEmpty()){
-//            TimeUtil.testClock();
             if (Defaults.DEBUG) Log.info("ROUND FINISHED !!!!!   " + aliveTeams);
 
             if (curRound +1 == nrounds || isFinished()){
@@ -338,8 +336,8 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         }
     }
 
-    private Matchup createMatchup(EventParams matchupParams, Collection<ArenaTeam> teams, JoinOptions jo){
-        Matchup m = new Matchup(matchupParams,teams, jo);
+    private Matchup createMatchup(EventParams matchupParams, Collection<ArenaTeam> _teams, JoinOptions jo){
+        Matchup m = new Matchup(matchupParams,_teams, jo);
         Collection<ArenaListener> li = 
                 methodController.getArenaListeners() != null ? new ArrayList<>(methodController.getArenaListeners()) 
                                                              : new ArrayList<>();
@@ -383,15 +381,16 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             return false;
         
         announceRound();
-        final BattleArenaController ac = BattleArena.getBAController();
 
         /// Section to start the match
-        curTimer = Scheduler.scheduleSynchronousTask( () -> { Round tr = rounds.get(curRound);
-                
-                                                              for ( Matchup m : tr.getMatchups() ) 
-                                                                  ac.addMatchup( new MatchTeamQObject( m ) );                                                               
-                                                            }, 
-                                                      timeBetweenRounds * 20L );
+        curTimer = Scheduler.scheduleSynchronousTask( 
+                    () -> { Round tr = rounds.get(curRound);
+                            BattleArenaController ac = BattleArena.getBAController();
+                            
+                            for ( Matchup m : tr.getMatchups() ) 
+                                ac.addMatchup( new MatchTeamQObject( m ) );  
+                              
+                          }, timeBetweenRounds * 20L );
         return true;
     }
 
@@ -406,29 +405,33 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             int nprelims = tr.getMatchups().size()*params.getMinTeams();
             for (int i=0;i< aliveTeams.size()-nprelims;i++){
                 ArenaTeam t = aliveTeams.get(i);
-                t.sendMessage("&4["+strround+"]&e You have a &5bye&e this round");
+                t.sendMessage("&4[" + strround + "]&e You have a &5bye&e this round");
             }
         }
         TrackerInterface sc = Tracker.getInterface( params );
-        final String prefix = params.getPrefix();
+        String prefix = params.getPrefix();
+        
         if (tr.getMatchups().size() <= 8){
+            
             for (Matchup m: tr.getMatchups()){
+                
                 List<String> names = new ArrayList<>();
+                
                 for (ArenaTeam t: m.getTeams()){
                     ArenaStat st = sc.getTeamRecord(t.getName());
-                    names.add("&8"+t.getDisplayName()+"&6["+st.getRating()+"]");
+                    names.add( "&8" + t.getDisplayName() + "&6[" + st.getRating() + "]") ;
                 }
-                String msg = "&e"+ strround +": " + StringUtils.join(names, " vs ");
-                if (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH > msg.length() + prefix.length()){
-                    broadcastAlive(prefix+" "+msg);
-                } else {
-                    broadcastAlive(msg);
-                }
+                String msg = "&e" + strround + ": " + String.join(" vs ", names);
+                
+                if (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH > msg.length() + prefix.length())
+                    broadcastAlive( prefix + " " + msg );
+                else 
+                    broadcastAlive(msg);             
             }
-        } else {
-            broadcastAlive(prefix + "&e Round " + strround +" has " + tr.getMatchups().size()+ " "+
+        } 
+        else broadcastAlive( prefix + "&e Round " + strround + " has " + tr.getMatchups().size() + " " +
                     MessageUtil.teamsOrPlayers(params.getMinTeamSize())+" competing. &6/tourney status:&e for updates");
-        }
+        
         if (curRound != nrounds)
             broadcast(prefix+"&e "+strround+" will start in &4" + timeBetweenRounds +" &eseconds!");
         else
@@ -437,15 +440,11 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
 
     @Override
     public void broadcast(String msg) { 
-        for (ArenaTeam t : competingTeams)
-            t.sendMessage(msg);
+        for (ArenaTeam t : competingTeams) t.sendMessage(msg);
     }
-
     public void broadcastAlive(String msg){
-        for (ArenaTeam t : aliveTeams)
-            t.sendMessage(msg);
+        for (ArenaTeam t : aliveTeams) t.sendMessage(msg);
     }
-
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer ap) {
         super.addedToTeam(team, ap);
@@ -453,7 +452,6 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             announceTourneySize();
         }
     }
-
     @Override
     public boolean addedTeam(ArenaTeam team){
         if (super.addedTeam(team)){
@@ -531,41 +529,47 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
             sb.append("&eEvent is still &6").append(state).append("\n");
         }
 
-        //		boolean useRounds = rounds.size() > 1 || isTourney;
         boolean useRounds = rounds.size() > 1;
-        for (int r = 0;r<rounds.size();r++){
+        for (int r = 0;r<rounds.size();r++) {
+            
             Round round = rounds.get(r);
             if (useRounds) sb.append("&5***&4 Round ").append(r + 1).append("&5 ***\n");
-            //			boolean useMatchups = curRound.getMatchups().size() > 1 || isTourney;
+            
             boolean useMatchups = round.getMatchups().size() > 1;
-            for (Matchup m: round.getMatchups()){
+            
+            for (Matchup m: round.getMatchups()) {
+                
                 if (useMatchups) sb.append("&4Matchup :");
+                
                 MatchResult result = m.getResult();
-                if (result == null || result.getVictors() == null){
-                    for (ArenaTeam t: m.getTeams()){
-                        sb.append(t.getTeamSummary()).append(" "); }
+                
+                if (result == null || result.getVictors() == null) {
+                    
+                    for (ArenaTeam t: m.getTeams())
+                        sb.append(t.getTeamSummary()).append(" "); 
+                    
                     sb.append("\n");
-                } else {
-                    sb.append(result.toPrettyString()).append("\n");}
-            }
+                } 
+                else sb.append( result.toPrettyString() ).append("\n");
+            } 
         }
-
         return sb.toString();
     }
 
     @Override
     public String getInfo() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder().append( StateOptions.getInfo(singleGameParms, singleGameParms.getName()) );
         StateGraph so = singleGameParms.getStateGraph();
-        sb.append(StateOptions.getInfo(singleGameParms, singleGameParms.getName()));
+        
         String firstPlacePrizes = so.getGiveString(TournamentTransition.FIRSTPLACE);
         String participantPrizes = so.getGiveString(TournamentTransition.PARTICIPANTS);
-        if (participantPrizes != null){
-            sb.append("\n&ePrize for &6participation:&e ").append(participantPrizes);}
-        if (firstPlacePrizes != null){
-            sb.append("\n&ePrize for getting &b1st &eplace:");
-            sb.append(firstPlacePrizes);
-        }
+        
+        if ( participantPrizes != null ) 
+            sb.append("\n&ePrize for &6participation:&e ").append( participantPrizes );
+        
+        if ( firstPlacePrizes != null ) 
+            sb.append("\n&ePrize for getting &b1st &eplace:").append( firstPlacePrizes );
+        
         return sb.toString();
     }
 }

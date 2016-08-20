@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 
-import mc.alk.arena.util.Log;
-
 public class CommandController {
 
     private static CommandMap commandMap = getCommandMap(); 
@@ -16,20 +14,23 @@ public class CommandController {
 
         Class<?> serverClass = Bukkit.getServer().getClass();
         try {
-            if (serverClass.isAssignableFrom(Bukkit.getServer().getClass())) {
-                final Field f = serverClass.getDeclaredField("commandMap");
+            if ( serverClass.isAssignableFrom( Bukkit.getServer().getClass() ) ) {
+                Field f = serverClass.getDeclaredField("commandMap");
                 f.setAccessible(true);
-                return (CommandMap) f.get(Bukkit.getServer());
+                return (CommandMap) f.get( Bukkit.getServer() );
             }
-        } catch (final SecurityException e) {
+        } 
+        catch ( SecurityException e ) {
             System.out.println("You will need to disable the security manager to use dynamic commands");
-        } catch (final Exception e) {
-            Log.printStackTrace(e);
-        }
+        } 
+        catch ( IllegalArgumentException | IllegalAccessException | NoSuchFieldException e ) {
+            e.printStackTrace();
+        } 
         return null;
     }
-    public static void registerCommand(final Command command) {  
-        if (commandMap != null) {
+    
+    public static void registerCommand( Command command ) {  
+        if ( commandMap != null ) {
             commandMap.register("/", command);
         }
     }

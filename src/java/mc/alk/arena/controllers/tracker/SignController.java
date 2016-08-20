@@ -1,4 +1,4 @@
-package mc.alk.tracker.controllers;
+package mc.alk.arena.controllers.tracker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,13 +21,13 @@ import org.bukkit.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.controllers.Scheduler;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.StatSign;
+import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.serializers.BaseConfig;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.SerializerUtil;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.StatSign;
-import mc.alk.tracker.objects.StatType;
 
 public class SignController {
     @Getter final Map<String,StatSign> personalSigns = new ConcurrentHashMap<>();

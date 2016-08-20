@@ -1,8 +1,8 @@
 package mc.alk.arena.events.tracker;
 
 import lombok.Getter;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.Stat;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
+import mc.alk.arena.objects.tracker.Stat;
 
 public class WinStatChangeEvent extends TrackerEvent{
 	@Getter final Stat winner;

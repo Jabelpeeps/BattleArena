@@ -43,7 +43,6 @@ import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.victoryconditions.AllKills;
 import mc.alk.arena.objects.victoryconditions.Custom;
-import mc.alk.arena.objects.victoryconditions.HighestKills;
 import mc.alk.arena.objects.victoryconditions.InfiniteLives;
 import mc.alk.arena.objects.victoryconditions.KillLimit;
 import mc.alk.arena.objects.victoryconditions.LastManStanding;
@@ -66,12 +65,12 @@ import mc.alk.arena.serializers.SpawnSerializer;
 import mc.alk.arena.serializers.StateFlagSerializer;
 import mc.alk.arena.serializers.TeamHeadSerializer;
 import mc.alk.arena.serializers.YamlFileUpdater;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.FileLogger;
 import mc.alk.arena.util.FileUpdater;
 import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.tracker.Tracker;
 
 public class BattleArena extends JavaPlugin {
 
@@ -129,31 +128,20 @@ public class BattleArena extends JavaPlugin {
 
 
         Class<?> clazz = getClass();       
-        for (String c : new String[]{"HeroesConfig", "McMMOConfig", "WorldGuardConfig"}){
-            try{
-                String source = "/default_files/otherPluginConfigs/"+c+".yml";
-                String dest = dir.getPath() + "/otherPluginConfigs/"+c+".yml";
-                File file = FileUtil.load(clazz, dest, source);
-                new BaseConfig(file);
-            } catch( Exception e ){
-                Log.err("Couldn't load File " + dir.getPath() + "/otherPluginConfigs/"+c+".yml");
-                Log.printStackTrace(e);
-            }
+        for ( String c : new String[]{ "HeroesConfig", "McMMOConfig", "WorldGuardConfig" } ) {
+            
+            String source = "/default_files/otherPluginConfigs/" + c + ".yml";
+            String dest = dir.getPath() + "/otherPluginConfigs/" + c + ".yml";
+            new BaseConfig().setConfig( FileUtil.load( clazz, dest, source ) );
+        }
+        for ( String c : new String[]{ "AllKills", "KillLimit", "MobKills","PlayerKills" } ) {
+            new BaseConfig().setConfig( FileUtil.load( clazz, dir.getPath() + "/victoryConditions/" + c + ".yml",
+                                                        "/default_files/victoryConditions/" + c + ".yml" ) );
         }
 
-        for (String c : new String[]{"AllKills", "KillLimit", "MobKills","PlayerKills"}){
-            try{
-                new BaseConfig(FileUtil.load(clazz, dir.getPath() + "/victoryConditions/"+c+".yml",
-                        "/default_files/victoryConditions/"+c+".yml"));
-            } catch( Exception e ){
-                Log.err("Couldn't load File " + dir.getPath() + "/otherPluginConfigs/"+c+".yml");
-                Log.printStackTrace(e);
-            }
-        }
-
-        MessageSerializer defaultMessages = new MessageSerializer("default", null);
+        MessageSerializer defaultMessages = new MessageSerializer( "default", null );
         
-        defaultMessages.setConfig(FileUtil.load(clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml"));
+        defaultMessages.setConfig( FileUtil.load( clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml" ) );
         
         new YamlFileUpdater(this).updateMessageSerializer(self, defaultMessages);
         
@@ -187,13 +175,13 @@ public class BattleArena extends JavaPlugin {
         VictoryType.register(AllKills.class, this);
         VictoryType.register(KillLimit.class, this);
         VictoryType.register(Custom.class, this);
-        VictoryType.register(HighestKills.class, this);
 
         /// Load our configs, then arenas
         bAConfigSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/config.yml", "/config.yml"));
         try {
             YamlFileUpdater.updateBaseConfig(this, bAConfigSerializer);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             Log.printStackTrace(e);
         }
 
@@ -218,7 +206,7 @@ public class BattleArena extends JavaPlugin {
         getCommand("arenaAlter").setExecutor(arenaEditorExecutor);
         getCommand("battleArena").setExecutor(new BattleArenaExecutor());
         getCommand("battleArenaDebug").setExecutor(new BattleArenaDebugExecutor());
-        final EventScheduler es = new EventScheduler();
+        EventScheduler es = new EventScheduler();
         getCommand("battleArenaScheduler").setExecutor(new BASchedulerExecutor(es));
         getCommand("arenaScoreboard").setExecutor(new ScoreboardExecutor(this, bAController, Defaults.SB_MESSAGES));
 
@@ -340,12 +328,10 @@ public class BattleArena extends JavaPlugin {
         return "[" + BattleArena.pluginname + "_v" + BattleArena.version + "]";
     }
 
-    public static ArenaFactory createArenaFactory(final Class<? extends Arena> arenaClass) {
+    public static ArenaFactory createArenaFactory( Class<? extends Arena> arenaClass ) {
         if (arenaClass == null) return null;
-        return new ArenaFactory() {
-
-            @Override
-            public Arena newArena() {
+        
+        return () -> {
                 Class<?>[] args = {};
                 try {
                     Constructor<?> constructor = arenaClass.getConstructor(args);
@@ -364,8 +350,7 @@ public class BattleArena extends JavaPlugin {
                     Log.printStackTrace(ex);
                 }
                 return null;
-            }
-        };
+            };
     }
     
     /**

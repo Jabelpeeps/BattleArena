@@ -1,4 +1,4 @@
-package mc.alk.tracker.objects;
+package mc.alk.arena.objects.tracker;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.bukkit.Location;
 
 import lombok.Getter;
 import lombok.Setter;
-import mc.alk.tracker.controllers.TrackerInterface;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 
 public class LeaderboardHologram extends Hologram {
 	@Getter private String leaderboardName;

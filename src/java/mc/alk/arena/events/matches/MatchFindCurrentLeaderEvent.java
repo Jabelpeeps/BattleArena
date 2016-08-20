@@ -10,7 +10,7 @@ import lombok.Setter;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 
 public class MatchFindCurrentLeaderEvent extends MatchEvent {
     @Getter final List<ArenaTeam> teams;

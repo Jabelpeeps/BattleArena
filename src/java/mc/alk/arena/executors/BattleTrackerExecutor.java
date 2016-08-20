@@ -10,10 +10,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerInterface;
-import mc.alk.tracker.objects.StatType;
 
 
 public class BattleTrackerExecutor extends CustomCommandExecutor {
@@ -33,7 +34,7 @@ public class BattleTrackerExecutor extends CustomCommandExecutor {
 		MessageUtil.sendMessage(sender, "&a[BattleTracker]&2 debugging for &6" + section +"&2 now &6" + on);
 	}
 
-	@MCCommand( cmds = {"set"}, perm = Defaults.ADMIN_PERM, usage = "set <pvp | pve> <section> <true | false>" )
+	@MCCommand( cmds = {"set"}, perm = Permissions.TRACKER_ADMIN, usage = "set <pvp | pve> <section> <true | false>" )
 	public void pvpToggle(CommandSender sender, String pvp, String section, Boolean on){
 		boolean ispvp = pvp.equalsIgnoreCase("pvp");
 		String type = ispvp ? "PvP" : "PvE";
@@ -78,14 +79,14 @@ public class BattleTrackerExecutor extends CustomCommandExecutor {
 		return MessageUtil.sendMessage(sender,"&2All stats reset for &6" + ti.getInterfaceName() );
 	}
 
-	@MCCommand( cmds = {"reload"}, perm = Defaults.ADMIN_PERM )
+	@MCCommand( cmds = {"reload"}, perm = Permissions.TRACKER_ADMIN )
 	public boolean reload(CommandSender sender){
 		Tracker.loadConfigs();
 
 		return MessageUtil.sendMessage(sender, "&2Configs reloaded for BattleTracker");
 	}
 
-	@MCCommand( cmds = {"hide"}, perm = Defaults.ADMIN_PERM )
+	@MCCommand( cmds = {"hide"}, perm = Permissions.TRACKER_ADMIN )
 	public boolean hide(CommandSender sender, String db, OfflinePlayer player, Boolean hide){
 		if (!Tracker.hasInterface(db))
 			return MessageUtil.sendMessage( sender, "&cDatabase " + db + " does not exist" );

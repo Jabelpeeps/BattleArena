@@ -181,7 +181,7 @@ public class EventExecutor extends BAExecutor{
 			return false;
 		}
 		/// Get the team
-		ArenaTeam t = teamc.getSelfFormedTeam(p);
+		ArenaTeam t = teamController.getSelfFormedTeam(p);
 		if (t==null){
 			t = TeamController.createTeam(eventParams, p); }
 		/// Get or Make a team for the Player

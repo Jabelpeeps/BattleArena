@@ -49,7 +49,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         Arena a = cs.getArena();
         TimedSpawn ts = a.deleteTimedSpawn((long) number);
         if (ts != null){
-            ac.updateArena(a);
+            arenaController.updateArena(a);
             ArenaSerializer.saveAllArenas(true);
             return MessageUtil.sendMessage(sender, "&6"+a.getName()+ "&e has deleted index=&4D" + number+"&e that had spawn="+ts);
         }
@@ -84,7 +84,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         } else {
             a.putTimedSpawn(index, spawn);
         }
-        ac.updateArena(a);
+        arenaController.updateArena(a);
         ArenaSerializer.saveArenas(a.getArenaType().getPlugin());
         return MessageUtil.sendMessage(sender, "&6"+a.getName()+ "&e now has spawn &6" + spawn +"&2  index=&5" + index);
     }

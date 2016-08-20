@@ -12,16 +12,16 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.Scheduler;
+import mc.alk.arena.controllers.tracker.SignController;
+import mc.alk.arena.controllers.tracker.TrackerMessageController;
+import mc.alk.arena.objects.tracker.StatSign;
+import mc.alk.arena.objects.tracker.StatSign.SignType;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.AutoClearingTimer;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.tracker.Tracker;
-import mc.alk.tracker.controllers.TrackerMessageController;
-import mc.alk.tracker.controllers.SignController;
-import mc.alk.tracker.objects.StatSign;
-import mc.alk.tracker.objects.StatSign.SignType;
-import mc.alk.tracker.objects.StatType;
 
 public class BTSignListener implements Listener{
 	SignController signController;
@@ -83,7 +83,7 @@ public class BTSignListener implements Listener{
 		}
 		if (ss == null){
 			return;}
-		if (!event.getPlayer().hasPermission(Defaults.ADMIN_PERM) && !event.getPlayer().isOp()){
+		if (!event.getPlayer().hasPermission( Permissions.TRACKER_ADMIN ) && !event.getPlayer().isOp()){
 			TrackerMessageController.sendMessage(event.getPlayer(), "&cYou don't have perms to create top signs");
 			cancelSignPlace(event, block);
 			return;

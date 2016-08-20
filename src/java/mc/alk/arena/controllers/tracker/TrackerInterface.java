@@ -1,4 +1,4 @@
-package mc.alk.tracker.controllers;
+package mc.alk.arena.controllers.tracker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,18 +20,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
+import mc.alk.arena.objects.tracker.PlayerStat;
+import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.objects.tracker.StatChange;
+import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.objects.tracker.TeamStat;
+import mc.alk.arena.objects.tracker.WLTRecord;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLInstance;
 import mc.alk.arena.serializers.tracker.SQLSerializer;
+import mc.alk.arena.tracker.EloCalculator;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
-import mc.alk.tracker.EloCalculator;
-import mc.alk.tracker.objects.PlayerStat;
-import mc.alk.tracker.objects.Stat;
-import mc.alk.tracker.objects.StatChange;
-import mc.alk.tracker.objects.StatType;
-import mc.alk.tracker.objects.TeamStat;
-import mc.alk.tracker.objects.WLTRecord;
-import mc.alk.tracker.objects.WLTRecord.WLT;
 
 public class TrackerInterface implements CacheSerializer<String,Stat>{
 	Cache<String, Stat> cache = new Cache<>(this);
@@ -151,6 +151,7 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 			case TIE:
 				ts1.tie(ts2); ts2.tie(ts1);
 				break;
+			default:
 			}
 		}
 		/// Change the elo
@@ -164,6 +165,7 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		case TIE:
 			ratingCalculator.changeRatings(ts1,ts2,true);
 			break;
+		default:
 		}
 	}
 

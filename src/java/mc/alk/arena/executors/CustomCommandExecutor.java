@@ -37,15 +37,15 @@ import mc.alk.arena.util.TeamUtil;
 
 public abstract class CustomCommandExecutor extends BaseExecutor{
 
-    protected final BattleArenaController ac;
-    protected final EventController ec;
-    protected final ArenaEditor aec;
+    protected final BattleArenaController arenaController;
+    protected final EventController eventController;
+    protected final ArenaEditor arenaEditor;
 
     protected CustomCommandExecutor(){
         super();
-        ac = BattleArena.getBAController();
-        ec = BattleArena.getEventController();
-        aec = BattleArena.getArenaEditor();
+        arenaController = BattleArena.getBAController();
+        eventController = BattleArena.getEventController();
+        arenaEditor = BattleArena.getArenaEditor();
     }
 
     protected boolean hasAdminPerms(CommandSender sender){
@@ -64,71 +64,43 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
 
     @Override
     protected String getUsageString(Class<?> clazz) {
-        if (ArenaPlayer.class == clazz){
-            return "<player> ";
-        } else if (Arena.class.isAssignableFrom(clazz)){
-            return "<arena> ";
-        } else if (ChangeType.class == clazz){
-            return "<Arena | Lobby | Waitroom>";
-        } else if (ParamAlterOptionPair.class == clazz){
-            return "<GameOption> [value]";
-        } else if (TransitionOptionTuple.class == clazz){
-            return "<GameStage> <Option> [value]";
-        } else if (TeamIndex.class == clazz){
-            return "<team>";
-        } else if (SpawnIndex.class == clazz){
-            return "<team> [spawn #]";
-        } else if (MatchParams.class == clazz){
-            return "";
-        } else if (EventParams.class == clazz){
-            return "";
-        } else if (ArenaOptionPair.class == clazz){
-            return "<ArenaOption> [value]";
-        }
+        
+        if (ArenaPlayer.class == clazz) return "<player> ";
+        else if (Arena.class.isAssignableFrom(clazz)) return "<arena> ";
+        else if (ChangeType.class == clazz) return "<Arena | Lobby | Waitroom>";
+        else if (ParamAlterOptionPair.class == clazz) return "<GameOption> [value]";
+        else if (TransitionOptionTuple.class == clazz) return "<GameStage> <Option> [value]";
+        else if (TeamIndex.class == clazz) return "<team>";
+        else if (SpawnIndex.class == clazz) return "<team> [spawn #]";
+        else if (MatchParams.class == clazz) return "";
+        else if (EventParams.class == clazz) return "";
+        else if (ArenaOptionPair.class == clazz) return "<ArenaOption> [value]";
         return super.getUsageString(clazz);
     }
 
     @Override
-    protected Object verifyArg(CommandSender sender, Class<?> clazz, Command command, String[] args,int curIndex, AtomicInteger numUsedStrings) {
-        if (EventParams.class == clazz) {
-            return verifyEventParams(command);
-        } 
-        else if (MatchParams.class == clazz) {
-            return verifyMatchParams(command);
-        } 
-        else if (CurrentSelection.class == clazz) {
-            return verifyCurrentSelection(sender);
-        }
-        if (args[curIndex] == null)
-            throw new ArrayIndexOutOfBoundsException();
+    protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
+                                int curIndex, AtomicInteger numUsedStrings ) {
+        
+        if (EventParams.class == clazz) return verifyEventParams(command);        
+        else if (MatchParams.class == clazz) return verifyMatchParams(command);        
+        else if (CurrentSelection.class == clazz) return verifyCurrentSelection(sender);
+        
+        if (args[curIndex] == null) throw new ArrayIndexOutOfBoundsException();
         
         numUsedStrings.set(1);
         String string = args[curIndex];
         
-        if (ArenaPlayer.class == clazz) {
-            return verifyArenaPlayer(string);
-        } 
-        else if (Arena.class.isAssignableFrom(clazz)) {
-            return verifyArena(clazz, string);
-        } 
-        else if (ChangeType.class == clazz) {
-            return verifyChangeType(string);
-        } 
-        else if (ParamAlterOptionPair.class == clazz) {
-            return verifyGameOption(sender,args,curIndex,numUsedStrings);
-        } 
-        else if (TransitionOptionTuple.class == clazz) {
-            return verifyTransitionOptionTuple(sender, args, curIndex, numUsedStrings);
-        } 
-        else if (ArenaOptionPair.class == clazz) {
-            return verifyArenaOptionPair(sender, args, curIndex, numUsedStrings);
-        } 
-        else if (TeamIndex.class == clazz) {
-            return verifyTeamIndex(string);
-        } 
-        else if (SpawnIndex.class == clazz) {
-            return verifySpawnIndex(args, curIndex, numUsedStrings);
-        }
+        if (ArenaPlayer.class == clazz) return verifyArenaPlayer(string);        
+        else if (Arena.class.isAssignableFrom(clazz)) return verifyArena(clazz, string);       
+        else if (ChangeType.class == clazz) return verifyChangeType(string);
+        else if (ParamAlterOptionPair.class == clazz) return verifyGameOption(sender,args,curIndex,numUsedStrings);
+        else if (TransitionOptionTuple.class == clazz) 
+                                        return verifyTransitionOptionTuple(sender, args, curIndex, numUsedStrings);        
+        else if (ArenaOptionPair.class == clazz) return verifyArenaOptionPair(sender, args, curIndex, numUsedStrings);       
+        else if (TeamIndex.class == clazz) return verifyTeamIndex(string);       
+        else if (SpawnIndex.class == clazz) return verifySpawnIndex(args, curIndex, numUsedStrings);
+       
         return super.verifyArg(sender, clazz, command, args, curIndex, numUsedStrings);
     }
 
@@ -278,7 +250,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private CurrentSelection verifyCurrentSelection(CommandSender sender) {
-        CurrentSelection cs = aec.getCurrentSelection(sender);
+        CurrentSelection cs = arenaEditor.getCurrentSelection(sender);
         if (cs == null)
             throw new IllegalArgumentException(ChatColor.RED + "You need to select an arena first");
         if (System.currentTimeMillis() - cs.lastUsed > 5*60*1000){
@@ -303,7 +275,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private Arena verifyArena(Class<?> arenaClass, String name) throws IllegalArgumentException {
-        Arena arena = ac.getArena(name);
+        Arena arena = arenaController.getArena(name);
         if (arena == null){
             throw new IllegalArgumentException("Arena '" +name+"' doesnt exist" );}
         if (!arenaClass.isAssignableFrom(arena.getClass())){

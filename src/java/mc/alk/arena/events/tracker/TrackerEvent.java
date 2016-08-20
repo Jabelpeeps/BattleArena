@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 
 import lombok.AllArgsConstructor;
 import mc.alk.arena.controllers.Scheduler;
-import mc.alk.tracker.controllers.TrackerInterface;
+import mc.alk.arena.controllers.tracker.TrackerInterface;
 
 @AllArgsConstructor
 public class TrackerEvent extends Event {

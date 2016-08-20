@@ -1,8 +1,8 @@
-package mc.alk.tracker.objects;
+package mc.alk.arena.objects.tracker;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import mc.alk.tracker.objects.WLTRecord.WLT;
+import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 
 @AllArgsConstructor @Getter
 public class StatChange {
