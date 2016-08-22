@@ -25,7 +25,6 @@ public enum HeroesListener implements Listener {
 	INSTANCE;
 
 	final Set<UUID> cancelExpLoss = Collections.synchronizedSet(new HashSet<UUID>());
-
 	static HashSet<String> disabledSkills = new HashSet<>();
 
 	public static void enable() {
@@ -50,7 +49,7 @@ public enum HeroesListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler( priority = EventPriority.HIGHEST, ignoreCancelled = true )
 	public void skillDisabled(SkillUseEvent event){
 		if (event.getPlayer() == null){
 			return;}
@@ -86,5 +85,4 @@ public enum HeroesListener implements Listener {
 		for (String s: disabledCommands){
 			disabledSkills.add(s.toLowerCase());}
 	}
-
 }

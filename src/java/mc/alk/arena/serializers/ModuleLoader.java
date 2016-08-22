@@ -1,6 +1,7 @@
 package mc.alk.arena.serializers;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -25,9 +26,7 @@ public class ModuleLoader {
             loadedModules.add(mod.getName());
             mod.setEnabled(true);
         }
-        if (!moduleDirectory.exists()) {
-            return;
-        }
+        if (!moduleDirectory.exists()) return;
 
         for ( File mod : moduleDirectory.listFiles( 
                        (dir, name) -> {
@@ -43,11 +42,8 @@ public class ModuleLoader {
                 am.onEnable();
                 BattleArena.addModule(am);
             } 
-            catch (Exception ex) {
+            catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | IOException ex ) {
                 Log.err("[BA Error] Error loading the module " + mod.toString());
-                if (am != null) {
-                    am.setEnabled(false);
-                }
                 Log.printStackTrace(ex);
             }
         }
@@ -56,20 +52,16 @@ public class ModuleLoader {
 
     }
 
-    private ArenaModule loadModule(File dir, File mod) throws Exception  {
-        ClassLoader loader = this.getClass().getClassLoader();
-        URL url = dir.toURI().toURL();
+    private ArenaModule loadModule(File dir, File mod) 
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 
-        URL[] urls = {url};
-        try ( URLClassLoader ucl = new URLClassLoader(urls, loader) ) {
+        try ( URLClassLoader ucl = new URLClassLoader( new URL[]{dir.toURI().toURL()}, getClass().getClassLoader()) ) {
 
             String shortName = mod.getName().substring(0, mod.getName().indexOf('.'));
             System.out.println("ArenaModule::loadModule(" + mod.getName() + "); // shortName = " + shortName);
             System.out.println("dir.toURI().toURL() = " + dir.toURI().toURL());
             Class<?> clazz = ucl.loadClass(shortName);
-//            Class<?>[] args = {};
             Class<? extends ArenaModule> moduleClass = clazz.asSubclass(ArenaModule.class);
-//            Constructor<?> constructor = moduleClass.getConstructor(args);
             return moduleClass.newInstance();
         }
     }

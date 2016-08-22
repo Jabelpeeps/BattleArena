@@ -22,7 +22,9 @@ import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.ArenaClassController;
+import mc.alk.arena.controllers.CommandController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.Scheduler;
@@ -46,12 +48,9 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.scoreboardapi.SEntry;
-import mc.alk.arena.util.CommandUtil;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.DmgDeathUtil;
-import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.TeamUtil;
 
 
@@ -63,14 +62,13 @@ public class ArenaMatch extends Match {
     final Map<UUID, Integer> deathTimer = new HashMap<>();
     final Map<UUID, Integer> respawnTimer = new HashMap<>();
 
-    public ArenaMatch(Arena arena, MatchParams mp, Collection<ArenaListener> listeners) {
-        super(arena, mp,listeners);
+    public ArenaMatch(Arena _arena, MatchParams mp, Collection<ArenaListener> listeners) {
+        super(_arena, mp,listeners);
     }
-
 
     @ArenaEventHandler( suppressCastWarnings = true, bukkitPriority = EventPriority.MONITOR )
     public void onPlayerDeath(PlayerDeathEvent event) {
-        final ArenaPlayer target = PlayerController.toArenaPlayer(event.getEntity());
+        ArenaPlayer target = PlayerController.toArenaPlayer(event.getEntity());
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
         if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) {
             return;
@@ -103,7 +101,7 @@ public class ArenaMatch extends Match {
         boolean exiting = event.isExiting() || !respawns || nDeaths >= nLivesPerPlayer;
         event.setExiting(exiting);
         final boolean trueDeath = event.getPlayerDeathEvent() != null;
-        /// Set their number of lives left on the scoreboard "if" it's not infinite or 1
+        
         if (nLivesPerPlayer != ArenaSize.MAX) {
             int curLives = nLivesPerPlayer - nDeaths;
             SEntry e = scoreboard.getEntry(target.getPlayer());
@@ -116,12 +114,10 @@ public class ArenaMatch extends Match {
                 pde.setKeepLevel(true);
 
             /// Handle Drops from bukkitEvent
-            if (clearsInventoryOnDeath || keepsInventory){ /// clear the drops
-                try {pde.getDrops().clear();} catch (Exception e){
-                    if (!Defaults.DEBUG_VIRTUAL)
-                        Log.printStackTrace(e);
-                }
-            } else if (woolTeams) {  /// Get rid of the wool from teams so it doesnt drop
+            if (clearsInventoryOnDeath || keepsInventory){ 
+                pde.getDrops().clear();               
+            } 
+            else if (woolTeams) {  
                 final int index = t.getIndex();
                 ItemStack teamHead = TeamUtil.getTeamHead(index);
                 List<ItemStack> items = pde.getDrops();
@@ -136,13 +132,11 @@ public class ArenaMatch extends Match {
                     }
                 }
             }
-            /// If keepInventory is specified, but not restoreAll, then we have a case
-            /// where we need to give them back the current Inventory they have on them
-            /// even if they log out
+            /// If keepInventory is specified, but not restoreAll, then we have a case where we need to give them 
+            /// back the current Inventory they have on them even if they log out
             if (keepsInventory){
                 boolean restores = getParams().hasOptionAt(MatchState.ONLEAVE,TransitionOption.RESTOREITEMS);
-                /// Restores and exiting, means clear their match inventory so they won't
-                /// get their match and their already stored inventory
+                /// Restores and exiting, means clear their match inventory so they won't get their match and their already stored inventory
                 if (restores && exiting){
                     psc.clearMatchItems(target);
                 } else { /// keep their current inv
@@ -225,16 +219,14 @@ public class ArenaMatch extends Match {
     @SuppressWarnings( "unused" )
     @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        final ArenaPlayer p = PlayerController.toArenaPlayer(event.getPlayer());
+        ArenaPlayer p = PlayerController.toArenaPlayer(event.getPlayer());
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
 
-        if (isWon()) {
-            return;
-        }
-        final StateOptions mo = tops.getOptions(MatchState.ONDEATH);
+        if (isWon()) return;
+        
+        StateOptions mo = tops.getOptions(MatchState.ONDEATH);
 
-        if (mo == null)
-            return;
+        if (mo == null) return;
 
         if (respawns) {
             final boolean randomRespawn = mo.randomRespawn();
@@ -243,26 +235,29 @@ public class ArenaMatch extends Match {
             if (timer != null) {
                 Bukkit.getScheduler().cancelTask(timer);
             }
-            final SpawnLocation loc;
-            final ArenaTeam t = getTeam(p);
+            SpawnLocation loc;
+            ArenaTeam t = getTeam(p);
             /// We respawn them to a different location
             if (mo.hasAnyOption(TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTMAINLOBBY,
                     TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM)) {
                 final int index = t.getIndex();
                 if (mo.hasOption(TransitionOption.TELEPORTLOBBY)) {
                     loc = RoomController.getLobbySpawn(index, getParams().getType(), randomRespawn);
-                } else if (mo.hasOption(TransitionOption.TELEPORTMAINLOBBY)) {
+                } 
+                else if (mo.hasOption(TransitionOption.TELEPORTMAINLOBBY)) {
                     loc = RoomController.getLobbySpawn(Defaults.MAIN_SPAWN, getParams().getType(), randomRespawn);
-                } else if (mo.hasOption(TransitionOption.TELEPORTMAINWAITROOM)) {
+                } 
+                else if (mo.hasOption(TransitionOption.TELEPORTMAINWAITROOM)) {
                     loc = this.getWaitRoomSpawn(Defaults.MAIN_SPAWN, randomRespawn);
-                } else {
+                } 
+                else {
                     loc = this.getWaitRoomSpawn(index, randomRespawn);
                 }
                 /// Should we respawn the player to the team spawn after a certain amount of time
                 Integer respawnTime = mo.getInt(TransitionOption.RESPAWNTIME);
                 if (respawnTime==null)
                     respawnTime = 15;
-                final Integer finalRespawnTime = respawnTime;
+                Integer finalRespawnTime = respawnTime;
                 if (scoreboard != null) {
                     new Countdown( BattleArena.getSelf(), 
                                    finalRespawnTime, 
@@ -298,10 +293,8 @@ public class ArenaMatch extends Match {
                         }, respawnTime * 20 );
                 
                 respawnTimer.put(p.getUniqueId(), taskid);
-
-            } else {
-                loc = getTeamSpawn(getTeam(p), randomRespawn);
-            }
+            } 
+            else loc = getTeamSpawn(getTeam(p), randomRespawn);
 
             event.setRespawnLocation(loc.getLocation());
             
@@ -312,22 +305,21 @@ public class ArenaMatch extends Match {
                         ArenaTeam team = getTeam(p);
                         TransitionController.transition( ArenaMatch.this, MatchState.ONDEATH, p, team, false);
                         TransitionController.transition( ArenaMatch.this, MatchState.ONSPAWN, p, team, false);
+                        
                         if (respawnsWithClass) {
                             ArenaClass ac = null;
-                            if (p.getPreferredClass() != null) {
+                            if (p.getPreferredClass() != null) 
                                 ac = p.getPreferredClass();
-                            } else if (p.getCurrentClass() != null) {
+                            else if (p.getCurrentClass() != null) 
                                 ac = p.getCurrentClass();
-                            }
-                            if (ac != null) {
-                                ArenaClassController.giveClass(p, ac);
-                            }
+                            
+                            if (ac != null) ArenaClassController.giveClass(p, ac);
                         }
-                        if (keepsInventory) psc.restoreMatchItems(p);
-                       
+                        if (keepsInventory) psc.restoreMatchItems(p);                     
                         if (woolTeams) TeamUtil.setTeamHead(team.getIndex(), p);
                     });
-        } else { /// This player is now out of the system now that we have given the ondeath effects
+        } 
+        else { /// This player is now out of the system now that we have given the ondeath effects
             Location l = tops.hasOptionAt(MatchState.ONLEAVE, TransitionOption.TELEPORTTO) ?
                     tops.getOptions(MatchState.ONLEAVE).getTeleportToLoc() : p.getOldLocation().getLocation();
             if (l != null)
@@ -347,16 +339,17 @@ public class ArenaMatch extends Match {
 
     @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
     public void onPlayerCommandPreprocess2(PlayerCommandPreprocessEvent event){
-        if (event.isCancelled()){
-            return;}
+        if (event.isCancelled()) return;
+        
         handlePreprocess(event);
     }
 
     private void handlePreprocess(PlayerCommandPreprocessEvent event) {
-        if (CommandUtil.shouldCancel(event, disabledAllCommands, disabledCommands, enabledCommands)){
+        if (CommandController.shouldCancel(event, disabledAllCommands, disabledCommands, enabledCommands)){
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED+"You cannot use that command when you are in a match");
-            if (PermissionsUtil.isAdmin(event.getPlayer())){
+            
+            if (Permissions.isAdmin(event.getPlayer())){
                 MessageUtil.sendMessage(event.getPlayer(),"&cYou can set &6/bad allowAdminCommands true: &c to change");}
         }
     }
@@ -374,58 +367,52 @@ public class ArenaMatch extends Match {
             return;
         }
 
-        /// Check to see if it's a sign
-        if (event.getClickedBlock().getType().equals(Material.SIGN) ||
-                event.getClickedBlock().getType().equals(Material.WALL_SIGN)){ /// Only checking for signs
-            //			signClick(event,this);
-        } else { /// its a ready block
-            if ( respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ) {
-                respawnClick(event,this,respawnTimer);
-            } else {
-                readyClick(event);
-            }
-        }
+        if (    event.getClickedBlock().getType().equals(Material.SIGN) 
+                || event.getClickedBlock().getType().equals(Material.WALL_SIGN)){ 
+			signClick( event,this );
+        } 
+        else if ( respawnTimer.containsKey( event.getPlayer().getUniqueId() ) )
+            respawnClick(event,this,respawnTimer);
+        else 
+            readyClick(event);
     }
 
     public static void respawnClick(PlayerInteractEvent event, PlayerHolder am, Map<UUID,Integer> respawnTimer) {
         ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
-        Integer id = respawnTimer.remove(ap.getUniqueId());
-        Bukkit.getScheduler().cancelTask(id);
-        SpawnLocation loc = am.getSpawn(am.getTeam(ap).getIndex(),
-                am.getParams().hasOptionAt(MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN));
+
+        Bukkit.getScheduler().cancelTask( respawnTimer.remove( ap.getUniqueId() ) );
+        SpawnLocation loc = am.getSpawn( am.getTeam( ap ).getIndex(),
+                                         am.getParams().hasOptionAt( MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN ));
         TeleportController.teleport(ap, loc.getLocation());
     }
 
     public static void signClick(PlayerInteractEvent event, PlayerHolder am) {
-        /// Get our sign
-        final Sign sign = (Sign) event.getClickedBlock().getState();
+        Sign sign = (Sign) event.getClickedBlock().getState();
+        
         /// Check to see if sign has correct format (is more efficient than doing string manipulation )
-        if (!sign.getLine(0).matches("^.[0-9a-fA-F]\\*.*$") && !sign.getLine(0).matches("^\\[.*$")){
-            return;}
+        if (!sign.getLine(0).matches("^.[0-9a-fA-F]\\*.*$") && !sign.getLine(0).matches("^\\[.*$")) return;
 
-        final Action action = event.getAction();
-        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK){
-            return;}
-        if (action == Action.LEFT_CLICK_BLOCK){ /// Dont let them break the sign
-            event.setCancelled(true);}
+        Action action = event.getAction();
+        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK) return;
+        
+        if (action == Action.LEFT_CLICK_BLOCK) event.setCancelled(true);
 
-        final ArenaClass ac = ArenaClassController.getClass(MessageUtil.decolorChat(
+        ArenaClass ac = ArenaClassController.getClass(MessageUtil.decolorChat(
                 sign.getLine(0)).replace('*',' ').replace('[',' ').replace(']',' ').trim());
+        
         ArenaClassController.changeClass(event.getPlayer(), am, ac);
     }
 
     private void readyClick(PlayerInteractEvent event) {
-        if (!Defaults.ENABLE_PLAYER_READY_BLOCK)
-            return;
-        final ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
-        if (!isInWaitRoomState()){
-            return;}
-        final Action action = event.getAction();
-        if (action == Action.LEFT_CLICK_BLOCK){ /// Dont let them break the block
-            event.setCancelled(true);}
+        if (!Defaults.ENABLE_PLAYER_READY_BLOCK) return;
 
-        if (ap.isReady())
-            return;
+        if (!isInWaitRoomState()) return;
+        
+        if ( event.getAction() == Action.LEFT_CLICK_BLOCK ) event.setCancelled(true);
+        
+        ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
+        if (ap.isReady()) return;
+        
         ap.setReady(true);
         MessageUtil.sendMessage(ap, "&2You ready yourself for the arena");
         callEvent(new ArenaPlayerReadyEvent(ap,true));
@@ -433,8 +420,8 @@ public class ArenaMatch extends Match {
 
     @ArenaEventHandler
     public void onPlayerReady(ArenaPlayerReadyEvent event){
-        if (!Defaults.ENABLE_PLAYER_READY_BLOCK){
-            return;}
+        if (!Defaults.ENABLE_PLAYER_READY_BLOCK) return;
+        
         int tcount = 0;
         int pcount = 0;
         for (ArenaTeam t: teams){
@@ -449,20 +436,21 @@ public class ArenaMatch extends Match {
     }
 
     public static void setDisabledCommands(List<String> commands) {
-        if (commands == null)
-            return;
+        if (commands == null) return;
+        
         disabledCommands.clear();
         if (commands.contains("all")) {
             disabledAllCommands = true;
-        } else {
+        } 
+        else {
             for (String s: commands){
                 disabledCommands.add("/" + s.toLowerCase());}
         }
     }
 
     public static void setEnabledCommands(List<String> commands) {
-        if (commands == null)
-            return;
+        if (commands == null) return;
+        
         enabledCommands.clear();
         for (String s: commands){
             enabledCommands.add("/" + s.toLowerCase());}

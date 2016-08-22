@@ -1,6 +1,18 @@
 package mc.alk.arena.objects.options;
 
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Location;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
@@ -8,32 +20,19 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.MinMax;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.TeamUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Location;
-
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class JoinOptions {
 
+    @AllArgsConstructor
     public static enum JoinOption{
-        ARENA("<arena>",false), TEAM("<team>",false),
+        ARENA("<arena>",false), 
+        TEAM("<team>",false),
         WANTEDTEAMSIZE("<teamSize>",false);
 
+        @Getter final String name;
         final public boolean needsValue;
-        final String name;
-        JoinOption(String name, boolean needsValue){
-            this.needsValue = needsValue;
-            this.name = name;
-        }
-        public String getName(){
-            return name;
-        }
+ 
         public static JoinOption fromName(String str){
             str = str.toUpperCase();
             try {return JoinOption.valueOf(str);} catch (Exception e){/*do nothing*/}
@@ -56,41 +55,33 @@ public class JoinOptions {
     }
 
     /** All options for joining */
-    final Map<JoinOption,Object> options = new EnumMap<JoinOption,Object>(JoinOption.class);
-
+    final Map<JoinOption,Object> options = new EnumMap<>(JoinOption.class);
     /** Location they have joined from */
-    Location joinedLocation = null;
-
-    MatchParams params;
-
+    @Setter Location joinLocation = null;
+    @Getter @Setter MatchParams matchParams;
     MinMax teamSize;
-
     /** When the player joined, (defaults to when the JoinOptions was created) */
-    long joinTime;
+    @Getter @Setter long joinTime;
 
     public JoinOptions(){
         joinTime = System.currentTimeMillis();
     }
 
-    public void setJoinLocation(Location joinLocation) {
-        this.joinedLocation = joinLocation;
-    }
-
     public boolean nearby(Arena arena, double distance) {
-        if (joinedLocation == null)
+        if (joinLocation == null)
             return false;
-        UUID wid = joinedLocation.getWorld().getUID();
+        UUID wid = joinLocation.getWorld().getUID();
         Location arenajoinloc = arena.getJoinLocation();
         if (arenajoinloc != null){
             return (wid == arenajoinloc.getWorld().getUID() &&
-                    arenajoinloc.distance(joinedLocation) <= distance);
+                    arenajoinloc.distance(joinLocation) <= distance);
         }
 
         for (List<SpawnLocation> list : arena.getSpawns()){
             for (SpawnLocation l : list){
                 if (l.getLocation().getWorld().getUID() != wid)
                     return false;
-                if (l.getLocation().distance(joinedLocation) <= distance)
+                if (l.getLocation().distance(joinLocation) <= distance)
                     return true;
 
             }
@@ -99,7 +90,7 @@ public class JoinOptions {
     }
 
     public boolean sameWorld(Arena arena) {
-        UUID wid = joinedLocation.getWorld().getUID();
+        UUID wid = joinLocation.getWorld().getUID();
         Location arenajoinloc = arena.getJoinLocation();
         if (arenajoinloc != null){
             return (wid == arenajoinloc.getWorld().getUID());}
@@ -121,7 +112,7 @@ public class JoinOptions {
         jos.setMatchParams(mp);
         jos.setJoinTime(System.currentTimeMillis());
         if (player != null)
-            jos.joinedLocation = player.getLocation();
+            jos.joinLocation = player.getLocation();
         Map<JoinOption,Object> ops = jos.options;
         Arena arena = null;
         String lastArg = args.length > 0 ? args[args.length-1] : "";
@@ -153,7 +144,7 @@ public class JoinOptions {
             }
             Integer teamIndex = TeamUtil.getFromHumanTeamIndex(op);
             if (teamIndex != null){
-                if (player != null && !PermissionsUtil.hasTeamPerm(player.getPlayer(), mp,teamIndex)){
+                if (player != null && !Permissions.hasTeamPerm(player.getPlayer(), mp,teamIndex)){
                     throw new InvalidOptionException("&cYou don't have permissions to join this team");}
                 ops.put(JoinOption.TEAM, teamIndex);
                 continue;
@@ -168,10 +159,10 @@ public class JoinOptions {
                 throw new InvalidOptionException("&cThe arena or option " + op+" does not exist, \n&cvalid options=&6"+
                         JoinOption.getValidList());
             }
-            switch(jo){
-                default:
-                    break;
-            }
+//            switch(jo){
+//                default:
+//                    break;
+//            }
 
             if (!jo.needsValue){
                 ops.put(jo,null);
@@ -206,16 +197,8 @@ public class JoinOptions {
         if (mm != null)
             ops.put(JoinOption.WANTEDTEAMSIZE, mm);
 
-        jos.params= mp;
+        jos.matchParams= mp;
         return jos;
-    }
-
-    public void setJoinTime(Long currentTimeMillis) {
-        this.joinTime = currentTimeMillis;
-    }
-
-    public Long getJoinTime(){
-        return joinTime;
     }
 
     public String optionsString(MatchParams mp) {
@@ -254,39 +237,28 @@ public class JoinOptions {
         return hasArena() ? (Arena) options.get(JoinOption.ARENA) : null;
     }
 
-
     public void setArena(Arena arena) {
         options.put(JoinOption.ARENA, arena);
-    }
-
-    public MatchParams getMatchParams() {
-        return params;
-    }
-
-    public void setMatchParams(MatchParams matchParams) {
-        this.params = matchParams;
     }
 
     @Override
     public JoinOptions clone() {
         JoinOptions jo = new JoinOptions();
-        jo.options.putAll(this.options);
-        jo.joinedLocation = this.joinedLocation;
-        jo.params = this.params;
-        jo.teamSize = this.teamSize;
-        jo.joinTime = this.joinTime;
+        jo.options.putAll( options );
+        jo.joinLocation =  joinLocation;
+        jo.matchParams =  matchParams;
+        jo.teamSize =  teamSize;
+        jo.joinTime =  joinTime;
         return jo;
     }
 
     public void setPlayer(ArenaPlayer player) throws InvalidOptionException {
-        this.joinedLocation = player.getLocation();
-        this.joinTime = System.currentTimeMillis();
+        joinLocation = player.getLocation();
+        joinTime = System.currentTimeMillis();
         Object teamIndex = options.get(JoinOption.TEAM);
         if (teamIndex != null){
-            if (!PermissionsUtil.hasTeamPerm(player.getPlayer(), getMatchParams(),(Integer) teamIndex)){
+            if (!Permissions.hasTeamPerm(player.getPlayer(), getMatchParams(),(Integer) teamIndex)){
                 throw new InvalidOptionException("&cYou don't have permissions to add this team");}
         }
-
     }
-
 }

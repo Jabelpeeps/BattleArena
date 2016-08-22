@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.competition.Match;
@@ -87,7 +88,7 @@ import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamIndex;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.plugins.CombatTagUtil;
-import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.MobArenaInterface;
 import mc.alk.arena.serializers.ArenaSerializer;
@@ -97,7 +98,6 @@ import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.MinMax;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.TimeUtil;
@@ -136,7 +136,6 @@ public class BAExecutor extends CustomCommandExecutor {
             for (String s : set) {
                 sendSystemMessage(sender, "type_enabled", s);
             }
-
             return true;
         }
         disabled.remove(mp.getName());
@@ -210,11 +209,11 @@ public class BAExecutor extends CustomCommandExecutor {
             return MessageUtil.sendMessage(player, "&cThis match type has no valid options, contact an admin to fix");
         }
 
-        if (isDisabled(player.getPlayer(), omp) && !PermissionsUtil.isAdmin(player.getPlayer())) {
+        if (isDisabled(player.getPlayer(), omp) && !Permissions.isAdmin(player.getPlayer())) {
             return true;
         }
 
-        if (!adminJoin && !PermissionsUtil.hasMatchPerm(player.getPlayer(), omp, "join")) {
+        if (!adminJoin && !Permissions.hasMatchPerm(player.getPlayer(), omp, "join")) {
             return sendSystemMessage(player, "no_join_perms", omp.getCommand());
         }
 
@@ -467,7 +466,7 @@ public class BAExecutor extends CustomCommandExecutor {
 
     public boolean leave(ArenaPlayer p, MatchParams mp, boolean adminLeave) {
         if (!adminLeave && !p.hasPermission("arena.leave")
-                && !PermissionsUtil.hasMatchPerm(p.getPlayer(), mp, "leave")) {
+                && !Permissions.hasMatchPerm(p.getPlayer(), mp, "leave")) {
             return true;
         }
 
@@ -853,7 +852,7 @@ public class BAExecutor extends CustomCommandExecutor {
 
     @MCCommand(cmds = {"watch"})
     public boolean watch(ArenaPlayer sender, MatchParams mp, Arena arena) {
-        if (!PermissionsUtil.hasMatchPerm(sender.getPlayer(), mp, "watch")) {
+        if (!Permissions.hasMatchPerm(sender.getPlayer(), mp, "watch")) {
             return MessageUtil.sendMessage(sender, "&cYou don't have permission to watch a &6" + mp.getCommand());
         }
         if (isDisabled(sender.getPlayer(), mp)) {
@@ -1118,7 +1117,7 @@ public class BAExecutor extends CustomCommandExecutor {
 
     @MCCommand(cmds = {"duel", "d"}, helpOrder = 10)
     public boolean duel(ArenaPlayer player, final MatchParams mp, String args[]) {
-        if (!PermissionsUtil.hasMatchPerm(player.getPlayer(), mp, "duel")) {
+        if (!Permissions.hasMatchPerm(player.getPlayer(), mp, "duel")) {
             return MessageUtil.sendMessage( player, "&cYou don't have permission to duel in a &6" + mp.getCommand());
         }
         if (isDisabled(player.getPlayer(), mp)) {
@@ -1196,7 +1195,7 @@ public class BAExecutor extends CustomCommandExecutor {
             if (duelController.isChallenged(ap)) {
                 return MessageUtil.sendMessage(player, "&4[Duel] &6" + ap.getDisplayName() + "&c already has been challenged!");
             }
-            if (!PermissionsUtil.hasMatchPerm(ap.getPlayer(), mp, "duel")) {
+            if (!Permissions.hasMatchPerm(ap.getPlayer(), mp, "duel")) {
                 return MessageUtil.sendMessage(player, "&6" + ap.getDisplayName()
                         + "&c doesn't have permission to duel in a &6" + mp.getCommand());
             }
@@ -1497,8 +1496,8 @@ public class BAExecutor extends CustomCommandExecutor {
             return false;
         }
 
-        if (EssentialsController.enabled()
-                && EssentialsController.inJail(player)) {
+        if ( EssentialsUtil.isEnabled()
+                && EssentialsUtil.inJail(player)) {
             if (showMessages) {
                 MessageUtil.sendMessage(player, "&cYou are still in jail!");
             }

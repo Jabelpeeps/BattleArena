@@ -36,7 +36,7 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PlayerUtil;
 
@@ -61,10 +61,11 @@ public class GameManager implements PlayerHolder {
 		methodController.updateEvents(matchState, player);
 	}
 
-	private GameManager(MatchParams params){
-		this.params = params;
-		methodController = new MethodController("GM "+params.getName());
+	private GameManager(MatchParams _params){
+		params = _params;
+		methodController = new MethodController("GM "+_params.getName());
 		methodController.addAllEvents(this);
+		
 		if (Defaults.TESTSERVER) {Log.info("GameManager Testing"); return;}
 		Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
 	}
@@ -131,12 +132,12 @@ public class GameManager implements PlayerHolder {
 			TransitionController.transition(this, MatchState.ONENTER, player, null, false);
 			updateBukkitEvents(MatchState.ONENTER, player);
 			
-			if ( EssentialsController.enabled() )
+			if ( EssentialsUtil.isEnabled() )
 				BAPlayerListener.setBackLocation( player,
-						                          EssentialsController.getBackLocation(player.getName()));
+				        EssentialsUtil.getBackLocation(player));
 			
 			PlayerUtil.setGameMode(player.getPlayer(), GameMode.SURVIVAL);
-			EssentialsController.setGod(player.getPlayer(), false);
+			EssentialsUtil.setGod(player, false);
             callEvent(new ArenaPlayerEnterMatchEvent(player, player.getTeam()));
 		}
 	}
@@ -157,7 +158,7 @@ public class GameManager implements PlayerHolder {
 		quitting(player);
         callEvent(new ArenaPlayerLeaveMatchEvent(player,player.getTeam()));
         
-		if (EssentialsController.enabled())
+		if (EssentialsUtil.isEnabled())
 			BAPlayerListener.setBackLocation(player, null);
 		
         PlayerStoreController.getPlayerStoreController().restoreScoreboard(player);

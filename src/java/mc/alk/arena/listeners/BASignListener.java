@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.MatchParams;
@@ -24,7 +25,6 @@ import mc.alk.arena.objects.signs.ArenaCommandSign;
 import mc.alk.arena.objects.signs.ArenaStatusSign;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.SignUtil;
 
 public class BASignListener implements Listener{
@@ -44,7 +44,7 @@ public class BASignListener implements Listener{
             return;
         }
 
-        if (PermissionsUtil.isAdmin(event.getPlayer()) && (event.getAction() ==Action.LEFT_CLICK_BLOCK)){
+        if (Permissions.isAdmin(event.getPlayer()) && (event.getAction() ==Action.LEFT_CLICK_BLOCK)){
             return;}
 
         if (event.getClickedBlock().getState() instanceof Sign) {
@@ -80,7 +80,7 @@ public class BASignListener implements Listener{
         Player p = event.getPlayer();
 
         /// Is the sign a arena class sign?
-        final boolean admin = PermissionsUtil.isAdmin(p);
+        final boolean admin = Permissions.isAdmin(p);
         String lines[] = event.getLines();
         ArenaClass ac = SignUtil.getArenaClassSign(lines);
         if (ac != null){

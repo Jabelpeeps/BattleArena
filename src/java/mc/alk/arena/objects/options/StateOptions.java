@@ -1,6 +1,5 @@
 package mc.alk.arena.objects.options;
 
-import static mc.alk.arena.objects.options.TransitionOption.ADDPERMS;
 import static mc.alk.arena.objects.options.TransitionOption.DISGUISEALLAS;
 import static mc.alk.arena.objects.options.TransitionOption.DOCOMMANDS;
 import static mc.alk.arena.objects.options.TransitionOption.ENCHANTS;
@@ -59,8 +58,8 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.plugins.MobArenaInterface;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.InventoryUtil.ArmorLevel;
+import mc.alk.arena.util.MinMax;
 
 public class StateOptions {
 
@@ -392,12 +391,16 @@ public class StateOptions {
     }
 
     public void addOption(TransitionOption option) throws InvalidOptionException {
-        if (option.hasValue()) throw new InvalidOptionException("TransitionOption needs a value!");
+        if (option.hasValue()) 
+            throw new InvalidOptionException("TransitionOption:" + option.getName() + " needs a value!");
+ 
         addOption(option, null);
     }
 
     public void addOption(TransitionOption option, Object value) throws InvalidOptionException {
-        if (option.hasValue() && value==null) throw new InvalidOptionException("TransitionOption needs a value!");
+        if (option.hasValue() && value == null) 
+            throw new InvalidOptionException("TransitionOption:" + option.getName() + " needs a value!");
+ 
         if ( options == null )
             options = new EnumMap<>(TransitionOption.class);
         options.put(option,value);
@@ -464,18 +467,18 @@ public class StateOptions {
     }
 
 
-    @SuppressWarnings( "unchecked" )
-    public List<String> getAddPerms() {
-        final Object o = options.get(ADDPERMS);
-        return o == null ? null : (List<String>) o;
-    }
-
-    /// TODO, not sure this will work properly, I really want to remove those perms that were added in another section!!
-    @SuppressWarnings( "unchecked" )
-    public List<String> getRemovePerms() {
-        final Object o = options.get(ADDPERMS);
-        return o == null ? null : (List<String>) o;
-    }
+//    @SuppressWarnings( "unchecked" )
+//    public List<String> getAddPerms() {
+//        final Object o = options.get(ADDPERMS);
+//        return o == null ? null : (List<String>) o;
+//    }
+//
+//    /// TODO, not sure this will work properly, I really want to remove those perms that were added in another section!!
+//    @SuppressWarnings( "unchecked" )
+//    public List<String> getRemovePerms() {
+//        final Object o = options.get(ADDPERMS);
+//        return o == null ? null : (List<String>) o;
+//    }
 
     public Location getTeleportToLoc() {return returnLoc(TELEPORTTO);}
 

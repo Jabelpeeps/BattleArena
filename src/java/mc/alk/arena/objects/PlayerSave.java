@@ -8,22 +8,23 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.Scoreboard;
 
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.listeners.BAPlayerListener;
-import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.serializers.InventorySerializer;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.ExpUtil;
 import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.PlayerUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.PlayerUtil;
 
 /**
  * @author alkarin
@@ -47,7 +48,7 @@ public class PlayerSave {
     @Getter @Setter Boolean flight;
     @Getter @Setter String arenaClass;
     @Getter @Setter String oldTeam;
-    @Getter private Object scoreboard;
+    @Getter private Scoreboard scoreboard;
     @Getter @Setter Double money;
 
     public PlayerSave(ArenaPlayer _player) {
@@ -55,6 +56,9 @@ public class PlayerSave {
     }
     public String getName() {
         return player.getName();
+    }
+    public UUID getUUID() {
+        return player.getUniqueId();
     }
 
     public int storeExperience() {
@@ -71,7 +75,6 @@ public class PlayerSave {
 
     public void restoreExperience() {
         if (exp == null) return;
-        
         ExpUtil.setTotalExperience(player.getPlayer(), exp);
         exp = null;
     }
@@ -83,16 +86,13 @@ public class PlayerSave {
     }
 
     public void storeHealth() {
-        if (health!=null)
-            return;
-
+        if (health!=null) return;
         health = player.getHealth();
         if (Defaults.DEBUG_STORAGE) Log.info("storing health=" + health + " for player=" + player.getName());
     }
 
     public void restoreHealth() {
-        if (health == null || health <= 0)
-            return;
+        if (health == null || health <= 0) return;
         if (Defaults.DEBUG_STORAGE) Log.info("restoring health=" + health+" for player=" + player.getName());
         PlayerUtil.setHealth(player.getPlayer(),health);
         health=null;
@@ -105,14 +105,12 @@ public class PlayerSave {
     }
 
     public void storeHunger() {
-        if (hunger !=null)
-            return;
+        if (hunger !=null) return;
         hunger = player.getFoodLevel();
     }
 
     public void restoreHunger() {
-        if (hunger == null || hunger <= 0)
-            return;
+        if (hunger == null || hunger <= 0) return;
         player.getPlayer().setFoodLevel( hunger );
         hunger = null;
     }
@@ -123,14 +121,12 @@ public class PlayerSave {
     }
 
     public void storeEffects() {
-        if (effects !=null)
-            return;
+        if (effects !=null) return;
         effects = new ArrayList<>(player.getPlayer().getActivePotionEffects());
     }
 
     public void restoreEffects() {
-        if (effects == null)
-            return;
+        if (effects == null) return;
         EffectUtil.enchantPlayer(player.getPlayer(), effects);
         effects = null;
     }
@@ -142,14 +138,12 @@ public class PlayerSave {
     }
 
     public void storeMagic() {
-        if (!HeroesController.enabled() || magic != null)
-            return;
+        if (!HeroesController.enabled() || magic != null) return;
         magic = HeroesController.getMagicLevel(player.getPlayer());
     }
 
     public void restoreMagic() {
-        if (!HeroesController.enabled() || magic ==null)
-            return;
+        if (!HeroesController.enabled() || magic ==null) return;
         HeroesController.setMagicLevel(player.getPlayer(), magic);
         magic = null;
     }
@@ -162,7 +156,6 @@ public class PlayerSave {
 
     public void storeItems() {
         if (items != null) return;
-        
         player.getPlayer().closeInventory();
         items = new PInv(player.getInventory());
         InventorySerializer.saveInventory(player.getUniqueId(), items);
@@ -170,7 +163,6 @@ public class PlayerSave {
 
     public void restoreItems() {
         if (items ==null) return;
-        
         InventoryUtil.addToInventory(player.getPlayer(), items);
         items = null;
     }
@@ -195,7 +187,6 @@ public class PlayerSave {
 
     public void restoreMatchItems() {
         if (matchItems==null) return;
-        
         InventoryUtil.addToInventory(player.getPlayer(), matchItems);
         matchItems = null;
     }
@@ -208,44 +199,36 @@ public class PlayerSave {
 
     public void storeGamemode() {
         if (gamemode !=null) return;
-        
-        PermissionsUtil.givePlayerInventoryPerms(player.getPlayer());
+        Permissions.givePlayerInventoryPerms(player.getPlayer());
         gamemode = player.getPlayer().getGameMode();
     }
 
 
     public void storeFlight() {
-        if (!EssentialsController.enabled() || flight != null) return;
-
-        if (EssentialsController.isFlying(player))
+        if ( player.getPlayer().isFlying() )
             flight = true;
     }
 
     public void restoreFlight() {
-        if (flight == null) return;
-        
-        EssentialsController.setFlight(player.getPlayer(), flight);
+        if ( flight == null ) return;
+        player.getPlayer().setFlying( flight );
         flight = null;
     }
 
-
     public void storeGodmode() {
-        if (!EssentialsController.enabled() || godmode != null) return;
-
-        if (EssentialsController.isGod(player))
+        if (!EssentialsUtil.isEnabled() || godmode != null) return;
+        if (EssentialsUtil.isGod(player))
             godmode = true;
     }
 
     public void restoreGodmode() {
-        if (godmode == null)
-            return;
-        EssentialsController.setGod(player.getPlayer(), godmode);
+        if (godmode == null) return;
+        EssentialsUtil.setGod(player, godmode);
         godmode = null;
     }
 
     public void restoreGamemode() {
-        if (gamemode == null)
-            return;
+        if (gamemode == null) return;
         PlayerUtil.setGameMode(player.getPlayer(), gamemode);
         gamemode = null;
     }
@@ -257,37 +240,28 @@ public class PlayerSave {
     }
 
     public void storeArenaClass() {
-        if (!HeroesController.enabled() || arenaClass != null)
-            return;
+        if (!HeroesController.enabled() || arenaClass != null) return;
         arenaClass = HeroesController.getHeroClassName(player.getPlayer());
     }
 
     public void restoreArenaClass() {
-        if (!HeroesController.enabled() || arenaClass==null)
-            return;
+        if (!HeroesController.enabled() || arenaClass==null) return;
         HeroesController.setHeroClass(player.getPlayer(), arenaClass);
     }
 
     public void storeScoreboard() {
-        if (scoreboard != null)
-            return;
-        scoreboard = PlayerUtil.getScoreboard(player.getPlayer());
+        if ( scoreboard != null ) return;      
+        scoreboard = player.getPlayer().getScoreboard();
     }
 
     public void restoreScoreboard() {
-        if (scoreboard==null)
-            return;
-        PlayerUtil.setScoreboard(player.getPlayer(), scoreboard);
+        if ( scoreboard == null ) return;
+        player.getPlayer().setScoreboard( scoreboard );
     }
 
     public void restoreMoney() {
-        if (money == null)
-            return;
+        if (money == null) return;
         MoneyController.add(player.getName(), money);
         money = null;
-    }
-
-    public UUID getID() {
-        return player.getUniqueId();
     }
 }

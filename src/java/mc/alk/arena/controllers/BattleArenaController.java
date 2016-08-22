@@ -65,7 +65,6 @@ public class BattleArenaController implements ArenaListener, Listener{
 
     final private Map<ArenaType, Arena> fixedArenas = new HashMap<>();
 
-
     public class OldLobbyState{
         ContainerState pcs;
         Set<Match> running = new HashSet<>();
@@ -73,7 +72,6 @@ public class BattleArenaController implements ArenaListener, Listener{
         public void add(Match am){running.add(am);}
         public boolean remove(Match am) {return running.remove(am);}
     }
-
 
     public BattleArenaController( SignUpdateListener _signUpdateListener ){
         MethodController methodController = new MethodController("BAC");

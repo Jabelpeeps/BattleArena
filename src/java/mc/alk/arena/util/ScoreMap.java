@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ScoreMap<K> extends ConcurrentHashMap<K,Integer> {
+public class ScoreMap<K> extends ConcurrentHashMap<K, Integer> {
 	private static final long serialVersionUID = 1L;
 
 	public int addPoints(K key, int points){
@@ -39,12 +39,12 @@ public class ScoreMap<K> extends ConcurrentHashMap<K,Integer> {
 	}
 
 	public void reset() {
-		this.clear();
+		clear();
 	}
 
 	public List<K> getLeaders() {
 		int highest = Integer.MIN_VALUE;
-		List<K> victors = new ArrayList<K>();
+		List<K> victors = new ArrayList<>();
 		for (K t: keySet()){
 			int points = getPoints(t);
 			if (points == highest){ /// we have some sort of tie
@@ -59,17 +59,15 @@ public class ScoreMap<K> extends ConcurrentHashMap<K,Integer> {
 	}
 
 	public synchronized TreeMap<Integer,Collection<K>> getRankings() {
-		TreeMap<Integer,Collection<K>> map = new TreeMap<Integer,Collection<K>>(Collections.reverseOrder());
+		TreeMap<Integer,Collection<K>> map = new TreeMap<>(Collections.reverseOrder());
 		for (Entry<K,Integer> entry : this.entrySet()){
 			Collection<K> col = map.get(entry.getValue());
 			if (col == null){
-				col = new ArrayList<K>();
+				col = new ArrayList<>();
 				map.put(entry.getValue(), col);
 			}
 			col.add(entry.getKey());
 		}
 		return map;
 	}
-
-
 }

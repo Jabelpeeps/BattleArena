@@ -22,7 +22,6 @@ import mc.alk.arena.objects.spawns.ItemSpawn;
 import mc.alk.arena.objects.spawns.SpawnGroup;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
-import mc.alk.arena.util.EntityUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 
@@ -123,7 +122,7 @@ public class SpawnSerializer {
         } catch ( NumberFormatException e) { }
 
         ItemStack is = InventoryUtil.parseItem( value );
-        EntityType et = EntityUtil.parseEntityType(key);
+        EntityType et = parseEntityType(key);
 
        if (is != null && et != null) {
             int keysize = key.length();
@@ -225,5 +224,15 @@ public class SpawnSerializer {
         if (rs <= 0) rs = -1;
         
         return new TimedSpawn(fs, rs, ds, si);
+    }
+    
+    static final String TAMED = "tamed_";
+
+    public static EntityType parseEntityType(String str) {
+
+        if ( str.startsWith(TAMED) ) 
+            str = str.substring(TAMED.length(), str.length());
+        
+        return EntityType.valueOf( str );
     }
 }

@@ -1,98 +1,45 @@
 package mc.alk.arena.plugins;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Player;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.UserMap;
 
-import mc.alk.arena.util.Log;
+import mc.alk.arena.controllers.PlayerController;
+import mc.alk.arena.objects.ArenaPlayer;
 
 public class EssentialsUtil {
 	static Essentials essentials;
-
-	public static boolean enableEssentials(Plugin plugin) {
-		try {
-			essentials = (Essentials) plugin;
-		} catch(Exception e){
-			Log.printStackTrace(e);
-			return false;
-		}
-		return true;
+	static UserMap map;
+	
+	static {
+		essentials = (Essentials) Bukkit.getPluginManager().getPlugin( "Essentials" );	
+		map = essentials.getUserMap();
 	}
-
-	public static User getUser(String playerName){
-		UserMap map = essentials.getUserMap();
-		if (map == null)
-			return null;
-		return map.getUser(playerName);
+    public static boolean isEnabled() {
+        return essentials != null && map != null;
+    }
+	public static User getUser(ArenaPlayer player){
+		return isEnabled() ? map.getUser(player.getName()) : null;
 	}
-
-	public static void setGod(String playerName, boolean enable) {
-		User user = getUser(playerName);
-		if (user != null && user.isGodModeEnabled() != enable){
-			user.setGodModeEnabled(enable);}
+	public static void setGod(ArenaPlayer player, boolean enable) {
+	    if ( isEnabled() )
+	        getUser(player).setGodModeEnabled(enable);
 	}
-
-	public static void setFlight(String playerName, boolean enable) {
-		User user = getUser(playerName);
-		if (user != null && user.isFlying() != enable){
-			user.setFlying(enable);}
+	public static boolean inJail(ArenaPlayer player) {
+		return isEnabled() ? getUser(player).getJailTimeout() > System.currentTimeMillis() : false;
 	}
-
-	public static void setFlightSpeed(String playerName, Float flightSpeed) {
-		User user = getUser(playerName);
-		if (user != null){
-			user.setFlySpeed(flightSpeed);}
+	public static boolean isGod(ArenaPlayer player) {
+		return isEnabled() ? getUser(player).isGodModeEnabled() : false;
 	}
-
-	public static boolean inJail(String playerName) {
-		try{
-			User user = getUser(playerName);
-			return user.getJailTimeout() > System.currentTimeMillis();
-		} catch(Exception e){
-			Log.printStackTrace(e);
-			return false;
-		}
+	public static void setBackLocation(Player player, Location loc) {
+        if ( isEnabled() )
+            getUser(PlayerController.getArenaPlayer( player )).setLastLocation(loc);
 	}
-
-	public static Boolean isGod(String playerName) {
-		try{
-			User user = getUser(playerName);
-			return user.isGodModeEnabled();
-		} catch(Exception e){
-			Log.printStackTrace(e);
-			return false;
-		}
-	}
-
-	public static Boolean isFlying(String playerName) {
-		try{
-			User user = getUser(playerName);
-			return user.isFlying();
-		} catch(Exception e){
-			Log.printStackTrace(e);
-			return false;
-		}
-	}
-
-	public static void setBackLocation(String playerName, Location loc){
-		try{
-			User user = getUser(playerName);
-			user.setLastLocation(loc);
-		} catch(Exception e){
-			Log.printStackTrace(e);
-		}
-	}
-
-	public static Location getBackLocation(String playerName){
-		try{
-			User user = getUser(playerName);
-			return user.getLastLocation();
-		} catch(Exception e){
-			Log.printStackTrace(e);
-			return null;
-		}
+	public static Location getBackLocation(ArenaPlayer player) {
+		return isEnabled() ? getUser(player).getLastLocation() : null;
 	}
 }

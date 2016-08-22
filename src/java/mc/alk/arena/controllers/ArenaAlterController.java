@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import lombok.AllArgsConstructor;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.containers.RoomContainer;
@@ -41,6 +42,8 @@ public class ArenaAlterController {
         public ChangeType ao;
         public Object value;
     }
+    
+    @AllArgsConstructor
     public enum ChangeType{
         WAITROOM(true,true),
         SPECTATE(true,true),
@@ -53,11 +56,6 @@ public class ArenaAlterController {
         final boolean needsValue; 
         final boolean needsPlayer; 
 
-        ChangeType(Boolean hasValue, Boolean _needsPlayer){
-            needsValue = hasValue;
-            needsPlayer = _needsPlayer;
-        }
-        
         public boolean needsPlayer() { return needsPlayer; }
         public boolean hasValue(){ return needsValue; }
 
@@ -66,7 +64,8 @@ public class ArenaAlterController {
             ChangeType ct = null;
             try {
                 ct = ChangeType.valueOf(str);
-            } catch (Exception e) {/* say nothing */}
+            } 
+            catch (Exception e) { }
             
             if (ct != null) return ct;
             if (str.equalsIgnoreCase("wr")) return WAITROOM;
@@ -78,7 +77,8 @@ public class ArenaAlterController {
             try{
                 if (Integer.valueOf(str) != null)
                     return SPAWNLOC;
-            } catch (Exception e) {/* say nothing */}
+            } 
+            catch (Exception e) { }
             
             if (str.equalsIgnoreCase("main")) return SPAWNLOC;
             if (TeamUtil.getFromHumanTeamIndex(str) != null) return SPAWNLOC;

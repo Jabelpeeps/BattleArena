@@ -36,8 +36,9 @@ public class Util {
     public static UUID fromString(String name){
         try {
             return UUID.fromString(name);
-        } catch (Exception e) {
-            return new UUID(0, name.hashCode());
+        } 
+        catch ( IllegalArgumentException e ) {
+            return new UUID( 0, name.hashCode() );
         }
     }
 

@@ -4,32 +4,22 @@ import mc.alk.arena.objects.ArenaSize;
 
 public class MinMax {
     public int min;
-
     public int max;
 
-    public MinMax(){
-        this.min = -1; this.max = -1;
-    }
-
-    public MinMax(int size){
-        this.min = size; this.max = size;
-    }
-
-    public MinMax(int min, int max){
-        this.min = min; this.max = max;
-    }
-
-    public MinMax(MinMax mm){
-        this.min = mm.min; this.max = mm.max;
-    }
-
-    @Override
-    public String toString(){return ArenaSize.rangeString(min, max);}
+    public MinMax() { min = -1; max = -1; }
+    public MinMax(int size) { min = size; max = size; }
+    public MinMax(int _min, int _max) { min = _min; max = _max; }
+    public MinMax(MinMax mm) { min = mm.min; max = mm.max; }
 
     public boolean contains(int i) {
         return min <= i && max >= i;
     }
-
+    public boolean intersect(MinMax mm) {
+        return  Math.max(mm.min, min) <= Math.min(mm.max, max);
+    }
+    public boolean valid() {
+        return min <= max;
+    }
     public static MinMax valueOf(String s) throws NumberFormatException{
         if (s == null) throw new NumberFormatException("Number can not be null");
         if (s.indexOf('+')!=-1){
@@ -51,14 +41,6 @@ public class MinMax {
         }
         return new MinMax(i,i);
     }
-
-
-    public boolean intersect(MinMax mm) {
-        return  Math.max(mm.min, min) <= Math.min(mm.max, max);
-    }
-
-    public boolean valid() {
-        return min <= max;
-    }
-
+    @Override
+    public String toString() { return ArenaSize.rangeString(min, max); } 
 }

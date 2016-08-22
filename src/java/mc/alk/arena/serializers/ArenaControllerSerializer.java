@@ -1,22 +1,5 @@
 package mc.alk.arena.serializers;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.controllers.PlayerController;
-import mc.alk.arena.controllers.PlayerRestoreController;
-import mc.alk.arena.listeners.BAPlayerListener;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
-import mc.alk.arena.util.SerializerUtil;
-import mc.alk.arena.util.Util;
-import mc.alk.arena.util.InventoryUtil.PInv;
-
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,11 +9,28 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.controllers.PlayerController;
+import mc.alk.arena.controllers.PlayerRestoreController;
+import mc.alk.arena.listeners.BAPlayerListener;
+import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.util.InventoryUtil;
+import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.Log;
+import mc.alk.arena.util.SerializerUtil;
+import mc.alk.arena.util.Util;
+
 
 public class ArenaControllerSerializer extends BaseConfig{
 
 	public ArenaControllerSerializer(){
-		this.setConfig(BattleArena.getSelf().getDataFolder()+"/saves/arenaplayers.yml");
+		setConfig(BattleArena.getSelf().getDataFolder()+"/saves/arenaplayers.yml");
 	}
 
 	public void load(){
@@ -108,7 +108,7 @@ public class ArenaControllerSerializer extends BaseConfig{
 
 	public static PInv getInventory(ConfigurationSection cs){
 		PInv pinv = new PInv();
-		List<ItemStack> items = new ArrayList<ItemStack>();
+		List<ItemStack> items = new ArrayList<>();
 		List<String> stritems = cs.getStringList("armor");
 		for (String stritem : stritems){
 			ItemStack is;
@@ -123,7 +123,7 @@ public class ArenaControllerSerializer extends BaseConfig{
 		}
 		pinv.armor = items.toArray(new ItemStack[items.size()]);
 
-		items = new ArrayList<ItemStack>();
+		items = new ArrayList<>();
 		stritems = cs.getStringList("contents");
 		for (String stritem : stritems){
 			ItemStack is;
@@ -146,21 +146,21 @@ public class ArenaControllerSerializer extends BaseConfig{
 	@Override
 	public void save(){
 		Map<UUID, PlayerRestoreController> prcs =
-				new HashMap<UUID,PlayerRestoreController>(BAPlayerListener.getPlayerRestores());
+				new HashMap<>(BAPlayerListener.getPlayerRestores());
 
-		Map<UUID,Location> playerLocs = new HashMap<UUID,Location>();
-		List<UUID> dieOnReenter = new ArrayList<UUID>();
-		List<UUID> clearInventoryReenter = new ArrayList<UUID>();
-		Map<UUID,GameMode> gameModes = new HashMap<UUID,GameMode>();
-		Map<UUID, PInv> items = new HashMap<UUID,PInv>();
+		Map<UUID,Location> playerLocs = new HashMap<>();
+		List<UUID> dieOnReenter = new ArrayList<>();
+		List<UUID> clearInventoryReenter = new ArrayList<>();
+		Map<UUID,GameMode> gameModes = new HashMap<>();
+		Map<UUID, PInv> items = new HashMap<>();
 
 		for (PlayerRestoreController prc: prcs.values()){
 			final UUID id = prc.getUUID();
 			if (prc.getTeleportLocation() != null)
 				playerLocs.put(id, prc.getTeleportLocation());
-			if (prc.getKill())
+			if (prc.isKill())
 				dieOnReenter.add(id);
-			if (prc.getClearInventory())
+			if (prc.isClearInventory())
 				clearInventoryReenter.add(id);
 			if (prc.getGamemode()!=null)
 				gameModes.put(id, prc.getGamemode());
@@ -193,14 +193,14 @@ public class ArenaControllerSerializer extends BaseConfig{
 		for (UUID name: items.keySet()){
 			ConfigurationSection pcs = cs.createSection(name.toString());
 			PInv inv = items.get(name);
-			List<String> stritems = new ArrayList<String>();
+			List<String> stritems = new ArrayList<>();
 			for (ItemStack is : inv.armor){
 				if (is == null || is.getType() == Material.AIR)
 					continue;
 				stritems.add(InventoryUtil.getItemString(is));}
 			pcs.set("armor", stritems);
 
-			stritems = new ArrayList<String>();
+			stritems = new ArrayList<>();
 			for (ItemStack is : inv.contents){
 				if (is == null || is.getType() == Material.AIR)
 					continue;

@@ -101,7 +101,7 @@ public class HeroesController {
 		if (hasHeroes)
 			try{HeroesUtil.setHealthP(player,health);}catch(Exception e){Log.printStackTrace(e);}
 		else
-			PlayerUtil.setHealthP(player,health,true);
+			PlayerUtil.setHealthPercent(player,health,true);
 	}
 
 	public static void cancelExpLoss(Player player, boolean cancel) {

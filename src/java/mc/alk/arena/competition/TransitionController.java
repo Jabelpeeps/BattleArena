@@ -154,35 +154,35 @@ public class TransitionController {
         final boolean woolTeams = tops.hasAnyOption(TransitionOption.WOOLTEAMS);
 
         /// Only do if player is online options
-        if (playerReady && !dead){
+        if (playerReady && !dead) {
             Double prizeMoney = null; /// kludge, take out when I find a better way to display messages
-            if (storeAll || mo.hasOption(TransitionOption.STOREGAMEMODE)){psc.storeGamemode(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREEXPERIENCE)){ psc.storeExperience(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREITEMS)) { psc.storeItems(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREHEALTH)){ psc.storeHealth(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREHUNGER)){ psc.storeHunger(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREMAGIC)){ psc.storeMagic(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREHEROCLASS)){psc.storeHeroClass(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREGAMEMODE)){psc.storeGodmode(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREFLIGHT)){psc.storeFlight(player);}
-            if (storeAll || mo.hasOption(TransitionOption.STOREENCHANTS)){psc.storeEffects(player);}
-            if (wipeInventory){InventoryUtil.clearInventory(p);}
-            if (mo.hasOption(TransitionOption.CLEAREXPERIENCE)){ ExpUtil.clearExperience(p);}
-            if (mo.hasOption(TransitionOption.HEALTH)) { PlayerUtil.setHealth(p, mo.getHealth());}
-            if (mo.hasOption(TransitionOption.HEALTHP)) { PlayerUtil.setHealthP(p, mo.getHealthP());}
-            if (mo.hasOption(TransitionOption.MAGIC)) { setMagicLevel(p, mo.getMagic()); }
-            if (mo.hasOption(TransitionOption.MAGICP)) { setMagicLevelP(p, mo.getMagicP()); }
-            if (hunger != null) { p.setFoodLevel( hunger ); }
-            if (mo.hasOption(TransitionOption.INVULNERABLE)) { PlayerUtil.setInvulnerable(p,mo.getInvulnerable()*20); }
-            if (mo.hasOption(TransitionOption.GAMEMODE)) { PlayerUtil.setGameMode(p,mo.getGameMode()); }
-            if (mo.hasOption(TransitionOption.FLIGHTOFF)) { PlayerUtil.setFlight(p,false); }
-            if (mo.hasOption(TransitionOption.FLIGHTON)) { PlayerUtil.setFlight(p,true); }
-            if (mo.hasOption(TransitionOption.FLIGHTSPEED)) { PlayerUtil.setFlightSpeed(p,mo.getFlightSpeed()); }
-            if (mo.hasOption(TransitionOption.DOCOMMANDS)) { PlayerUtil.doCommands(p,mo.getDoCommands()); }
-            if (mo.hasOption(TransitionOption.DEENCHANT)) { psc.deEnchant(p);}
-            if (mo.hasOption(TransitionOption.UNDISGUISE)) {DisguiseController.undisguise(p);}
-            if (mo.getDisguiseAllAs() != null) {DisguiseController.disguisePlayer(p, mo.getDisguiseAllAs());}
-            if (mo.getMoney() != null) {MoneyController.add(player.getName(), mo.getMoney());}
+            if (storeAll || mo.hasOption(TransitionOption.STOREGAMEMODE)) psc.storeGamemode(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREEXPERIENCE)) psc.storeExperience(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREITEMS)) psc.storeItems(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREHEALTH)) psc.storeHealth(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREHUNGER)) psc.storeHunger(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREMAGIC)) psc.storeMagic(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREHEROCLASS)) psc.storeHeroClass(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREGAMEMODE)) psc.storeGodmode(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREFLIGHT)) psc.storeFlight(player);
+            if (storeAll || mo.hasOption(TransitionOption.STOREENCHANTS)) psc.storeEffects(player);
+            if (wipeInventory) InventoryUtil.clearInventory(p);
+            if (mo.hasOption(TransitionOption.CLEAREXPERIENCE)) ExpUtil.clearExperience(p);
+            if (mo.hasOption(TransitionOption.HEALTH)) PlayerUtil.setHealth(p, mo.getHealth());
+            if (mo.hasOption(TransitionOption.HEALTHP)) PlayerUtil.setHealthPercent(p, mo.getHealthP());
+            if (mo.hasOption(TransitionOption.MAGIC)) setMagicLevel(p, mo.getMagic()); 
+            if (mo.hasOption(TransitionOption.MAGICP)) setMagicLevelP(p, mo.getMagicP()); 
+            if (hunger != null) p.setFoodLevel( hunger ); 
+            if (mo.hasOption(TransitionOption.INVULNERABLE)) PlayerUtil.setInvulnerable(p,mo.getInvulnerable()*20);
+            if (mo.hasOption(TransitionOption.GAMEMODE)) PlayerUtil.setGameMode(p,mo.getGameMode()); 
+            if (mo.hasOption(TransitionOption.FLIGHTOFF)) PlayerUtil.setFlight(p,false); 
+            if (mo.hasOption(TransitionOption.FLIGHTON)) PlayerUtil.setFlight(p,true); 
+            if (mo.hasOption(TransitionOption.FLIGHTSPEED)) p.setFlySpeed( mo.getFlightSpeed() ); 
+            if (mo.hasOption(TransitionOption.DOCOMMANDS)) PlayerUtil.doCommands(p,mo.getDoCommands());
+            if (mo.hasOption(TransitionOption.DEENCHANT)) psc.deEnchant(p);
+            if (mo.hasOption(TransitionOption.UNDISGUISE)) DisguiseController.undisguise(p);
+            if (mo.getDisguiseAllAs() != null) DisguiseController.disguisePlayer(p, mo.getDisguiseAllAs());
+            if (mo.getMoney() != null) MoneyController.add(player.getName(), mo.getMoney());
             if (mo.hasOption(TransitionOption.POOLMONEY) && am instanceof Match) {
                 prizeMoney = ((Match)am).getPrizePoolMoney() * mo.getDouble(TransitionOption.POOLMONEY) /
                         team.size();
@@ -192,29 +192,29 @@ public class TransitionController {
                     MoneyController.subtract(player.getName(), prizeMoney);
                 }
             }
-            if (mo.getExperience() != null) {ExpUtil.giveExperience(p, mo.getExperience());}
-            if (mo.hasOption(TransitionOption.REMOVEPERMS)){ removePerms(player, mo.getRemovePerms());}
-            if (mo.hasOption(TransitionOption.ADDPERMS)){ addPerms(player, mo.getAddPerms(), 0);}
-            if (mo.hasOption(TransitionOption.GIVECLASS) && player.getCurrentClass() == null){
-                final ArenaClass ac = getArenaClass(mo,teamIndex);
+            if (mo.getExperience() != null) ExpUtil.giveExperience(p, mo.getExperience());
+//            if (mo.hasOption(TransitionOption.REMOVEPERMS)) removePerms(player, mo.getRemovePerms());
+//            if (mo.hasOption(TransitionOption.ADDPERMS)) addPerms(player, mo.getAddPerms(), 0);
+            if (mo.hasOption(TransitionOption.GIVECLASS) && player.getCurrentClass() == null) {
+                ArenaClass ac = getArenaClass(mo,teamIndex);
                 if (ac != null && ac.isValid()) { 
                     if (mo.hasAnyOption(TransitionOption.WOOLTEAMS, TransitionOption.ALWAYSWOOLTEAMS)) 
                         TeamUtil.setTeamHead(teamIndex, player); 
-                    if (armorTeams){
+                    
+                    if (armorTeams)
                         ArenaClassController.giveClass(player, ac, TeamUtil.getTeamColor(teamIndex));
-                    } else{
+                    else
                         ArenaClassController.giveClass(player, ac);
-                    }
                 }
             }
-            if (mo.hasOption(TransitionOption.CLASSENCHANTS)){
+            if (mo.hasOption(TransitionOption.CLASSENCHANTS)) {
                 ArenaClass ac = player.getCurrentClass();
                 if (ac != null){
                     ArenaClassController.giveClassEnchants(p, ac);}
             }
             if (mo.hasOption(TransitionOption.GIVEDISGUISE) && DisguiseController.enabled()){
-                final String disguise = getDisguise(mo,teamIndex);
-                if (disguise != null){ /// Give class items and effects
+                String disguise = getDisguise(mo,teamIndex);
+                if (disguise != null) { 
                     DisguiseController.disguisePlayer(p, disguise);}
             }
             if (mo.hasOption(TransitionOption.GIVEITEMS)){
@@ -222,29 +222,30 @@ public class TransitionController {
                 giveItems(transition, player, mo.getGiveItems(),teamIndex, woolTeams, insideArena,color);
             }
 
-            try{if (effects != null)
+            try {
+                if (effects != null)
                 EffectUtil.enchantPlayer(p, effects);
-            } catch (Exception e){
+            } 
+            catch (Exception e){
                 if (!Defaults.DEBUG_VIRTUAL)
                     Log.warn("BattleArena "+p.getName()+" was not enchanted");
             }
             if (Defaults.ANNOUNCE_GIVEN_ITEMS){
                 String prizeMsg = mo.getPrizeMsg(null, prizeMoney);
-                if (prizeMsg != null){
-                    MessageUtil.sendMessage(player,"&eYou have been given \n"+prizeMsg);}
+                if (prizeMsg != null)
+                    MessageUtil.sendMessage(player,"&eYou have been given \n"+prizeMsg);
             }
             if (teleportIn){
                 transition(am, MatchState.ONSPAWN, player, team, false);
             }
             /// else we have a subste of the options we should always do regardless if they are alive or not
-        }  else if (teleportOut){
-            if (mo.hasOption(TransitionOption.REMOVEPERMS)){ removePerms(player, mo.getRemovePerms());}
-            if (mo.hasOption(TransitionOption.GAMEMODE)) { PlayerUtil.setGameMode(p,mo.getGameMode()); }
-            if (mo.hasOption(TransitionOption.FLIGHTOFF)) { PlayerUtil.setFlight(p,false); }
-            if (mo.hasOption(TransitionOption.DEENCHANT)) { psc.deEnchant(p);}
-
-
-            if (wipeInventory) { InventoryUtil.clearInventory(p); }
+        }  
+        else if (teleportOut) {
+//            if (mo.hasOption(TransitionOption.REMOVEPERMS)) removePerms(player, mo.getRemovePerms());
+            if (mo.hasOption(TransitionOption.GAMEMODE)) PlayerUtil.setGameMode(p,mo.getGameMode()); 
+            if (mo.hasOption(TransitionOption.FLIGHTOFF)) PlayerUtil.setFlight(p,false);
+            if (mo.hasOption(TransitionOption.DEENCHANT)) psc.deEnchant(p);
+            if (wipeInventory) InventoryUtil.clearInventory(p);
         }
 
         /// Teleport out, need to do this at the end so that all the onCancel/onComplete options are completed first
@@ -253,8 +254,8 @@ public class TransitionController {
         }
         /// Restore their exp and items.. Has to happen AFTER teleport
         boolean restoreAll = mo.hasOption(TransitionOption.RESTOREALL);
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREGAMEMODE)){ psc.restoreGamemode(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREEXPERIENCE)) { psc.restoreExperience(player);}
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREGAMEMODE)) psc.restoreGamemode(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREEXPERIENCE)) psc.restoreExperience(player);
         if (restoreAll || mo.hasOption(TransitionOption.RESTOREITEMS)){
             if (woolTeams && teamIndex != -1){
                 /// Teams that have left can have a -1 teamIndex
@@ -263,13 +264,13 @@ public class TransitionController {
             if (Defaults.DEBUG_TRANSITIONS)Log.info("   "+transition+" transition restoring items "+insideArena);
             psc.restoreItems(player);
         }
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREENCHANTS)){psc.restoreEffects(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHEALTH)){ psc.restoreHealth(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHUNGER)){ psc.restoreHunger(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREMAGIC)) { psc.restoreMagic(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHEROCLASS)){psc.restoreHeroClass(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREGODMODE)){psc.restoreGodmode(player);}
-        if (restoreAll || mo.hasOption(TransitionOption.RESTOREFLIGHT)){psc.restoreFlight(player);}
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREENCHANTS)) psc.restoreEffects(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHEALTH)) psc.restoreHealth(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHUNGER)) psc.restoreHunger(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREMAGIC)) psc.restoreMagic(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREHEROCLASS)) psc.restoreHeroClass(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREGODMODE)) psc.restoreGodmode(player);
+        if (restoreAll || mo.hasOption(TransitionOption.RESTOREFLIGHT)) psc.restoreFlight(player);
         return true;
     }
 
@@ -281,15 +282,15 @@ public class TransitionController {
         HeroesController.setMagicLevelP(p, magic);
     }
 
-    private static void removePerms(ArenaPlayer p, List<String> perms) {
-//		if (perms == null || perms.isEmpty()) {
-//        }
-        /// TODO complete
-    }
+//    private static void removePerms(ArenaPlayer p, List<String> perms) {
+////		if (perms == null || perms.isEmpty()) {
+////        }
+//        /// TODO complete
+//    }
 
     private static void addPerms(ArenaPlayer p, List<String> perms, int ticks) {
-        if (perms == null || perms.isEmpty())
-            return;
+        if (perms == null || perms.isEmpty()) return;
+        
         PermissionAttachment attachment = p.getPlayer().addAttachment(BattleArena.getSelf(),ticks);
         for (String perm: perms){
             attachment.setPermission(perm, true);}
@@ -297,36 +298,34 @@ public class TransitionController {
 
     private static void giveItems(final CompetitionState ms, final ArenaPlayer p, final List<ItemStack> items,
                                   final int teamIndex,final boolean woolTeams, final boolean insideArena, Color color) {
-        if (woolTeams && insideArena){
-            TeamUtil.setTeamHead(teamIndex, p);}
-        if (Defaults.DEBUG_TRANSITIONS)Log.info("   "+ms+" transition giving items to " + p.getName());
-        if (items == null || items.isEmpty())
-            return;
-        InventoryUtil.addItemsToInventory(p.getPlayer(),items,woolTeams,color);
+        
+        if (woolTeams && insideArena) TeamUtil.setTeamHead(teamIndex, p);
+        if (Defaults.DEBUG_TRANSITIONS) Log.info("   " + ms + " transition giving items to " + p.getName() );
+        
+        if (items != null && !items.isEmpty()) InventoryUtil.addItemsToInventory( p.getPlayer(), items, woolTeams, color);
     }
 
     private static ArenaClass getArenaClass(StateOptions mo, final int teamIndex) {
         Map<Integer,ArenaClass> classes = mo.getClasses();
-        if (classes == null)
-            return null;
-        if (classes.containsKey(teamIndex)){
+        if (classes == null) return null;
+        
+        if (classes.containsKey(teamIndex))
             return classes.get(teamIndex);
-        } else if (classes.containsKey(ArenaClass.DEFAULT)){
+        else if (classes.containsKey(ArenaClass.DEFAULT))
             return classes.get(ArenaClass.DEFAULT);
-        }
+        
         return null;
     }
 
     private static String getDisguise(StateOptions mo, final int teamIndex) {
         Map<Integer,String> disguises = mo.getDisguises();
-        if (disguises==null)
-            return null;
-        if (disguises.containsKey(teamIndex)){
+        if (disguises==null) return null;
+        
+        if (disguises.containsKey(teamIndex))
             return disguises.get(teamIndex);
-        } else if (disguises.containsKey(Integer.MAX_VALUE)){
+        else if (disguises.containsKey(Integer.MAX_VALUE))
             return disguises.get(Integer.MAX_VALUE);
-        }
+        
         return null;
     }
-
 }

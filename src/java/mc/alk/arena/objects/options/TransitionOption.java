@@ -6,10 +6,13 @@ import static mc.alk.arena.objects.options.TransitionOption.OPTYPE.TRANSITION;
 
 import org.bukkit.GameMode;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.MinMax;
 
+@AllArgsConstructor
 public enum TransitionOption {
     /// Default only Options
     DUELONLY ("duelOnly", false, CONFIG),					/// DEFAULTS only: this game type is duel only
@@ -102,8 +105,8 @@ public enum TransitionOption {
     ENCHANTS("enchants",true,TRANSITION),						/// Give the Enchants found in enchants:
     DEENCHANT("deEnchant",false,TRANSITION),					/// DeEnchant all positive and negative effects from the player
     CLASSENCHANTS("classEnchants",false,TRANSITION),			/// regive the enchants from the class they have chosen
-    ADDPERMS("addPerms", false,TRANSITION),					/// NOT IMPLEMENTED
-    REMOVEPERMS("removePerms", false,TRANSITION),				/// NOT IMPLEMENTED
+//    ADDPERMS("addPerms", false,TRANSITION),					/// NOT IMPLEMENTED
+//    REMOVEPERMS("removePerms", false,TRANSITION),				/// NOT IMPLEMENTED
     GAMEMODE("gameMode",true,TRANSITION),						/// =<GameMode> : sets the given gamemode of the player
     DOCOMMANDS("doCommands",true,TRANSITION),					/// Run a list of commands as either the console or player
     FLIGHTOFF("flightOff",false,TRANSITION),					/// Disable flight
@@ -139,32 +142,16 @@ public enum TransitionOption {
     POOLMONEY("poolMoney",true, TRANSITION),					/// =<double>: give the players a percent of the money contributed by all players
     ;
 
-    public boolean isState() {
-        return opType == OPTYPE.STATE;
-    }
-
-    public boolean isTransition() {
-        return opType == OPTYPE.TRANSITION;
-    }
-
-    public enum OPTYPE{
-        STATE, TRANSITION, CONFIG
-    }
-    
-    final String name; 
+    @Getter final String name; 
     final boolean hasValue; 
     final OPTYPE opType;
     
-    TransitionOption(String name,Boolean hasValue, OPTYPE opType){
-        this.name= name;
-        this.hasValue = hasValue;
-        this.opType = opType;
-    }
-
     @Override
     public String toString(){ return name; }
-
     public boolean hasValue(){ return hasValue; }
+    public boolean isState() { return opType == OPTYPE.STATE; }
+    public boolean isTransition() { return opType == OPTYPE.TRANSITION; }
+
 
     public static TransitionOption fromString(String str){
         str = str.toUpperCase();
@@ -229,5 +216,9 @@ public enum TransitionOption {
                 break;
         }
         return null;
+    }
+
+    public enum OPTYPE {
+        STATE, TRANSITION, CONFIG
     }
 }

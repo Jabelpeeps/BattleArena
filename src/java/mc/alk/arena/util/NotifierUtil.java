@@ -84,5 +84,4 @@ public class NotifierUtil {
         }
         list.add(l);
     }
-
 }

@@ -5,35 +5,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+
 /**
  * @author alkarin
  */
 public class TimingUtil {
-    static List<TimingUtil> timers;
+    @Getter static List<TimingUtil> timers;
 
-    Map<String,TimingStat> timings = new HashMap<String,TimingStat>();
-
-    public static List<TimingUtil> getTimers() {
-        return timers;
-    }
+    @Getter Map<String,TimingStat> timings = new HashMap<>();
 
     public static void resetTimers() {
         for (TimingUtil t: timers){
             t.timings.clear();
         }
     }
-
     public class TimingStat {
         public int count = 0;
         public long totalTime = 0;
-        public long getAverage() {
-            return totalTime/count;
-        }
+        public long getAverage() { return totalTime/count; }
     }
-
     public TimingUtil(){
         if (timers == null) {
-            timers = new ArrayList<TimingUtil>();
+            timers = new ArrayList<>();
         }
         timers.add(this);
     }
@@ -50,9 +44,4 @@ public class TimingUtil {
         }
         return t;
     }
-
-    public Map<String, TimingStat> getTimings() {
-        return timings;
-    }
-
 }

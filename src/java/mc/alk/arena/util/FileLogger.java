@@ -1,7 +1,5 @@
 package mc.alk.arena.util;
 
-import mc.alk.arena.BattleArena;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +15,8 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import mc.alk.arena.BattleArena;
+
 
 /**
  *
@@ -24,10 +24,9 @@ import java.util.Vector;
  *
  */
 public class FileLogger {
-    static final String version ="1.0.3";
-    static Vector<String> msgs = new Vector<String>();
+    static final String version = "1.0.3";
+    static Vector<String> msgs = new Vector<>();
 
-    public FileLogger() {}
     public static Integer count = 0;
     public static final Integer saveEvery = 100;
     public static final Integer saveTime = 60000; /// every 60 seconds
@@ -37,14 +36,9 @@ public class FileLogger {
 
     public static synchronized void init(){
         File f = new File(BattleArena.getSelf().getDataFolder()+"/saves/log.txt");
-        int lineCount;
-        try {
-            lineCount = count(f.getAbsolutePath());
-            if (lineCount > maxFileSize){
-                trimFile(f,lineCount);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        int lineCount = count(f.getAbsolutePath());
+        if (lineCount > maxFileSize){
+            trimFile(f,lineCount);
         }
     }
 
@@ -103,14 +97,13 @@ public class FileLogger {
 
     private static File trimFile(File f, int lineCount) {
         File f2 = new File(BattleArena.getSelf().getDataFolder()+"/log2.txt");
-        BufferedWriter out = null;
-        BufferedReader br = null;
-        try {
-            out = new BufferedWriter(new FileWriter(f2,true));
-            br = new BufferedReader(new FileReader(f));
-            int count = 0;
+
+        try ( BufferedWriter out = new BufferedWriter(new FileWriter(f2,true));
+              BufferedReader br = new BufferedReader(new FileReader(f)); ) {
+
+            int _count = 0;
             String line;
-            while (count < maxFileSize - lineCount){
+            while (_count < maxFileSize - lineCount){
                 br.readLine();
             }
             while ((line = br.readLine()) != null){
@@ -119,14 +112,9 @@ public class FileLogger {
             if (!f2.renameTo(f)){
                 Log.info("Couldn't rename file " + f.getName());
             }
-        } catch (Exception e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
-        } finally{
-            if (out != null)
-                try {out.close();} catch (Exception e) {/* do nothing */}
-            if (br != null)
-                try {br.close();} catch (Exception e) {/* do nothing */}
-        }
+        } 
         return f2;
     }
 
@@ -138,27 +126,25 @@ public class FileLogger {
      * @return line count
      * @throws IOException
      */
-    static int count(String filename) throws IOException {
+    static int count(String filename)  {
         File f = new File(filename);
         if (!f.exists())
             return 0;
-        InputStream is = new BufferedInputStream(new FileInputStream(filename));
-        try {
+        
+        try ( InputStream is = new BufferedInputStream(new FileInputStream(filename)); ) {
             byte[] c = new byte[1024];
-            int count = 0;
+            int _count = 0;
             int readChars;
             while ((readChars = is.read(c)) != -1) {
                 for (int i = 0; i < readChars; ++i) {
                     if (c[i] == '\n')
-                        ++count;
+                        ++_count;
                 }
             }
-            return count;
-        } finally {
-            try{is.close();} catch(Exception e){/* do nothing */}
-        }
+            return _count;
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } 
+        return 0;
     }
-
-
 }
-

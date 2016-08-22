@@ -26,10 +26,10 @@ import mc.alk.arena.controllers.PlayerRestoreController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.regions.WorldGuardRegion;
-import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.MessageUtil;
 
 
 /**
@@ -67,7 +67,7 @@ public class BAPlayerListener implements Listener  {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event){
-		if (!EssentialsController.enabled() || !PlayerController.hasArenaPlayer(event.getEntity()))
+		if (!EssentialsUtil.isEnabled() || !PlayerController.hasArenaPlayer(event.getEntity()))
 			return;
         ArenaPlayer ap = PlayerController.toArenaPlayer(event.getEntity());
         if (!restore.containsKey(ap.getUniqueId()))
@@ -76,7 +76,7 @@ public class BAPlayerListener implements Listener  {
         PlayerRestoreController prc = getOrCreateRestorer(ap);
 		Location loc = prc.getBackLocation();
 		if (loc != null){
-			EssentialsController.setBackLocation(event.getEntity().getName(), loc);
+		    EssentialsUtil.setBackLocation(event.getEntity(), loc);
 		}
 	}
 
@@ -123,8 +123,8 @@ public class BAPlayerListener implements Listener  {
 
 	public static void teleportOnReenter(ArenaPlayer player, Location destloc, Location lastloc) {
 		PlayerRestoreController prc = getOrCreateRestorer(player);
-		prc.setTp(destloc);
-		prc.setLastLocs(lastloc);
+		prc.setTeleportLocation(destloc);
+		prc.setLastLoc(lastloc);
 	}
 
 	public static void addMessageOnReenter(ArenaPlayer player, String message) {
@@ -208,6 +208,4 @@ public class BAPlayerListener implements Listener  {
         UUID id = player.getUniqueId();
         return restore.containsKey(id) ? restore.get(id).getBackLocation() : null;
     }
-
-
 }

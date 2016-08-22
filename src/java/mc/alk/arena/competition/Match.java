@@ -1153,8 +1153,8 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                 this.prizePoolMoney -= params.getEntranceFee();
             /// refund their join requirements
             if (player.getMetaData().getJoinRequirements()!=null){
-                PlayerStoreController psc = new PlayerStoreController(player.getMetaData().getJoinRequirements());
-                psc.restoreAll(player);
+                PlayerStoreController _psc = new PlayerStoreController(player.getMetaData().getJoinRequirements());
+                _psc.restoreAll(player);
             }
         }
         if (player.getMetaData().getJoinRequirements()!=null){

@@ -1,9 +1,11 @@
 package mc.alk.arena.serializers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.BattleArena;
@@ -17,14 +19,19 @@ import mc.alk.arena.util.TeamUtil.TeamHead;
 public class TeamHeadSerializer extends BaseConfig{
 
 	public void loadAll(){
-		try {config.load(file);} catch (Exception e){Log.printStackTrace(e);}
+		try {
+		    config.load(file); 
+		} 
+		catch (IOException | InvalidConfigurationException e){ Log.printStackTrace(e); }
+		
 		loadTeams(config);
 	}
 
 	public static void loadTeams(ConfigurationSection cs) {
-		if (cs == null){
+		if (cs == null) {
 			Log.info(BattleArena.getNameAndVersion() +" has no teamColors");
-			return;}
+			return;
+		}
 		List<String> keys = cs.getStringList("teams");
 		boolean first = true;
 		for (String teamStr : keys){
@@ -61,5 +68,4 @@ public class TeamHeadSerializer extends BaseConfig{
 		TeamUtil.addTeamHead(name, new TeamHead( item, split[0], Color.fromRGB( r, g, b) ) );
 		return name;
 	}
-
 }

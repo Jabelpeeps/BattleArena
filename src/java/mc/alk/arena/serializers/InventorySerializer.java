@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
@@ -28,16 +29,16 @@ import mc.alk.arena.util.Log;
 
 public class InventorySerializer {
 
-	public static List<String> getDates(final OfflinePlayer player) {
+    static DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG, Locale.getDefault() );
+	
+    public static List<String> getDates( OfflinePlayer player) {
 	    
         UUID id = player.getUniqueId();
         BaseConfig serializer = getSerializer(id);
-        if (serializer == null)
-            return null;
+        if (serializer == null) return null;
+        
         PriorityQueue<Long> dates = new PriorityQueue<>(Defaults.NUM_INV_SAVES, Collections.reverseOrder());
         Set<String> keys = serializer.config.getKeys(false);
-
-        DateFormat format = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
 
         for (String key : keys) {
             ConfigurationSection cs = serializer.config.getConfigurationSection(key);
@@ -47,7 +48,8 @@ public class InventorySerializer {
             Date date;
             try {
                 date = format.parse(strdate);
-            } catch (ParseException e) {
+            } 
+            catch (ParseException e) {
                 Log.printStackTrace(e);
                 continue;
             }
@@ -60,9 +62,8 @@ public class InventorySerializer {
         return strdates;
     }
 
-	public static PInv getInventory(final OfflinePlayer player, int index){
-		if (index < 0 || index >= Defaults.NUM_INV_SAVES)
-			return null;
+	public static PInv getInventory( OfflinePlayer player, int index){
+		if (index < 0 || index >= Defaults.NUM_INV_SAVES) return null;
 		
         UUID id = player.getUniqueId();
 		BaseConfig serializer = getSerializer(id);
@@ -70,11 +71,9 @@ public class InventorySerializer {
 		if (serializer == null) return null;
 		
 		PriorityQueue<KeyValue<Long,PInv>> dates =
-				new PriorityQueue<>( Defaults.NUM_INV_SAVES, (arg0, arg1) -> { return arg1.key.compareTo(arg0.key); });
+				new PriorityQueue<>( Defaults.NUM_INV_SAVES, (arg0, arg1) -> arg1.key.compareTo(arg0.key) );
 		
 		Set<String> keys = serializer.config.getKeys(false);
-
-		DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG );
 
 		for (String key: keys) {
 			ConfigurationSection cs = serializer.config.getConfigurationSection(key);
@@ -107,10 +106,9 @@ public class InventorySerializer {
         Scheduler.scheduleAsynchronousTask( () -> {
             
 				BaseConfig serializer = getSerializer(id);
-				if (serializer == null)
-					return;
-				Date now = new Date();
-				String date = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG ).format(now);
+				if (serializer == null) return;
+				
+				String date = format.format(new Date());
 				int curSection = serializer.config.getInt( "curSection", 0 );
 				serializer.config.set( "curSection", (curSection +1) % Defaults.NUM_INV_SAVES );
 				ConfigurationSection pcs = serializer.config.createSection( curSection + "" );
@@ -141,17 +139,15 @@ public class InventorySerializer {
 		BaseConfig bs = new BaseConfig();
 		File dir = new File(BattleArena.getSelf().getDataFolder()+"/saves/inventories/");
 		
-		if (!dir.exists()){
-			try {dir.mkdirs();}catch (Exception e){/* do nothing */}
-			}
+		if (!dir.exists()) dir.mkdirs();
+			
 		return bs.setConfig(dir.getPath()+"/"+id+".yml");
 	}
 
 	public static boolean giveInventory(ArenaPlayer player, Integer index, Player other) {
 		PInv pinv = getInventory(player.getPlayer(), index);
 		
-		if (pinv == null)
-			return false;
+		if (pinv == null) return false;
 
 		for (ItemStack is: pinv.armor){
 			InventoryUtil.addItemToInventory(other, is);
@@ -159,10 +155,8 @@ public class InventorySerializer {
 		for (ItemStack is: pinv.contents){
 			InventoryUtil.addItemToInventory(other, is);
 		}
-		try{other.updateInventory();} catch(Exception e){ /// yes this has thrown errors on me before
-			return false; /// do I really want to return false? do I care if this doesnt go through?
-		}
+		other.updateInventory();
+		
 		return true;
 	}
-
 }

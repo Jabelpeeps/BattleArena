@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.controllers.BAEventController;
 import mc.alk.arena.controllers.BAEventController.SizeEventPair;
@@ -23,7 +24,6 @@ import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
 import mc.alk.arena.util.TimeUtil;
 
 
@@ -145,7 +145,7 @@ public class EventExecutor extends BAExecutor{
 	}
 
 	public boolean eventJoin(ArenaPlayer p, EventParams eventParams, String[] args, boolean adminCommand) {
-		if (!adminCommand && !PermissionsUtil.hasMatchPerm(p.getPlayer(), eventParams, "join")){
+		if (!adminCommand && !Permissions.hasMatchPerm(p.getPlayer(), eventParams, "join")){
 			sendSystemMessage(p,"no_join_perms", eventParams.getCommand());
 			return false;
 		}
@@ -252,7 +252,7 @@ public class EventExecutor extends BAExecutor{
 
 
 	private void appendTeamStatus(CommandSender sender, AbstractComp event, StringBuilder sb) {
-		if (PermissionsUtil.isAdmin(sender) || sender.hasPermission("arena.event.status")){
+		if (Permissions.isAdmin(sender) || sender.hasPermission("arena.event.status")){
 			for (ArenaTeam t: event.getTeams()){
 				sb.append("\n").append(t.getTeamInfo(null));
 			}

@@ -13,7 +13,7 @@ import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.messaging.plugins.HerochatPlugin;
 import mc.alk.arena.plugins.DisguiseController;
-import mc.alk.arena.plugins.EssentialsController;
+import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.FactionsController;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.McMMOController;
@@ -93,18 +93,9 @@ public class BAPluginListener implements Listener {
             Log.info("[BattleArena] CombatTag detected, enabling limited tag support");
         }
     }
-
     public void loadEssentials() {
-        if (!EssentialsController.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("Essentials");
-            if (plugin != null) {
-                if (EssentialsController.setPlugin(plugin)) {
-                    Log.info("[BattleArena] Essentials detected. God mode handling activated");
-                } else {
-                    Log.info("[BattleArena] Essentials detected but could not hook properly");
-                }
-            }
-        }
+        if ( EssentialsUtil.isEnabled()) 
+            Log.info("[BattleArena] Essentials detected. God mode handling activated");
     }
 
     public void loadFactions() {

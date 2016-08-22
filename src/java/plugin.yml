@@ -1,6 +1,6 @@
 name: ${project.name}
 main: mc.alk.arena.BattleArena
-version: ${project.version}-b${project.build.number}
+version: ${project.version}-b${env.BUILD_NUMBER}
 website: http://dev.bukkit.org/bukkit-plugins/battlearena2/
 description: Arena system for BattleCraft
 authors: [alkarin, Europia79]

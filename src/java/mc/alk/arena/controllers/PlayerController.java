@@ -16,7 +16,7 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.ServerUtil;
 
 public final class PlayerController {
-	private static HashMap<UUID,ArenaPlayer> players = new HashMap<>();
+	private static HashMap<UUID, ArenaPlayer> players = new HashMap<>();
 
 	/**
 	 * wrap a player into an ArenaPlayer
@@ -101,10 +101,10 @@ public final class PlayerController {
 	}
 
     public static List<Player> UUIDToPlayerList(Collection<UUID> uuids) {
-        List<Player> players = new ArrayList<>(uuids.size());
+        List<Player> _players = new ArrayList<>(uuids.size());
         for (UUID id : uuids)
-            players.add(ServerUtil.findPlayer(id));
-        return players;
+            _players.add(ServerUtil.findPlayer(id));
+        return _players;
     }
 
     public static void clearArenaPlayers(){

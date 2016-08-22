@@ -15,13 +15,13 @@ import org.bukkit.inventory.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
 
 abstract class AbstractTeam implements ArenaTeam{
 	static int count = 0;
@@ -382,27 +382,27 @@ abstract class AbstractTeam implements ArenaTeam{
     public int getPriority() {
 		int priority = Integer.MAX_VALUE;
 		for (ArenaPlayer ap: players){
-			if ( PermissionsUtil.getPriority( ap ) < priority)
-				priority = PermissionsUtil.getPriority( ap );
+			if ( Permissions.getPriority( ap ) < priority)
+				priority = Permissions.getPriority( ap );
 		}
 		return priority;
 	}
 
 	@Override
 	public void addPlayer(ArenaPlayer player) {
-		this.players.add(player);
-		this.leftPlayers.remove(player);
-		this.nameChanged = true;
+		players.add(player);
+		leftPlayers.remove(player);
+		nameChanged = true;
 	}
 
 	@Override
 	public boolean removePlayer(ArenaPlayer player) {
-		this.deadPlayers.remove(player);
-		this.leftPlayers.remove(player);
-		this.kills.remove(player);
-		this.deaths.remove(player);
-		this.nameChanged = true;
-        return this.players.remove(player);
+		deadPlayers.remove(player);
+		leftPlayers.remove(player);
+		kills.remove(player);
+		deaths.remove(player);
+		nameChanged = true;
+        return players.remove(player);
     }
 
 	/**
@@ -418,46 +418,46 @@ abstract class AbstractTeam implements ArenaTeam{
 	}
 
 	@Override
-	public void addPlayers(Collection<ArenaPlayer> players) {
-		this.players.addAll(players);
-		this.nameChanged = true;
+	public void addPlayers(Collection<ArenaPlayer> _players) {
+		players.addAll(_players);
+		nameChanged = true;
 	}
 
 	@Override
-	public void removePlayers(Collection<ArenaPlayer> players) {
-		this.players.removeAll(players);
-		this.deadPlayers.removeAll(players);
-		this.leftPlayers.removeAll(players);
-		for (ArenaPlayer ap: players){
-			this.kills.remove(ap);
-			this.deaths.remove(ap);
+	public void removePlayers(Collection<ArenaPlayer> _players) {
+		players.removeAll(_players);
+		deadPlayers.removeAll(_players);
+		leftPlayers.removeAll(_players);
+		for (ArenaPlayer ap: _players){
+			kills.remove(ap);
+			deaths.remove(ap);
 		}
-		this.nameChanged = true;
+		nameChanged = true;
 	}
 
 	@Override
 	public void clear(){
-		this.players.clear();
-		this.deadPlayers.clear();
-		this.leftPlayers.clear();
-		this.nameManuallySet = false;
-		this.nameChanged = false;
-		this.name = "Empty";
-		this.kills.clear();
-		this.deadPlayers.clear();
+		players.clear();
+		deadPlayers.clear();
+		leftPlayers.clear();
+		nameManuallySet = false;
+		nameChanged = false;
+		name = "Empty";
+		kills.clear();
+		deadPlayers.clear();
 	}
 
 	@Override
-    public void setArenaObjective(ArenaObjective objective){
-		this.objective = objective;
+    public void setArenaObjective(ArenaObjective _objective){
+		objective = _objective;
 		int tk = 0;
 		for (ArenaPlayer player: this.getPlayers()){
-			Integer kills = getNKills(player);
-			if (kills == null) kills = 0;
-			objective.setPoints(player, kills);
-			tk += kills;
+			Integer _kills = getNKills(player);
+			if (_kills == null) _kills = 0;
+			_objective.setPoints(player, _kills);
+			tk += _kills;
 		}
-		objective.setPoints(this, tk);
+		_objective.setPoints(this, tk);
 	}
 
 	@Override

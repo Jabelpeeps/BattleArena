@@ -16,8 +16,8 @@ import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
-import mc.alk.arena.util.Log;
 import mc.alk.arena.util.InventoryUtil.PInv;
+import mc.alk.arena.util.Log;
 
 public class PlayerStoreController {
     static final PlayerStoreController INSTANCE = new PlayerStoreController();
@@ -26,10 +26,10 @@ public class PlayerStoreController {
     public PlayerStoreController(){}
 
     public PlayerStoreController(PlayerSave save) {
-        saves.put(save.getID(), save);
+        saves.put( save.getUUID(), save);
     }
 
-    private PlayerSave getOrCreateSave(final ArenaPlayer player) {
+    private PlayerSave getOrCreateSave( ArenaPlayer player) {
         PlayerSave save = saves.get(player.getUniqueId());
         if (save !=null)
             return save;

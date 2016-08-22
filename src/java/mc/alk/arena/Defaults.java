@@ -106,7 +106,7 @@ public class Defaults {
     public static boolean DEBUG_TRACKING = false;
     public static boolean DEBUG_MATCH_TEAMS = false;
 
-    public static boolean ALLOW_ADMIN_CMDS_IN_Q_OR_MATCH = false;
+    public static boolean ALLOW_ADMIN_CMDS_IN_Q_OR_MATCH = true;
     public static boolean ENABLE_TELEPORT_FIX = false;
     public static boolean ENABLE_PLAYER_READY_BLOCK = true;
 

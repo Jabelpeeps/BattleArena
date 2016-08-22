@@ -1,16 +1,16 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.arena.util.TeamUtil;
+import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.List;
+import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.spawns.SpawnLocation;
+import mc.alk.arena.util.TeamUtil;
 
 
 public class ArenaDebugger {
@@ -19,7 +19,7 @@ public class ArenaDebugger {
 
 	public static ArenaDebugger getDebugger(Arena arena){
 		if (arenas == null){
-			arenas = new HashMap<Arena, ArenaDebugger>();
+			arenas = new HashMap<>();
 		}
 
 		ArenaDebugger ad = arenas.get(arena);
@@ -39,7 +39,7 @@ public class ArenaDebugger {
 	}
 
     final Arena arena;
-	HashMap<Location, ItemStack> oldBlocks = new HashMap<Location, ItemStack>(); /// Used for debugging with show/hide spawns
+	HashMap<Location, ItemStack> oldBlocks = new HashMap<>(); /// Used for debugging with show/hide spawns
 
 	public ArenaDebugger(Arena arena) {
 		this.arena = arena;
@@ -62,7 +62,7 @@ public class ArenaDebugger {
 	}
 
 	public void showSpawns(Player player) {
-		oldBlocks = new HashMap<Location,ItemStack>();
+		oldBlocks = new HashMap<>();
 		SpawnController sc = arena.getSpawnController();
 		if (sc != null){
 			sc.start();
@@ -98,7 +98,9 @@ public class ArenaDebugger {
 		if (!oldBlocks.containsKey(key)){
 			Block b = l.getBlock();
 			player.sendBlockChange(l, is.getTypeId(), (byte)is.getDurability());
-			oldBlocks.put(key, new ItemStack(b.getType(), b.getData()));
+			ItemStack item = new ItemStack( b.getType() );
+		    item.setData( b.getState().getData() );
+			oldBlocks.put(key, item );
 		}
 	}
 

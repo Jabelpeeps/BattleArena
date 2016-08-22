@@ -179,6 +179,4 @@ public class BAEventController implements Listener {
 	public void onEventFinished(EventFinishedEvent event){
 		removeEvent(event.getEvent());
 	}
-
-
 }

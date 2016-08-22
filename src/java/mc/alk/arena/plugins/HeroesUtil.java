@@ -24,12 +24,11 @@ import mc.alk.arena.util.PlayerUtil;
 
 public abstract class HeroesUtil {
 	static Heroes heroes = null;
-	static Map<ArenaTeam,HeroParty> parties = 
-	        Collections.synchronizedMap(new HashMap<ArenaTeam,HeroParty>());
+	static Map<ArenaTeam,HeroParty> parties = Collections.synchronizedMap(new HashMap<>());
 
-	public abstract void setHeroPlayerHealth(Player player, double health);
-	public abstract double getHeroHealth(Player player);
-	public abstract void setHeroHealthP(Player player, double health);
+//	public abstract void setHeroPlayerHealth(Player player, double health);
+//	public abstract double getHeroHealth(Player player);
+//	public abstract void setHeroHealthP(Player player, double health);
 
 	public static boolean hasHeroClass(String name) {
 		if (heroes == null)

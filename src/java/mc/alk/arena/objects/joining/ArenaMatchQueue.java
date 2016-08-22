@@ -29,6 +29,7 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.competition.ArenaMatch;
 import mc.alk.arena.competition.Match;
+import mc.alk.arena.controllers.CommandController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.PlayerStoreController;
@@ -62,28 +63,21 @@ import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.util.CommandUtil;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.MinMax;
-import mc.alk.arena.util.PermissionsUtil;
-
 
 public class ArenaMatchQueue implements ArenaListener, Listener {
     static final boolean DEBUG = false;
     static boolean disabledAllCommands;
     final private static HashSet<String> disabledCommands = new HashSet<>();
     final private static HashSet<String> enabledCommands = new HashSet<>();
-
     final List<WaitingObject> joinHandlers = new LinkedList<>();
     final Map<WaitingObject, IdTime> forceTimers = Collections.synchronizedMap(new HashMap<WaitingObject, IdTime>());
     final protected Map<UUID, WaitingObject> inQueue = new HashMap<>();
-
     final protected MethodController methodController = new MethodController("QC");
-
     final private Map<ArenaType, ArenaQueue> arenaqueue = new ConcurrentHashMap<>();
-
     final Map<ArenaType,LinkedList<FoundMatch>> delayedReadyMatches = new HashMap<>();
     final private Map<ArenaType, Integer> runningMatchTypes = Collections.synchronizedMap(new HashMap<ArenaType, Integer>());
 
@@ -146,8 +140,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             return m;
         }
 
-        private void addCompetition(AbstractJoinHandler joinHandler, Match m) {
-            for (ArenaTeam t : joinHandler.getTeams()) {
+        private void addCompetition(AbstractJoinHandler _joinHandler, Match m) {
+            for (ArenaTeam t : _joinHandler.getTeams()) {
                 for (ArenaPlayer ap : t.getPlayers()) {
                     ap.addCompetition(m);
                 }
@@ -762,10 +756,10 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     @ArenaEventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
         if (!event.isCancelled() &&
-                CommandUtil.shouldCancel(event, disabledAllCommands, disabledCommands, enabledCommands)){
+                CommandController.shouldCancel(event, disabledAllCommands, disabledCommands, enabledCommands)){
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED+"You cannot use that command when you are in the queue");
-            if (PermissionsUtil.isAdmin(event.getPlayer())){
+            if (Permissions.isAdmin(event.getPlayer())){
                 MessageUtil.sendMessage(event.getPlayer(), "&cYou can set &6/bad allowAdminCommands true: &c to change");}
         }
     }
@@ -795,9 +789,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         
         AnnounceInterval(final ArenaMatchQueue amq, final WaitingObject wo, IdTime idt, final long timeMillis) {
             
-            final Countdown c = new Countdown(BattleArena.getSelf(),
-                    timeMillis/1000, 30L, 
-                    ( secondsRemaining ) -> {
+            Countdown c = new Countdown(BattleArena.getSelf(), timeMillis/1000, 30L, 
+                ( secondsRemaining ) -> {
                         if (secondsRemaining > 0 || secondsRemaining < 0) {
                             
                             Set<ArenaPlayer> players = new HashSet<>();
@@ -811,7 +804,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                         }
                         return true;
                 
-            });
+                });
             c.setCancelOnExpire(false);
             idt.c = c;
             forceTimers.put(wo, idt);

@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeamController;
@@ -49,10 +50,9 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Countdown;
+import mc.alk.arena.util.Countdown.CountdownCallback;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-import mc.alk.arena.util.PermissionsUtil;
-import mc.alk.arena.util.Countdown.CountdownCallback;
 
 
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {
@@ -102,11 +102,11 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public void addAllOnline() {
 
         for (Player p: Bukkit.getOnlinePlayers()){
-            if (PermissionsUtil.isAdmin(p)) { /// skip admins (they are doin' importantz thingz)
-                continue;}
+            if (Permissions.isAdmin(p)) continue;
+
             ArenaTeam t = TeamController.createTeam(params, PlayerController.toArenaPlayer(p));
             TeamJoinObject tqo = new TeamJoinObject(t,params,null);
-            this.joining(tqo);
+            joining(tqo);
         }
     }
 
@@ -180,9 +180,10 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     protected void endEvent() {
-        if (state == EventState.CLOSED)
-            return;
+        if (state == EventState.CLOSED) return;
+        
         transitionTo(EventState.CLOSED);
+        
         if (Defaults.DEBUG_TRACE) Log.info("BAEvent::endEvent");
         stopTimer();
 
@@ -205,14 +206,14 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public abstract boolean canLeave(ArenaPlayer p);
 
     @Override
-    protected void transitionTo(CompetitionState state){
-        this.state = (EventState) state;
+    protected void transitionTo(CompetitionState _state){
+        this.state = (EventState) _state;
         times.put(this.state, System.currentTimeMillis());
     }
 
     @Override
-    public Long getTime(CompetitionState state){
-        return times.get(state);
+    public Long getTime(CompetitionState _state){
+        return times.get(_state);
     }
 
     /**
@@ -222,6 +223,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public boolean leave(ArenaPlayer p) {
         ArenaTeam t = getTeam(p);
         p.removeCompetition(this);
+        
         if (params.needsLobby()){
             RoomController.leaveLobby(params, p);
         }

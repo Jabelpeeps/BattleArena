@@ -19,8 +19,8 @@ import mc.alk.arena.objects.signs.ArenaStatusSign;
 public class SignUtil {
 
 	public static ArenaCommandSign getArenaCommandSign(Sign sign, String[] lines) {
-		if (lines.length < 2)
-			return null;
+		if (lines.length < 2) return null;
+		
 		String param = MessageUtil.decolorChat(lines[0]).replaceAll("[\\[\\" + Defaults.SIGN_PREFIX + "\\]]", "").trim();
         MatchParams mp = ParamController.getMatchParams(param);
         if (mp == null){
@@ -29,16 +29,15 @@ public class SignUtil {
 				if (p.getName().equalsIgnoreCase(param) ||
                         p.getCommand().equalsIgnoreCase(param) ||
                         p.getSignDisplayName()!=null &&
-                        MessageUtil.decolorChat(p.getSignDisplayName().replaceAll("[\\[\\"+Defaults.SIGN_PREFIX+"\\]]","").trim()).
-                                equalsIgnoreCase(param)){
+                        MessageUtil.decolorChat(
+                                p.getSignDisplayName().replaceAll( "[\\[\\" + Defaults.SIGN_PREFIX + "\\]]", "" ) .trim() 
+                                                ).equalsIgnoreCase(param)){
 					mp = p;
 					break;
 				}
 			}
-			if (mp == null){
-				return null;}
+			if (mp == null) return null;
 		}
-
 		try {
             return ArenaCommandSign.create(sign.getLocation(),mp,lines);
         } catch (Exception e){
@@ -76,7 +75,4 @@ public class SignUtil {
 		Material t = l.getBlock().getType();
 		return t == Material.SIGN || t == Material.SIGN_POST || t==Material.WALL_SIGN ? (Sign)l.getBlock().getState(): null;
 	}
-//	public void sendLines(Player player, Sign sign, String[] lines) {
-//        player.sendSignChange( sign.getLocation(), lines );
-//    }
 }

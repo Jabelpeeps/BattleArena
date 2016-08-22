@@ -1,9 +1,9 @@
 package mc.alk.arena.controllers;
 
-import mc.alk.arena.objects.ArenaParams;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import mc.alk.arena.objects.ArenaParams;
 
 /**
  * @author alkarin
@@ -11,9 +11,9 @@ import java.util.Map;
 public enum StatsController {
     INSTANCE;
 
-    Map<ArenaParams, CompetitionStat> stats = new HashMap<ArenaParams, CompetitionStat>();
+    Map<ArenaParams, CompetitionStat> stats = new HashMap<>();
 
-    class CompetitionStat{
+    class CompetitionStat {
         int nComps;
         int totalPlayers;
     }

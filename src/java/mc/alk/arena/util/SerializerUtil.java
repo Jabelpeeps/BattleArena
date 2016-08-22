@@ -26,6 +26,7 @@ public class SerializerUtil {
         if (mlocs != null){
             for (Integer key: mlocs.keySet()) {
                 ArrayList<String> list = new ArrayList<>();
+                
                 for (SpawnLocation l : mlocs.get(key)) {
                     String s = getLocString(l);
                     list.add(s);
@@ -35,7 +36,6 @@ public class SerializerUtil {
         }
         return locations;
     }
-
 
     public static Map<String, List<String>> toSpawnMap(AreaContainer rc) {
         if (rc == null)
@@ -136,16 +136,13 @@ public class SerializerUtil {
         return locs;
     }
 
-
     public static String getBlockString(Block b) {
-        return b.getType() +";" +b.getData() + ";"+getBlockLocString(b.getLocation());
+        return b.getType() + ";" + b.getState().getData() + ";" + getBlockLocString( b.getLocation() );
     }
-
 
     public static Block parseBlock(String string) {
         String[] split = string.split(";");
         Location l = getLocation(split[2]);
         return l.getWorld().getBlockAt(l);
     }
-
 }

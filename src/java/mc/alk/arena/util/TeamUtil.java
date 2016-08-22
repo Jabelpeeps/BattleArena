@@ -32,72 +32,61 @@ public class TeamUtil {
 			inv.setHelmet(new ItemStack(Material.AIR));
 		}
 	}
-
 	public static String getTeamName(int index) {
 		return index < teamHeads.size() ? teamHeads.get(index).getName() : "Team" + index;
 	}
-
 	public static void setTeamHead(final int color, ArenaTeam team) {
 		for (ArenaPlayer p: team.getPlayers()){
 			setTeamHead(color,p);
 		}
 	}
-
 	public static ItemStack getTeamHead(int index){
 		return index < teamHeads.size() ? teamHeads.get(index).getHeadItem() : new ItemStack(Material.DIRT);
 	}
-
 	public static ChatColor getTeamChatColor(int index){
 		return index < teamHeads.size() ? teamHeads.get(index).getChatColor() : ChatColor.WHITE;
 	}
-
 	public static Color getTeamColor(Integer index){
 		return index != null && index < teamHeads.size() ? teamHeads.get(index).getColor() : Color.WHITE;
 	}
-
     public static DyeColor getDyeColor(Integer index){
         return index != null && index < teamHeads.size() ? teamHeads.get(index).getDyeColor() : DyeColor.WHITE;
     }
-
     public static void setTeamHead(final int index, ArenaPlayer player) {
 		setTeamHead( getTeamHead(index), player );
 	}
-
 	public static void setTeamHead(final ItemStack item, ArenaPlayer player) {
 		setTeamHead( item, player.getPlayer() );
 	}
-
 	public static void setTeamHead(ItemStack item, Player p) {
-		if (p.isOnline() && !p.isDead()){
+		if (p.isOnline() && !p.isDead()) {
 			ItemStack is = p.getInventory().getHelmet();
-            try{
-			p.getInventory().setHelmet(item);
-			if (is != null && is.getType() != Material.AIR && is.getType()!= Material.WOOL){
-				InventoryUtil.addItemToInventory(p, is.clone(), is.getAmount(),true, true);}
-				p.updateInventory();
-			}catch (Exception e){
-                if (!Defaults.DEBUG_VIRTUAL)
-                    Log.printStackTrace(e);
-            }
+            p.getInventory().setHelmet(item);
+			
+			if (is != null && is.getType() != Material.AIR && is.getType()!= Material.WOOL)
+				InventoryUtil.addItemToInventory(p, is.clone(), is.getAmount(),true, true);
+			p.updateInventory();
 		}
 	}
 
 	public static Integer getTeamIndex(String op) {
-		if (map.containsKey(op.toUpperCase())){
-			return map.get(op.toUpperCase());}
-		try{
+		if (map.containsKey(op.toUpperCase()))
+			return map.get(op.toUpperCase());
+		try {
 			return Integer.valueOf(op);
-		} catch(Exception e){
+		} 
+		catch( NumberFormatException e ){
 			return null;
 		}
 	}
 
     public static Integer getFromHumanTeamIndex(String op) {
-        if (map.containsKey(op.toUpperCase())){
-            return map.get(op.toUpperCase());}
-        try{
+        if (map.containsKey(op.toUpperCase()))
+            return map.get(op.toUpperCase());
+        try {
             return Integer.valueOf(op) -1;
-        } catch(Exception e){
+        } 
+        catch( NumberFormatException e){
             return null;
         }
     }
