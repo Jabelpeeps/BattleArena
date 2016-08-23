@@ -1,10 +1,10 @@
 package mc.alk.arena.objects.teams;
 
-import mc.alk.arena.objects.ArenaPlayer;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import mc.alk.arena.objects.ArenaPlayer;
 
 
 /**
@@ -12,8 +12,8 @@ import java.util.Set;
  * @author alkarin
  *
  */
-class CompositeTeam extends AbstractTeam{
-	final Set<ArenaTeam> oldTeams = new HashSet<ArenaTeam>();
+public class CompositeTeam extends ArenaTeam{
+	final Set<ArenaTeam> oldTeams = new HashSet<>();
 
 	public CompositeTeam() {
 		super();

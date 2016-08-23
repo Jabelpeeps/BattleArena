@@ -7,9 +7,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.MessageUtil;
 
 
-
-public class FormingTeam extends AbstractTeam{
-	Set<ArenaPlayer> joined_players = new HashSet<ArenaPlayer>();
+public class FormingTeam extends ArenaTeam{
+	Set<ArenaPlayer> joined_players = new HashSet<>();
 
 	public FormingTeam(){
 		super();
@@ -28,7 +27,7 @@ public class FormingTeam extends AbstractTeam{
 
 	public Set<ArenaPlayer> getUnjoinedPlayers() {
 		if (hasAllPlayers()) return null;
-		Set<ArenaPlayer> ps = new HashSet<ArenaPlayer>(players);
+		Set<ArenaPlayer> ps = new HashSet<>(players);
 		ps.removeAll(joined_players);
 		return ps;
 	}
@@ -53,12 +52,9 @@ public class FormingTeam extends AbstractTeam{
 	public boolean isReady() {
 		return false;
 	}
-
 	@Override
 	public void clear() {
 		super.clear();
 		joined_players.clear();
 	}
-
 }
-

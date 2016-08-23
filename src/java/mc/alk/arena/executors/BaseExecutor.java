@@ -1,5 +1,6 @@
 package mc.alk.arena.executors;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +18,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.Log;
@@ -33,8 +34,8 @@ public abstract class BaseExecutor implements CommandExecutor{
     public static final String version = "2.1.0";
     static final boolean DEBUG = false;
     static final String DEFAULT_CMD = "_dcmd_";
-    private HashMap<String, TreeMap<Integer, MethodWrapper>> methods = new HashMap<>();
-    private HashMap<String, Map<String, TreeMap<Integer, MethodWrapper>>> subCmdMethods = new HashMap<>();
+    private Map<String, TreeMap<Integer, MethodWrapper>> methods = new HashMap<>();
+    private Map<String, Map<String, TreeMap<Integer, MethodWrapper>>> subCmdMethods = new HashMap<>();
     public static final String ONLY_INGAME = ChatColor.RED + "You need to be in game to use this command";
     static final int LINES_PER_PAGE = 8;
 
@@ -53,21 +54,25 @@ public abstract class BaseExecutor implements CommandExecutor{
         final Object obj; /// Object instance the method belongs to
         final Method method; 
         
-        MCCommand command;
+        private MCCommand command;
         String usage;
         Float helpOrder;
         
-        public MCCommand getCommand(){
+        public MCCommand getCommand() {
             if ( command == null )
                 command = method.getAnnotation( MCCommand.class );
             return command;
-        }
-       
-        public float getHelpOrder(){
+        }      
+        public float getHelpOrder() {
             if ( helpOrder == null )
                 helpOrder = getCommand().helpOrder();
             return helpOrder;
         }
+        public Object invoke( Arguments args ) 
+                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            return method.invoke( obj, args.args );          
+        }
+        
         @Override
         public int compareTo( MethodWrapper o ) {
             int c = Float.compare( getHelpOrder(), o.getHelpOrder() );
@@ -87,47 +92,50 @@ public abstract class BaseExecutor implements CommandExecutor{
         addMethods( this, getClass().getMethods() );
     }
 
-    protected boolean validCommandSenderClass(Class<?> clazz) {
+    protected boolean validCommandSenderClass( Class<?> clazz ) {
         return CommandSender.class.isAssignableFrom( clazz ) 
                 || ArenaPlayer.class.isAssignableFrom( clazz );
     }
 
-    public void addMethods(Object obj, Method[] methodArray){
+    public void addMethods( Object obj, Method[] methodArray ) {
 
-        for (Method method : methodArray){
-            MCCommand mc = method.getAnnotation(MCCommand.class);
+        for ( Method method : methodArray ) {
+            MCCommand command = method.getAnnotation( MCCommand.class );
             
-            if (mc == null) continue;
+            if ( command == null ) continue;
             
             Class<?> types[] = method.getParameterTypes();
-            if (types.length == 0 || !validCommandSenderClass(types[0])){
-                System.err.println("MCCommands must start with a CommandSender,Player, or ArenaPlayer");
+            
+            if ( types.length == 0 || !validCommandSenderClass( types[0] ) ) {
+                Log.err( "MCCommands must start with a CommandSender, Player, or ArenaPlayer" );
                 continue;
             }
-            if (mc.cmds().length == 0){ /// There is no subcommand. just the command itself with arguments
-                addMethod( obj, method, mc, DEFAULT_CMD );
+            if ( command.subCmds().length == 0 ) { /// There is no subcommand. just the command itself with arguments
+                addMethod( obj, method, command, DEFAULT_CMD );
             } 
             else {
-                /// For each of the cmds, store them with the method
-                for ( String cmd : mc.cmds() ) {
-                    addMethod( obj, method, mc, cmd.toLowerCase() );
+                for ( String cmd : command.subCmds() ) {
+                    addMethod( obj, method, command, cmd.toLowerCase() );
                 }
             }
         }
     }
 
-    private void addMethod(Object obj, Method method, MCCommand mc, String cmd) {
+    private void addMethod( Object obj, Method method, MCCommand mc, String cmd ) {
+        
         int ml = method.getParameterTypes().length;
-        if (mc.subCmds().length == 0){
-            TreeMap<Integer,MethodWrapper> mthds = methods.get(cmd);
-            if (mthds == null){
+        if ( mc.subCmds().length == 0 ) {
+            
+            TreeMap<Integer,MethodWrapper> mthds = methods.get( cmd );
+            if ( mthds == null ) {
                 mthds = new TreeMap<>();
             }
-            int order = (mc.order() != -1? mc.order()*100000 :Integer.MAX_VALUE) - ml*100 - mthds.size();
-            MethodWrapper mw = new MethodWrapper(obj,method);
-            mthds.put(order, mw);
-            methods.put(cmd, mthds);
-            addUsage(mw, mc);
+            int order = ( mc.order() != -1 ? mc.order() * 100000 
+                                           : Integer.MAX_VALUE ) - ml * 100 - mthds.size();
+            MethodWrapper mw = new MethodWrapper( obj, method );
+            mthds.put( order, mw );
+            methods.put( cmd, mthds );
+            addUsage( mw, mc );
         } 
         else {
             Map<String,TreeMap<Integer,MethodWrapper>> basemthds = subCmdMethods.get(cmd);
@@ -135,13 +143,14 @@ public abstract class BaseExecutor implements CommandExecutor{
                 basemthds = new HashMap<>();
                 subCmdMethods.put(cmd, basemthds);
             }
-            for (String subcmd: mc.subCmds()){
+            for ( String subcmd: mc.subCmds() ) {
                 TreeMap<Integer,MethodWrapper> mthds = basemthds.get(subcmd);
                 if (mthds == null){
                     mthds = new TreeMap<>();
                     basemthds.put(subcmd, mthds);
                 }
-                int order = (mc.order() != -1? mc.order()*100000 :Integer.MAX_VALUE) - ml*100-mthds.size();
+                int order = (mc.order() != -1 ? mc.order() * 100000 
+                                              : Integer.MAX_VALUE ) - ml * 100 - mthds.size();
                 MethodWrapper mw = new MethodWrapper(obj,method);
                 /// Set help order
                 if (mc.helpOrder() == Integer.MAX_VALUE){
@@ -153,19 +162,21 @@ public abstract class BaseExecutor implements CommandExecutor{
         }
     }
     private void addUsage(MethodWrapper method, MCCommand mc) {
-
         /// save the usages, for showing help messages
-        if (!mc.usage().isEmpty())
-            method.usage = mc.usage();
-        else /// Generate an automatic usage string
-            method.usage = createUsage(method.method);
         
-        usage.add(method);
+        if ( !mc.usage().isEmpty() )
+            method.usage = mc.usage();
+        else 
+            method.usage = createUsage( method.method );
+        
+        usage.add( method );
     }
 
     private String createUsage(Method method) {
+        
         MCCommand cmd = method.getAnnotation(MCCommand.class);
-        StringBuilder sb = new StringBuilder(cmd.cmds().length > 0 ? cmd.cmds()[0] +" " : "");
+        StringBuilder sb = new StringBuilder( cmd.cmds().length > 0 ? cmd.cmds()[0] + " " 
+                                                                    : "");
         int startIndex = 1;
         if (cmd.subCmds().length > 0){
             sb.append(cmd.subCmds()[0]).append(" ");
@@ -204,83 +215,86 @@ public abstract class BaseExecutor implements CommandExecutor{
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         TreeMap<Integer,MethodWrapper> methodmap = null;
 
-        /// No method to handle, show some help
         if ((args.length == 0 && !methods.containsKey(DEFAULT_CMD))
                 || (args.length > 0 && (args[0].equals("?") || args[0].equals("help")))){
             showHelp(sender, command,args);
             return true;
         }
-        final int length = args.length;
-        final String cmd = length > 0 ? args[0].toLowerCase() : null;
-        final String subcmd = length > 1 ? args[1].toLowerCase() : null;
+        int length = args.length;
+        String cmd = length > 0 ? args[0].toLowerCase() : null;
+        String subcmd = length > 1 ? args[1].toLowerCase() : null;
         int startIndex = 0;
 
         /// check for subcommands
-        if (subcmd!=null && subCmdMethods.containsKey(cmd) && subCmdMethods.get(cmd).containsKey(subcmd)){
+        if ( subcmd!=null && subCmdMethods.containsKey(cmd) && subCmdMethods.get(cmd).containsKey(subcmd) ){
             methodmap = subCmdMethods.get(cmd).get(subcmd);
             startIndex = 2;
         }
-        if (methodmap == null && cmd != null){ /// Find our method, and verify all the annotations
+        if (methodmap == null && cmd != null) { 
             methodmap = methods.get(cmd);
             if (methodmap != null)
-                startIndex =1;
+                startIndex = 1;
         }
 
-        if (methodmap == null){ /// our last attempt
+        if (methodmap == null) { /// our last attempt
             methodmap = methods.get(DEFAULT_CMD);
         }
 
-        if (methodmap == null || methodmap.isEmpty()){
-            return MessageUtil.sendMessage(sender, "&cThat command does not exist!&6 /"+command.getLabel()+" help &c for help");}
-
-        MCCommand mccmd;
-        List<CommandException> errs =null;
+        if ( methodmap == null || methodmap.isEmpty() )
+            return MessageUtil.sendMessage(sender, 
+                    "&cThat command does not exist!&6 /" + command.getLabel() + " help &c for help" );     
+        
+        List<CommandException> errs = new ArrayList<>();
         boolean success = false;
-        for (MethodWrapper mwrapper : methodmap.values()){
-
-            mccmd = mwrapper.method.getAnnotation(MCCommand.class);
-            final boolean isOp = sender == null || sender.isOp() || sender instanceof ConsoleCommandSender;
-
-            if (( mccmd.op() && !isOp ) || mccmd.admin() ) /// no op, no pass
-                continue;
+        for ( MethodWrapper mwrapper : methodmap.values() ) {
+            
             Arguments newArgs = null;
-            try {
-                newArgs= verifyArgs(mwrapper,mccmd,sender,command, label, args, startIndex);
-                    Object completed = mwrapper.method.invoke(mwrapper.obj,newArgs.args);
-                if (completed != null && completed instanceof Boolean){
-                    success = (Boolean)completed;
-                    if (!success){
-                        String usage = mwrapper.usage;
-                        if (usage != null && !usage.isEmpty()){
-                            MessageUtil.sendMessage(sender, usage);}
+            try {           
+                MCCommand mccmd = mwrapper.getCommand();
+                if ( ( !mccmd.perm().isEmpty() && !sender.hasPermission( mccmd.perm() ) 
+                                                            && !sender.hasPermission( Permissions.ADMIN_NODE ) )
+                        || ( mccmd.admin() && !sender.isOp() && !sender.hasPermission( Permissions.ADMIN_NODE ) )
+                        || ( mccmd.op() && !sender.isOp() ) )
+                    throw new IllegalArgumentException( "You don't have permission to use this command" );
+                
+                newArgs = verifyArgs( mwrapper, sender, command, label, args, startIndex );
+                
+                Object completed = mwrapper.invoke( newArgs );
+                               
+                if ( completed != null && completed instanceof Boolean ) {
+                    success = (boolean) completed;
+                    if ( !success ) {
+                        String _usage = mwrapper.usage;
+                        if ( _usage != null && !_usage.isEmpty() )
+                            MessageUtil.sendMessage( sender, _usage );
                     }
-                } else {
+                } 
+                else {
                     success = true;
                 }
                 break; /// success on one
-            } catch (IllegalArgumentException e){ /// One of the arguments wasn't correct, store the message
-                if (errs == null)
-                    errs = new ArrayList<>();
-                errs.add(new CommandException(e,mwrapper));
-            } catch (Exception e) { /// Just all around bad
-                logInvocationError(e, mwrapper,newArgs);
+            } catch ( IllegalArgumentException e ) { /// One of the arguments wasn't correct, store the message
+                errs.add( new CommandException( e, mwrapper ) );
+            } catch ( IllegalAccessException | InvocationTargetException e ) {
+                logInvocationError( e, mwrapper, newArgs );
             }
         }
         /// and handle all errors
         if (!success && errs != null && !errs.isEmpty()){
             HashSet<String> usages = new HashSet<>();
-            for (CommandException e: errs){
-                usages.add(ChatColor.GOLD+command.getLabel() +" " +e.mw.usage+" &c:"+e.err.getMessage());
+            for ( CommandException e : errs ) {
+                usages.add( ChatColor.GOLD + command.getLabel() + " " + e.mw.usage + " &c:" + e.err.getMessage() );
             }
-            for (String msg : usages){
+            for ( String msg : usages ) {
                 MessageUtil.sendMessage(sender, msg);}
         }
         return true;
     }
 
-    private void logInvocationError(Exception e, MethodWrapper mwrapper, Arguments newArgs) {
+    protected void logInvocationError(Exception e, MethodWrapper mwrapper, Arguments newArgs) {
         
-        Log.err( "["+BattleArena.getNameAndVersion()+" Error] "+mwrapper.method +" : " + mwrapper.obj +"  : " + newArgs);
+        Log.err( "[" + BattleArena.getNameAndVersion() + " Error] " + mwrapper.method + " : " + 
+                                                                    mwrapper.obj + "  : " + newArgs );
         if (newArgs!=null && newArgs.args != null){
             for (Object o: newArgs.args)
                 System.err.println("[Error] object=" + o);
@@ -294,75 +308,64 @@ public abstract class BaseExecutor implements CommandExecutor{
         Log.printStackTrace(e);
     }
 
-    protected Arguments verifyArgs(MethodWrapper mwrapper, MCCommand cmd, CommandSender sender,
-                                   Command command, String label, String[] args, int startIndex) throws IllegalArgumentException{
+    protected Arguments verifyArgs( MethodWrapper mwrapper, CommandSender sender, Command command, 
+                                    String label, String[] args, int startIndex) throws IllegalArgumentException{
+        
+        MCCommand cmd = mwrapper.getCommand();
+        
         if (DEBUG){
-            Log.info(" method="+mwrapper.method.getName() + " verifyArgs " + cmd +" sender=" +sender+
-                    ", label=" + label+" args="+ Arrays.toString(args));
-            for (String arg: args){
-                Log.info(" -- arg=" +arg);}
-            for (Class<?> t: mwrapper.method.getParameterTypes()){
-                Log.info(" -- type=" +t);}
+            Log.info( " method=" + mwrapper.method.getName() + " verifyArgs " + cmd + " sender=" + sender +
+                    ", label=" + label + " args=" + Arrays.toString( args ) );
+            
+            for ( String arg : args )
+                Log.info( " -- arg=" + arg );
+            
+            for ( Class<?> t : mwrapper.method.getParameterTypes() )
+                Log.info( " -- type=" + t );
         }
-        final int paramLength = mwrapper.method.getParameterTypes().length;
+        int paramLength = mwrapper.method.getParameterTypes().length;
 
-        /// Check our permissions
-        if (!cmd.perm().isEmpty() && !sender.hasPermission(cmd.perm()) && !(cmd.admin() && sender.isOp()))
-            throw new IllegalArgumentException("You don't have permission to use this command");
-
-        /// Verify min number of arguments
-        if (args.length < cmd.min()){
-            throw new IllegalArgumentException("You need at least "+cmd.min()+" arguments");
-        }
-        /// Verfiy max number of arguments
-        if (args.length > cmd.max()){
-            throw new IllegalArgumentException("You need less than "+cmd.max()+" arguments");
-        }
-        /// Verfiy max number of arguments
-        if (cmd.exact()!= -1 && args.length != cmd.exact()){
-            throw new IllegalArgumentException("You need exactly "+cmd.exact()+" arguments");
-        }
-        final boolean isPlayer = sender instanceof Player;
-        final boolean isOp = (isPlayer && sender.isOp()) || sender == null || sender instanceof ConsoleCommandSender;
-
-        if (cmd.op() && !isOp)
-            throw new IllegalArgumentException("You need to be op to use this command");
-
-        if (cmd.admin() && !isOp && (isPlayer && !sender.isOp()))
-            throw new IllegalArgumentException("You need to be an Admin to use this command");
-
+        if (args.length < cmd.min())
+            throw new IllegalArgumentException( "You need at least " + cmd.min() + " arguments" );
+        
+        if (args.length > cmd.max())
+            throw new IllegalArgumentException( "You need less than " + cmd.max() + " arguments" );
+        
+        if (cmd.exact()!= -1 && args.length != cmd.exact())
+            throw new IllegalArgumentException( "You need exactly " + cmd.exact() + " arguments" );
+        
+        boolean isPlayer = sender instanceof Player;
         Class<?> types[] = mwrapper.method.getParameterTypes();
 
         //		/// In game check
-        if (types[0] == Player.class && !isPlayer){
+        if (types[0] == Player.class && !isPlayer ) {
             throw new IllegalArgumentException(ONLY_INGAME);
         }
-        int strIndex = startIndex/*skip the label*/, objIndex = 1;
+        int strIndex = startIndex;
+        int objIndex = 1;
 
         Arguments newArgs = new Arguments(); /// Our return value
         Object[] objs = new Object[paramLength]; /// Our new array of castable arguments
 
         newArgs.args = objs; /// Set our return object with the new castable arguments
-        objs[0] = verifySender(sender, types[0]);
+        objs[0] = verifySender( sender, types[0] );
         AtomicInteger numUsedStrings = new AtomicInteger(0);
-        for (int i=1;i<types.length;i++){
+        for ( int i = 1; i < types.length; i++ ) {
             Class<?> clazz = types[i];
-            try{
-                if (CommandSender.class == clazz){
-                    objs[objIndex] = sender;
-                } else if (String[].class == clazz){
+            try {
+                if (String[].class == clazz || Object[].class == clazz ) {
                     objs[objIndex] = args;
-                } else if (Object[].class == clazz){
-                    objs[objIndex] =args;
-                } else {
-                    objs[objIndex] = verifyArg(sender, clazz, command, args, strIndex, numUsedStrings);
+                } 
+                else {
+                    objs[objIndex] = verifyArg( sender, clazz, command, args, strIndex, numUsedStrings );
                     if (objs[objIndex] == null){
                         throw new IllegalArgumentException("Argument " + args[strIndex] + " can not be null");
                     }
                 }
-                if (DEBUG) Log.info("   " + objIndex + " : " + strIndex + "  " +
-                        (args.length > strIndex ? args[strIndex] : null ) + " <-> " + objs[objIndex] +" !!! Cs = " +
-                        clazz.getCanonicalName());
+                if (DEBUG) 
+                    Log.info( "   " + objIndex + " : " + strIndex + "  " + (args.length > strIndex ? args[strIndex] 
+                                                                                                   : null ) + 
+                                            " <-> " + objs[objIndex] + " !!! Cs = " + clazz.getCanonicalName() );
                 if (numUsedStrings.get() > 0){
                     strIndex+=numUsedStrings.get();}
             } catch (ArrayIndexOutOfBoundsException e){
@@ -385,13 +388,16 @@ public abstract class BaseExecutor implements CommandExecutor{
     }
 
     protected Object verifySender(CommandSender sender, Class<?> clazz) {
-        if (!clazz.isAssignableFrom(sender.getClass())){
-            throw new IllegalArgumentException("sender must be a " + clazz.getSimpleName());}
+        if (!clazz.isAssignableFrom(sender.getClass()))
+            throw new IllegalArgumentException("sender must be a " + clazz.getSimpleName());
         return sender;
     }
 
-    protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
-                                            int curIndex, AtomicInteger numUsedStrings) {
+    protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, 
+                                String[] args, int curIndex, AtomicInteger numUsedStrings ) {
+        
+        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "BaseExecutor.verifyArgs() entered" );
+        
         numUsedStrings.set(0);
         
         if ( Command.class == clazz ) return command;
@@ -406,9 +412,9 @@ public abstract class BaseExecutor implements CommandExecutor{
         else if (String.class == clazz) return string;
         else if (Integer.class == clazz || int.class == clazz) return verifyInteger(string);
         else if (Boolean.class == clazz || boolean.class == clazz) return Boolean.parseBoolean(string);
-        else if (Object.class == clazz) return string;
         else if (Float.class == clazz || float.class == clazz) return verifyFloat(string);
         else if (Double.class == clazz || double.class == clazz) return verifyDouble(string);
+        else if (Object.class == clazz) return string;
         
         return null;
     }
@@ -420,14 +426,12 @@ public abstract class BaseExecutor implements CommandExecutor{
         return p;
     }
 
-
     private Player verifyPlayer(String name) throws IllegalArgumentException {
         Player p = ServerUtil.findPlayer(name);
         if (p == null || !p.isOnline())
             throw new IllegalArgumentException(name+" is not online ");
         return p;
     }
-
 
     private Integer verifyInteger(Object object) throws IllegalArgumentException {
         try {
@@ -451,15 +455,6 @@ public abstract class BaseExecutor implements CommandExecutor{
         }catch (NumberFormatException e){
             throw new IllegalArgumentException(ChatColor.RED+(String)object+" is not a valid double.");
         }
-    }
-
-    /**
-     * When no arguments are supplied, no method is found
-     * What to display when this happens
-     * @param sender the sender
-     */
-    protected void showHelp(CommandSender sender, Command command){
-        showHelp( sender, command, null );
     }
 
     protected void showHelp(CommandSender sender, Command command, String[] args) {
@@ -512,11 +507,11 @@ public abstract class BaseExecutor implements CommandExecutor{
         npages = (int) Math.ceil( (double) npages / LINES_PER_PAGE ); 
         
         if ( npages <= 0 ) {
-            MessageUtil.sendMessage(sender, "&4There are no available sub-commands" );
+            MessageUtil.sendMessage( sender, "&4There are no available sub-commands" );
             return;
         }
         if ( page > npages ) {
-            MessageUtil.sendMessage(sender, "&4That page doesnt exist, try 1-" + npages );
+            MessageUtil.sendMessage( sender, "&4That page doesnt exist, try 1-" + npages );
             return;
         }
       

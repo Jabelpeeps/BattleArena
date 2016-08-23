@@ -58,6 +58,10 @@
             <id>mcMMO-repo</id>
             <url>http://repo.terrocidepvp.net/artifactory/jenkins/</url>
         </repository>
+        <repository>
+            <id>Heros-repo</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </repository>
     </repositories>
     
     <dependencies>
@@ -326,19 +330,28 @@
             </exclusions>
         </dependency>
         
-        <!-- groupId = unknown.plugins -->
         <dependency>
-            <groupId>unknown.plugins</groupId>
-            <artifactId>Herochat</artifactId>
-            <version>5.6.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>unknown.plugins</groupId>
+            <groupId>com.herocraftonline.heroes</groupId>       
             <artifactId>Heroes</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.5.5-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>VaultAPI</artifactId>
+                </exclusion>                
+            </exclusions>
         </dependency>
+        
+        <!-- groupId = unknown.plugins -->
         <dependency>
             <groupId>unknown.plugins</groupId>
             <artifactId>MobArena</artifactId>
@@ -346,7 +359,7 @@
             <scope>provided</scope>
         </dependency>
          
- <!-- java dependency, not bukkit plugin, see https://projectlombok.org/ -->               
+ <!-- java dependencie, not bukkit plugin, see https://projectlombok.org/ -->               
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

@@ -8,10 +8,8 @@ import java.util.Map;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 
-import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.controllers.ArenaController;
@@ -170,8 +168,8 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.CLEAREXPERIENCE)) ExpUtil.clearExperience(p);
             if (mo.hasOption(TransitionOption.HEALTH)) PlayerUtil.setHealth(p, mo.getHealth());
             if (mo.hasOption(TransitionOption.HEALTHP)) PlayerUtil.setHealthPercent(p, mo.getHealthP());
-            if (mo.hasOption(TransitionOption.MAGIC)) setMagicLevel(p, mo.getMagic()); 
-            if (mo.hasOption(TransitionOption.MAGICP)) setMagicLevelP(p, mo.getMagicP()); 
+            if (mo.hasOption(TransitionOption.MAGIC)) HeroesController.setMagicLevel(p, mo.getMagic()); 
+            if (mo.hasOption(TransitionOption.MAGICP)) HeroesController.setMagicLevelP(p, mo.getMagicP()); 
             if (hunger != null) p.setFoodLevel( hunger ); 
             if (mo.hasOption(TransitionOption.INVULNERABLE)) PlayerUtil.setInvulnerable(p,mo.getInvulnerable()*20);
             if (mo.hasOption(TransitionOption.GAMEMODE)) PlayerUtil.setGameMode(p,mo.getGameMode()); 
@@ -274,27 +272,19 @@ public class TransitionController {
         return true;
     }
 
-    private static void setMagicLevel(Player p, Integer magic) {
-        HeroesController.setMagicLevel(p, magic);
-    }
-
-    private static void setMagicLevelP(Player p, Integer magic) {
-        HeroesController.setMagicLevelP(p, magic);
-    }
-
 //    private static void removePerms(ArenaPlayer p, List<String> perms) {
 ////		if (perms == null || perms.isEmpty()) {
 ////        }
 //        /// TODO complete
 //    }
 
-    private static void addPerms(ArenaPlayer p, List<String> perms, int ticks) {
-        if (perms == null || perms.isEmpty()) return;
-        
-        PermissionAttachment attachment = p.getPlayer().addAttachment(BattleArena.getSelf(),ticks);
-        for (String perm: perms){
-            attachment.setPermission(perm, true);}
-    }
+//    private static void addPerms(ArenaPlayer p, List<String> perms, int ticks) {
+//        if (perms == null || perms.isEmpty()) return;
+//        
+//        PermissionAttachment attachment = p.getPlayer().addAttachment(BattleArena.getSelf(),ticks);
+//        for (String perm: perms){
+//            attachment.setPermission(perm, true);}
+//    }
 
     private static void giveItems(final CompetitionState ms, final ArenaPlayer p, final List<ItemStack> items,
                                   final int teamIndex,final boolean woolTeams, final boolean insideArena, Color color) {

@@ -26,7 +26,9 @@ public class MessageUtil {
     public static boolean sendSystemMessage(CommandSender p, String nodeString, Object... varArgs) {
         return sendMessage(p, MessageHandler.getSystemMessage( nodeString, varArgs ));
     }
-    
+    public static boolean sendSystemMessage(ArenaPlayer p, String nodeString, Object... varArgs) {
+        return sendMessage(p, MessageHandler.getSystemMessage( nodeString, varArgs ));
+    }
     public static void sendMessage(Collection<ArenaPlayer> players, String message) {
         for ( ArenaPlayer ap : players )
             sendMessage( ap.getPlayer(), message );

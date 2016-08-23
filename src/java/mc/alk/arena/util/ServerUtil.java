@@ -11,7 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.Defaults;
-import mc.alk.virtualPlayer.VirtualPlayers;
+import mc.alk.virtualplayers.VirtualPlayers;
 
 
 public class ServerUtil {

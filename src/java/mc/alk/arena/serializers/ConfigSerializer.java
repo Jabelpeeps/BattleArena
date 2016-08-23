@@ -79,10 +79,10 @@ public class ConfigSerializer extends BaseConfig {
         if (config.getConfigurationSection(name) != null) 
             cs = config.getConfigurationSection(name);
 
-        ArenaType at = getArenaType(cs);
+        ArenaType at = getArenaType( cs );
         
-        if (at == null && !name.equalsIgnoreCase("tourney"))
-            throw new ConfigException("Could not parse arena type. Valid types. " + ArenaType.getValidList());
+        if ( at == null && !name.equalsIgnoreCase( "tourney" ) )
+            throw new ConfigException( "Could not parse arena type. Valid types. " + ArenaType.getValidList() );
 
         return loadMatchParams( at, name, cs);
     }
@@ -97,33 +97,33 @@ public class ConfigSerializer extends BaseConfig {
 
         MatchParams mp = at != null ? new MatchParams(at) : new MatchParams();
         
-        if (!isNonBaseConfig || cs.contains("victoryCondition"))
-            mp.setVictoryType(loadVictoryType(cs)); 
+        if ( !isNonBaseConfig || cs.contains( "victoryCondition" ) )
+            mp.setVictoryType( loadVictoryType( cs ) ); 
 
-        if (!isNonBaseConfig) {
+        if ( !isNonBaseConfig ) {
             
-            mp.setName(name);
-            mp.setCommand(cs.getString("command",name));
-            if ( cs.contains("cmd") )
-                mp.setCommand(cs.getString("cmd"));
+            mp.setName( name );
+            mp.setCommand( cs.getString( "command", name ) );
+            if ( cs.contains( "cmd" ) )
+                mp.setCommand( cs.getString( "cmd" ) );
         }
-        loadGameSize(cs, mp, isNonBaseConfig);
+        loadGameSize( cs, mp, isNonBaseConfig );
 
-        if (cs.contains("prefix")) 
-            mp.setPrefix( cs.getString("prefix","&6["+name+"]"));
+        if ( cs.contains( "prefix" ) ) 
+            mp.setPrefix( cs.getString( "prefix", "&6[" + name + "]" ) );
         
-        if (cs.contains("displayName")) 
-            mp.setArenaDisplayName( cs.getString("displayName"));
+        if ( cs.contains( "displayName" ) ) 
+            mp.setArenaDisplayName( cs.getString( "displayName" ) );
         
-        if (cs.contains("signDisplayName")) 
-            mp.setSignDisplayName(cs.getString("signDisplayName"));
+        if ( cs.contains( "signDisplayName" ) ) 
+            mp.setSignDisplayName( cs.getString( "signDisplayName" ) );
 
-        loadTimes(cs, mp); 
+        loadTimes( cs, mp ); 
         
-        if (!isNonBaseConfig || cs.contains("nLives"))
-            mp.setNLives(toPositiveSize(cs.getString("nLives"), 1)); 
+        if ( !isNonBaseConfig || cs.contains( "nLives" ) )
+            mp.setNLives( toPositiveSize( cs.getString( "nLives" ), 1 ) ); 
 
-        loadBTOptions(cs, mp, isNonBaseConfig); 
+        loadBTOptions( cs, mp, isNonBaseConfig ); 
 
         if (cs.contains("nConcurrentCompetitions"))
             mp.setNumConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions","infinite")));
@@ -150,7 +150,7 @@ public class ConfigSerializer extends BaseConfig {
             
             if (teamKeys != null) {
                 Map<Integer, MatchParams> teamParams = new HashMap<>();
-                for (String s : teamKeys) {
+                for ( String s : teamKeys ) {
                     try {
                         Integer index = Integer.valueOf(s.substring(4)) - 1;
                         MatchParams p = loadMatchParams( null, s, teamcs.getConfigurationSection(s), true );
@@ -336,8 +336,8 @@ public class ConfigSerializer extends BaseConfig {
     private static List<String> loadModules(ConfigurationSection cs, MatchParams mp) {
         List<String> modules = new ArrayList<>();
 
-        if (cs.contains("modules")){
-            List<?> keys = cs.getList("modules");
+        if ( cs.contains( "modules" ) ) {
+            List<?> keys = cs.getList( "modules" );
             
             if (keys != null){
                 for (Object key: keys){
@@ -468,7 +468,7 @@ public class ConfigSerializer extends BaseConfig {
         }
         if (type != null){
             ArenaType at = ArenaType.fromString(type);
-            if (at != null) { /// User is trying to make a custom type... let them
+            if (at != null) {
                 return ArenaType.getArenaClass(at);
             }
         }
@@ -486,24 +486,35 @@ public class ConfigSerializer extends BaseConfig {
         }
         return at;
     }
-
-    public static StateOptions getTransitionOptions(ConfigurationSection cs) throws InvalidOptionException, IllegalArgumentException {
+    
+    private static void tryAddOption( StateOptions tops, TransitionOption option, Object obj ) {
+        try {
+            tops.addOption( option, obj );
+        } 
+        catch ( InvalidOptionException e ){
+            Log.err( e.getMessage() );
+            Log.printStackTrace(e);
+        }
+    }
+    
+    public static StateOptions getTransitionOptions(ConfigurationSection cs) 
+                                        throws InvalidOptionException, IllegalArgumentException {
         if (cs == null ) return null;
         
         StateOptions tops = new StateOptions();
         
-        if (cs.contains("options")){
-            if (!cs.isList("options")) {
-                throw new InvalidOptionException("options: should be a list, instead it was '" + cs.getString("options", null) + "'");}
+        if (cs.contains("options")) {
+            if (!cs.isList("options")) 
+                throw new InvalidOptionException( "options: should be a list, instead it was '" + 
+                                                    cs.getString( "options", null ) + "'" );
             
             Collection<String> optionsstr = cs.getStringList("options");
             
-            for (String obj : optionsstr){
+            for ( String obj : optionsstr ) {
                 String[] split = obj.split("=");
                 String key = split[0].trim().toUpperCase();
                 String value = split.length > 1 ? split[1].trim() : null;
 
-                /// Check first to see if this option is actually a set of options
                 StateOptions optionSet = OptionSetController.getOptionSet(key);
                 if (optionSet != null){
                     tops.addOptions(optionSet);
@@ -512,12 +523,12 @@ public class ConfigSerializer extends BaseConfig {
 
                 TransitionOption to;
                 Object ovalue;
-                try{
+                try {
                     to = TransitionOption.fromString(key);
-                    if (to == TransitionOption.ENCHANTS) /// we deal with these later
+                    if ( to == TransitionOption.ENCHANTS ) /// we deal with these later
                         continue;
-                    if (to.hasValue() && value == null){
-                        Log.err("Transition Option " + to +" needs a value! " + key + "=<value>");
+                    if ( to.hasValue() && value == null ) {
+                        Log.err( "Transition Option " + to + " needs a value! " + key + "=<value>" );
                         continue;
                     }
                     ovalue = to.parseValue(value);
@@ -530,100 +541,62 @@ public class ConfigSerializer extends BaseConfig {
             }
         }
 
-        try {
-            if (cs.contains("teleportTo")){
-                tops.addOption(TransitionOption.TELEPORTTO, SerializerUtil.getLocation(cs.getString("teleportTo")));}
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
-        try {
-            if (cs.contains("giveClass")){
-                tops.addOption(TransitionOption.GIVECLASS, getArenaClasses(cs.getConfigurationSection("giveClass")));}
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
-        try {
-            if (cs.contains("giveDisguise")){
-                tops.addOption(TransitionOption.GIVEDISGUISE, getArenaDisguises(cs.getConfigurationSection("giveDisguise")));}
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
-        try {
-            if (cs.contains("doCommands")){
-                tops.addOption(TransitionOption.DOCOMMANDS, getDoCommands(cs.getStringList("doCommands")));}
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
-        try {
-            /// Convert from old to new style aka ("needItems" and items: list, to needItems:)
-            List<ItemStack> items = InventoryUtil.getItemList(cs,"needItems");
-            
-            if (items == null && tops.hasOption( TransitionOption.NEEDITEMS ) ) {
-                items = InventoryUtil.getItemList(cs, "items");
-                
-                if ( items != null && !items.isEmpty() )
-                    tops.addOption( TransitionOption.NEEDITEMS, items );
-                else
-                    tops.removeOption(TransitionOption.NEEDITEMS);
-            } 
-            else if (items != null && !items.isEmpty())
-                tops.addOption(TransitionOption.NEEDITEMS,items);
-            else 
-                tops.removeOption(TransitionOption.NEEDITEMS);
-        } 
-        catch (Exception e) {
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
-        try {
-            List<ItemStack> items = InventoryUtil.getItemList(cs,"giveItems");
-            
-            if (items == null)
-                items = InventoryUtil.getItemList(cs,"items");
+        if ( cs.contains( "teleportTo" ) )
+            tryAddOption( tops, TransitionOption.TELEPORTTO, SerializerUtil.getLocation( cs.getString( "teleportTo" ) ) );
 
-            if (items!=null && !items.isEmpty()) 
-                tops.addOption(TransitionOption.GIVEITEMS,items);
-            else 
-                tops.removeOption(TransitionOption.GIVEITEMS);
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
+        if ( cs.contains( "giveClass" ) )
+            tryAddOption( tops, TransitionOption.GIVECLASS, getArenaClasses( cs.getConfigurationSection( "giveClass" ) ) );
 
-        try {
-            List<ItemStack> items = InventoryUtil.getItemList(cs,"takeItems");
-            
-            if (items!=null && !items.isEmpty()) 
-                tops.addOption(TransitionOption.TAKEITEMS,items);
-            else 
-                tops.removeOption(TransitionOption.TAKEITEMS);
-        } 
-        catch (Exception e){
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
+        if ( cs.contains( "giveDisguise" ) )
+            tryAddOption( tops, TransitionOption.GIVEDISGUISE, getArenaDisguises( cs.getConfigurationSection( "giveDisguise" ) ) );
+        
+        if ( cs.contains( "doCommands" ) )
+            tryAddOption( tops, TransitionOption.DOCOMMANDS, getDoCommands( cs.getStringList( "doCommands" ) ) );
 
-        try {
-            List<PotionEffect> effects = getEffectList(cs, "enchants");
+
+        /// Convert from old to new style aka ("needItems" and items: list, to needItems:)
+        List<ItemStack> items = InventoryUtil.getItemList(cs,"needItems");
+        
+        if (items == null && tops.hasOption( TransitionOption.NEEDITEMS ) ) {
+            items = InventoryUtil.getItemList(cs, "items");
             
-            if (effects!=null && !effects.isEmpty())
-                tops.addOption(TransitionOption.ENCHANTS, effects);
+            if ( items != null && !items.isEmpty() )
+                tryAddOption( tops, TransitionOption.NEEDITEMS, items );
             else
-                tops.removeOption(TransitionOption.ENCHANTS);   
+                tops.removeOption( TransitionOption.NEEDITEMS );
         } 
-        catch (Exception e) {
-            Log.err( e.getMessage() );
-            Log.printStackTrace(e);
-        }
+        else if (items != null && !items.isEmpty())
+            tryAddOption( tops, TransitionOption.NEEDITEMS, items );
+        else 
+            tops.removeOption( TransitionOption.NEEDITEMS );
+
+        
+        items = InventoryUtil.getItemList(cs,"giveItems");
+        
+        if (items == null)
+            items = InventoryUtil.getItemList(cs,"items");
+
+        if (items!=null && !items.isEmpty()) 
+            tryAddOption( tops, TransitionOption.GIVEITEMS, items );
+        else 
+            tops.removeOption(TransitionOption.GIVEITEMS);
+        
+
+        items = InventoryUtil.getItemList(cs,"takeItems");
+        
+        if (items!=null && !items.isEmpty()) 
+            tryAddOption( tops, TransitionOption.TAKEITEMS, items );
+        else 
+            tops.removeOption(TransitionOption.TAKEITEMS);
+
+
+        List<PotionEffect> effects = getEffectList(cs, "enchants");
+        
+        if (effects!=null && !effects.isEmpty())
+            tryAddOption( tops, TransitionOption.ENCHANTS, effects );
+        else
+            tops.removeOption(TransitionOption.ENCHANTS);   
+ 
 
 //        setPermissionSection(cs,"addPerms",tops);
 
@@ -632,6 +605,7 @@ public class ConfigSerializer extends BaseConfig {
 
     public static List<CommandLineString> getDoCommands(List<String> list) {
         List<CommandLineString> commands = new ArrayList<>();
+        
         for ( String line : list ) {
             commands.add( CommandLineString.parse(line) );
         }
@@ -652,6 +626,7 @@ public class ConfigSerializer extends BaseConfig {
 //    }
 
     public static HashMap<Integer,ArenaClass> getArenaClasses(ConfigurationSection cs){
+        
         HashMap<Integer,ArenaClass> classes = new HashMap<>();
         Set<String> keys = cs.getKeys(false);
         
@@ -662,9 +637,9 @@ public class ConfigSerializer extends BaseConfig {
             } 
             else {
                 try {
-                    team = Integer.valueOf(whichTeam.replaceAll("team", "")) - 1;
+                    team = Integer.parseInt( whichTeam.replaceAll( "team", "" ) ) - 1;
                 } 
-                catch(Exception e){
+                catch( NumberFormatException e ) {
                     Log.err( "Couldn't find which team this class belongs to '" + whichTeam + "'" );
                     continue;
                 }
@@ -698,9 +673,9 @@ public class ConfigSerializer extends BaseConfig {
             } 
             else {
                 try {
-                    team = Integer.valueOf( whichTeam.replaceAll( "team", "" ) ) - 1;
+                    team = Integer.parseInt( whichTeam.replaceAll( "team", "" ) ) - 1;
                 } 
-                catch(Exception e){
+                catch( NumberFormatException e){
                     Log.err( "Couldnt find which team this disguise belongs to '" + whichTeam + "'" );
                     continue;
                 }
@@ -847,7 +822,6 @@ public class ConfigSerializer extends BaseConfig {
             maincs.set("cancelIfNotEnoughPlayers", params.isCancelIfNotEnoughPlayers());
 
         maincs.set("arenaCooldown", params.getArenaCooldown());
-
         maincs.set("allowedTeamSizeDifference", params.getAllowedTeamSizeDifference());
 
         if (params.getForceStartTime() != null ) maincs.set("forceStartTime", params.getForceStartTime());
@@ -858,10 +832,13 @@ public class ConfigSerializer extends BaseConfig {
         AnnouncementOptions ao = params.getAnnouncementOptions();
         if (ao != null){
             Map<MatchState, Map<AnnouncementOption, Object>> map = ao.getMatchOptions();
+            
             if (map != null){
                 ConfigurationSection cs = maincs.createSection("announcements");
+                
                 for (Entry<MatchState, Map<AnnouncementOption, Object>> entry : map.entrySet()){
                     List<String> ops = new ArrayList<>();
+                    
                     for (Entry<AnnouncementOption,Object> entry2 : entry.getValue().entrySet()){
                         Object o = entry2.getValue();
                         ops.add(entry2.getKey() +(o != null ? o.toString() :""));
@@ -943,11 +920,11 @@ public class ConfigSerializer extends BaseConfig {
                                     break;
                                 default:
                                     Object value = ops.get(to);
-                                    if (value == null) {
+                                    if (value == null)
                                         s = to.toString();
-                                    } else {
+                                    else
                                         s = to.toString() + "=" + value.toString();
-                                    }
+                                    
                                     list.add(s);
                             }
                         } catch (Exception e) {
@@ -968,9 +945,9 @@ public class ConfigSerializer extends BaseConfig {
 
     public static List<String> getModuleList(Collection<ArenaModule> modules) {
         List<String> list = new ArrayList<>();
-        if (modules != null){
-            for (ArenaModule m: modules){
-                list.add(m.getName());}
+        if ( modules != null ) {
+            for ( ArenaModule m : modules ) 
+                list.add(m.getName());
         }
         return list;
     }
@@ -978,8 +955,8 @@ public class ConfigSerializer extends BaseConfig {
     public static List<String> getEnchants(List<PotionEffect> effects) {
         List<String> list = new ArrayList<>();
         if (effects != null){
-            for (PotionEffect is: effects){
-                list.add(EffectUtil.getEnchantString(is));}
+            for (PotionEffect is: effects)
+                list.add(EffectUtil.getEnchantString(is));
         }
         return list;
     }
@@ -1006,10 +983,9 @@ public class ConfigSerializer extends BaseConfig {
     public static List<String> getDoCommandsStringList(List<CommandLineString> doCommands) {
         List<String> list = new ArrayList<>();
         if (doCommands != null){
-            for (CommandLineString s: doCommands){
-                list.add(s.getRawCommand());}
+            for ( CommandLineString s : doCommands )
+                list.add(s.getRawCommand());
         }
         return list;
     }
-
 }

@@ -41,7 +41,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
 
     Plugin plugin;
     protected final BattleArenaController bac;
-    boolean MESSAGES = false;
+    boolean MESSAGES;
     /**
      * key = matchID
      */
@@ -57,9 +57,9 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     String lastOperation = "";
 
     public ScoreboardExecutor(Plugin reference, BattleArenaController controller, boolean messages) {
-        this.plugin = reference;
-        this.bac = controller;
-        this.MESSAGES = messages;
+        plugin = reference;
+        bac = controller;
+        MESSAGES = messages;
     }
 
     /**
@@ -70,7 +70,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
      * @param amountToWin How many points does a team need to win ?
      * @return
      */
-    @MCCommand(cmds = {"create"}, op = true)
+    @MCCommand( cmds = {"create"}, op = true )
     public boolean create(CommandSender sender, Arena arena, String label, Integer amountToWin) {
         Match match = this.bac.getMatch(arena);
         int matchID = match.getId();
@@ -101,7 +101,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
      * @param arena
      * @return 
      */
-    @MCCommand(cmds = {"remove", "delete", "unregister"}, op = true)
+    @MCCommand( cmds = {"remove", "delete", "unregister"}, op = true )
     public boolean remove(CommandSender sender, Arena arena) {
         Match match = this.bac.getMatch(arena);
         int matchID = match.getId();
@@ -121,7 +121,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Add X amount.
      */
-    @MCCommand(cmds = {"addpoints", "add"}, op = true)
+    @MCCommand( cmds = {"addpoints", "add"}, op = true )
     public boolean add(CommandSender sender, ArenaPlayer ap, Integer x) {
         Match match = bac.getMatch(ap);
         int matchID = match.getId();
@@ -148,7 +148,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Increment by one.
      */
-    @MCCommand(cmds = {"addpoint", "increment", "increase", "inc"}, op = true)
+    @MCCommand( cmds = {"addpoint", "increment", "increase", "inc"}, op = true )
     public boolean increment(CommandSender sender, ArenaPlayer ap) {
         return add(sender, ap, 1);
     }
@@ -156,7 +156,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Decrement by one.
      */
-    @MCCommand(cmds = {"removepoint", "decrement", "decrease", "dec"}, op = true)
+    @MCCommand( cmds = {"removepoint", "decrement", "decrease", "dec"}, op = true )
     public boolean decrement(CommandSender sender, ArenaPlayer ap) {
         return minus(sender, ap, 1);
     }
@@ -164,7 +164,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Minus X amount.
      */
-    @MCCommand(cmds = {"minus", "subtract", "removepoints"}, op = true)
+    @MCCommand( cmds = {"minus", "subtract", "removepoints"}, op = true )
     public boolean minus(CommandSender sender, ArenaPlayer ap, Integer x) {
         int neg = x * -1;
         return add(sender, ap, neg);
@@ -173,7 +173,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Cmd to toggle between verbose and quiet modes. <br/>
      */
-    @MCCommand(cmds={"toggle"}, op=true)
+    @MCCommand( cmds={"toggle"}, op = true )
     public boolean toggle(CommandSender sender) {
         if (MESSAGES) {
             MESSAGES = false;
@@ -185,7 +185,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * In verbose mode, messages from this executor will be displayed. <br/>
      */
-    @MCCommand(cmds={"verbose", "v"}, op=true)
+    @MCCommand( cmds={"verbose", "v"}, op = true )
     public boolean verbose(CommandSender sender) {
         MESSAGES = true;
         printMessage(sender, "The ArenaScoreboard command is now in verbose mode.");
@@ -198,7 +198,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
      * 
      * This was a requested feature because apparently, this cmd was spamming the console.
      */
-    @MCCommand(cmds={"quiet", "q"}, op=true)
+    @MCCommand( cmds = {"quiet", "q"}, op = true )
     public boolean quiet(CommandSender sender) {
         MESSAGES = false;
         sender.sendMessage("The ArenaScoreboard command is now in quiet mode.");
@@ -219,7 +219,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
      * I'm not sure there's an actual use-case-scenario for undo... 
      * I just always wanted to write an undo command :P
      */
-    @MCCommand(cmds = {"undo"}, op = true)
+    @MCCommand( cmds = {"undo"}, op = true )
     public boolean undo(CommandSender sender) {
         String cmd = getLastCommand();
         if (cmd.equals("")) {
@@ -257,5 +257,4 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
         }
         return lastCmd;
     }
-
 }

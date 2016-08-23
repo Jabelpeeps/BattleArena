@@ -19,7 +19,7 @@ import com.herocraftonline.heroes.characters.party.HeroParty;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
+import mc.alk.arena.objects.teams.CompositeTeam;
 import mc.alk.arena.util.PlayerUtil;
 
 public abstract class HeroesUtil {
@@ -162,7 +162,7 @@ public abstract class HeroesUtil {
 		HeroParty party = hero.getParty();
 		if (party == null)
 			return null;
-		ArenaTeam t = TeamFactory.createCompositeTeam();
+		ArenaTeam t = new CompositeTeam();
 		Hero leader = party.getLeader();
 		if (leader != null)
 			t.addPlayer(PlayerController.toArenaPlayer(leader.getPlayer()));

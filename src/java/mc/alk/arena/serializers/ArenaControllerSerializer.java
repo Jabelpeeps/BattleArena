@@ -140,14 +140,9 @@ public class ArenaControllerSerializer extends BaseConfig{
 		return pinv;
 	}
 
-
-
-
 	@Override
 	public void save(){
-		Map<UUID, PlayerRestoreController> prcs =
-				new HashMap<>(BAPlayerListener.getPlayerRestores());
-
+		Map<UUID, PlayerRestoreController> prcs = new HashMap<>(BAPlayerListener.getPlayerRestores());
 		Map<UUID,Location> playerLocs = new HashMap<>();
 		List<UUID> dieOnReenter = new ArrayList<>();
 		List<UUID> clearInventoryReenter = new ArrayList<>();
@@ -214,5 +209,4 @@ public class ArenaControllerSerializer extends BaseConfig{
 			Log.printStackTrace(e);
 		}
 	}
-
 }

@@ -57,7 +57,7 @@ public class EventExecutor extends BAExecutor{
 		return result.event;
 	}
 
-	@MCCommand(cmds={"cancel"},admin=true, order=4)
+	@MCCommand( cmds = {"cancel"}, admin = true, order = 4 )
 	public boolean eventCancel(CommandSender sender, ArenaPlayer player) {
 		AbstractComp event = controller.getEvent(player);
 		if (event == null){
@@ -72,7 +72,7 @@ public class EventExecutor extends BAExecutor{
 		return MessageUtil.sendMessage(sender,"&eYou have canceled the &6" + event.getName());
 	}
 
-	@MCCommand(cmds={"start"},admin=true,usage="start", order=2)
+	@MCCommand( cmds = {"start"}, admin = true, usage = "start", order = 2 )
 	public boolean eventStart(CommandSender sender, final EventParams eventParams, String[] args) {
 		AbstractComp event = controller.getOpenEvent(eventParams);
 		if (event == null){
@@ -101,7 +101,7 @@ public class EventExecutor extends BAExecutor{
 		}
 	}
 
-	@MCCommand(cmds={"info"},usage="info", order=2)
+	@MCCommand( cmds = {"info"}, usage = "info", order = 2 )
 	public boolean eventInfo(CommandSender sender, EventParams eventParams){
 		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
@@ -115,8 +115,7 @@ public class EventExecutor extends BAExecutor{
         return MessageUtil.sendMessage(sender, event.getInfo());
 	}
 
-
-	@MCCommand(cmds={"check"},usage="check", order=2)
+	@MCCommand( cmds = {"check"}, usage = "check", order = 2 )
 	public boolean eventCheck(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
@@ -130,45 +129,42 @@ public class EventExecutor extends BAExecutor{
 	}
 
 	@Override
-	@MCCommand(cmds={"join"})
+	@MCCommand( cmds = {"join"} )
 	public boolean join(ArenaPlayer player, MatchParams mp, String args[]) {
-        //noinspection SimplifiableIfStatement
-        if (mp instanceof EventParams){
-			return eventJoin(player, (EventParams)mp, args);}
-		return true; /// awkward, how did they get here???
+        if ( mp instanceof EventParams ) 
+			return eventJoin(player, (EventParams)mp, args);
+		return true; 
 	}
 
-	@MCCommand(cmds={"join"}, order=2)
+	@MCCommand( cmds = {"join"}, order = 2 )
 	public boolean eventJoin(ArenaPlayer player, EventParams eventParams, String[] args) {
 		eventJoin(player, eventParams, args, false);
 		return true;
 	}
 
-	public boolean eventJoin(ArenaPlayer p, EventParams eventParams, String[] args, boolean adminCommand) {
+	private boolean eventJoin(ArenaPlayer p, EventParams eventParams, String[] args, boolean adminCommand) {
 		if (!adminCommand && !Permissions.hasMatchPerm(p.getPlayer(), eventParams, "join")){
-			sendSystemMessage(p,"no_join_perms", eventParams.getCommand());
+			MessageUtil.sendSystemMessage(p,"no_join_perms", eventParams.getCommand());
 			return false;
 		}
 		if (isDisabled(p.getPlayer(), eventParams)){
 			return true;}
 		AbstractComp event = controller.getOpenEvent(eventParams);
 
-		/// perform add checks
 		if (event == null){
-			sendSystemMessage(p, "no_event_open");
+		    MessageUtil.sendSystemMessage(p, "no_event_open");
 			return false;
 		}
 
 		if (!event.canJoin()){
-			sendSystemMessage(p, "you_cant_join_event_while", event.getCommand(), event.getState());
+		    MessageUtil.sendSystemMessage(p, "you_cant_join_event_while", event.getCommand(), event.getState());
 			return false;
 		}
 
-		if (!canJoin(p)){
-			return false;}
+		if (!canJoin(p)) return false;
 
 		if (event.waitingToJoin(p)){
-			sendSystemMessage(p, "you_will_join_when_matched");
+		    MessageUtil.sendSystemMessage(p, "you_will_join_when_matched");
 			return false;
 		}
 
@@ -180,53 +176,46 @@ public class EventExecutor extends BAExecutor{
 			MessageUtil.sendMessage(p,notReadyMsg);
 			return false;
 		}
-		/// Get the team
+
 		ArenaTeam t = teamController.getSelfFormedTeam(p);
-		if (t==null){
-			t = TeamController.createTeam(eventParams, p); }
-		/// Get or Make a team for the Player
+		if (t==null)
+			t = TeamController.createTeam(eventParams, p); 
 
 		if (!canJoin(t,true)){
-			sendSystemMessage(p, "teammate_cant_join");
+		    MessageUtil.sendSystemMessage(p, "teammate_cant_join");
 			return MessageUtil.sendMessage(p,"&6/team leave: &cto leave the team");
 		}
 
-		/// Check any options specified in the add
 		JoinOptions jp;
 		try {
 			jp = JoinOptions.parseOptions(sq, p, Arrays.copyOfRange(args, 1, args.length));
 		} catch (InvalidOptionException e) {
 			return MessageUtil.sendMessage(p, e.getMessage());
-		} catch (Exception e){
-			Log.printStackTrace(e);
-			jp = null;
-		}
+		} 
+		
 		if (sq.getMaxTeamSize() < t.size()){
-			sendSystemMessage(p, "event_invalid_team_size", sq.getMaxTeamSize(), t.size());
+		    MessageUtil.sendSystemMessage(p, "event_invalid_team_size", sq.getMaxTeamSize(), t.size());
 			return false;
 		}
 
-		/// Now that we have options and teams, recheck the team for joining
 		if (!event.canJoin(t)){
 			return false;}
-		/// Check fee
+
 		if (!checkAndRemoveFee(sq, t)){
 			return false;}
 		TeamJoinObject tqo = new TeamJoinObject(t,sq,jp);
 
-		/// Finally actually add the event
 		event.joining(tqo);
-		//		sendSystemMessage(t, "you_joined_event", event.getDisplayName());
+
 		if (sq.getSecondsTillStart() != null){
 			Long time = event.getTimeTillStart();
 			if (time != null)
-				sendSystemMessage(p, "event_will_start_in", TimeUtil.convertMillisToString(time));
+			    MessageUtil.sendSystemMessage(p, "event_will_start_in", TimeUtil.convertMillisToString(time));
 		}
 		return true;
 	}
 
-
-	@MCCommand(cmds={"teams"}, usage="teams", admin=true, order=2)
+	@MCCommand( cmds = {"teams"}, usage = "teams", admin = true, order = 2 )
 	public boolean eventTeams(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
         return event == null || eventTeams(sender, event);
@@ -240,7 +229,7 @@ public class EventExecutor extends BAExecutor{
 		return MessageUtil.sendMessage(sender,sb.toString());
 	}
 
-	@MCCommand(cmds={"status"}, usage="status", order=4)
+	@MCCommand( cmds = {"status"}, usage = "status", order = 4 )
 	public boolean eventStatus(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
@@ -259,7 +248,7 @@ public class EventExecutor extends BAExecutor{
 		}
 	}
 
-	@MCCommand(cmds={"result"},usage="result", order=2)
+	@MCCommand( cmds = {"result"}, usage = "result", order = 2 )
 	public boolean eventResult(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
 		if (event == null){
@@ -284,5 +273,4 @@ public class EventExecutor extends BAExecutor{
         if (eoo.hasOption(EventOpenOption.FORCEJOIN)){
             event.addAllOnline();}
     }
-
 }

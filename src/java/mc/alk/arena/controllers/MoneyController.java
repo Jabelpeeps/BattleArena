@@ -92,7 +92,6 @@ public class MoneyController {
 	public static void setEconomy(Economy economy) {
 		MoneyController.economy = economy;
 		initialized = true;
-		/// Certain economy plugins don't implement this method correctly due to a NPE (I'm looking at you BOSEconomy! -_-)
 		try{
 			String cur = economy.currencyNameSingular();
 			if (cur == null || cur.isEmpty()){
@@ -110,5 +109,4 @@ public class MoneyController {
 	public static void setRegisterEconomy() {
 		initialized = true;
 	}
-
 }

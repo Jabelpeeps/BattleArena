@@ -34,16 +34,13 @@ public class DisguiseController {
 		if ( !enabled ) return;
 		
         Disguise dis;
-        DisguiseType d = null;
+        DisguiseType d = DisguiseType.valueOf( disguise.toUpperCase() );
 
-        d = DisguiseType.valueOf( disguise.toUpperCase() );
-
-        if ( d != null ) {
+        if ( d != null )
             dis = new MobDisguise( d, false );
-        } else {
+        else
             dis = new PlayerDisguise( disguise );
-        }
 
-        DisguiseAPI.disguiseToAll( player,dis );
+        DisguiseAPI.disguiseToAll( player, dis );
 	}
 }

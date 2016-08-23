@@ -1,11 +1,13 @@
 package mc.alk.arena.objects.options;
 
+import lombok.AllArgsConstructor;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.util.MinMax;
 
+@AllArgsConstructor
 public enum AlterParamOption {
     NLIVES ("nLives", true, false),
     TEAMSIZE("teamSize",true, false),
@@ -29,27 +31,16 @@ public enum AlterParamOption {
     TAKEITEMS("takeItems",true, false),
     ALLOWEDTEAMSIZEDIFFERENCE("allowedTeamSizeDifference",true,false),
     CLOSEWAITROOMWHILERUNNING("closeWaitroomWhileRunning", true,false),
-    CANCELIFNOTENOUGHPLAYERS("cancelIfNotEnoughPlayers", true,false)
-    ;
+    CANCELIFNOTENOUGHPLAYERS("cancelIfNotEnoughPlayers", true,false);
 
     final String name;
+    final boolean needsValue; 
+    final boolean needsPlayer; 
 
-    final boolean needsValue; /// whether the transition needs a value
-
-    final boolean needsPlayer; /// whether we need a player
-
-    AlterParamOption(String name, Boolean hasValue, Boolean needsPlayer){
-        this.name = name;
-        this.needsValue = hasValue;
-        this.needsPlayer = needsPlayer;
-    }
-
-    public boolean hasValue(){return needsValue;}
-
-    public boolean needsPlayer(){return needsPlayer;}
-
+    public boolean hasValue() { return needsValue; }
+    public boolean needsPlayer() { return needsPlayer; }
     @Override
-    public String toString(){return name;}
+    public String toString(){ return name; }
 
     public static AlterParamOption fromString(String str){
         str = str.toUpperCase();
@@ -105,13 +96,13 @@ public enum AlterParamOption {
                 return VictoryType.fromString(value);
             case GAMETYPE:
                 return ArenaType.getType(value);
+ 
             case CANCELIFNOTENOUGHPLAYERS:
             case CLOSEWAITROOMWHILERUNNING:
             case RATED:
             case USETRACKERMESSAGES:
                 return Boolean.valueOf(value);
             default:
-                break;
         }
         return null;
     }

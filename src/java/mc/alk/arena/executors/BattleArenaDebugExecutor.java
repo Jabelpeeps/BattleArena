@@ -109,7 +109,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return MethodController.showAllListeners( sender, args.length > 1 ? args[1] : "" );
     }
 
-    @MCCommand( cmds={"addKill"}, admin = true, min = 2, usage = "addKill <player>" )
+    @MCCommand( cmds = {"addKill"}, admin = true, min = 2, usage = "addKill <player>" )
     public boolean arenaAddKill(CommandSender sender, ArenaPlayer pl) {
         Match am = arenaController.getMatch(pl);
         if (am == null) {
@@ -121,12 +121,12 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return MessageUtil.sendMessage(sender,pl.getName()+" has received a kill");
     }
 
-    @MCCommand(cmds={"getExp"}, admin=true)
+    @MCCommand( cmds = {"getExp"}, admin = true )
     public boolean getExp(Player player) {
         return MessageUtil.sendMessage(player,ChatColor.GREEN+ "Experience  " + player.getTotalExperience() +" " + ExpUtil.getTotalExperience(player));
     }
 
-    @MCCommand(cmds={"showVars"}, admin=true)
+    @MCCommand( cmds = {"showVars"}, admin = true )
     public boolean showVars(CommandSender sender, String paramName, String[] args) {
         MatchParams mp = findMatchParam(sender, paramName);
         if (mp == null)
@@ -141,19 +141,19 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         }
     }
 
-    @MCCommand(cmds={"showTransitions"}, admin=true)
+    @MCCommand( cmds = {"showTransitions"}, admin = true )
     public boolean showTransitions(CommandSender sender, String paramName) {
         MatchParams mp = findMatchParam(sender, paramName);
         return mp == null || MessageUtil.sendMessage(sender, mp.toString());
     }
 
-    @MCCommand(cmds={"showPlayerVars"}, admin=true)
+    @MCCommand( cmds = {"showPlayerVars"}, admin = true )
     public boolean showPlayerVars(CommandSender sender, ArenaPlayer player) {
         ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(player, ToStringStyle.MULTI_LINE_STYLE);
         return MessageUtil.sendMessage(sender, rtsb.toString());
     }
 
-    @MCCommand(cmds={"showArenaVars"}, admin=true)
+    @MCCommand( cmds = {"showArenaVars"}, admin = true )
     public boolean showArenaVars(CommandSender sender, Arena arena, String[] args) {
         if (args.length > 4 && args[4].equals("parent")){
             return MessageUtil.sendMessage(sender, 
@@ -181,7 +181,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         }
     }
 
-    @MCCommand(cmds={"showMatchVars"}, admin=true)
+    @MCCommand( cmds={"showMatchVars"}, admin = true )
     public boolean showMatchVars(CommandSender sender, Arena arena, String[] vars) {
         Match match = BattleArena.getBAController().getMatch(arena);
         if (match == null)
@@ -213,7 +213,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(match, ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
-    @MCCommand(cmds={"showLobbyVars"}, admin=true)
+    @MCCommand( cmds = {"showLobbyVars"}, admin = true )
     public boolean showLobbyVars(CommandSender sender, String arenatype) {
         ArenaType type = ArenaType.fromString(arenatype);
         if (type == null){
@@ -237,7 +237,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return mp;
     }
 
-    @MCCommand(cmds={"invalidReasons"}, admin=true)
+    @MCCommand( cmds = {"invalidReasons"}, admin = true )
     public boolean arenaInvalidReasons(CommandSender sender, Arena arena) {
         Collection<String> reasons = arena.getInvalidReasons();
         MessageUtil.sendMessage(sender, "&eInvalid reasons for &6" + arena.getName());
@@ -250,7 +250,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"invalidQReasons"}, admin=true)
+    @MCCommand( cmds = {"invalidQReasons"}, admin = true )
     public boolean matchQInvalidReasons(CommandSender sender, ArenaPlayer player, Arena arena) {
         WaitingObject qo = BattleArena.getBAController().getQueueObject(player);
         if (qo == null){
@@ -267,7 +267,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"showClass"}, admin=true)
+    @MCCommand( cmds = {"showClass"}, admin = true )
     public boolean showClass(CommandSender sender, String stringClass) {
         final Class<?> clazz;
         try {
@@ -280,20 +280,20 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 new ReflectionToStringBuilder(clazz, ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
-    @MCCommand(cmds={"showAMQ"}, admin=true)
+    @MCCommand( cmds = {"showAMQ"}, admin = true )
     public boolean showAMQ(CommandSender sender) {
         return MessageUtil.sendMessage(sender, 
                 new ReflectionToStringBuilder( BattleArena.getBAController().getArenaMatchQueue(), 
                                                                 ToStringStyle.MULTI_LINE_STYLE ).toString());
     }
 
-    @MCCommand(cmds={"showBAC"}, admin=true)
+    @MCCommand( cmds = {"showBAC"}, admin = true )
     public boolean showBAC(CommandSender sender) {
         return MessageUtil.sendMessage(sender, 
                 new ReflectionToStringBuilder(BattleArena.getBAController(), ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
-    @MCCommand(cmds={"verify"}, admin=true)
+    @MCCommand( cmds = {"verify"}, admin = true )
     public boolean arenaVerify(CommandSender sender) {
         String[] lines = arenaController.toStringQueuesAndMatches().split("\n");
         for (String line : lines)
@@ -302,7 +302,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"showAllArenas"}, admin=true)
+    @MCCommand( cmds = {"showAllArenas"}, admin = true )
     public boolean arenaShowAllArenas(CommandSender sender) {
         String[] lines = arenaController.toStringArenas().split("\n");
         for (String line : lines)
@@ -311,24 +311,24 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"showq"}, admin=true)
+    @MCCommand( cmds = {"showq"}, admin = true )
     public boolean showQueue(CommandSender sender) {
         MessageUtil.sendMessage(sender,arenaController.queuesToString());
         return true;
     }
 
-    @MCCommand(cmds={"showaq"}, admin=true)
+    @MCCommand( cmds = {"showaq"}, admin = true )
     public boolean showArenaQueue(CommandSender sender) {
         MessageUtil.sendMessage(sender,arenaController.getArenaMatchQueue().toStringArenas());
         return true;
     }
 
-    @MCCommand(cmds={"online"}, admin=true)
+    @MCCommand( cmds = {"online"}, admin = true )
     public boolean arenaVerify(CommandSender sender, OfflinePlayer p) {
         return MessageUtil.sendMessage(sender, "Player " + p.getName() +"  is " + p.isOnline());
     }
 
-    @MCCommand(cmds={"purgeQueue"}, admin=true)
+    @MCCommand( cmds = {"purgeQueue"}, admin = true )
     public boolean arenaPurgeQueue(CommandSender sender) {
         try {
             Collection<ArenaTeam> teams = arenaController.purgeQueue();
@@ -344,32 +344,32 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"hasPerm"}, admin=true)
+    @MCCommand( cmds = {"hasPerm"}, admin = true )
     public boolean hasPerm(CommandSender sender, String perm, Player p) {
         return MessageUtil.sendMessage(sender, "Player " + p.getDisplayName() +"  hasPerm " + perm +" " +p.hasPermission(perm));
     }
 
-    @MCCommand(cmds={"setexp"}, op=true)
+    @MCCommand( cmds = {"setexp"}, op = true )
     public boolean setExp(CommandSender sender, ArenaPlayer p, Integer exp) {
         ExpUtil.setTotalExperience(p.getPlayer(), exp);
         return MessageUtil.sendMessage(sender,"&2Player's exp set to " + exp );
     }
 
-    @MCCommand(cmds={"tp"}, admin=true, order=337)
+    @MCCommand( cmds = {"tp"}, admin = true, order = 337 )
     public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, SpawnIndex index) {
         return teleportToSpawn(sender,arena,LocationType.ARENA, index);
     }
 
-    @MCCommand(cmds={"tp"}, admin=true, order=338)
+    @MCCommand( cmds = {"tp"}, admin = true, order = 338 )
     public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, String type, SpawnIndex index) {
-        try{
-            return teleportToSpawn(sender,arena,LocationType.valueOf(type.toUpperCase()), index);
+        try {
+            return teleportToSpawn(sender, arena, LocationType.valueOf(type.toUpperCase()), index);
         } catch (IllegalArgumentException e){
             return MessageUtil.sendMessage(sender,"&c" + e.getMessage());
         }
     }
 
-    public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, LocationType type, SpawnIndex index) {
+    private boolean teleportToSpawn(ArenaPlayer sender, Arena arena, LocationType type, SpawnIndex index) {
         final SpawnLocation loc;
         switch(type){
             case ANY:
@@ -406,7 +406,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                         (index.spawnIndex + 1) + " &2loc=&6" + SerializerUtil.getBlockLocString(loc.getLocation()));
     }
 
-    @MCCommand(cmds={"giveArenaClass"}, admin=true)
+    @MCCommand( cmds = {"giveArenaClass"}, admin = true )
     public boolean giveArenaClass(CommandSender sender, String className, Player player) {
         ArenaClass clazz = ArenaClassController.getClass(className);
         if (clazz == null)
@@ -417,13 +417,13 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 "&2Arena class " + clazz.getDisplayName() +"&2 given to &6" + player.getName());
     }
 
-    @MCCommand(cmds={"allowAdminCommands"}, admin=true)
+    @MCCommand( cmds = {"allowAdminCommands"}, admin = true )
     public boolean allowAdminCommands(CommandSender sender, Boolean enable) {
         Defaults.ALLOW_ADMIN_CMDS_IN_Q_OR_MATCH = enable;
         return MessageUtil.sendMessage(sender,"&2Admins can "+ (enable ? "&6use" : "&cnot use")+"&2 commands in match");
     }
 
-    @MCCommand(cmds={"notify"}, admin=true)
+    @MCCommand( cmds = {"notify"}, admin = true )
     public boolean addNotifyListener(CommandSender sender, Player player, String type, Boolean enable) {
         if (enable){
             NotifierUtil.addListener(player, type);
@@ -444,7 +444,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 "&2 " + player.getDisplayName() + " &cstopped listening&2 to " + type + " debugging messages" );
     }
 
-    @MCCommand(cmds={"showContainers"}, admin=true)
+    @MCCommand( cmds = {"showContainers"}, admin = true )
     public boolean showContainers(CommandSender sender, String args[]) {
         MatchParams params = null;
         if (args.length > 1) {
@@ -467,14 +467,14 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"setTimings"}, admin=true)
+    @MCCommand( cmds = {"setTimings"}, admin = true )
     public boolean setTimings(CommandSender sender, boolean set) {
         Defaults.DEBUG_TIMINGS = true;
         MessageUtil.sendMessage(sender, "&2Timings now " + set);
         return true;
     }
 
-    @MCCommand(cmds={"timings"}, admin=true)
+    @MCCommand( cmds = {"timings"}, admin = true )
     public boolean showTimings(CommandSender sender, String[] args) {
 
         boolean useMs = !(args.length >1 && args[1].equalsIgnoreCase("ns"));
@@ -515,7 +515,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         return true;
     }
 
-    @MCCommand(cmds={"pasteConfig"}, admin=true)
+    @MCCommand( cmds = {"pasteConfig"}, admin = true )
     public boolean pasteConfig(CommandSender sender, String paramName, String[] args) {
         MatchParams mp = findMatchParam(sender, paramName);
         if (mp == null)
@@ -532,13 +532,12 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         }
         if (!f.exists()){
             return MessageUtil.sendMessage(sender, "&cNo config file found for " + paramName);}
-        // String pasteID = BattleArena.getSelf().getBattlePluginsAPI().pasteFile(pasteTitle,f.getPath());
+        
         return MessageUtil.sendMessage(sender, "&2Paste command not yet implemented.");
-        // return sendMessage(sender, pasteID);
     }
 
     @SuppressWarnings( "deprecation" )
-    @MCCommand(cmds={"showScoreboard"}, admin=true)
+    @MCCommand( cmds = {"showScoreboard"}, admin = true )
     public boolean showScoreboard(CommandSender sender, Player player) {
         Scoreboard sc = player.getScoreboard();
         if (sc == null)

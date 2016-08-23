@@ -144,17 +144,17 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
 
     @MCCommand(cmds = {}, admin = true, perm = "arena.alter")
     public boolean arenaGeneric(CommandSender sender, CurrentSelection cs, ArenaOptionPair aop) {
-        return ArenaEditorExecutor.setArenaOption(sender, cs.getArena(), aop);
+        return setArenaOption(sender, cs.getArena(), aop);
     }
 
     @MCCommand(cmds = {}, admin = true, perm = "arena.alter")
     public boolean arenaGeneric(CommandSender sender,CurrentSelection cs,  ParamAlterOptionPair gop) {
-        return ArenaEditorExecutor.setArenaOption(sender, cs.getArena(), gop);
+        return setArenaOption(sender, cs.getArena(), gop);
     }
 
     @MCCommand(cmds = {}, admin = true, perm = "arena.alter")
     public boolean arenaGeneric(CommandSender sender,CurrentSelection cs,  TransitionOptionTuple top) {
-        return ArenaEditorExecutor.setArenaOption(sender, cs.getArena(), top);
+        return setArenaOption(sender, cs.getArena(), top);
     }
 
     public static boolean setArenaOption(CommandSender sender, Arena arena, TransitionOptionTuple top) {
@@ -231,5 +231,4 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         }
         return true;
     }
-
 }

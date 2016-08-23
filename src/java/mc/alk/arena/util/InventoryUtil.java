@@ -3,7 +3,6 @@ package mc.alk.arena.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,6 +35,9 @@ public class InventoryUtil {
 	static final String version = "BA InventoryUtil 2.1.7";
 	static final boolean DEBUG = false;
 
+    public enum ArmorLevel { DISGUISE, WOOL, LEATHER, IRON, GOLD, CHAINMAIL, DIAMOND }
+    public enum ArmorType { BOOTS, LEGGINGS, CHEST, HELM }
+    
 	@AllArgsConstructor
     public static class Armor {
         final public ArmorType type;
@@ -44,7 +46,7 @@ public class InventoryUtil {
 
 	public static class EnchantmentWithLevel{
 		public EnchantmentWithLevel(){}
-		public EnchantmentWithLevel(boolean all ){this.all = all;}
+		public EnchantmentWithLevel( boolean _all ){ all = _all; }
 		public Enchantment e;
 		public Integer lvl;
 		boolean all = false;
@@ -66,16 +68,13 @@ public class InventoryUtil {
 			armor = new ItemStack[0];
 		}
 		public void setArmor(PlayerInventory inventory){
-			this.armor=new ItemStack[4];
-			this.armor[ArmorType.HELM.ordinal()] = inventory.getHelmet();
-			this.armor[ArmorType.CHEST.ordinal()] = inventory.getChestplate();
-			this.armor[ArmorType.LEGGINGS.ordinal()] = inventory.getLeggings();
-			this.armor[ArmorType.BOOTS.ordinal()] = inventory.getBoots();
+			armor = new ItemStack[4];
+			armor[ArmorType.HELM.ordinal()] = inventory.getHelmet();
+			armor[ArmorType.CHEST.ordinal()] = inventory.getChestplate();
+			armor[ArmorType.LEGGINGS.ordinal()] = inventory.getLeggings();
+			armor[ArmorType.BOOTS.ordinal()] = inventory.getBoots();
 		}
 	}
-
-	public enum ArmorLevel{ DISGUISE, WOOL, LEATHER, IRON, GOLD, CHAINMAIL, DIAMOND }
-	public enum ArmorType{ BOOTS, LEGGINGS, CHEST, HELM }
 
 	public static Enchantment getEnchantmentByCommonName(String iname){
 		iname = iname.toLowerCase();
@@ -277,32 +276,30 @@ public class InventoryUtil {
 		return null;
 	}
 
-
     public static boolean isInt(String i) {try {Integer.parseInt(i);return true;} catch (Exception e) {return false;}}
 
 	public static boolean isFloat(String i){try{Float.parseFloat(i);return true;} catch (Exception e){return false;}}
 
-	/// This allows for abbreviations to work, useful for sign etc
-	public static int getMaterialID(String name) {
-		name = name.toUpperCase();
-		/// First try just getting it from the Material Name
-		Material mat = Material.getMaterial(name);
-		if (mat != null)
-			return mat.getId();
-		/// Might be an abbreviation, or a more complicated
-		int temp = Integer.MAX_VALUE;
-		mat = null;
-		name = name.replaceAll("\\s+", "").replaceAll("_", "");
-		for (Material m : Material.values()) {
-			if (m.name().replaceAll("_", "").startsWith(name)) {
-				if (m.name().length() < temp) {
-					mat = m;
-					temp = m.name().length();
-				}
-			}
-		}
-		return mat != null ? mat.getId() : -1;
-	}
+//	/// This allows for abbreviations to work, useful for sign etc
+//	public static int getMaterialID(String name) {
+//		name = name.toUpperCase();
+//		/// First try just getting it from the Material Name
+//		Material mat = Material.getMaterial(name);
+//		if (mat != null)
+//			return mat.getId();
+//		/// Might be an abbreviation, or a more complicated
+//		int temp = Integer.MAX_VALUE;
+//		name = name.replaceAll("\\s+", "").replaceAll("_", "");
+//		for (Material m : Material.values()) {
+//			if (m.name().replaceAll("_", "").startsWith(name)) {
+//				if (m.name().length() < temp) {
+//					mat = m;
+//					temp = m.name().length();
+//				}
+//			}
+//		}
+//		return mat != null ? mat.getId() : -1;
+//	}
 
 	public static boolean hasItem(Player p, ItemStack item) {
 		PlayerInventory inv = p.getInventory();
@@ -758,22 +755,16 @@ public class InventoryUtil {
 		try{
 			Matcher matcher = PATTERN_LORE.matcher(str);
 			if(matcher.find()){
-                //Replace color codes
                 String part = ChatColor.translateAlternateColorCodes('&', matcher.group(1));
-				//Now we can split it.
 				String[] lines = part.split("([;\\n]|\\\\n)");
-				//DEBUG
 				if(DEBUG) Log.info(Arrays.toString(lines));
-				//Create a new list
 				LinkedList<String> lore = new LinkedList<>();
-				//Add all the sections to the list
                 Collections.addAll(lore, lines);
-				//Success!
 				return lore;
 			}
 		}
 		catch(Exception e){
-			Log.printStackTrace(e); //Damn.
+			Log.printStackTrace(e); 
 		}
 		return null;
 	}
@@ -927,67 +918,37 @@ public class InventoryUtil {
 		}
 	}
 
-	public static class ItemComparator implements Comparator<ItemStack>{
-		@Override
-		public int compare(ItemStack arg0, ItemStack arg1) {
-            return compareItem(arg0,arg1);
-        }
-    }
-
     public static boolean sameItem(ItemStack item1, ItemStack item2) {
-        return compareItem(item1, item2) == 0;
-    }
 
-    public static int compareItem(ItemStack item1, ItemStack item2) {
-        if (item1 == null && item2 == null)
-            return 0;
-        if (item1 == null)
-            return 1;
-        if (item2 == null)
-            return -1;
-        Integer i = item1.getTypeId();
-        Integer i2 = item2.getTypeId();
-        if (i== Material.AIR.getId() && i2 == Material.AIR.getId()) return 0;
-        if (i == Material.AIR.getId()) return 1;
-        if (i2 == Material.AIR.getId()) return -1;
+        if ( item1 == null && item2 == null ) return true;
+        if ( item1 == null || item2 == null ) return false;
+             
+        Material i1 = item1.getType();
+        Material i2 = item2.getType();
+        
+        if ( i1 != i2 ) return false;
+        if ( i1 == Material.AIR && i2 == Material.AIR ) return true;
+        
+        if ( item1.getDurability() != item2.getDurability() ) return false;
+        if ( item1.getAmount() != item2.getAmount() ) return false;
 
-        int c = i.compareTo(i2);
-        if (c!= 0)
-            return c;
-        Short s= item1.getDurability();
-        c = s.compareTo(item2.getDurability());
-        if (c!= 0)
-            return c;
-        i = item1.getAmount();
-        c = i.compareTo(item2.getAmount());
-        if (c!= 0)
-            return c;
         Map<Enchantment, Integer> e1 = item1.getEnchantments();
         Map<Enchantment, Integer> e2 = item1.getEnchantments();
-        i = e1.size();
-        c = i.compareTo(e2.size());
-        if (c!=0)
-            return c;
-        for (Enchantment e: e1.keySet()){
-            if (!e2.containsKey(e))
-                return -1;
-            i = e1.get(e);
-            i2 = e2.get(e);
-            c = i.compareTo(i2);
-            if (c != 0)
-                return c;
-        }
-        return 0;
+        
+        if ( e1.isEmpty() && e2.isEmpty() ) return true;
+        if ( e1.equals( e2 ) ) return true;
+        
+        return false;
     }
 
     public static boolean sameItems(List<ItemStack> items, PlayerInventory inv, boolean woolTeams) {
-		ItemStack[] contents =inv.getContents();
+		ItemStack[] contents = inv.getContents();
 		ItemStack[] armor = inv.getArmorContents();
 		/// This is a basic check to make sure we have the same number of items, and same total durability
 		/// Even with the 3 loops b/c there is no creation or sorting this is orders of magnitude faster
 		/// and takes almost no time.
-		int nitems1 =0, nitems2=0;
-		int dura1=0, dura2=0;
+		int nitems1 = 0, nitems2 = 0;
+		int dura1 = 0, dura2 = 0;
 
 		for (ItemStack is: items){
 			if (is == null || is.getType() == Material.AIR)
@@ -1178,15 +1139,12 @@ public class InventoryUtil {
 					}
 				} catch (IllegalArgumentException e) {
 					Log.err(cs.getCurrentPath() +"."+nodeString + " couldnt parse item " + str);
-				} catch (Exception e){
-					Log.err(cs.getCurrentPath() +"."+nodeString + " couldnt parse item " + str);
-				}
+				} 
 			}
 		} catch (Exception e){
 			Log.err(cs.getCurrentPath() +"."+nodeString + " could not be parsed in config.yml");
 			Log.printStackTrace(e);
 		}
 		return items;
-	}
-	
+	}	
 }

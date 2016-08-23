@@ -142,8 +142,10 @@ public class ArenaClassController {
         userClassSwitchTime.put(ap.getUniqueId(), System.currentTimeMillis());
         /// check to see if they have a team head
         ArenaTeam at = ap.getTeam();
-        boolean woolTeams = ((at != null && at.getIndex() != -1) && p.getInventory().getHelmet() != null &&
-                InventoryUtil.sameItem(at.getHeadItem(), p.getInventory().getHelmet()));
+        boolean woolTeams = at != null 
+                            && at.getIndex() != -1
+                            && p.getInventory().getHelmet() != null 
+                            && InventoryUtil.sameItem( at.getHeadItem(), p.getInventory().getHelmet() );
 
 //        boolean woolTeams = mp.hasAnyOption(TransitionOption.WOOLTEAMS);
         /// Have They have already selected a class this match, have they changed their inventory since then?

@@ -126,13 +126,13 @@ public class ArenaSize implements CompetitionSize{
 	}
 
     public static int toInt(String size) {
-        return size.equalsIgnoreCase("infinite") ? MAX : Integer.valueOf(size);
+        return size.equalsIgnoreCase("infinite") ? MAX : Integer.parseInt(size);
     }
 
     public static int toInt(String size, int defValue) {
         if (size == null || size.isEmpty())
             return defValue;
-        return size.equalsIgnoreCase("infinite") ? MAX : Integer.valueOf(size);
+        return size.equalsIgnoreCase("infinite") ? MAX : Integer.parseInt(size);
     }
 
     @Override

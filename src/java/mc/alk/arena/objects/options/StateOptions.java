@@ -55,7 +55,7 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.PVPState;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.plugins.MobArenaInterface;
+import mc.alk.arena.plugins.MobArenaUtil;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.InventoryUtil.ArmorLevel;
@@ -200,7 +200,7 @@ public class StateOptions {
             }
         }
         /// Inside MobArena?
-        if (MobArenaInterface.hasMobArena() && MobArenaInterface.insideMobArena(p)){
+        if ( MobArenaUtil.isEnabled() && MobArenaUtil.insideMobArena( p.getPlayer() ) ) {
             return false;
         }
         if (options.containsKey(GAMEMODE)){
@@ -230,6 +230,7 @@ public class StateOptions {
     }
 
     public String getNotReadyMsg(String header) {
+        
         StringBuilder sb = new StringBuilder();
         boolean hasSomething = false;
         if (header != null){
@@ -298,7 +299,7 @@ public class StateOptions {
             }
         }
         /// Inside MobArena?
-        if (MobArenaInterface.hasMobArena() && MobArenaInterface.insideMobArena(p)){
+        if ( MobArenaUtil.isEnabled() && MobArenaUtil.insideMobArena( p.getPlayer() ) ) {
             isReady = false;
             sb.append("&5 - &4You are Inside Mob Arena");
         }
@@ -490,6 +491,7 @@ public class StateOptions {
     private ChatColor getColor(TransitionOption transitionOption, StateOptions so) {
         return so !=null && so.options.containsKey(transitionOption) ? ChatColor.WHITE : ChatColor.GOLD;
     }
+    
     public String getOptionString(StateOptions so) {
         if (options == null) return "[SO empty]";
         StringBuilder sb = new StringBuilder("[");

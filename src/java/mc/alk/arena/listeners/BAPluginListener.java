@@ -17,8 +17,8 @@ import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.FactionsController;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.McMMOController;
-import mc.alk.arena.plugins.MobArenaInterface;
-import mc.alk.arena.plugins.VanishNoPacketInterface;
+import mc.alk.arena.plugins.MobArenaUtil;
+import mc.alk.arena.plugins.VanishNoPacketUtil;
 import mc.alk.arena.plugins.WorldEditUtil;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.util.Log;
@@ -90,12 +90,12 @@ public class BAPluginListener implements Listener {
 
     public void loadCombatTag() {
         if ( Bukkit.getPluginManager().getPlugin("CombatTag") != null ) {
-            Log.info("[BattleArena] CombatTag detected, enabling limited tag support");
+            Log.info( "[BattleArena] CombatTag detected, enabling limited tag support" );
         }
     }
     public void loadEssentials() {
-        if ( EssentialsUtil.isEnabled()) 
-            Log.info("[BattleArena] Essentials detected. God mode handling activated");
+        if ( EssentialsUtil.isEnabled() ) 
+            Log.info( "[BattleArena] Essentials detected. God mode handling activated" );
     }
 
     public void loadFactions() {
@@ -152,13 +152,8 @@ public class BAPluginListener implements Listener {
     }
 
     public void loadMobArena() {
-        if (!MobArenaInterface.hasMobArena()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("MobArena");
-            if (plugin != null) {
-                MobArenaInterface.setPlugin(plugin);
-                Log.info("[BattleArena] MobArena detected.  Implementing no add when in MobArena");
-            }
-        }
+        if ( MobArenaUtil.isEnabled() ) 
+                Log.info( "[BattleArena] MobArena detected.  Implementing no add when in MobArena" );
     }
 
     public void loadMultiInv() {
@@ -193,22 +188,18 @@ public class BAPluginListener implements Listener {
 
     public void loadWorldEdit() {
         if ( !WorldEditUtil.hasWorldEdit() && WorldEditUtil.checkIfLoadedYet() )
-            Log.info("[BattleArena] WorldEdit detected.");               
+            Log.info( "[BattleArena] WorldEdit detected." );               
     }
 
     public void loadWorldGuard() {
         if ( !WorldGuardController.hasWorldGuard() && WorldGuardController.checkIfLoadedYet() ) 
-            Log.info("[BattleArena] WorldGuard detected. WorldGuard regions can now be used");
+            Log.info( "[BattleArena] WorldGuard detected. WorldGuard regions can now be used" );
     }
 
     public void loadVanishNoPacket() {
-        if (!VanishNoPacketInterface.enabled()) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
-            if (plugin != null) {
-                VanishNoPacketInterface.setPlugin(plugin);
-                Log.info("[BattleArena] VanishNoPacket detected. Invisibility fix is disabled for vanished players not in an arena");
-            }
-        }
+        if ( VanishNoPacketUtil.isEnabled() ) 
+            Log.info( "[BattleArena] VanishNoPacket detected. Invisibility fix is "
+                        + "disabled for vanished players not in an arena" );
     }
 
     public void loadVault() {
@@ -216,31 +207,34 @@ public class BAPluginListener implements Listener {
             /// Load vault economy
             if (!MoneyController.hasEconomy()) {
                 try {
-                    RegisteredServiceProvider<Economy> provider = Bukkit.getServer().
-                            getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+                    RegisteredServiceProvider<Economy> provider = 
+                            Bukkit.getServer().getServicesManager().getRegistration( Economy.class );
+                    
                     if (provider == null || provider.getProvider() == null) {
-                        Log.warn(BattleArena.getNameAndVersion() + " found no economy plugin. Attempts to use money in arenas might result in errors.");
+                        Log.warn( BattleArena.getNameAndVersion() + " found no economy plugin. "
+                                    + "Attempts to use money in arenas might result in errors.");
                         return;
                     }
                     MoneyController.setEconomy(provider.getProvider());
-                    Log.info(BattleArena.getNameAndVersion() + " found economy plugin Vault. [Default]");
-                    
-                } catch (Error e) {
-                    Log.err(BattleArena.getNameAndVersion() + " exception loading economy through Vault");
+                    Log.info( BattleArena.getNameAndVersion() + " found economy plugin Vault. [Default]"  );
+                } 
+                catch (Error e) {
+                    Log.err( BattleArena.getNameAndVersion() + " exception loading economy through Vault"    );
                     Log.printStackTrace(e);
                 }
             }
             /// Load Vault chat
             if (AnnouncementOptions.vaultChat == null) {
                 try {
-                    RegisteredServiceProvider<Chat> provider = Bukkit.getServer().
-                            getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-                    if (provider != null && provider.getProvider() != null) {
+                    RegisteredServiceProvider<Chat> provider = 
+                            Bukkit.getServer().getServicesManager().getRegistration( Chat.class );
+                    
+                    if (provider != null && provider.getProvider() != null)
                         AnnouncementOptions.setVaultChat(provider.getProvider());
-                    } else if (AnnouncementOptions.chatPlugin == null) {
+                    else if (AnnouncementOptions.chatPlugin == null) 
                         Log.info("[BattleArena] Vault chat not detected, ignoring channel options");
-                    }
-                } catch (Error e) {
+                } 
+                catch (Error e) {
                     Log.err(BattleArena.getNameAndVersion() + " exception loading chat through Vault");
                     Log.printStackTrace(e);
                 }
@@ -253,5 +247,4 @@ public class BAPluginListener implements Listener {
             Defaults.PLUGIN_ANTILOOT = true;
         }
     }
-
 }

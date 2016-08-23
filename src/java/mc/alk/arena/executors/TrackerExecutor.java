@@ -10,8 +10,8 @@ import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.controllers.tracker.TrackerMessageController;
 import mc.alk.arena.objects.tracker.Stat;
 import mc.alk.arena.objects.tracker.StatType;
-import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
@@ -21,12 +21,12 @@ import mc.alk.arena.util.TimeUtil;
 public class TrackerExecutor extends CustomCommandExecutor {
 	final TrackerInterface ti;
 	public static final int MAX_RECORDS = 100;
-	public TrackerExecutor(TrackerInterface ti) {
+	public TrackerExecutor(TrackerInterface _ti) {
 		super();
-		this.ti =ti;
+		ti = _ti;
 	}
 
-	@MCCommand(cmds={"top"}, usage="top [x] [team size]")
+	@MCCommand( cmds={"top"}, usage = "top [x] [team size]" )
 	public boolean showTopXOther(CommandSender sender, String[] args){
 		int x = 5;
 		StatType st = null;
@@ -58,12 +58,12 @@ public class TrackerExecutor extends CustomCommandExecutor {
 		return true;
 	}
 
-	@MCCommand(cmds={"versus","vs"}, usage="vs <player>")
+	@MCCommand( cmds = {"versus", "vs"}, usage = "vs <player>" )
 	public boolean versus(Player player1, String player2){
 		return versus(player1, player1.getName(), player2, 5);
 	}
 
-	@MCCommand(cmds={"versus","vs"}, usage="vs <player> <# records>")
+	@MCCommand( cmds = {"versus", "vs"}, usage = "vs <player> <# records>" )
 	public boolean versus(Player player1, String player2, Integer nRecords){
 		return versus(player1, player1.getName(), player2, nRecords);
 	}
@@ -96,7 +96,7 @@ public class TrackerExecutor extends CustomCommandExecutor {
 		return true;
 	}
 
-	@MCCommand(cmds={"addKill"},op=true,usage="addkill <player1> <player2>: this is a debugging method")
+	@MCCommand( cmds = {"addKill"}, op = true, usage = "addkill <player1> <player2>: this is a debugging method" )
 	public boolean addKill(CommandSender sender, String p1, String p2){
 		Stat stat = ti.loadPlayerRecord(p1);
 		Stat stat2 = ti.loadPlayerRecord(p2);
@@ -150,14 +150,17 @@ public class TrackerExecutor extends CustomCommandExecutor {
 			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", p.getName()));}
 		String msg=null;
 		if (sender instanceof Player){
+		    
 			Stat selfStat = ti.loadRecord((Player)sender);
 			if (selfStat == null){ ///
 			    MessageUtil.sendMessage(sender, "&cYou have no records, Showing record for &6"+stat.getName());
 				msg = getFullStatMsg(stat);
-			} else {
+			} 
+			else {
 				msg = getStatMsg(selfStat,stat);
 			}
-		} else {
+		} 
+		else {
 		    MessageUtil.sendMessage(sender, "&2Showing record for &6" + stat.getName());
 			msg = getFullStatMsg(stat);
 		}
@@ -174,5 +177,4 @@ public class TrackerExecutor extends CustomCommandExecutor {
 		}
 		return stat;
 	}
-
 }

@@ -25,7 +25,7 @@ import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.plugins.CombatTagUtil;
 import mc.alk.arena.plugins.EssentialsUtil;
-import mc.alk.arena.plugins.VanishNoPacketInterface;
+import mc.alk.arena.plugins.VanishNoPacketUtil;
 import mc.alk.arena.util.Log;
 
 public class TeleportController implements Listener {
@@ -52,15 +52,12 @@ public class TeleportController implements Listener {
             player.setFallDistance(0);
             Location loc = location.clone();
             loc.setY(loc.getY() + Defaults.TELEPORT_Y_OFFSET);
-            /// Close their inventory so they arent taking things in/out
             player.closeInventory();
             player.setFireTicks(0);
             arenaPlayer.despawnMobs();
 
-            /// Deal with vehicles
             if (player.isInsideVehicle()) player.leaveVehicle();
 
-            /// Load the chunk if its not already loaded
             if (!loc.getWorld().isChunkLoaded(loc.getBlock().getChunk())) 
                 loc.getWorld().loadChunk(loc.getBlock().getChunk());
     
@@ -98,7 +95,6 @@ public class TeleportController implements Listener {
                 if (l != null)
                     EssentialsUtil.setBackLocation(player, l);
             }
-
             if (Defaults.DEBUG_TRACE)
                 Log.info("BattleArena ending teleport player=" + player.getDisplayName());
         } 
@@ -128,11 +124,11 @@ public class TeleportController implements Listener {
         }
     }
 
-    ///TODO remove these work around teleport hacks when bukkit fixes the invisibility on teleport issue
+    /// TODO remove these work around teleport hacks when bukkit fixes the invisibility on teleport issue
     /// modified from the teleportFix2 found online
     private void invisbleTeleportWorkaround( Player player ) {
         
-        final int visibleDistance = Bukkit.getViewDistance() * 16;
+        int visibleDistance = Bukkit.getViewDistance() * 16;
         // Fix the visibility issue one tick later
         Scheduler.scheduleSynchronousTask( 
                 () -> { 
@@ -147,16 +143,16 @@ public class TeleportController implements Listener {
                 }, TELEPORT_FIX_DELAY);
     }
 
-    void updateEntities(final Player tpedPlayer, final List<Player> players, boolean visible) {
+    void updateEntities( Player tpedPlayer, List<Player> players, boolean visible ) {
         // Hide or show every player to tpedPlayer and hide or show tpedPlayer to every player.
         for (Player player : players) {
             if (!player.isOnline()) continue;
 
-            if (VanishNoPacketInterface.isVanished(player)) {
+            if (VanishNoPacketUtil.isVanished(player)) {
                 if (!InArenaListener.inArena(player)) {
                     continue;
                 }
-                VanishNoPacketInterface.toggleVanish(player);
+                VanishNoPacketUtil.toggleVanish(player);
             }
             if (visible) {
                 tpedPlayer.showPlayer(player);
@@ -169,7 +165,7 @@ public class TeleportController implements Listener {
         }
     }
 
-    List<Player> getPlayersWithinDistance(final Player player, final int distance) {
+    List<Player> getPlayersWithinDistance( Player player, int distance ) {
         List<Player> res = new ArrayList<>();
         int d2 = distance * distance;
         UUID uid = player.getWorld().getUID();
@@ -182,8 +178,8 @@ public class TeleportController implements Listener {
                     res.add(p);
                 }
             } 
-            catch (IllegalArgumentException e) {
-                Log.info(e.getMessage());
+            catch ( IllegalArgumentException e ) {
+                Log.info( e.getMessage() );
             } 
         }
         return res;

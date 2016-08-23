@@ -1,21 +1,25 @@
 package mc.alk.arena.plugins;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.kitteh.vanish.VanishManager;
 import org.kitteh.vanish.VanishPlugin;
 
 public class VanishNoPacketUtil {
 	static VanishPlugin vanish;
+	static VanishManager manager;
 
-	public static void setPlugin(Plugin plugin) {
-		vanish = (VanishPlugin) plugin;
+	static {
+		vanish = (VanishPlugin) Bukkit.getPluginManager().getPlugin("VanishNoPacket");
+		manager = vanish.getManager();
 	}
-
+	public static boolean isEnabled() {
+	    return vanish != null && manager != null;
+	}
 	public static boolean isVanished(Player player) {
-		return vanish.getManager().isVanished(player);
+		return manager.isVanished(player);
 	}
-
 	public static void toggleVanish(Player player) {
-		vanish.getManager().toggleVanish(player);
+	    manager.toggleVanish(player);
 	}
 }

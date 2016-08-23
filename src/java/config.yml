@@ -74,7 +74,7 @@ defaultOptions:
 
     ## Enable ready block (a block players can click to signify they are ready)
     enablePlayerReadyBlock: false
-    readyBlockType: 42  ## what is the ready block (42 is iron_block)
+    readyBlockType: IRON_BLOCK  ## use offical MC Material names
 
     ## How long before a player can choose another class
     timeBetweenClassChange: 3

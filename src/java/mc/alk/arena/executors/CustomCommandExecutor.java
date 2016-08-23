@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.Permissions;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaAlterController;
 import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
@@ -48,10 +48,6 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         arenaEditor = BattleArena.getArenaEditor();
     }
 
-    protected boolean hasAdminPerms(CommandSender sender){
-        return sender.isOp() || sender.hasPermission(Permissions.ADMIN_NODE);
-    }
-
     @Override
     protected Object verifySender(CommandSender sender, Class<?> clazz) {
         if (clazz == ArenaPlayer.class){
@@ -81,6 +77,8 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     @Override
     protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
                                 int curIndex, AtomicInteger numUsedStrings ) {
+        
+        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "CustomCommandExecutor.verifyArgs() entered" );
         
         if (EventParams.class == clazz) return verifyEventParams(command);        
         else if (MatchParams.class == clazz) return verifyMatchParams(command);        
@@ -137,8 +135,10 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
         }
         if (ct.needsPlayer() && !(sender instanceof Player))
             throw new IllegalArgumentException(ChatColor.RED + "You need to be online to change the option " + ct.name());
+        
         ArenaOptionPair aop = new ArenaOptionPair();
         aop.ao = ct;
+        
         if (ct == ChangeType.SPAWNLOC) {
             aop.value = ChangeType.getValue(ct, curIndex, args);
             if (aop.value == null){
@@ -276,10 +276,11 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
 
     private Arena verifyArena(Class<?> arenaClass, String name) throws IllegalArgumentException {
         Arena arena = arenaController.getArena(name);
-        if (arena == null){
-            throw new IllegalArgumentException("Arena '" +name+"' doesnt exist" );}
-        if (!arenaClass.isAssignableFrom(arena.getClass())){
-            throw new IllegalArgumentException("Arena '" +name+"' isn't a "+arenaClass.getSimpleName()+" arena" );}
+        if (arena == null)
+            throw new IllegalArgumentException("Arena '" + name + "' doesnt exist" );
+        
+        if (!arenaClass.isAssignableFrom(arena.getClass()))
+            throw new IllegalArgumentException( "Arena '" + name + "' isn't a " + arenaClass.getSimpleName() + " arena" );
         return arena;
     }
 
@@ -293,7 +294,6 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
             if (mp != null)
                 return mp;
         }
-
         throw new IllegalArgumentException(ChatColor.RED + "Match parameters for a &6" + command.getName()+"&c can't be found");
     }
 
@@ -307,7 +307,6 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
             if (mp != null)
                 return (EventParams) mp;
         }
-
         throw new IllegalArgumentException(ChatColor.RED + "Event parameters for a &6" + command.getName()+"&c can't be found");
     }
 }

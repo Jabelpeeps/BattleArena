@@ -18,7 +18,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		this.es = es;
 	}
 
-	@MCCommand(cmds={"add"}, admin=true)
+	@MCCommand( cmds = {"add"}, admin = true )
 	public boolean schedule(CommandSender sender, String eventType, String[] args) {
 		MatchParams ep = ParamController.getMatchParamCopy(eventType);
 		if (ep == null){
@@ -32,7 +32,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		return true;
 	}
 
-	@MCCommand(cmds={"delete","del"}, admin=true)
+	@MCCommand( cmds = {"delete","del"}, admin = true )
 	public boolean delete(CommandSender sender, Integer index) {
 		List<EventPair> events = es.getEvents();
 		if (events == null || events.isEmpty()){
@@ -44,7 +44,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		return MessageUtil.sendMessage(sender, "&2Event &6"+index+"&2 deleted");
 	}
 
-	@MCCommand(cmds={"list"}, admin=true)
+	@MCCommand( cmds = {"list"}, admin = true )
 	public boolean list(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
 		if (events == null || events.isEmpty()){
@@ -58,7 +58,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		return MessageUtil.sendMessage(sender, "&6/bas delete <number>:&e to delete an event");
 	}
 
-	@MCCommand(cmds={"start"}, admin=true)
+	@MCCommand( cmds = {"start"}, admin = true )
 	public boolean start(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
 		if (events == null || events.isEmpty()){
@@ -71,7 +71,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		return MessageUtil.sendMessage(sender, "&2Scheduled events are now &astarted");
 	}
 
-	@MCCommand(cmds={"stop"}, admin=true)
+	@MCCommand( cmds = {"stop"}, admin = true )
 	public boolean stop(CommandSender sender) {
 		if (!es.isRunning()){
 			return MessageUtil.sendMessage(sender, "&cScheduled events are already stopped!");
@@ -80,7 +80,7 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 		return MessageUtil.sendMessage(sender, "&2Scheduled events are now &4stopped!");
 	}
 
-	@MCCommand(cmds={"startNext"}, admin=true)
+	@MCCommand( cmds = {"startNext"}, admin = true )
 	public boolean startNext(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
 		if (events == null || events.isEmpty()){

@@ -1,10 +1,10 @@
 package mc.alk.arena.objects.teams;
 
+import java.util.Set;
+
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.util.TeamUtil;
-
-import java.util.Set;
 
 public class TeamFactory {
 
@@ -20,15 +20,15 @@ public class TeamFactory {
         return ct;
     }
 
-    public static CompositeTeam createCompositeTeam(MatchParams params, Set<ArenaPlayer> players) {
-        CompositeTeam ct = (CompositeTeam) createCompositeTeam(-1, params);
-        ct.addPlayers(players);
-		return ct;
-	}
-
-	public static CompositeTeam createCompositeTeam() {
-		return new CompositeTeam();
-	}
+//    public static CompositeTeam createCompositeTeam(MatchParams params, Set<ArenaPlayer> players) {
+//        CompositeTeam ct = (CompositeTeam) createCompositeTeam(-1, params);
+//        ct.addPlayers(players);
+//		return ct;
+//	}
+//
+//	public static CompositeTeam createCompositeTeam() {
+//		return new CompositeTeam();
+//	}
 
     public static ArenaTeam createCompositeTeam(Integer index, MatchParams params) {
         ArenaTeam at = new CompositeTeam();

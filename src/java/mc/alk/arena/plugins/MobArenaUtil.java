@@ -1,22 +1,29 @@
 package mc.alk.arena.plugins;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import com.garbagemule.MobArena.MobArena;
+import com.garbagemule.MobArena.framework.ArenaMaster;
 
 public class MobArenaUtil {
-	MobArena ma = null;
-	public MobArenaUtil(Plugin plugin){
-		ma = (MobArena) plugin;
+    
+	static MobArena ma;
+	static ArenaMaster master;
+	
+	static {
+		ma = (MobArena) Bukkit.getPluginManager().getPlugin("MobArena");
+		master = ma.getArenaMaster();
 	}
-	public boolean insideMobArena(Player player) {
-		if (ma == null)
-			return false;
-		boolean has = ma.getArenaMaster().getArenaWithPlayer(player) != null;
-		if (!has){
-			has = ma.getArenaMaster().getArenaWithSpectator(player) != null;
-		}
-		return has;
+	
+	public static boolean isEnabled() {
+	    return ma != null && master != null;
+	}
+	
+	public static boolean insideMobArena(Player player) {
+		if ( ma == null ) return false;
+
+		return  master.getArenaWithPlayer(player) != null 
+		        || master.getArenaWithSpectator(player) != null;
 	}
 }

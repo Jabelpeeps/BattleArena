@@ -32,7 +32,7 @@ import mc.alk.arena.util.MessageUtil;
 
 public class BattleArenaExecutor extends CustomCommandExecutor {
 
-    @MCCommand(cmds = {"listInv"}, admin = true)
+    @MCCommand( cmds = {"listInv"}, admin = true )
     public boolean listSaves(CommandSender sender, OfflinePlayer p) {
         Collection<String> dates = InventorySerializer.getDates(p);
 
@@ -47,7 +47,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    @MCCommand(cmds = {"listInv"}, admin = true)
+    @MCCommand( cmds = {"listInv"}, admin = true )
     public boolean listSave(CommandSender sender, OfflinePlayer p, Integer index) {
         if (index < 0 || index > Defaults.NUM_INV_SAVES) {
             return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
@@ -73,7 +73,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    @MCCommand(cmds = {"giveInv"}, admin = true)
+    @MCCommand( cmds = {"giveInv"}, admin = true )
     public boolean restoreInv(CommandSender sender, ArenaPlayer p, Integer index, Player other) {
         if (index < 0 || index > Defaults.NUM_INV_SAVES) {
             return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
@@ -84,7 +84,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(sender, "&cPlayer inventory could not be given to " + other.getDisplayName());
     }
 
-    @MCCommand(cmds = {"restoreInv"}, admin = true)
+    @MCCommand( cmds = {"restoreInv"}, admin = true )
     public boolean restoreInv(CommandSender sender, ArenaPlayer p, Integer index) {
         if (index < 0 || index > Defaults.NUM_INV_SAVES) {
             return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
@@ -123,7 +123,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    @MCCommand(cmds = {"reload"}, admin = true, perm = "arena.reload")
+    @MCCommand( cmds = {"reload"}, admin = true, perm = "arena.reload" )
     public boolean arenaReload(CommandSender sender) {
         BAEventController baec = BattleArena.getBAEventController();
         if (arenaController.hasRunningMatches() || !arenaController.isQueueEmpty() || baec.hasOpenEvent()) {
@@ -142,7 +142,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(sender, "&6BattleArena&e configuration reloaded");
     }
 
-    @MCCommand(cmds = {"listClasses"}, admin = true)
+    @MCCommand( cmds = {"listClasses"}, admin = true )
     public boolean listArenaClasses(CommandSender sender) {
         Set<ArenaClass> classes = ArenaClassController.getClasses();
         MessageUtil.sendMessage(sender, "&2Registered classes");
@@ -154,7 +154,7 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    @MCCommand(cmds = {"kick"}, admin = true, perm = "arena.kick")
+    @MCCommand( cmds = {"kick"}, admin = true, perm = "arena.kick" )
     public boolean arenaKick(CommandSender sender, ArenaPlayer player) {
         ArenaPlayerLeaveEvent event = new ArenaPlayerLeaveEvent(player, player.getTeam(),
                 ArenaPlayerLeaveEvent.QuitReason.KICKED);

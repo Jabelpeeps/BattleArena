@@ -90,7 +90,7 @@ import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.plugins.CombatTagUtil;
 import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.plugins.HeroesController;
-import mc.alk.arena.plugins.MobArenaInterface;
+import mc.alk.arena.plugins.MobArenaUtil;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.InventoryUtil;
@@ -134,12 +134,12 @@ public class BAExecutor extends CustomCommandExecutor {
                 set.add(param.getName());
             }
             for (String s : set) {
-                sendSystemMessage(sender, "type_enabled", s);
+                MessageUtil.sendSystemMessage(sender, "type_enabled", s);
             }
             return true;
         }
         disabled.remove(mp.getName());
-        return sendSystemMessage(sender, "type_enabled", mp.getName());
+        return MessageUtil.sendSystemMessage(sender, "type_enabled", mp.getName());
     }
 
     @MCCommand( cmds = {"disable"}, admin = true, perm = "arena.enable", usage = "disable" )
@@ -153,25 +153,12 @@ public class BAExecutor extends CustomCommandExecutor {
                 set.add(param.getName());
             }
             for (String s : set) {
-                sendSystemMessage(sender, "type_disabled", s);
+                MessageUtil.sendSystemMessage(sender, "type_disabled", s);
             }
             return true;
         }
         disabled.add(mp.getName());
-        return sendSystemMessage(sender, "type_disabled", mp.getName());
-    }
-
-    public static boolean sendSystemMessage(CommandSender sender, String node, Object... args) {
-        return MessageUtil.sendMessage(sender, MessageHandler.getSystemMessage(node, args));
-    }
-
-    public static boolean sendSystemMessage(ArenaTeam team, String node, Object... args) {
-        team.sendMessage(MessageHandler.getSystemMessage(node, args));
-        return true;
-    }
-
-    public static boolean sendSystemMessage(ArenaPlayer sender, String node, Object... args) {
-        return MessageUtil.sendMessage(sender, MessageHandler.getSystemMessage(node, args));
+        return MessageUtil.sendSystemMessage(sender, "type_disabled", mp.getName());
     }
 
     @MCCommand( cmds = {"enabled"}, admin = true )
@@ -214,7 +201,7 @@ public class BAExecutor extends CustomCommandExecutor {
         }
 
         if (!adminJoin && !Permissions.hasMatchPerm(player.getPlayer(), omp, "join")) {
-            return sendSystemMessage(player, "no_join_perms", omp.getCommand());
+            return MessageUtil.sendSystemMessage(player, "no_join_perms", omp.getCommand());
         }
 
         if (!canJoin(player)) {
@@ -237,7 +224,7 @@ public class BAExecutor extends CustomCommandExecutor {
         }
 
         if (!canJoin(t, true)) {
-            sendSystemMessage(player, "teammate_cant_join", omp.getName());
+            MessageUtil.sendSystemMessage(player, "teammate_cant_join", omp.getName());
             return MessageUtil.sendMessage(player, "&6/team leave: &cto leave the team");
         }
 
@@ -262,7 +249,7 @@ public class BAExecutor extends CustomCommandExecutor {
                         }
                     }
                 }
-                return sendSystemMessage(player, "valid_arena_not_built", mp.getName());
+                return MessageUtil.sendSystemMessage(player, "valid_arena_not_built", mp.getName());
             }
         }
 
@@ -281,8 +268,7 @@ public class BAExecutor extends CustomCommandExecutor {
 
         /// Check if the team is ready
         if (!ops.teamReady(t, null)) {
-            t.sendMessage(ops.getRequiredString(MessageHandler
-                    .getSystemMessage("need_the_following") + "\n"));
+            t.sendMessage(ops.getRequiredString(MessageHandler.getSystemMessage("need_the_following") + "\n"));
             return true;
         }
 
@@ -306,8 +292,8 @@ public class BAExecutor extends CustomCommandExecutor {
         /// Annouce to the server if they have the option set
 
         Channel channel = ao != null ? ao.getChannel(true, MatchState.ONENTERQUEUE)
-                : AnnouncementOptions.getDefaultChannel(true,
-                        MatchState.ONENTERQUEUE);
+                                     : AnnouncementOptions.getDefaultChannel(true, MatchState.ONENTERQUEUE);
+        
         String neededPlayers = jr.maxPlayers == CompetitionSize.MAX ? "inf" : jr.maxPlayers + "";
         List<Object> vars = new ArrayList<>();
         vars.add(mp);
@@ -406,13 +392,13 @@ public class BAExecutor extends CustomCommandExecutor {
     protected boolean isDisabled(CommandSender sender, MatchParams mp) {
         if (disabled.contains(mp.getName())) {
             
-            sendSystemMessage(sender, "match_disabled", mp.getName());
+            MessageUtil.sendSystemMessage(sender, "match_disabled", mp.getName());
             final String enabled = ParamController.getAvaibleTypes(disabled);
             
             if (enabled.isEmpty()) {
-                return sendSystemMessage(sender, "all_disabled");
+                return MessageUtil.sendSystemMessage(sender, "all_disabled");
             }
-            return sendSystemMessage(sender, "currently_enabled", enabled);
+            return MessageUtil.sendSystemMessage(sender, "currently_enabled", enabled);
         }
         return false;
     }
@@ -475,7 +461,7 @@ public class BAExecutor extends CustomCommandExecutor {
         if (event.getMessages() != null && !event.getMessages().isEmpty()) {
             MessageUtil.sendMessage(event.getPlayer(), event.getMessages());
         } else {
-            sendSystemMessage(p, "you_not_in_queue");
+            MessageUtil.sendSystemMessage(p, "you_not_in_queue");
         }
         return true;
     }
@@ -873,6 +859,8 @@ public class BAExecutor extends CustomCommandExecutor {
 
     @MCCommand(cmds = {"create"}, admin = true, perm = "arena.create", usage = "create <arena name>")
     public boolean arenaCreate(Player sender, MatchParams mp, String name) {
+        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "arenaCreate Method entered" );
+        
         if (arenaController.getArena(name) != null) {
             return MessageUtil.sendMessage(sender, "&cThere is already an arena named &6" + name);
         }
@@ -946,7 +934,7 @@ public class BAExecutor extends CustomCommandExecutor {
         return _setGameOption(sender, params, index.getInt(), gop.alterParamOption, gop.value);
     }
 
-    public boolean _setGameOption(CommandSender sender, MatchParams params,
+    private boolean _setGameOption(CommandSender sender, MatchParams params,
                                     Integer teamIndex, AlterParamOption option, Object value) {
         try {
             ParamAlterController.setGameOption(sender, params, teamIndex, option, value);
@@ -972,7 +960,7 @@ public class BAExecutor extends CustomCommandExecutor {
         return _setGameStateOption(sender, params, index.getInt(), top.state, top.op, top.value);
     }
 
-    public boolean _setGameStateOption(CommandSender sender, MatchParams params, Integer teamIndex,
+    private boolean _setGameStateOption(CommandSender sender, MatchParams params, Integer teamIndex,
             CompetitionState state, TransitionOption to, Object value) {
         try {
             ParamAlterController.setGameOption(sender, params, teamIndex, state, to, value);
@@ -1271,7 +1259,7 @@ public class BAExecutor extends CustomCommandExecutor {
                     }
                 }
             }
-            return sendSystemMessage(player, "valid_arena_not_built", mp.getName());
+            return MessageUtil.sendSystemMessage(player, "valid_arena_not_built", mp.getName());
         }
         final StateGraph ops = mp.getStateGraph();
         if (ops == null) {
@@ -1412,8 +1400,8 @@ public class BAExecutor extends CustomCommandExecutor {
         }
 
         /// Inside MobArena?
-        if (MobArenaInterface.hasMobArena()
-                && MobArenaInterface.insideMobArena(player)) {
+        if ( MobArenaUtil.isEnabled()
+                && MobArenaUtil.insideMobArena( player.getPlayer() ) ) {
             if (showMessages) {
                 MessageUtil.sendMessage(player, "&cYou need to finish with MobArena first!");
             }
@@ -1481,7 +1469,7 @@ public class BAExecutor extends CustomCommandExecutor {
                         continue;
                     }
                     if (!_canJoin(p, true, true)) {
-                        sendSystemMessage(player, "teammate_cant_join");
+                        MessageUtil.sendSystemMessage(player, "teammate_cant_join");
                         MessageUtil.sendMessage(player, "&6/team leave: &cto leave the team");
                         return false;
                     }
