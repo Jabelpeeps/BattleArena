@@ -75,7 +75,7 @@ public class SpawnSerializer {
         Set<String> keys = cs.getKeys(false);
         
         for (String key : keys) {
-            List<SpawnInstance> sis = parseSpawnable(convertToStringList(cs, key));
+            List<SpawnInstance> sis = parseSpawnable( convertToStringList(cs, key) );
             
             if ( sis != null ) 
                 for ( SpawnInstance si : sis ) 
@@ -122,7 +122,7 @@ public class SpawnSerializer {
         } catch ( NumberFormatException e) { }
 
         ItemStack is = InventoryUtil.parseItem( value );
-        EntityType et = parseEntityType(key);
+        EntityType et = parseEntityType( key );
 
        if (is != null && et != null) {
             int keysize = key.length();
@@ -226,10 +226,11 @@ public class SpawnSerializer {
         return new TimedSpawn(fs, rs, ds, si);
     }
     
-    static final String TAMED = "tamed_";
+    static final String TAMED = "TAMED_";
 
     public static EntityType parseEntityType(String str) {
-
+        str = str.toUpperCase();
+        
         if ( str.startsWith(TAMED) ) 
             str = str.substring(TAMED.length(), str.length());
         
