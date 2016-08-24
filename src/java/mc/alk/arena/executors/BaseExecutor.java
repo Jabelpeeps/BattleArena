@@ -3,7 +3,6 @@ package mc.alk.arena.executors;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -135,6 +134,11 @@ public abstract class BaseExecutor implements CommandExecutor{
             mthds.put( order, mw );
             methods.put( cmd, mthds );
             addUsage( mw, mc );
+            
+            if ( Defaults.DEBUG_COMMANDS )
+                Log.info( "[Command Added] Command String=" + cmd + System.lineSeparator() + 
+                          "MCCommand=" + mc.toString() + System.lineSeparator() +
+                          "Host Classfile=" + obj.getClass().getSimpleName() );
         } 
         else {
             Map<String,TreeMap<Integer,MethodWrapper>> basemthds = subCmdMethods.get(cmd);
@@ -157,6 +161,12 @@ public abstract class BaseExecutor implements CommandExecutor{
                 }
                 mthds.put(order, mw);
                 addUsage(mw, mc);
+                
+                if ( Defaults.DEBUG_COMMANDS )
+                    Log.info( "[Sub-Command Added] Main command=" + cmd + System.lineSeparator() + 
+                              "Sub-command String=" + subcmd + System.lineSeparator() +
+                              "MCCommand=" + mc.toString() + System.lineSeparator() +
+                              "Host Classfile=" + obj.getClass().getSimpleName() );
             }
         }
     }
@@ -312,16 +322,13 @@ public abstract class BaseExecutor implements CommandExecutor{
         
         MCCommand cmd = mwrapper.getCommand();
         
-        if ( Defaults.DEBUG_COMMANDS ) {
-            Log.info( " method=" + mwrapper.method.getName() + " verifyArgs " + cmd + " sender=" + sender +
-                    ", label=" + label + " args=" + Arrays.toString( args ) );
-            
-            for ( String arg : args )
-                Log.info( " -- arg=" + arg );
-            
-            for ( Class<?> t : mwrapper.method.getParameterTypes() )
-                Log.info( " -- type=" + t );
-        }
+//        if ( Defaults.DEBUG_COMMANDS ) {
+//            Log.info( " method=" + mwrapper.method.getName() + " verifyArgs " + cmd + " sender=" + sender +
+//                    ", label=" + label + " args=" + Arrays.toString( args ) );
+//            
+//            for ( Class<?> t : mwrapper.method.getParameterTypes() )
+//                Log.info( " -- type=" + t );
+//        }
         int paramLength = mwrapper.method.getParameterTypes().length;
 
         if (args.length < cmd.min())
