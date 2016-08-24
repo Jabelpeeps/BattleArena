@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.BattleArena;
-import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaAlterController;
 import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
@@ -78,7 +77,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
                                 int curIndex, AtomicInteger numUsedStrings ) {
         
-        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "CustomCommandExecutor.verifyArgs() entered" );
+//        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "CustomCommandExecutor.verifyArgs() entered" );
         
         if (EventParams.class == clazz) return verifyEventParams(command);        
         else if (MatchParams.class == clazz) return verifyMatchParams(command);        

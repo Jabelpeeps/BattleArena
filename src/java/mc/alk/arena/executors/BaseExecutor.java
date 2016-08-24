@@ -32,7 +32,6 @@ import mc.alk.arena.util.ServerUtil;
 
 public abstract class BaseExecutor implements CommandExecutor{
     public static final String version = "2.1.0";
-    static final boolean DEBUG = false;
     static final String DEFAULT_CMD = "_dcmd_";
     private Map<String, TreeMap<Integer, MethodWrapper>> methods = new HashMap<>();
     private Map<String, Map<String, TreeMap<Integer, MethodWrapper>>> subCmdMethods = new HashMap<>();
@@ -313,7 +312,7 @@ public abstract class BaseExecutor implements CommandExecutor{
         
         MCCommand cmd = mwrapper.getCommand();
         
-        if (DEBUG){
+        if ( Defaults.DEBUG_COMMANDS ) {
             Log.info( " method=" + mwrapper.method.getName() + " verifyArgs " + cmd + " sender=" + sender +
                     ", label=" + label + " args=" + Arrays.toString( args ) );
             
@@ -362,7 +361,7 @@ public abstract class BaseExecutor implements CommandExecutor{
                         throw new IllegalArgumentException("Argument " + args[strIndex] + " can not be null");
                     }
                 }
-                if (DEBUG) 
+                if ( Defaults.DEBUG_COMMANDS ) 
                     Log.info( "   " + objIndex + " : " + strIndex + "  " + (args.length > strIndex ? args[strIndex] 
                                                                                                    : null ) + 
                                             " <-> " + objs[objIndex] + " !!! Cs = " + clazz.getCanonicalName() );
@@ -396,7 +395,7 @@ public abstract class BaseExecutor implements CommandExecutor{
     protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, 
                                 String[] args, int curIndex, AtomicInteger numUsedStrings ) {
         
-        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "BaseExecutor.verifyArgs() entered" );
+//        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "BaseExecutor.verifyArgs() entered" );
         
         numUsedStrings.set(0);
         
