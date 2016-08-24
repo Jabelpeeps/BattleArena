@@ -11,7 +11,8 @@ public class VanishNoPacketUtil {
 
 	static {
 		vanish = (VanishPlugin) Bukkit.getPluginManager().getPlugin("VanishNoPacket");
-		manager = vanish.getManager();
+		if ( vanish != null )
+		    manager = vanish.getManager();
 	}
 	public static boolean isEnabled() {
 	    return vanish != null && manager != null;

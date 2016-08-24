@@ -17,7 +17,8 @@ public class EssentialsUtil {
 	
 	static {
 		essentials = (Essentials) Bukkit.getPluginManager().getPlugin( "Essentials" );	
-		map = essentials.getUserMap();
+		if ( essentials != null )
+		    map = essentials.getUserMap();
 	}
     public static boolean isEnabled() {
         return essentials != null && map != null;

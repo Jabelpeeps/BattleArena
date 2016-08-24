@@ -13,7 +13,8 @@ public class MobArenaUtil {
 	
 	static {
 		ma = (MobArena) Bukkit.getPluginManager().getPlugin("MobArena");
-		master = ma.getArenaMaster();
+		if ( ma != null )
+		    master = ma.getArenaMaster();
 	}
 	
 	public static boolean isEnabled() {
@@ -21,7 +22,7 @@ public class MobArenaUtil {
 	}
 	
 	public static boolean insideMobArena(Player player) {
-		if ( ma == null ) return false;
+		if ( !isEnabled() ) return false;
 
 		return  master.getArenaWithPlayer(player) != null 
 		        || master.getArenaWithSpectator(player) != null;
