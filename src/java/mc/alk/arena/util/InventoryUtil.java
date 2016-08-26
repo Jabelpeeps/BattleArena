@@ -383,8 +383,8 @@ public class InventoryUtil {
 
 	private static void addArmorToInventory(PlayerInventory inv,
 			ItemStack itemStack, int stockAmount, boolean ignoreCustomHelmet, Color color) {
-		Material itemType =itemStack.getType();
-		boolean isHelmet = false; // armor.get(itemType).type == ArmorType.HELM;
+		Material itemType = itemStack.getType();
+		boolean isHelmet = false; 
                 try {
                     isHelmet = armors.get(itemType).type == ArmorType.HELM;
                 } catch (NullPointerException handled) {
@@ -392,14 +392,14 @@ public class InventoryUtil {
                 }
 
 		Armor a = armors.get(itemType);
-		final ItemStack oldArmor = getArmorSlot(inv,a.type);
-		boolean empty = (oldArmor == null || oldArmor.getType() == Material.AIR);
-		boolean better = empty || armorSlotBetter(armors.get(oldArmor.getType()), a);
+		ItemStack oldArmor = getArmorSlot( inv, a.type );
+		boolean empty = ( oldArmor == null || oldArmor.getType() == Material.AIR);
+        boolean better = empty || armorSlotBetter( armors.get( a.type ), a );
 
 		if (color != null && a.level == ArmorLevel.LEATHER){
 			setColor(itemStack,color);
 		}
-		if (empty || better){
+		if ( better ) {
 			switch (armors.get(itemType).type){
 			case HELM:
 				if (empty || !ignoreCustomHelmet)
@@ -411,10 +411,11 @@ public class InventoryUtil {
 			}
 		}
 		if (!empty){
-			if (better && !(isHelmet && ignoreCustomHelmet)){
-				addItemToInventory(inv, oldArmor,oldArmor.getAmount());
-			} else {
-				addItemToInventory(inv, itemStack,stockAmount);
+			if (better && !(isHelmet && ignoreCustomHelmet) && oldArmor != null ){
+				addItemToInventory(inv, oldArmor, oldArmor.getAmount() );
+			} 
+			else {
+				addItemToInventory(inv, itemStack, stockAmount );
 			}
 		}
 	}

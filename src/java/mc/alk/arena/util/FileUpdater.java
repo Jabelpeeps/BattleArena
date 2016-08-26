@@ -174,24 +174,22 @@ public class FileUpdater {
     }
 
 
-    public void copy(File file1, File file2) {
-        InputStream inputStream = null;
-        OutputStream out= null;
-        try{
-            if (file2.exists()){
-                file2.delete();}
-            inputStream = new FileInputStream(file1);
-            out=new FileOutputStream(file2);
-            byte buf[]=new byte[1024];
+    public void copy( File file1, File file2 ) {
+        
+        if ( file2.exists() )
+            file2.delete();
+        
+        try ( InputStream inputStream = new FileInputStream( file1 );
+              OutputStream out = new FileOutputStream( file2 ); ) {
+
+            byte buf[] = new byte[1024];
             int len;
-            while((len=inputStream.read(buf))>0){
-                out.write(buf,0,len);}
+            while( ( len = inputStream.read( buf ) ) > 0 ) {
+                out.write( buf, 0, len );
+            }
         } catch (Exception e){
             e.printStackTrace();
-        } finally{
-            try{ out.close();} catch (Exception e){}
-            try{ inputStream.close();} catch (Exception e){}
-        }
+        } 
     }
 
     public static void deleteIfExists(File file) {

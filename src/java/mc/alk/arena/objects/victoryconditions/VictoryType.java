@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import lombok.Getter;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.serializers.BaseConfig;
 import mc.alk.arena.util.CaseInsensitiveMap;
@@ -17,29 +18,32 @@ public class VictoryType {
     final static public CaseInsensitiveMap<BaseConfig> configs = new CaseInsensitiveMap<>();
 
     static int count =0;
-    final String name;
+    @Getter final String name;
     final Plugin ownerPlugin;
     final int id = count++;
 
-    private VictoryType(final String name,final Plugin plugin){
-        this.name = name;
-        this.ownerPlugin = plugin;
+    private VictoryType( String _name, Plugin plugin ) {
+        name = _name;
+        ownerPlugin = plugin;
 
-        if (!types.containsKey(name))
-            types.put(name,this);
+        if (!types.containsKey(_name))
+            types.put(_name,this);
     }
 
-    public static VictoryType fromString(final String type) {
-        if (type.equalsIgnoreCase("none")) {return types.get("custom");}
+    public static VictoryType fromString( String type ) {
+        if ( "none".equalsIgnoreCase( type ) )
+            return types.get( "custom" );
         return type == null ? null : types.get(type);
     }
 
     public static VictoryType getType(VictoryCondition vc) {
-        return vc == null ? null : types.get(vc.getClass().getSimpleName());
+        return vc == null ? null 
+                          : types.get(vc.getClass().getSimpleName());
     }
 
     public static VictoryType getType(Class<? extends VictoryCondition> vc) {
-        return vc == null ? null : types.get(vc.getSimpleName());
+        return vc == null ? null 
+                          : types.get(vc.getSimpleName());
     }
 
     public static String getValidList() {
@@ -54,9 +58,6 @@ public class VictoryType {
     }
     @Override
     public String toString(){
-        return name;
-    }
-    public String getName() {
         return name;
     }
 
@@ -75,17 +76,19 @@ public class VictoryType {
             if (constructor != null) {
                 Object[] args = {match, config != null ? config.getConfig() : null};
                 newVC = (VictoryCondition) constructor.newInstance(args);
-            } else {
+            } 
+            else {
                 constructor = vcClass.getConstructor(Match.class);
                 newVC =(VictoryCondition) constructor.newInstance(match);
             }
 
             if (newVC instanceof NLives) {
-                Integer nlives = match.getParams().getNLives();
-                ((NLives) newVC).setMaxLives(nlives == null ? 1 : nlives);
+                int nlives = match.getParams().getNLives();
+                ((NLives) newVC).setMaxLives(nlives == 0 ? 1 : nlives);
             }
             return newVC;
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             Log.err("VictoryType = " + vt +"  class="+vcClass.getSimpleName());
             Log.printStackTrace(e);
         }
@@ -107,13 +110,10 @@ public class VictoryType {
     public int ordinal() {
         return id;
     }
-
     public static VictoryType[] values() {
         return types.values().toArray(new VictoryType[types.size()]);
     }
-
     public static void addConfig(VictoryType type, BaseConfig config) {
         configs.put(type.getName(), config);
     }
 }
-

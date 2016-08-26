@@ -34,7 +34,6 @@ public class Cache <Key, Value> {
 	public static abstract class CacheObject<K,V> implements UniqueKey<K>{
 		@Setter protected Cache<K, V> cache;
 		
-		@SuppressWarnings("unchecked")
 		protected void setDirty() {
 		    if ( cache != null ) 
 		        cache.setDirty(getKey());
@@ -218,39 +217,16 @@ public class Cache <Key, Value> {
 	 * Specify that a cache object is 'dirty' and needs to be saved to db
 	 * @param key
 	 */
-	public void setDirty(Key... keys) {
+	public void setDirty(Key key) {
 		modified = true;
-		synchronized(dirty){
-			for (Key key : keys){
-				if (DEBUG) Log.info( " - setting dirty key = " + key + " v=" + map.get(key));
-				dirty.add(key);
-			}
+		synchronized(dirty) {
+			if (DEBUG) Log.info( " - setting dirty key = " + key + " v=" + map.get(key));
+			dirty.add(key);			
 		}
 		if (autoFlush && autoFlushTime != null){
 			flushOld(autoFlushTime);}
 
 	}
-	/**
-	 * Specify that a list of cache objects are 'dirty' and need to be saved to db
-	 * @param types
-	 */
-	public void setDirty(UniqueKey<Key> ... types) {
-		synchronized(dirty){
-			for (UniqueKey<Key> t: types){
-				if (map.containsKey(t.getKey()))
-					dirty.add(t.getKey());
-			}
-		}
-	}
-
-	public void setClean(UniqueKey<Key> ... types) {
-		synchronized(dirty){
-			for (UniqueKey<Key> t: types){
-				dirty.remove(t.getKey());
-			}
-		}
-	}
-
 
 	/**
 	 * Explicitly save
@@ -303,8 +279,8 @@ public class Cache <Key, Value> {
 	 * @param cachable
 	 */
     @SuppressWarnings("unchecked")
-    public void setSerializer(CacheSerializer<Key, Value> serializer){
-		this.serializer = (CacheSerializer<Key, UniqueKey<Key>>) serializer;
+    public void setSerializer(CacheSerializer<Key, Value> _serializer){
+		serializer = (CacheSerializer<Key, UniqueKey<Key>>) _serializer;
 	}
 
 	/**

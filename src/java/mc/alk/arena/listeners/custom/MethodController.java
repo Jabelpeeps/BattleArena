@@ -173,21 +173,21 @@ public class MethodController {
      * @param player ArenaPlayer
      * @param events Events
      */
-    public void updateSpecificEvents(MatchState matchState, ArenaPlayer player, Class<? extends Event>... events) {
-        try {
-            List<UUID> players = new ArrayList<>();
-            players.add(player.getUniqueId());
+//    public void updateSpecificEvents(MatchState matchState, ArenaPlayer player, Class<? extends Event>... events) {
+//        try {
+//            List<UUID> players = new ArrayList<>();
+//            players.add(player.getUniqueId());
+//
+//            for (Class<? extends Event> event: events){
+//                updateEvent(null, matchState,players, event);}
+//        } catch (Exception e) {
+//            Log.printStackTrace(e);
+//        }
+//    }
 
-            for (Class<? extends Event> event: events){
-                updateEvent(null, matchState,players, event);}
-        } catch (Exception e) {
-            Log.printStackTrace(e);
-        }
-    }
-
-    private void updateEvent(ArenaListener listener, MatchState matchState,
-                             Collection<UUID> players, final Class<? extends Event> event) {
-        final List<RListener> rls = bukkitMethods.get(event);
+    private void updateEvent( ArenaListener listener, MatchState matchState,
+                              Collection<UUID> players, Class<? extends Event> event) {
+        List<RListener> rls = bukkitMethods.get(event);
         if (rls == null || rls.isEmpty()){
             return;}
         if (Defaults.DEBUG_EVENTS) System.out.println("updateEventListener "+  event.getSimpleName() +"    " + matchState);

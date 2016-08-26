@@ -39,12 +39,10 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -96,15 +94,13 @@ public class WorldGuardController {
         LocalSession session = wep.getSession(p);
         LocalPlayer player = wep.wrapPlayer(p);
         Extent editSession = (Extent) session.createEditSession(player);
-        Closer closer = Closer.create();
         
         try {
-            Region region = session.getSelection(player.getWorld());
+            Region region = session.getSelection( player.getWorld() );
             Clipboard cb = new BlockArrayClipboard(region);
-            ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, cb, region.getMinimumPoint());
-            Operations.completeLegacy(copy);
+            Operations.completeLegacy( new ForwardExtentCopy( editSession, region, cb, region.getMinimumPoint() ) );
             LocalConfiguration config = wep.getWorldEdit().getConfiguration();
-            File dir = wep.getWorldEdit().getWorkingDirectoryFile(config.saveDir);
+            File dir = wep.getWorldEdit().getWorkingDirectoryFile( config.saveDir );
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
                     throw new IOException("Could not create directory " + config.saveDir);
@@ -112,24 +108,17 @@ public class WorldGuardController {
             }
             File schematicFile = new File(dir, schematicName + ".schematic");
             schematicFile.createNewFile();
-
-            FileOutputStream fos = closer.register(new FileOutputStream(schematicFile));
-            BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
-            ClipboardWriter writer = closer.register(ClipboardFormat.SCHEMATIC.getWriter(bos));
-            writer.write(cb, LegacyWorldData.getInstance());
-            return true;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (IncompleteRegionException e) {
-            e.printStackTrace();
-        } catch (MaxChangedBlocksException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignore) {
+            
+            try ( ClipboardWriter writer = 
+                    ClipboardFormat.SCHEMATIC.getWriter( 
+                            new BufferedOutputStream( new FileOutputStream( schematicFile ) ) ); ) {
+            
+                writer.write( cb, LegacyWorldData.getInstance() );
+                return true;
             }
-        }
+        } catch ( IOException | IncompleteRegionException | MaxChangedBlocksException ex ) {
+            ex.printStackTrace();
+        } 
         return false;
     }
 
@@ -189,7 +178,6 @@ public class WorldGuardController {
             return false;
         }
 
-        Closer closer = Closer.create();
         try {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();
@@ -198,11 +186,10 @@ public class WorldGuardController {
                 System.out.println("Clipboard file could not read or it does not exist.");
             } 
             else {
-                FileInputStream fis = closer.register(new FileInputStream(f));
-                BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-                ClipboardReader reader = format.getReader(bis);
-                Clipboard clipboard = reader.read(worldData);
-                session.setClipboard( (CuboidClipboard) clipboard );
+                try ( BufferedInputStream bis = new BufferedInputStream( new FileInputStream(f) ) ) {
+                    Clipboard clipboard = format.getReader( bis ).read( worldData );
+                    session.setClipboard( (CuboidClipboard) clipboard );
+                }
             }
 
             CuboidClipboard holder = session.getClipboard();
@@ -215,8 +202,7 @@ public class WorldGuardController {
         } catch (MaxChangedBlocksException e) {
             System.out.println("MaxChangedBlocksException");
             e.printStackTrace();
-        } catch (EmptyClipboardException ex) {
-        }
+        } catch (EmptyClipboardException ex) { }
         return true;
     }
 

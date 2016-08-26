@@ -10,18 +10,18 @@ import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumLivesPerPlaye
 public class NLives extends VictoryCondition implements DefinesNumLivesPerPlayer{
 	int nLives; /// number of lives before a player is eliminated from a team
 
-	public NLives(Match match) {
-		super(match);
+	public NLives(Match _match) {
+		super(_match);
 		nLives = 1;
 	}
 
-	public NLives(Match match, Integer maxLives) {
-		super(match);
-		this.nLives = maxLives;
+	public NLives(Match _match, Integer maxLives) {
+		super(_match);
+		nLives = maxLives;
 	}
 
 	public void setMaxLives(Integer maxLives) {
-		this.nLives = maxLives;
+		nLives = maxLives;
 	}
 
 	@ArenaEventHandler( priority=ArenaEventPriority.LOW)

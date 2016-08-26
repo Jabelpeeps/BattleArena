@@ -281,6 +281,7 @@ public abstract class BaseExecutor implements CommandExecutor {
                     success = true;
                 }
                 break; /// success on one
+                
             } catch ( IllegalArgumentException e ) { /// One of the arguments wasn't correct, store the message
                 errs.add( new CommandException( e, mwrapper ) );
             } catch ( IllegalAccessException | InvocationTargetException e ) {
@@ -288,7 +289,7 @@ public abstract class BaseExecutor implements CommandExecutor {
             }
         }
         /// and handle all errors
-        if (!success && errs != null && !errs.isEmpty()){
+        if ( !success && !errs.isEmpty() ) {
             HashSet<String> usages = new HashSet<>();
             for ( CommandException e : errs ) {
                 usages.add( ChatColor.GOLD + command.getLabel() + " " + e.mw.usage + " &c:" + e.err.getMessage() );

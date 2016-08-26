@@ -32,7 +32,6 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	public ArenaObjective(String name, String criteria) {
 		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, 50, 0 );
 	}
-
 	/**
 	 *
 	 * @param name Objective name
@@ -42,11 +41,9 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	public ArenaObjective(String name, String criteria, int priority) {
 		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, priority, 0 );
 	}
-
 	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot) {
 		this( name, criteria, displayName, slot, 50, 0 );
 	}
-
 	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot, int priority) {
 		this( name, criteria, displayName, slot, priority, 0 );
 	}
@@ -60,13 +57,8 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 			setDisplayName(displayName);}
 	}
 
-	public void setDisplaySlot(ArenaDisplaySlot sidebar) {
-		objective.setDisplaySlot(sidebar.toSAPI());
-	}
-
-	public Integer getPoints(ArenaTeam t) {
-		return teamPoints.get(t);
-	}
+	public void setDisplaySlot(ArenaDisplaySlot sidebar) { objective.setDisplaySlot(sidebar.toSAPI()); }
+	public Integer getPoints(ArenaTeam t) { return teamPoints.get(t); }
 
 	public void setAllPoints(int points) {
 		for (ArenaTeam t: teamPoints.keySet()){
@@ -91,72 +83,63 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
 	public Integer addPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);
-		setPoints(team,points+oldPoints);
-		return points+oldPoints;
+		setPoints( team,points + oldPoints );
+		return points + oldPoints;
 	}
 
 	public Integer addPoints(ArenaPlayer ap, int points) {
 		int oldPoints = playerPoints.getPoints(ap);
-		setPoints(ap,points+oldPoints);
-		return points+oldPoints;
+		setPoints( ap, points + oldPoints );
+		return points + oldPoints;
 	}
 
 	public Integer subtractPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);
-		setPoints(team,oldPoints-points);
-		return oldPoints-points;
+		setPoints( team, oldPoints - points );
+		return oldPoints - points;
 	}
 
 	public int subtractPoints(ArenaPlayer ap, int points) {
 		int oldPoints = playerPoints.getPoints(ap);
-		setPoints(ap,oldPoints-points);
-		return oldPoints-points;
+		setPoints( ap, oldPoints - points );
+		return oldPoints - points;
 	}
 
-	public List<ArenaTeam> getTeamLeaders() {
-		return teamPoints.getLeaders();
-	}
-
-	public TreeMap<Integer, Collection<ArenaTeam>> getTeamRanks() {
-		return teamPoints.getRankings();
-	}
-
-	public List<ArenaPlayer> getPlayerLeaders() {
-		return playerPoints.getLeaders();
-	}
-
-	public TreeMap<Integer, Collection<ArenaPlayer>> getPlayerRanks() {
-		return playerPoints.getRankings();
-	}
+	public List<ArenaTeam> getTeamLeaders() { return teamPoints.getLeaders(); }
+	public TreeMap<Integer, Collection<ArenaTeam>> getTeamRanks() { return teamPoints.getRankings(); }
+	public List<ArenaPlayer> getPlayerLeaders() { return playerPoints.getLeaders(); }
+	public TreeMap<Integer, Collection<ArenaPlayer>> getPlayerRanks() { return playerPoints.getRankings(); }
 
 	public MatchResult getMatchResult(Match match){
-		TreeMap<Integer,Collection<ArenaTeam>> ranks = this.getTeamRanks();
+		TreeMap<Integer,Collection<ArenaTeam>> ranks = getTeamRanks();
 		/// Deal with teams that haven't scored and possibly aren't inside the ranks
 		HashSet<ArenaTeam> unfoundTeams = new HashSet<>(match.getAliveTeams());
 		for (Collection<ArenaTeam> t : ranks.values()){
 			unfoundTeams.removeAll(t);
 		}
 		Collection<ArenaTeam> zeroes = ranks.get(0);
-		if (zeroes != null){
+		
+		if ( zeroes != null )
 			zeroes.addAll(unfoundTeams);
-		} else {
+		else
 			ranks.put(0, unfoundTeams);
-		}
 
 		MatchResult result = new MatchResult();
-		if (ranks == null || ranks.isEmpty())
+		if ( ranks.isEmpty() )
 			return result;
-		if (ranks.size() == 1){ /// everyone tied obviously
+		if (ranks.size() == 1) { /// everyone tied obviously
 			for (Collection<ArenaTeam> col : ranks.values()){
 				result.setDrawers(col);}
-		} else {
+		} 
+		else {
 			boolean first = true;
 			for (Integer key : ranks.keySet()){
 				Collection<ArenaTeam> col = ranks.get(key);
 				if (first){
 					result.setVictors(col);
 					first = false;
-				} else {
+				} 
+				else {
 					result.addLosers(col);
 				}
 			}
@@ -176,104 +159,45 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
 	@Override
-	public List<ArenaTeam> getLeaders() {
-		return getTeamLeaders();
-	}
-
+	public List<ArenaTeam> getLeaders() { return getTeamLeaders(); }
 	@Override
-	public TreeMap<?, Collection<ArenaTeam>> getRanks() {
-		return getTeamRanks();
-	}
-
+	public TreeMap<?, Collection<ArenaTeam>> getRanks() { return getTeamRanks(); }
 	@Override
-	public void setScoreBoard(ArenaScoreboard scoreboard) {
-		scoreboard.setObjectiveScoreboard(this);
-	}
-
+	public void setScoreBoard(ArenaScoreboard scoreboard) { scoreboard.setObjectiveScoreboard(this); }
 	@Override
-	public void setDisplayName(String displayName) {
-		objective.setDisplayName(displayName);
-	}
-
+	public void setDisplayName(String displayName) { objective.setDisplayName(displayName); }
     @Override
-    public String getDisplayNameSuffix() {
-        return objective.getDisplayNameSuffix();
-    }
-
+    public String getDisplayNameSuffix() { return objective.getDisplayNameSuffix(); }
     @Override
-	public void setDisplayNameSuffix(String suffix) {
-		objective.setDisplayNameSuffix(suffix);
-	}
-
+	public void setDisplayNameSuffix(String suffix) { objective.setDisplayNameSuffix(suffix); }
     @Override
-    public String getDisplayNamePrefix() {
-        return objective.getDisplayNamePrefix();
-    }
-
+    public String getDisplayNamePrefix() { return objective.getDisplayNamePrefix(); }
     @Override
-    public void setDisplayNamePrefix(String prefix) {
-        objective.setDisplayNamePrefix(prefix);
-    }
-
+    public void setDisplayNamePrefix(String prefix) { objective.setDisplayNamePrefix(prefix); }
     @Override
-	public boolean setPoints(SEntry entry, int points) {
-		return objective.setPoints(entry, points);
-	}
-
+	public boolean setPoints(SEntry entry, int points) { return objective.setPoints(entry, points); }
 	@Override
-	public SAPIDisplaySlot getDisplaySlot() {
-		return objective.getDisplaySlot();
-	}
-
+	public SAPIDisplaySlot getDisplaySlot() { return objective.getDisplaySlot(); }
 	@Override
-	public int getPriority() {
-		return objective.getPriority();
-	}
-
+	public int getPriority() { return objective.getPriority(); }
 	@Override
-	public void setDisplaySlot(SAPIDisplaySlot slot) {
-		objective.setDisplaySlot(slot);
-	}
-
+	public void setDisplaySlot(SAPIDisplaySlot slot) { objective.setDisplaySlot(slot); }
 	@Override
-	public String getId() {
-		return objective.getId();
-	}
-
+	public String getId() { return objective.getId(); }
 	@Override
-	public String getDisplayName() {
-		return objective.getDisplayName();
-	}
-
+	public String getDisplayName() { return objective.getDisplayName(); }
     @Override
-    public String getBaseDisplayName() {
-        return objective.getBaseDisplayName();
-    }
-
+    public String getBaseDisplayName() { return objective.getBaseDisplayName(); }
     @Override
-	public boolean setTeamPoints(STeam t, int points) {
-		return objective.setTeamPoints(t, points);
-	}
-
+	public boolean setTeamPoints(STeam t, int points) { return objective.setTeamPoints(t, points); }
 	@Override
-	public boolean setPoints(String id, int points) {
-		return objective.setPoints(id, points);
-	}
-
+	public boolean setPoints(String id, int points) { return objective.setPoints(id, points); }
 	@Override
-	public SEntry addEntry(String id, int points) {
-		return objective.addEntry(id, points);
-	}
-
+	public SEntry addEntry(String id, int points) { return objective.addEntry(id, points); }
 	@Override
-	public void setDisplayPlayers(boolean b) {
-		objective.setDisplayPlayers(b);
-	}
-
+	public void setDisplayPlayers(boolean b) { objective.setDisplayPlayers(b); }
 	@Override
-	public void setDisplayTeams(boolean display) {
-		objective.setDisplayTeams(display);
-	}
+	public void setDisplayTeams(boolean display) { objective.setDisplayTeams(display); }
 
 	@Override
 	public void setScoreboard(SScoreboard scoreboard) {
@@ -282,74 +206,33 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
     @Override
-    public int getPoints(String id) {
-        return objective.getPoints(id);
-    }
-
+    public int getPoints(String id) { return objective.getPoints(id); }
     @Override
-    public int getPoints(SEntry e) {
-        return objective.getPoints(e);
-    }
-
+    public int getPoints(SEntry e) { return objective.getPoints(e); }
     @Override
-	public String toString(){
-		return objective.toString();
-	}
-
+	public String toString() { return objective.toString(); }
 	@Override
-	public boolean isDisplayTeams() {
-		return objective.isDisplayTeams();
-	}
-
+	public boolean isDisplayTeams() { return objective.isDisplayTeams(); }
 	@Override
-	public boolean isDisplayPlayers() {
-		return objective.isDisplayPlayers();
-	}
-
+	public boolean isDisplayPlayers() { return objective.isDisplayPlayers(); }
 	@Override
-	public SScoreboard getScoreboard() {
-		return objective.getScoreboard();
-	}
-
+	public SScoreboard getScoreboard() { return objective.getScoreboard(); }
 	@Override
-	public SEntry addEntry(OfflinePlayer player, int points) {
-		return objective.addEntry(player, points);
-	}
-
+	public SEntry addEntry(OfflinePlayer player, int points) { return objective.addEntry(player, points); }
 	@Override
-	public SEntry removeEntry(OfflinePlayer player) {
-		return objective.removeEntry(player);
-	}
-
+	public SEntry removeEntry(OfflinePlayer player) { return objective.removeEntry(player); }
 	@Override
-	public SEntry removeEntry(String id) {
-		return objective.removeEntry(id);
-	}
-
+	public SEntry removeEntry(String id) { return objective.removeEntry(id); }
 	@Override
-	public boolean addEntry(SEntry entry, int defaultPoints) {
-		return objective.addEntry(entry, defaultPoints);
-	}
-
+	public boolean addEntry(SEntry entry, int defaultPoints) { return objective.addEntry(entry, defaultPoints); }
 	@Override
-	public SEntry removeEntry(SEntry entry) {
-		return objective.removeEntry(entry);
-	}
-
+	public SEntry removeEntry(SEntry entry) { return objective.removeEntry(entry); }
 	@Override
-	public boolean contains(SEntry e) {
-		return objective.contains(e);
-	}
-
+	public boolean contains(SEntry e) { return objective.contains(e); }
 	@Override
-	public STeam addTeam(String id, int points) {
-		return objective.addTeam(id, points);
-	}
-
+	public STeam addTeam(String id, int points) { return objective.addTeam(id, points); }
 	@Override
-	public boolean addTeam(STeam entry, int points) {
-		return objective.addTeam(entry, points);
-	}
+	public boolean addTeam(STeam entry, int points) { return objective.addTeam(entry, points); }
 
     public void setDisplayName(String displayNamePrefix, String displayName, String displayNameSuffix, STeam team){
         if (objective instanceof BObjective) {

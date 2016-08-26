@@ -119,13 +119,13 @@ public class SQLSerializer {
 			e1.printStackTrace();
 			return;
 		}
-		String connectionString = null, datasourceString = null;
+		String datasourceString = null;
 		final int minIdle;
 		final int maxActive;
 		
 		switch(type){
     		case SQLITE:
-    			datasourceString = connectionString = "jdbc:sqlite:" + url + "/" + DB + ".sqlite";
+    			datasourceString = "jdbc:sqlite:" + url + "/" + DB + ".sqlite";
     			maxActive = 1;
     			minIdle = -1;
     			break;
@@ -134,7 +134,6 @@ public class SQLSerializer {
     			minIdle = 10;
     			maxActive = 20;
     			datasourceString = "jdbc:mysql://" + url + ":" + port + "/" + DB + "?autoReconnect=true";
-    			connectionString = "jdbc:mysql://" + url + ":" + port + "?autoReconnect=true";
     			break;
 		}
 
@@ -193,45 +192,37 @@ public class SQLSerializer {
 
 		/// Create our table and index
 		String strStmt = sql_create_table;
-		Statement st = null;
-		int result =0;
-		Connection con = null;
-		try {
-			con = getConnection();
-		} catch (SQLException e) {
-			Log.error( "Failed in creating Table, null connection. " + strStmt + " result=" + result );
-			e.printStackTrace();
-			return false;
-		}
-		try {
-			st = con.createStatement();
-			result = st.executeUpdate(strStmt);
+		int result = 0;
+		
+		try ( Connection con = getConnection();
+              Statement st = con.createStatement(); ) {
+		    
+			result = st.executeUpdate( strStmt );			
 			if (DEBUG) Log.info( "Created Table with stmt=" + strStmt);
+			
+		    if ( sql_updates != null ) {
+	            for ( String sql_update : sql_updates ) {
+	                if (sql_update == null) continue;
+	                
+	                strStmt = sql_update;
+	                
+	                try {
+	                    result = st.executeUpdate(strStmt);
+	                    if (DEBUG) Log.info( "Update Table with stmt=" + strStmt);
+	                } 
+	                catch (SQLException e) {
+	                    Log.error( "Failed in updating Table " +strStmt + " result=" + result);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	            }
+	        }
 		} catch (SQLException e) {
-		    Log.error( "Failed in creating Table " +strStmt + " result=" + result);
+		    Log.error( "Failed in creating Table " + strStmt + " result=" + result);
 			e.printStackTrace();
-			closeConnection(con);
 			return false;
 		}
-		/// Updates and indexes
-		if (sql_updates != null){
-			for (String sql_update: sql_updates){
-				if (sql_update == null)
-					continue;
-				strStmt = sql_update;
-				try {
-					st = con.createStatement();
-					result = st.executeUpdate(strStmt);
-					if (DEBUG) Log.info( "Update Table with stmt=" + strStmt);
-				} catch (SQLException e) {
-				    Log.error( "Failed in updating Table " +strStmt + " result=" + result);
-					e.printStackTrace();
-					closeConnection(con);
-					return false;
-				}
-			}
-		}
-		closeConnection(con);
+
 		return true;
 	}
 
@@ -288,14 +279,14 @@ public class SQLSerializer {
 	 * @return
 	 */
 	protected RSCon executeQuery(boolean displayErrors, Integer timeoutSeconds, String strRawStmt, Object... varArgs){
-		Connection con = null;
-		try {
-			con = getConnection();
-		} catch (SQLException e) {
+
+		try ( Connection con = getConnection() ) {
+	        return executeQuery( con, displayErrors, timeoutSeconds, strRawStmt, varArgs );
+		} 
+		catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return executeQuery(con,displayErrors,timeoutSeconds, strRawStmt,varArgs);
 	}
 
 	/**
@@ -306,20 +297,20 @@ public class SQLSerializer {
 	 */
 	protected RSCon executeQuery(Connection con, boolean displayErrors, Integer timeoutSeconds,
 			                                                String strRawStmt, Object... varArgs){
-		PreparedStatement ps = null;
 		RSCon rscon = null;
 
-		try {
-			ps = getStatement(displayErrors, strRawStmt,con,varArgs);
+		try ( PreparedStatement ps = getStatement( displayErrors, strRawStmt, con, varArgs ) ) {
+		    
 			if (DEBUG) System.out.println("Executing =" + ps +" timeout="+timeoutSeconds+" raw="+strRawStmt);
 			ps.setQueryTimeout(timeoutSeconds);
 			ResultSet rs = ps.executeQuery();
 			rscon = new RSCon();
 			rscon.con = con;
 			rscon.rs = rs;
+			
 		} catch (Exception e) {
 			if (displayErrors){
-				System.err.println("Couldnt execute query "  + ps);
+				System.err.println("Couldnt execute query " + strRawStmt);
 				for (int i=0;i< varArgs.length;i++){
 					System.err.println("   arg["+ i+"] = " + varArgs[i]);}
 				e.printStackTrace();
@@ -351,30 +342,21 @@ public class SQLSerializer {
 
 	protected int executeUpdate(String strRawStmt, Object... varArgs){
 		int result= -1;
-		Connection con = null;
-		try {
-			con = getConnection();
-		} catch (SQLException e) {
-			System.err.println("Couldnt execute update raw='"  + strRawStmt+"'");
-			e.printStackTrace();
-			return -1;
-		}
 
-		PreparedStatement ps = null;
-		try {
-			ps = getStatement(strRawStmt,con,varArgs);
+		try ( Connection con = getConnection();
+		      PreparedStatement ps = getStatement(strRawStmt,con,varArgs); ) {
 			if (DEBUG) System.out.println("Executing   =" + ps.toString() +"  raw="+strRawStmt);
+			
 			result = ps.executeUpdate();
-		} catch (Exception e) {
-			System.err.println("Couldnt execute update "  + ps);
+		} 
+		catch (Exception e) {
+			System.err.println("Couldnt execute update "  + strRawStmt );
 			e.printStackTrace();
-		} finally {
-			closeConnection(con);
-		}
+		} 
 		return result;
 	}
 
-	protected void executeBatch(final boolean async, final String updateStatement, final List<List<Object>> batch) {
+	protected void executeBatch( boolean async, String updateStatement, List<List<Object>> batch) {
 		
 	    if (async) 
 			new Thread( () -> executeBatch(updateStatement, batch) ).start();
@@ -382,7 +364,7 @@ public class SQLSerializer {
 			executeBatch(updateStatement, batch);
 	}
 
-	protected void executeBatch(String updateStatement, List<List<Object>> batch) {
+	protected void executeBatch( String updateStatement, List<List<Object>> batch ) {
 		
 	    try ( Connection con = getConnection(); 
 	          PreparedStatement ps  = con.prepareStatement( updateStatement ); ) {
