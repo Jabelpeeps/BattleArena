@@ -108,11 +108,11 @@ public abstract class BaseExecutor implements CommandExecutor{
                 Log.err( "MCCommands must start with a CommandSender, Player, or ArenaPlayer" );
                 continue;
             }
-            if ( command.subCmds().length == 0 ) { /// There is no subcommand. just the command itself with arguments
+            if ( command.cmds().length == 0 ) { 
                 addMethod( obj, method, command, DEFAULT_CMD );
             } 
             else {
-                for ( String cmd : command.subCmds() ) {
+                for ( String cmd : command.cmds() ) {
                     addMethod( obj, method, command, cmd.toLowerCase() );
                 }
             }
@@ -380,16 +380,16 @@ public abstract class BaseExecutor implements CommandExecutor{
             objIndex++;
         }
 
-        /// Verify alphanumeric
-        if (cmd.alphanum().length > 0){
-            for (int index: cmd.alphanum()){
-                if (index >= args.length)
-                    throw new IllegalArgumentException("String Index out of range. ");
-                if (!args[index].matches("[a-zA-Z0-9_]*")) {
-                    throw new IllegalArgumentException("argument '" + args[index] + "' can only be alphanumeric with underscores");
-                }
-            }
-        }
+//        /// Verify alphanumeric
+//        if (cmd.alphanum().length > 0){
+//            for (int index: cmd.alphanum()){
+//                if (index >= args.length)
+//                    throw new IllegalArgumentException("String Index out of range. ");
+//                if (!args[index].matches("[a-zA-Z0-9_]*")) {
+//                    throw new IllegalArgumentException("argument '" + args[index] + "' can only be alphanumeric with underscores");
+//                }
+//            }
+//        }
         return newArgs; 
     }
 

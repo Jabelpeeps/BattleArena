@@ -22,7 +22,7 @@ public @interface MCCommand {
     boolean op() default false; 
 
     String usage() default "";
-    String usageNode() default "";
-	String perm() default ""; /// permission node
-	int[] alphanum() default {}; /// only alpha numeric
+//    String usageNode() default "";
+	String perm() default ""; 
+//	int[] alphanum() default {}; /// only alpha numeric
 }
