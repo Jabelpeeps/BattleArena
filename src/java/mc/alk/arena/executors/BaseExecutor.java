@@ -27,9 +27,10 @@ import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
+import mc.alk.arena.util.ReflectUtil;
 import mc.alk.arena.util.ServerUtil;
 
-public abstract class BaseExecutor implements CommandExecutor{
+public abstract class BaseExecutor implements CommandExecutor {
     public static final String version = "2.1.0";
     static final String DEFAULT_CMD = "_dcmd_";
     private Map<String, TreeMap<Integer, MethodWrapper>> methods = new HashMap<>();
@@ -136,9 +137,8 @@ public abstract class BaseExecutor implements CommandExecutor{
             addUsage( mw, mc );
             
             if ( Defaults.DEBUG_COMMANDS )
-                Log.info( "[Command Added] Command String=" + cmd + System.lineSeparator() + 
-                          "MCCommand=" + mc.toString() + System.lineSeparator() +
-                          "Host Classfile=" + obj.getClass().getSimpleName() );
+                Log.info( "[Command Added] Command String=" + cmd +  "  Host Classfile=" + obj.getClass().getSimpleName() + 
+                        System.lineSeparator() + "MCCommand=" + ReflectUtil.toString( mc ) + System.lineSeparator() );
         } 
         else {
             Map<String,TreeMap<Integer,MethodWrapper>> basemthds = subCmdMethods.get(cmd);
@@ -163,10 +163,9 @@ public abstract class BaseExecutor implements CommandExecutor{
                 addUsage(mw, mc);
                 
                 if ( Defaults.DEBUG_COMMANDS )
-                    Log.info( "[Sub-Command Added] Main command=" + cmd + System.lineSeparator() + 
-                              "Sub-command String=" + subcmd + System.lineSeparator() +
-                              "MCCommand=" + mc.toString() + System.lineSeparator() +
-                              "Host Classfile=" + obj.getClass().getSimpleName() );
+                    Log.info( "[Sub-Command Added] Main command=" + cmd + "  Sub-command String=" + subcmd + 
+                            "  Host Classfile=" + obj.getClass().getSimpleName() + 
+                            System.lineSeparator() + "MCCommand=" + ReflectUtil.toString( mc ) + System.lineSeparator() );
             }
         }
     }
@@ -389,13 +388,13 @@ public abstract class BaseExecutor implements CommandExecutor{
 //                    throw new IllegalArgumentException("argument '" + args[index] + "' can only be alphanumeric with underscores");
 //                }
 //            }
-//        }
+//        } 
         return newArgs; 
     }
 
     protected Object verifySender(CommandSender sender, Class<?> clazz) {
-        if (!clazz.isAssignableFrom(sender.getClass()))
-            throw new IllegalArgumentException("sender must be a " + clazz.getSimpleName());
+        if ( !clazz.isAssignableFrom( sender.getClass() ) )
+            throw new IllegalArgumentException( "sender must be a " + clazz.getSimpleName() );
         return sender;
     }
 
