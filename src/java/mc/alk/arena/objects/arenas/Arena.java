@@ -43,17 +43,17 @@ import mc.alk.arena.util.Util;
 public class Arena extends AreaContainer {
 
     /// If this is not null, this is where distance will be based off of, otherwise it's an area around the spawns
-    protected Location joinloc;
-    protected Map<Long, TimedSpawn> timedSpawns; /// Item/mob/other spawn events
+    @Getter protected Location joinLocation;
+    @Getter protected Map<Long, TimedSpawn> timedSpawns; /// Item/mob/other spawn events
     protected SpawnController spawnController;
     @Getter @Setter protected Match match;
     @Getter @Setter protected RoomContainer spectatorRoom;
     @Getter @Setter protected RoomContainer waitroom;
     @Getter @Setter protected RoomContainer visitorRoom;
     @Persist
-    protected WorldGuardRegion wgRegion;
+    @Getter @Setter protected WorldGuardRegion worldGuardRegion;
 
-    public Arena(){
+    public Arena() {
         super( "arena", LocationType.ARENA );
     }
 
@@ -295,14 +295,7 @@ public class Arena extends AreaContainer {
      * @return location
      */
     public SpawnLocation getVisitorLoc(int teamIndex, boolean random) {
-        return visitorRoom != null ? visitorRoom.getSpawn(teamIndex,random) : null;}
-
-    /**
-     * Return the spot where players need to add close to
-     * @return location
-     */
-    public Location getJoinLocation() {
-        return joinloc;
+        return visitorRoom != null ? visitorRoom.getSpawn(teamIndex,random) : null;
     }
 
     /**
@@ -345,22 +338,13 @@ public class Arena extends AreaContainer {
         return reasons;
     }
 
-
     /**
      * Set the worldguard region for this arena (only available with worldguard)
      * @param regionWorld World name
      * @param regionName region name
      */
     public void setWorldGuardRegion(String regionWorld, String regionName) {
-        wgRegion = new WorldGuardRegion(regionWorld, regionName);
-    }
-
-    /**
-     * Set the worldguard region for this arena (only available with worldguard)
-     * @param region WorldGuardRegion
-     */
-    public void setWorldGuardRegion(WorldGuardRegion region) {
-        wgRegion = region;
+        worldGuardRegion = new WorldGuardRegion(regionWorld, regionName);
     }
 
     /**
@@ -368,23 +352,7 @@ public class Arena extends AreaContainer {
      * @return true or false if region is found and valid
      */
     public boolean hasRegion() {
-        return wgRegion != null && wgRegion.valid();
-    }
-
-    /**
-     * Get the worldguard wgRegionName for this arena
-     * @return region
-     */
-    public WorldGuardRegion getWorldGuardRegion() {
-        return wgRegion;
-    }
-
-    /**
-     * Return the timed spawns for this arena
-     * @return the timed spawns
-     */
-    public Map<Long, TimedSpawn> getTimedSpawns() {
-        return timedSpawns;
+        return worldGuardRegion != null && worldGuardRegion.valid();
     }
 
     /**
@@ -428,11 +396,11 @@ public class Arena extends AreaContainer {
         match.setVictor(player);
     }
 
-    @Override
     /**
      * Get the current state of the match
      * @return current match state
      */
+    @Override
     public CompetitionState getState(){
         return match.getState();
     }

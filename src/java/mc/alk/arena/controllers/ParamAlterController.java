@@ -1,11 +1,11 @@
 package mc.alk.arena.controllers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,9 +33,14 @@ import mc.alk.arena.util.MinMax;
 
 public class ParamAlterController {
     MatchParams params;
-
-    public ParamAlterController(MatchParams params){
-        this.params = ParamController.getMatchParams(params.getType());
+    
+    static final Set<TransitionOption> tpOps = EnumSet.of( TransitionOption.TELEPORTIN,
+                    TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTCOURTYARD, 
+                    TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTMAINLOBBY, 
+                    TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTSPECTATE );
+    
+    public ParamAlterController(MatchParams _params){
+        params = ParamController.getMatchParams(_params.getType());
     }
 
     private static MatchParams getOrCreateTeamParams(Integer teamIndex, MatchParams params){
@@ -53,8 +58,9 @@ public class ParamAlterController {
         return tp;
     }
 
-    public static boolean setTeamParams(CommandSender sender, Integer teamIndex, MatchParams params, AlterParamOption option,
-                                        Object value) throws InvalidOptionException {
+    public static boolean setTeamParams(CommandSender sender, Integer teamIndex, MatchParams params, 
+                                        AlterParamOption option, Object value) throws InvalidOptionException {
+        
         RegisteredCompetition rc = CompetitionController.getCompetition(params.getName());
         if (rc == null){
             throw new InvalidOptionException("&cGame &6" + params.getName() +"&c not found!");}
@@ -65,8 +71,9 @@ public class ParamAlterController {
         return true;
     }
 
-    public static boolean setGameOption(CommandSender sender, MatchParams params, Integer teamIndex, AlterParamOption option, Object value)
-            throws InvalidOptionException {
+    public static boolean setGameOption(CommandSender sender, MatchParams params, Integer teamIndex, 
+                                        AlterParamOption option, Object value) throws InvalidOptionException {
+        
         RegisteredCompetition rc = CompetitionController.getCompetition(params.getName());
         if (rc == null){
             throw new InvalidOptionException("&cGame &6" + params.getName() +"&c not found!");}
@@ -102,11 +109,8 @@ public class ParamAlterController {
         ParamController.addMatchParams(params);
     }
 
-
-
     public static boolean setOption(CommandSender sender, MatchParams params, AlterParamOption option, Object value)
-            throws IllegalStateException {
-        int iv;
+                                                                                        throws IllegalStateException {
         switch(option){
             case NLIVES: params.setNLives((Integer)value); break;
             case NTEAMS: params.setNTeams((MinMax) value);  break;
@@ -115,22 +119,26 @@ public class ParamAlterController {
             case PREFIX: params.setPrefix((String)value); break;
             case SIGNDISPLAYNAME: params.setSignDisplayName((String) value); break;
             case DISPLAYNAME: params.setArenaDisplayName((String) value); break;
-            case COMMAND: params.setCommand((String) value); break;
+            case COMMAND: 
+                params.setCommand((String) value); 
+                sendMessage(sender, "&c[Info]&e This option will change after a restart");
+                break;
             case DATABASE: params.setTableName((String) value); break;
-            case MATCHTIME: params.setMatchTime((Integer)value);break;
+            case MATCHTIME: params.setMatchTime((Integer)value); break;
             case CLOSEWAITROOMWHILERUNNING: params.setCloseWaitroomWhileRunning((Boolean)value); break;
             case CANCELIFNOTENOUGHPLAYERS: params.setCancelIfNotEnoughPlayers((Boolean)value); break;
             case ALLOWEDTEAMSIZEDIFFERENCE: params.setAllowedTeamSizeDifference((Integer)value); break;
             case NCUMONCURRENTCOMPETITIONS: params.setNumConcurrentCompetitions((Integer)value); break;
             case PRESTARTTIME:
-                iv = (Integer) value;
-                checkGreater(iv,0, true);
-                params.setSecondsTillMatch(iv);
+                int iv = (int) value;
+                checkGreater(iv, 0, true );
+                params.setSecondsTillMatch( iv );
                 break;
             case VICTORYTIME:
-                iv = (Integer) value;
-                checkGreater(iv,1, true);
-                params.setSecondsToLoot(iv); break;
+                int iv2 = (int) value;
+                checkGreater( iv2, 1, true );
+                params.setSecondsToLoot( iv2 ); 
+                break;
             case VICTORYCONDITION:
                 params.setVictoryType((VictoryType)value);
                 break;
@@ -141,19 +149,12 @@ public class ParamAlterController {
                 params.setRated((Boolean)value);
                 break;
             default:
-                break;
-        }
-        switch(option){
-            case COMMAND:
-                sendMessage(sender, "&c[Info]&e This option will change after a restart");
-                break;
-            default: /* do nothing */
         }
         return true;
     }
 
-    public static boolean setOption(CommandSender sender, MatchParams params, CompetitionState state, TransitionOption to, Object value)
-            throws InvalidOptionException {
+    public static boolean setOption(CommandSender sender, MatchParams params, CompetitionState state, 
+                                    TransitionOption to, Object value) throws InvalidOptionException {
 
         if (to.hasValue() && value == null)
             throw new InvalidOptionException("Transition Option " + to +" needs a value! " + to+"=<value>");
@@ -166,22 +167,26 @@ public class ParamAlterController {
                 throw new InvalidOptionException("&cYou need to be in game to set this option");
             }
             value = InventoryUtil.getItemList((Player) sender);
-        } else if (to == TransitionOption.ENCHANTS){
-            List<PotionEffect> list = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getEffects() : new ArrayList<>();
+        } 
+        else if (to == TransitionOption.ENCHANTS){
+            List<PotionEffect> list = tops.hasOptionAt(state, to) ? tops.getOptions(state).getEffects() 
+                                                                  : new ArrayList<>();
             list.add((PotionEffect) value);
             value = list;
-        } else if (to == TransitionOption.DOCOMMANDS){
-            List<CommandLineString> list = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getDoCommands() : new ArrayList<>();
+        } 
+        else if (to == TransitionOption.DOCOMMANDS){
+            List<CommandLineString> list = tops.hasOptionAt(state, to) ? tops.getOptions(state).getDoCommands() 
+                                                                       : new ArrayList<>();
             list.add((CommandLineString)value);
             value = list;
-        } else if (to == TransitionOption.GIVECLASS){
-            Map<Integer, ArenaClass> map = tops.hasOptionAt(state, to) ?
-                    tops.getOptions(state).getClasses() : new HashMap<>();
+        } 
+        else if (to == TransitionOption.GIVECLASS){
+            Map<Integer, ArenaClass> map = tops.hasOptionAt(state, to) ? tops.getOptions(state).getClasses() 
+                                                                       : new HashMap<>();
             map.put(ArenaClass.DEFAULT, (ArenaClass) value);
             value = map;
-        } else if (to == TransitionOption.TELEPORTTO){
+        } 
+        else if (to == TransitionOption.TELEPORTTO){
             if (sender == null || !(sender instanceof Player)) {
                 throw new InvalidOptionException("&cYou need to be in game to set this option");
             }
@@ -189,15 +194,9 @@ public class ParamAlterController {
         }
 
         /// For teleport options, remove them from other places where they just dont make sense
-        HashSet<TransitionOption> tpOps =
-                new HashSet<>(Arrays.asList(
-                        TransitionOption.TELEPORTIN,TransitionOption.TELEPORTWAITROOM ,
-                        TransitionOption.TELEPORTCOURTYARD, TransitionOption.TELEPORTLOBBY,
-                        TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTMAINWAITROOM,
-                        TransitionOption.TELEPORTSPECTATE
-                ));
+
         if ((state == MatchState.ONPRESTART || state == MatchState.ONSTART || state == MatchState.ONJOIN) &&
-                tpOps.contains(to)){
+                tpOps.contains(to) ) {
             tops.removeStateOption(MatchState.ONPRESTART, to);
             tops.removeStateOption(MatchState.ONSTART, to);
             tops.removeStateOption(MatchState.ONJOIN, to);
@@ -255,7 +254,7 @@ public class ParamAlterController {
                     /* do nothing */
                 }
                 return true;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 Log.err(e.getMessage());
                 sendMessage(sender, "&cCould not delete game option &6" + args[1]);
                 sendMessage(sender, e.getMessage());
@@ -282,7 +281,7 @@ public class ParamAlterController {
                     sendMessage(sender, "&2Options at &6"+state +"&2 are &6" + ops.toString());
                 }
                 return true;
-            } catch (Exception e) {
+            } catch ( IllegalArgumentException e) {
                 sendMessage(sender, "&cCould not remove game option " + args[1]);
                 sendMessage(sender, e.getMessage());
                 return false;
@@ -292,13 +291,13 @@ public class ParamAlterController {
         return false;
     }
 
-    private boolean deleteTransitionOption(CompetitionState state, String key) throws Exception{
+    private boolean deleteTransitionOption(CompetitionState state, String key) throws IllegalArgumentException {
         TransitionOption to = TransitionOption.fromString(key);
         StateGraph tops = params.getArenaStateGraph();
         return tops.removeStateOption(state, to);
     }
 
-    private boolean deleteGameOption(AlterParamOption go) throws Exception {
+    private boolean deleteGameOption(AlterParamOption go) {
         switch(go){
             case NLIVES: params.setNLives(0); break;
             case NTEAMS: params.setNTeams(null);  break;

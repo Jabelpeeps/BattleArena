@@ -85,7 +85,7 @@ public class EventOpenOptions {
 			Object obj = null;
 			String[] split = op.split("=");
 			split[0] = split[0].trim().toUpperCase();
-			Arena arena = BattleArena.getBAController().getArena(op);
+			Arena arena = BattleArenaController.getArena(op);
 			if (arena != null){
 				ops.put(EventOpenOption.ARENA, arena);
 				continue;
@@ -134,7 +134,7 @@ public class EventOpenOptions {
 				eoo.announceInterval = (Integer) obj;
 				break;
 			case ARENA:
-				obj = BattleArena.getBAController().getArena(val);
+				obj = BattleArenaController.getArena(val);
 				if (obj==null){
 					throw new InvalidOptionException("&cCouldnt find the arena &6" +val);}
 			default:

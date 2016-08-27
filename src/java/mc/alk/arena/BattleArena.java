@@ -74,7 +74,7 @@ import mc.alk.arena.util.MessageUtil;
 
 public class BattleArena extends JavaPlugin {
 
-    static private String pluginname;
+    @Getter static final private String pluginname = "BattleArena";
     static private String version;
     @Getter static private BattleArena self;
 
@@ -108,7 +108,7 @@ public class BattleArena extends JavaPlugin {
     public void onEnable() {
         self = this;
         PluginDescriptionFile pdfFile = getDescription();
-        pluginname = pdfFile.getName();
+//        pluginname = pdfFile.getName();
         version = pdfFile.getVersion();
         Log.setLogger(getLogger());
         
@@ -233,7 +233,7 @@ public class BattleArena extends JavaPlugin {
                         ArenaSerializer.setBAC(bAController);
         
                         sfs.loadLobbyStates(RoomController.getLobbies());
-                        sfs.loadContainerStates(bAController.getArenas());
+                        sfs.loadContainerStates(BattleArenaController.getAllArenas());
         
                         arenaControllerSerializer.load();
         
@@ -267,7 +267,7 @@ public class BattleArena extends JavaPlugin {
         sfs.setConfig(getDataFolder().getPath() + "/saves/state.yml");
         sfs.save( bAExecutor.getDisabled(),
                   RoomController.getLobbies(),
-                  bAController.getArenas() );
+                  BattleArenaController.getAllArenas() );
         FileLogger.saveAll();
     }
 

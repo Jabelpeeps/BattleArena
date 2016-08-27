@@ -27,15 +27,15 @@ public class AreaContainer extends AbstractAreaContainer{
     Map<UUID, Integer> respawnTimer = null;
     final LocationType type;
 
-    public AreaContainer(String name, LocationType type){
-        super(name);
-        this.type = type;
+    public AreaContainer(String _name, LocationType _type){
+        super(_name);
+        type = _type;
     }
 
-    public AreaContainer(String name, MatchParams params, LocationType type){
-        super(name);
-        setParams(params);
-        this.type = type;
+    public AreaContainer(String _name, MatchParams _params, LocationType _type){
+        super(_name);
+        setParams(_params);
+        type = _type;
     }
 
     @Override
@@ -69,9 +69,7 @@ public class AreaContainer extends AbstractAreaContainer{
                 respawnTimer = new HashMap<>();
             if (respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ){
                 ArenaMatch.respawnClick(event,this, respawnTimer);
-            } else {
-//				readyClick(event);
-            }
+            } 
         }
     }
 
@@ -117,16 +115,13 @@ public class AreaContainer extends AbstractAreaContainer{
     }
 
     @Override
-    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-    }
+    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     @Override
-    public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-    }
+    public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     @Override
-    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-    }
+    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     @Override
     public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
@@ -139,8 +134,7 @@ public class AreaContainer extends AbstractAreaContainer{
     }
 
     @Override
-    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-    }
+    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     /**
      * Return a string of appended spawn locations
@@ -157,8 +151,6 @@ public class AreaContainer extends AbstractAreaContainer{
                 }
             }
         }
-
         return sb.toString();
     }
-
 }

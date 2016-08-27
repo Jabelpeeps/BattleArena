@@ -362,7 +362,8 @@ public class ArenaSerializer extends BaseConfig {
     }
 
     private void saveArenas(boolean log) {
-        ArenaSerializer.saveArenas(BattleArena.getBAController().getArenas().values(), file, config, plugin,log);
+        BattleArena.getBAController();
+        ArenaSerializer.saveArenas(BattleArenaController.getAllArenas().values(), file, config, plugin,log);
         try {
             config.save(file);
         } catch (IOException e) {

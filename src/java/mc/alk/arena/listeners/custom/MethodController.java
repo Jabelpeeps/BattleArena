@@ -52,21 +52,21 @@ public class MethodController {
     interface BAEventCaller { void callEvent(BAEvent event); }
     
     /** Our Dynamic listeners, listening for bukkit events*/
-    final static EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> bukkitListeners =
-            new EnumMap<>(EventPriority.class);
+    @Getter final static EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> eventListeners =
+                                                                               new EnumMap<>(EventPriority.class);
 
     /** Our registered bukkit events and the methods to call when they happen*/
-    final static HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends Event>,List<ArenaEventMethod>>> bukkitEventMethods =
-            new HashMap<>();
+    final static HashMap<Class<? extends ArenaListener>,
+                         HashMap<Class<? extends Event>,
+                                 List<ArenaEventMethod>>> bukkitEventMethods = new HashMap<>();
 
     /** Our registered match events and the methods to call when they happen*/
-    final static HashMap<Class<? extends ArenaListener>,HashMap<Class<? extends BAEvent>,List<ArenaEventMethod>>> matchEventMethods =
-            new HashMap<>();
-
+    final static HashMap<Class<? extends ArenaListener>,
+                         HashMap<Class<? extends BAEvent>,
+                                 List<ArenaEventMethod>>> matchEventMethods = new HashMap<>();
+    
     final private HashMap<Class<? extends Event>,List<RListener>> bukkitMethods = new HashMap<>();
-
     final private HashMap<Class<? extends BAEvent>,List<RListener>> matchMethods = new HashMap<>();
-
     final static Set<MethodController> controllers = new HashSet<>();
     static int controllerCount = 0;
 
@@ -76,38 +76,36 @@ public class MethodController {
     static TimingUtil timings;
     MatchState curState = MatchState.NONE;
 
-    public MethodController(Object owner){
-        if (Defaults.DEBUG_EVENTS) controllers.add(this);
-        this.owner = owner;
+    public MethodController( Object _owner ) {
+        if (Defaults.DEBUG_EVENTS) controllers.add( this );
+        owner = _owner;
         controllerCount++;
         if (Bukkit.getPluginManager().useTimings() || Defaults.DEBUG_TIMINGS){
             
             if (timings == null) 
                 timings = new TimingUtil();
 
-            baexecutor = event -> {
-                
+            baexecutor = ( event ) -> {              
                     TimingStat t = timings.getOrCreate(event.getClass().getSimpleName());
                     long startTime = System.nanoTime();
 
                     Class<?> clazz = event.getClass();
-                    for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
+                    for (HashMap<Type,BukkitEventHandler> ls : eventListeners.values()){
                         BukkitEventHandler beh = ls.get(clazz);
                         if (beh == null)
                             continue;
                         beh.invokeArenaEvent(arenaListeners, event);
                     }
                     event.callEvent();
-                    t.count+=1;
+                    t.count += 1;
                     t.totalTime += System.nanoTime() - startTime;       
-                    };                   
+            };                   
         } 
         else {
-            baexecutor = event -> {
- 
+            baexecutor = ( event ) -> {
                     Class<?> clazz = event.getClass();
                     
-                    for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
+                    for (HashMap<Type,BukkitEventHandler> ls : eventListeners.values()){
                         
                         BukkitEventHandler beh = ls.get(clazz);
                         
@@ -116,12 +114,8 @@ public class MethodController {
                         beh.invokeArenaEvent(arenaListeners, event);
                     }
                     event.callEvent(); 
-                    };
+            };
         }
-    }
-
-    public static EnumMap<EventPriority, HashMap<Type, BukkitEventHandler>> getEventListeners() {
-        return bukkitListeners;
     }
 
     public void updateEvents(MatchState matchState, ArenaPlayer player){
@@ -145,26 +139,21 @@ public class MethodController {
     }
 
     public void updateEventsRange(ArenaListener listener, MatchState beginState, MatchState endState, List<UUID> players) {
-        for (MatchState ms : MatchState.values()){
-            if (ms.ordinal() < beginState.ordinal())
-                continue;
-            if (ms.ordinal() > endState.ordinal())
-                break;
-            updateEvents(listener,ms, players);
+        for ( MatchState ms : MatchState.values() ) {
+            
+            if ( ms.ordinal() < beginState.ordinal() ) continue;
+            if ( ms.ordinal() > endState.ordinal() ) break;
+            updateEvents( listener, ms, players );
         }
     }
 
     public void updateEvents(ArenaListener listener, MatchState matchState, List<UUID> players) {
-        try {
-            Collection<Class<? extends Event>> keys = bukkitMethods.keySet();
-            for (Class<? extends Event> event: keys){
-                updateEvent(listener, matchState, players, event);}
-            Collection<Class<? extends BAEvent>> mkeys = matchMethods.keySet();
-            for (Class<? extends BAEvent> event: mkeys){
-                updateBAEvent(listener, matchState, players, event);}
-        } catch (Exception e) {
-            Log.printStackTrace(e);
-        }
+        
+            for ( Class<? extends Event> event : bukkitMethods.keySet() )
+                updateEvent( listener, matchState, players, event );
+            
+            for ( Class<? extends BAEvent> event : matchMethods.keySet() ) 
+                updateBAEvent( listener, matchState, players, event );
     }
 
     /**
@@ -202,7 +191,7 @@ public class MethodController {
                 BukkitEventHandler bel = getCreate(event,mem);
                 bel.addListener(rl,players);
             } else if (mem.getEndState() == matchState) {
-                for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
+                for (HashMap<Type,BukkitEventHandler> ls : eventListeners.values()){
                     BukkitEventHandler bel = ls.get(event);
                     if (bel != null){
                         bel.removeListener(rl, players);
@@ -213,10 +202,10 @@ public class MethodController {
     }
 
     private BukkitEventHandler getCreateBA(Class<? extends BAEvent> event, ArenaEventMethod mem){
-        HashMap<Type,BukkitEventHandler> gels = bukkitListeners.get(mem.getBukkitPriority());
+        HashMap<Type,BukkitEventHandler> gels = eventListeners.get(mem.getBukkitPriority());
         if (gels == null){
             gels = new HashMap<>();
-            bukkitListeners.put(mem.getBukkitPriority(), gels);
+            eventListeners.put(mem.getBukkitPriority(), gels);
         }
         BukkitEventHandler gel = gels.get(event);
         if (Defaults.DEBUG_EVENTS) System.out.println("***************************** checking for " + event);
@@ -247,7 +236,7 @@ public class MethodController {
                 bel.addListener(rl,players);
             } 
             else if (mem.getEndState() == matchState ) {
-                for (HashMap<Type,BukkitEventHandler> ls : bukkitListeners.values()){
+                for (HashMap<Type,BukkitEventHandler> ls : eventListeners.values()){
                     BukkitEventHandler bel = ls.get(event);
                     if (bel != null){
                         bel.removeListener(rl, players);
@@ -258,10 +247,10 @@ public class MethodController {
     }
 
     private BukkitEventHandler getCreate(Class<? extends Event> event, ArenaEventMethod mem){
-        HashMap<Type,BukkitEventHandler> gels = bukkitListeners.get(mem.getBukkitPriority());
+        HashMap<Type,BukkitEventHandler> gels = eventListeners.get(mem.getBukkitPriority());
         if (gels == null){
             gels = new HashMap<>();
-            bukkitListeners.put(mem.getBukkitPriority(), gels);
+            eventListeners.put(mem.getBukkitPriority(), gels);
         }
         BukkitEventHandler gel = gels.get(event);
         if (Defaults.DEBUG_EVENTS) 
@@ -276,8 +265,8 @@ public class MethodController {
         return gel;
     }
 
-    public static List<ArenaEventMethod> getMethods(ArenaListener ael, Event event) {
-        return getMethods(ael,event.getClass());
+    public static List<ArenaEventMethod> getMethods( ArenaListener ael, Event event ) {
+        return getMethods( ael, event.getClass() );
     }
 
     private static List<ArenaEventMethod> getMethods(ArenaListener ael, Class<? extends Event> eventClass) {
@@ -488,7 +477,7 @@ public class MethodController {
                     if ( rl.getListener() == listener ) {
                         iter.remove();
                         
-                        for ( HashMap<Type, BukkitEventHandler> ls : bukkitListeners.values() ) {
+                        for ( HashMap<Type, BukkitEventHandler> ls : eventListeners.values() ) {
                             BukkitEventHandler bel = ls.get( rl.getMethod().getEvent() );
                             if ( bel != null ) {
                                 bel.removeAllListener( rl );

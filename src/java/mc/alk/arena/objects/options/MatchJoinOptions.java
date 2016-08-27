@@ -1,13 +1,13 @@
 package mc.alk.arena.objects.options;
 
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.exceptions.InvalidOptionException;
-import mc.alk.arena.util.MinMax;
-
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+
+import mc.alk.arena.controllers.BattleArenaController;
+import mc.alk.arena.objects.MatchParams;
+import mc.alk.arena.objects.exceptions.InvalidOptionException;
+import mc.alk.arena.util.MinMax;
 
 public class MatchJoinOptions {
 	public static enum MatchJoinOption{
@@ -37,7 +37,7 @@ public class MatchJoinOptions {
 		}
 	}
 
-	Map<MatchJoinOption,Object> options = new EnumMap<MatchJoinOption,Object>(MatchJoinOption.class);
+	Map<MatchJoinOption,Object> options = new EnumMap<>(MatchJoinOption.class);
 
 	public static MatchJoinOptions parseOptions(String[] args, Set<Integer> ignoreArgs) throws InvalidOptionException{
 		MatchJoinOptions mjo = new MatchJoinOptions();
@@ -71,7 +71,7 @@ public class MatchJoinOptions {
 			}
 			break;
 			case ARENA:
-				obj = BattleArena.getBAController().getArena(val);
+				obj = BattleArenaController.getArena(val);
 				if (obj==null){
 					throw new InvalidOptionException("&cCouldnt find the arena &6" +val);}
 			default:

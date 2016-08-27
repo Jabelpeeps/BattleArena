@@ -74,7 +74,7 @@ public class ArenaAlterController {
             if (str.equalsIgnoreCase("v") || str.equalsIgnoreCase("visitor")) return VLOC;
             if (str.equalsIgnoreCase("spawn") || str.equalsIgnoreCase("teamSpawn")) return SPAWNLOC;
             
-            try{
+            try {
                 if (Integer.valueOf(str) != null)
                     return SPAWNLOC;
             } 

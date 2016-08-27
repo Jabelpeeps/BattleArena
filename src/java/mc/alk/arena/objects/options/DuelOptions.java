@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
+import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -152,7 +153,7 @@ public class DuelOptions {
                     obj = money;
                     break;
                 case ARENA:
-                    Arena a = BattleArena.getBAController().getArena(val);
+                    Arena a = BattleArenaController.getArena(val);
                     if (a == null) {
                         throw new InvalidOptionException("&cCouldnt find the arena &6" + val);
                     }

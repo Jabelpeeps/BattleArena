@@ -11,8 +11,8 @@ import org.bukkit.Location;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import mc.alk.arena.BattleArena;
 import mc.alk.arena.Permissions;
+import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
@@ -124,7 +124,7 @@ public class JoinOptions {
                 continue;
             Object obj = null;
             op = MessageUtil.decolorChat(op);
-            Arena a = BattleArena.getBAController().getArena(op);
+            Arena a = BattleArenaController.getArena(op);
             if (a != null){
                 if (arena != null){
                     throw new InvalidOptionException("&cYou specified 2 arenas!");}
@@ -171,7 +171,7 @@ public class JoinOptions {
             String val = args[++i];
             switch(jo){
                 case ARENA:
-                    obj = BattleArena.getBAController().getArena(val);
+                    obj = BattleArenaController.getArena(val);
                     if (obj==null){
                         throw new InvalidOptionException("&cCouldnt find the arena &6" +val);}
                     a = (Arena) obj;

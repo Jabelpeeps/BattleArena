@@ -29,6 +29,7 @@ import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
 import mc.alk.arena.controllers.ArenaClassController;
 import mc.alk.arena.controllers.BAEventController;
+import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.DuelController;
 import mc.alk.arena.controllers.EventController;
@@ -507,7 +508,7 @@ public class BAExecutor extends CustomCommandExecutor {
             return MessageUtil.sendMessage(sender, "&cMatch couldnt be found for &6" + player.getName());
         }
         String arenaName = args[1];
-        Arena arena = arenaController.getArena(arenaName);
+        Arena arena = BattleArenaController.getArena(arenaName);
         if (arena == null) {
             return MessageUtil.sendMessage(sender, "&cArena " + arenaName + " not found");
         }
@@ -532,7 +533,7 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaStatus(CommandSender sender, String[] args) {
         Match am;
         String pormatch = args[1];
-        Arena a = arenaController.getArena(pormatch);
+        Arena a = BattleArenaController.getArena(pormatch);
         Player player;
         if (a == null) {
             player = ServerUtil.findPlayer(pormatch);
@@ -696,7 +697,7 @@ public class BAExecutor extends CustomCommandExecutor {
             lc.setContainerState(ContainerState.OPEN);
             return MessageUtil.sendMessage(sender, "&6 Lobby for " + mp.getName() + ChatColor.YELLOW + " is now &2open");
         } else {
-            Arena arena = arenaController.getArena(arenaName);
+            Arena arena = BattleArenaController.getArena(arenaName);
             if (arena == null) {
                 return MessageUtil.sendMessage(sender, "&cArena " + arenaName + " could not be found");
             }
@@ -744,7 +745,7 @@ public class BAExecutor extends CustomCommandExecutor {
             return MessageUtil.sendMessage(sender, "&6 Lobby for " + mp.getName() + ChatColor.YELLOW + " is now &4closed");
             
         } else {
-            Arena arena = arenaController.getArena(arenaName);
+            Arena arena = BattleArenaController.getArena(arenaName);
             if (arena == null) {
                 return MessageUtil.sendMessage(sender, "&cArena " + arenaName + " could not be found");
             }
@@ -861,7 +862,7 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaCreate(Player sender, MatchParams mp, String name) {
         if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "arenaCreate Method entered" );
         
-        if (arenaController.getArena(name) != null) {
+        if (BattleArenaController.getArena(name) != null) {
             return MessageUtil.sendMessage(sender, "&cThere is already an arena named &6" + name);
         }
         if (ParamController.getMatchParams(name) != null) {
@@ -1328,7 +1329,7 @@ public class BAExecutor extends CustomCommandExecutor {
     public boolean arenaList(CommandSender sender, MatchParams mp, String[] args) {
         boolean all = args.length > 1 && (args[1]).equals("all");
 
-        Collection<Arena> arenas = arenaController.getArenas().values();
+        Collection<Arena> arenas = BattleArenaController.getAllArenas().values();
         HashMap<ArenaType, Collection<Arena>> arenasbytype = new HashMap<>();
         for (Arena arena : arenas) {
             Collection<Arena> as = arenasbytype.get(arena.getArenaType());
@@ -1613,7 +1614,7 @@ public class BAExecutor extends CustomCommandExecutor {
         return true;
     }
 
-    protected Arena getArena(String name) { return arenaController.getArena(name); }
+    protected Arena getArena(String name) { return BattleArenaController.getArena(name); }
 
     public static boolean checkPlayer(CommandSender sender) {
         if (!(sender instanceof Player)) {

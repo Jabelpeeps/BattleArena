@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
@@ -52,25 +53,25 @@ import mc.alk.arena.objects.pairs.JoinResult.JoinStatus;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 
-public class BattleArenaController implements ArenaListener, Listener{
+public class BattleArenaController implements ArenaListener, Listener {
 
     private boolean stop = false;
 
     final private Set<Match> running_matches = Collections.synchronizedSet(new CopyOnWriteArraySet<Match>());
-    final private Map<ArenaType,List<Match>> unfilled_matches =new HashMap<>();
-    private Map<String, Arena> allarenas = new ConcurrentHashMap<>();
+    final private Map<ArenaType,List<Match>> unfilled_matches = new HashMap<>();
+    @Getter static private Map<String, Arena> allArenas = new ConcurrentHashMap<>();
     final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<>();
     final ArenaMatchQueue amq = new ArenaMatchQueue();
     final SignUpdateListener signUpdateListener;
 
     final private Map<ArenaType, Arena> fixedArenas = new HashMap<>();
 
-    public class OldLobbyState{
+    public class OldLobbyState {
         ContainerState pcs;
         Set<Match> running = new HashSet<>();
-        public boolean isEmpty() {return running.isEmpty();}
-        public void add(Match am){running.add(am);}
-        public boolean remove(Match am) {return running.remove(am);}
+        public boolean isEmpty() { return running.isEmpty(); }
+        public void add(Match am){ running.add(am); }
+        public boolean remove(Match am) { return running.remove(am); }
     }
 
     public BattleArenaController( SignUpdateListener _signUpdateListener ){
@@ -177,7 +178,7 @@ public class BattleArenaController implements ArenaListener, Listener{
         Match am = event.getMatch();
         removeMatch(am); /// handles removing running match from the BArenaController
 
-        final Arena arena = allarenas.get(am.getArena().getName().toUpperCase());
+        final Arena arena = allArenas.get(am.getArena().getName().toUpperCase());
         if (arena == null) { /// we have deleted this arena while a match was going on
             return;}
 
@@ -204,18 +205,15 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public void updateArena(Arena arena) {
-        allarenas.put(arena.getName().toUpperCase(), arena);
+        allArenas.put(arena.getName().toUpperCase(), arena);
         if (amq.removeArena(arena) != null){ /// if its not being used
             amq.add(arena);}
     }
 
     public void addArena(Arena arena) {
-        allarenas.put(arena.getName().toUpperCase(), arena);
+        allArenas.put(arena.getName().toUpperCase(), arena);
         amq.add(arena);
     }
-
-
-    public Map<String, Arena> getArenas(){return allarenas;}
 
     /**
      * Add the TeamQueueing object to the queue
@@ -345,11 +343,11 @@ public class BattleArenaController implements ArenaListener, Listener{
     public boolean isInQue(ArenaPlayer p) { return amq.isInQue( p ); }
     public void addMatchup(MatchTeamQObject m) { amq.join( m ); }
     public Arena reserveArena(Arena arena) { return amq.reserveArena( arena ); }
-    public Arena getArena(String arenaName) { return allarenas.get( arenaName.toUpperCase() ); }
+    public static Arena getArena(String arenaName) { return allArenas.get( arenaName.toUpperCase() ); }
 
     public Arena removeArena(Arena arena) {
         amq.removeArena(arena);
-        allarenas.remove(arena.getName().toUpperCase());
+        allArenas.remove(arena.getName().toUpperCase());
         return arena;
     }
 
@@ -385,7 +383,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public Arena getArenaByMatchParams(MatchParams jp) {
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.valid() && a.matches(jp)){
                 return a;}
         }
@@ -393,7 +391,7 @@ public class BattleArenaController implements ArenaListener, Listener{
     }
 
     public Arena getArenaByMatchParams(JoinOptions jp) {
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.valid() && a.matches(jp)){
                 return a;}
         }
@@ -402,7 +400,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
     public List<Arena> getArenas(MatchParams mp) {
         List<Arena> arenas = new ArrayList<>();
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.valid() && a.matches(mp)){
                 arenas.add(a);}
         }
@@ -414,7 +412,7 @@ public class BattleArenaController implements ArenaListener, Listener{
         MatchParams mp = jp.getMatchParams();
         int sizeDif = Integer.MAX_VALUE;
         int m1 = mp.getMinTeamSize();
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.getArenaType() != mp.getType() || !a.valid())
                 continue;
             if (a.matches(jp)){
@@ -430,7 +428,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
     public Map<Arena,List<String>> getNotMachingArenaReasons(MatchParams mp) {
         Map<Arena,List<String>> reasons = new HashMap<>();
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.getArenaType() != mp.getType()){
                 continue;
             }
@@ -452,7 +450,7 @@ public class BattleArenaController implements ArenaListener, Listener{
         Map<Arena,List<String>> reasons = new HashMap<>();
         MatchParams mp = jp.getMatchParams();
         Arena wantedArena = jp.getArena();
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (wantedArena !=null && !a.matches(wantedArena)) {
                 continue;}
             if (a.getArenaType() != mp.getType()){
@@ -474,7 +472,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
     public boolean hasArenaSize(int i) {return getArenaBySize(i) != null;}
     public Arena getArenaBySize(int i) {
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             if (a.getParams().matchesTeamSize(i)){
                 return a;}
         }
@@ -502,7 +500,7 @@ public class BattleArenaController implements ArenaListener, Listener{
                 cancelMatch(am);
                 Arena a = am.getArena();
                 if (a != null){
-                    Arena arena = allarenas.get(a.getName().toUpperCase());
+                    Arena arena = allArenas.get(a.getName().toUpperCase());
                     if (arena != null)
                         amq.add(arena);
                 }
@@ -611,7 +609,7 @@ public class BattleArenaController implements ArenaListener, Listener{
         StringBuilder sb = new StringBuilder();
         sb.append(amq.toStringArenas());
         sb.append("------ arenas -------\n");
-        for (Arena a : allarenas.values()){
+        for (Arena a : allArenas.values()){
             sb.append(a).append("\n");
         }
         return sb.toString();
@@ -627,7 +625,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
         amq.stop();
         amq.removeAllArenas();
-        allarenas.clear();
+        allArenas.clear();
         amq.resume();
     }
 
@@ -641,7 +639,7 @@ public class BattleArenaController implements ArenaListener, Listener{
 
         amq.stop();
         amq.removeAllArenas(arenaType);
-        Iterator<Arena> iter = allarenas.values().iterator();
+        Iterator<Arena> iter = allArenas.values().iterator();
         while (iter.hasNext()){
             Arena a = iter.next();
             if (a != null && a.getArenaType() == arenaType){

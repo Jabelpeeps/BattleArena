@@ -45,17 +45,17 @@ public class ArenaClassController {
     }
 
     public static void addClass(ArenaClass ac){
-        classes.put(ac.getName().toUpperCase(), ac);
-        classes.put(MessageUtil.decolorChat(ac.getDisplayName()).toUpperCase(),ac);
-        classes.put(MessageUtil.decolorChat(ac.getDisplayName().replaceAll("\\[\\]", "")).toUpperCase(),ac);
+        classes.put( ac.getName().toUpperCase(), ac );
+        classes.put( MessageUtil.decolorChat( ac.getDisplayName() ).toUpperCase(), ac );
+        classes.put( MessageUtil.decolorChat( ac.getDisplayName().replaceAll("\\[\\]", "") ).toUpperCase(), ac );
     }
 
     public static ArenaClass getClass(String name){
-        return classes.get(name.toUpperCase());
+        return classes.get( name.toUpperCase() );
     }
 
     public static void giveClass(ArenaPlayer player, ArenaClass ac) {
-        giveClass(player,ac,null);
+        giveClass( player, ac, null );
     }
 
     public static void giveClass(ArenaPlayer player, ArenaClass ac, Color color) {
@@ -107,7 +107,10 @@ public class ArenaClassController {
     }
 
     public static void giveClassEnchants(Player player, ArenaClass ac) {
-        try{if (ac.getEffects() != null) EffectUtil.enchantPlayer(player, ac.getEffects());}
+        try {
+            if (ac.getEffects() != null) 
+                EffectUtil.enchantPlayer(player, ac.getEffects());
+        }
         catch (Exception e){/* do nothing */}
     }
 

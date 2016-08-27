@@ -37,29 +37,29 @@ public class ArenaClass {
     
 	@Getter boolean valid = false;
 
-    public ArenaClass(String name){
-		this(name,name,new ArrayList<ItemStack>(),new ArrayList<PotionEffect>(),new ArrayList<String>());
+    public ArenaClass(String _name){
+		this( _name, _name, new ArrayList<ItemStack>(), new ArrayList<PotionEffect>(), new ArrayList<String>() );
 		valid = false;
 	}
 
-	public ArenaClass(String name, String displayName, List<ItemStack> items, List<PotionEffect> effects, List<String> perms){
-		this.name = name;
+	public ArenaClass(String _name, String _displayName, List<ItemStack> _items, 
+	                    List<PotionEffect> _effects, List<String> perms ) {
+		name = _name;
 		CopyOnWriteArrayList<ItemStack> listitems = new CopyOnWriteArrayList<>();
 		ArrayList<ItemStack> armoritems = new ArrayList<>();
-		if (items != null){
-			for (ItemStack is: items){
-				if (InventoryUtil.isArmor(is)){
+		if (_items != null) {
+			for (ItemStack is: _items) {
+				if (InventoryUtil.isArmor(is))
 					armoritems.add(is);
-				} else {
+				else
 					listitems.add(is);
-				}
 			}
 		}
-		this.items = listitems;
-		this.items.addAll(armoritems);
-		this.effects = effects;
-		this.displayName = displayName;
-                this.permissions = perms;
+		items = listitems;
+		items.addAll(armoritems);
+		effects = _effects;
+		displayName = _displayName;
+        permissions = perms;
 		valid = true;
 	}
 
@@ -79,11 +79,10 @@ public class ArenaClass {
     public List<SpawnInstance> getMobsClone() {
         List<SpawnInstance> l = new ArrayList<>();
         for (SpawnInstance si: mobs){
-            if (si instanceof EntitySpawn){
+            if (si instanceof EntitySpawn)
                 l.add(new EntitySpawn((EntitySpawn)si));
-            } else {
+            else 
                 l.add(si);
-            }
         }
         return l;
     }

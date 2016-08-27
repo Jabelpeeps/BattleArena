@@ -274,7 +274,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private Arena verifyArena(Class<?> arenaClass, String name) throws IllegalArgumentException {
-        Arena arena = arenaController.getArena(name);
+        Arena arena = BattleArenaController.getArena(name);
         if (arena == null)
             throw new IllegalArgumentException("Arena '" + name + "' doesnt exist" );
         

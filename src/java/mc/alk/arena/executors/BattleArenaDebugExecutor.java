@@ -26,6 +26,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ArenaClassController;
+import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.CompetitionController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.PlayerController;
@@ -457,7 +458,8 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             }
         }
         MessageUtil.sendMessage(sender, "&5Arenas");
-        for (Arena a: BattleArena.getBAController().getArenas().values()){
+        BattleArena.getBAController();
+        for (Arena a: BattleArenaController.getAllArenas().values()){
             if (params != null && a.getArenaType() != params.getType())
                 continue;
             MessageUtil.sendMessage(sender," &2" + a.getName() +" - &6" + a.getContainerState().getState());
