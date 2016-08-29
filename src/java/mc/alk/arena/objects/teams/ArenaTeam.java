@@ -54,31 +54,22 @@ public abstract class ArenaTeam {
     @Getter @Setter int index = -1;
     @Setter String iDString = null;
 
-	/**
-	 * Default Constructor
-	 */
-	public ArenaTeam(){
-		init();
-	}
+	public ArenaTeam() {}
+	
 	protected ArenaTeam(ArenaPlayer p) {
-		init();
 		players.add(p);
 		nameChanged = true;
 	}
 	protected ArenaTeam(Collection<ArenaPlayer> teammates) {
-		init();
 		players.addAll(teammates);
 		nameChanged = true;
 	}
 	protected ArenaTeam(ArenaPlayer p, Collection<ArenaPlayer> teammates) {
-		init();
 		players.add(p);
 		players.addAll(teammates);
 		nameChanged = true;
 	}
-	public void init(){
-		reset();
-	}
+	
     public void reset() {
         players.clear();
 		deaths.clear();
@@ -86,6 +77,7 @@ public abstract class ArenaTeam {
         deadPlayers.clear();
         nameChanged = true;
 	}
+    
 	protected String createName() {
 		if (nameManuallySet || !nameChanged)
 			return name;
@@ -429,7 +421,7 @@ public abstract class ArenaTeam {
 	}
 
 	public ArenaStat getStat() {
-		return getStat( getCurrentParams() );
+		return getStat( currentParams );
 	}
 	public ArenaStat getStat(MatchParams params){
         return Tracker.getInterface( params ).getTeamRecord( name );

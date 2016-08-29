@@ -53,7 +53,7 @@ public class ArenaObjective implements ScoreTracker {
     int worst = Integer.MAX_VALUE;
     
     TreeSet<ArenaScore> scores = new TreeSet<>( 
-            ( o1, o2)  -> {
+            ( o1, o2 )  -> {
                 int c = o2.getScore() - o1.getScore();
                 if (c != 0)
                     return c;
@@ -69,11 +69,9 @@ public class ArenaObjective implements ScoreTracker {
     public ArenaObjective( ArenaScoreboard board, String _id, String _displayName, String _criteria ) {
         this( board, _id, _displayName, _criteria, 50 );
     }
-
-    public ArenaObjective(String _id, String _displayName, String _criteria, int _priority) {
+    public ArenaObjective( String _id, String _displayName, String _criteria, int _priority ) {
         this( null, _id, _displayName, _criteria, _priority );
     }
-
     public ArenaObjective( ArenaScoreboard board, String _id, String _displayName, String _criteria, int _priority ) {
         id = _id;
         criteria = MessageUtil.colorChat(_criteria);
@@ -83,8 +81,7 @@ public class ArenaObjective implements ScoreTracker {
         if (board != null)
             setScoreboard(board);
     }
-
-	public ArenaObjective(String name, String _criteria) {
+	public ArenaObjective( String name, String _criteria ) {
 		this( name, _criteria, name, SAPIDisplaySlot.SIDEBAR, 50 );
 	}
 	/**
@@ -93,18 +90,16 @@ public class ArenaObjective implements ScoreTracker {
 	 * @param _criteria Objective criteria
 	 * @param priority: lower priority means it has precedence
 	 */
-	public ArenaObjective(String name, String _criteria, int _priority) {
+	public ArenaObjective( String name, String _criteria, int _priority ) {
 		this( name, _criteria, name, SAPIDisplaySlot.SIDEBAR, _priority );
 	}
-	public ArenaObjective(String name, String _criteria, String _displayName, SAPIDisplaySlot slot) {
+	public ArenaObjective( String name, String _criteria, String _displayName, SAPIDisplaySlot slot ) {
 		this( name, _criteria, _displayName, slot, 50 );
 	}
-	public ArenaObjective(String _id, String _criteria, String _displayName, SAPIDisplaySlot slot, int _priority) {
+	public ArenaObjective( String _id, String _criteria, String _displayName, SAPIDisplaySlot slot, int _priority ) {
 
 		this( _id, _displayName, _criteria, _priority );
 		setDisplaySlot(slot);
-		if (_displayName != null){
-			setDisplayName(_displayName);}
 	}
 
 	public Integer getPoints(ArenaTeam t) { return teamPoints.get(t); }
@@ -272,11 +267,11 @@ public class ArenaObjective implements ScoreTracker {
         }
     }
 
-    protected boolean setPoints(ArenaScore score, int points) {
-        if ( (score.getEntry() instanceof STeam && isDisplayTeams()) ||
-                (score.getEntry() instanceof SAPIPlayerEntry && isDisplayPlayers()) ||
-                (!(score.getEntry() instanceof SAPIPlayerEntry) && !(score.getEntry() instanceof STeam))){
-            addScore(score, points);
+    protected boolean setPoints( ArenaScore score, int points ) {
+        if (    ( displayTeams && score.getEntry() instanceof STeam ) ||
+                ( displayPlayers && score.getEntry() instanceof SAPIPlayerEntry ) ||
+                ( !(score.getEntry() instanceof SAPIPlayerEntry) && !(score.getEntry() instanceof STeam) ) ) {
+            addScore( score, points );
         } 
         else if ( score.getScore() != points ) {
             score.setScore( points );
@@ -284,13 +279,13 @@ public class ArenaObjective implements ScoreTracker {
         return true;
     }
 
-    private void addScore(final ArenaScore e, final int points) {
+    private void addScore( ArenaScore e, int points ) {
         scores.remove(e);
         e.setScore(points);
         scores.add(e);
 
-        if (scores.size() <= SAPI.MAX_ENTRIES) {
-            _setScore(e.getEntry(), points);
+        if ( scores.size() <= SAPI.MAX_ENTRIES ) {
+            _setScore( e.getEntry(), points );
             cur15.add(e.getEntry());
             worst = Math.min(points, worst);
         } 
@@ -298,16 +293,17 @@ public class ArenaObjective implements ScoreTracker {
             HashSet<SEntry> now15 = new HashSet<>(SAPI.MAX_ENTRIES);
             ArrayList<ArenaScore> added = new ArrayList<>(2);
             Iterator<ArenaScore> iter = scores.iterator();
-            for (int i = 0; i < SAPI.MAX_ENTRIES && iter.hasNext(); i++) {
+            
+            for ( int i = 0; i < SAPI.MAX_ENTRIES && iter.hasNext(); i++ ) {
                 ArenaScore sapiScore = iter.next();
-                now15.add(sapiScore.getEntry());
-                if (!cur15.contains(sapiScore.getEntry())) {
-                    added.add(sapiScore);
+                now15.add( sapiScore.getEntry() );
+                if ( !cur15.contains( sapiScore.getEntry() ) ) {
+                    added.add( sapiScore );
                 }
             }
-            cur15.removeAll(now15);
+            cur15.removeAll( now15 );
             for ( SEntry se : cur15 ) {
-                objective.getScoreboard().resetScores(se.getOfflinePlayer().getName());
+                objective.getScoreboard().resetScores(se.getBaseDisplayName());
             }
             cur15 = now15;
             if (added.isEmpty()) {
@@ -316,15 +312,14 @@ public class ArenaObjective implements ScoreTracker {
             } 
             else {
                 for ( ArenaScore se : added)  {
-                    _setScore(se.getEntry(), se.getScore());
+                    _setScore( se.getEntry(), se.getScore() );
                 }
             }
         }
-
     }
 
-    private void _setScore(final SEntry e, final int points) {
-        Score sc = objective.getScore(e.getOfflinePlayer().getName());
+    private void _setScore( SEntry e, int points) {
+        Score sc = objective.getScore( e.getBaseDisplayName() );
         if (points != 0) {
             sc.setScore(points);
         } 
@@ -337,6 +332,7 @@ public class ArenaObjective implements ScoreTracker {
     
     public int getPoints(SEntry l) {
         OfflinePlayer p = l.getOfflinePlayer();
+        if ( p == null ) return 0;
         return objective.getScore(p.getName()).getScore();
     }
 
@@ -379,7 +375,7 @@ public class ArenaObjective implements ScoreTracker {
                     addScore(sc, sc.getScore());
                 } 
                 else {
-                    objective.getScoreboard().resetScores(entry.getOfflinePlayer().getName());
+                    objective.getScoreboard().resetScores(entry.getBaseDisplayName());
                 }
             }
         }
@@ -411,6 +407,7 @@ public class ArenaObjective implements ScoreTracker {
     }
 
     public boolean addEntry( SEntry entry, int points ) {
+        
         if (entry instanceof STeam) {
             return addTeam((STeam) entry, points);}
         
@@ -462,7 +459,7 @@ public class ArenaObjective implements ScoreTracker {
     }
 
     public SEntry removeEntry( SEntry entry ) {
-        return (SEntry) entries.remove( entry );
+        return entries.remove( entry ).entry;
     }
 
     public int getPoints( String _id ) {
@@ -476,7 +473,7 @@ public class ArenaObjective implements ScoreTracker {
         
         SEntry l = scoreboard.getEntry(_id);
         
-        if (l == null) return false;
+        if ( l == null ) return false;
         
         setPoints( l, points );
         return true;
@@ -488,22 +485,22 @@ public class ArenaObjective implements ScoreTracker {
         return has;
     }
 
-    protected final ArenaScore getOrCreateSAPIScore(SEntry e, int points){
-        if (entries.containsKey(e))
-            return entries.get(e);
-        ArenaScore score = new ArenaScore(e, points);
-        entries.put(e, score);
-        setPoints(score, points);
+    protected final ArenaScore getOrCreateSAPIScore( SEntry e, int points ) {
+        if ( entries.containsKey( e ) ) return entries.get( e );
+        
+        ArenaScore score = new ArenaScore( e, points );
+        entries.put( e, score );
+        setPoints( score, points );
         return score;
     }
 
     public boolean setTeamPoints( STeam team, int points ) {
-        if (displayTeams) {
-            setPoints(team,points);
+        if ( displayTeams ) {
+            setPoints( team, points );
         }
-        if (displayPlayers){
-            for (String p: team.getPlayers()){
-                SEntry e = scoreboard.createEntry(p);
+        if ( displayPlayers ) {
+            for ( String p : team.getPlayers() ) {
+                SEntry e = scoreboard.createEntry( p );
                 if ( e == null ) continue;
                 setPoints( e, points );
             }
@@ -534,7 +531,7 @@ public class ArenaObjective implements ScoreTracker {
                 skipped.add(e);
                 continue;
             }
-            Set<Score> scoresSet = objective.getScoreboard().getScores(e.getOfflinePlayer().getName());
+            Set<Score> scoresSet = objective.getScoreboard().getScores(e.getBaseDisplayName());
             for (Score score : scoresSet){
                 if (score.getObjective().equals(objective)){
                     if (score.getScore() != 0){

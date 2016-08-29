@@ -110,7 +110,7 @@ public class TeamUtil {
 	}
 
     public static void initTeam(ArenaTeam team, MatchParams params) {
-        team.reset();/// reset scores, set alive
+        team.reset();
         team.setCurrentParams(params);
         int index = team.getIndex();
         MatchParams teamParams = null;

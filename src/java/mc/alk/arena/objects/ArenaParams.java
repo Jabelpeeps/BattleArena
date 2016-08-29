@@ -533,10 +533,10 @@ public class ArenaParams {
     }
 
     public MatchParams getTeamParams(int index) {
-        if (arenaTeamParams!=null) {
+        if (arenaTeamParams != null) {
             MatchParams mp = arenaTeamParams.get(index);
-            if (mp != null) {
-                return mp;}
+            if (mp != null) 
+                return mp;
         }
         if (parent != null) {
             return parent.getTeamParams(index);

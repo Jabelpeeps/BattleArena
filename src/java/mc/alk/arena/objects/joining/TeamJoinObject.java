@@ -9,7 +9,7 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-public class TeamJoinObject extends QueueObject{
+public class TeamJoinObject extends QueueObject {
 	@Getter final ArenaTeam team;
 
 	public TeamJoinObject(ArenaTeam _team, MatchParams params, JoinOptions options) {
@@ -36,16 +36,14 @@ public class TeamJoinObject extends QueueObject{
 	}
 
 	@Override
-	public boolean hasTeam(ArenaTeam team) {
-		if (this.team.getId() == team.getId())
-			return true;
-		for (ArenaPlayer ap : this.team.getPlayers()){
-			if (team.hasMember(ap)){
+	public boolean hasTeam( ArenaTeam _team ) {
+		if ( team.getId() == _team.getId() ) return true;
+		
+		for ( ArenaPlayer ap : team.getPlayers() ) {
+			if (_team.hasMember(ap) ) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-	public boolean hasStartPerms() { return false; }
 }

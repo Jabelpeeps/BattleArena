@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
@@ -22,18 +23,89 @@ import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamHandler;
-import mc.alk.arena.util.Log;
 
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     
     public static final TeamJoinResult CANTFIT = new TeamJoinResult( TeamJoinStatus.CANT_FIT, -1 );
     final MatchParams matchParams;
     @Getter final List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
-    final int minTeams,maxTeams;
+    final int minTeams, maxTeams;
     @Setter Competition competition;
     WaitingScoreboard scoreboard;
     @Getter int nPlayers;
 
+    public static enum TeamJoinStatus {
+        ADDED, CANT_FIT, ADDED_TO_EXISTING, ADDED_STILL_NEEDS_PLAYERS
+    }
+
+    @AllArgsConstructor
+    public static class TeamJoinResult {
+        @Getter final public TeamJoinStatus joinStatus;
+        @Getter final public int remaining;
+    }
+
+    public AbstractJoinHandler( MatchParams params, Competition _competition, List<ArenaTeam> _teams ) {
+        matchParams = params;
+        minTeams = params.getMinTeams();
+        maxTeams = params.getMaxTeams();
+        competition = _competition;
+        if ( Defaults.USE_SCOREBOARD )
+            initWaitingScoreboard(_teams);
+    }
+
+    private void initWaitingScoreboard( List<ArenaTeam> startingTeams ) {
+        List<ArenaTeam> tems = new ArrayList<>();
+
+        int needed = 0;
+        int optional = 0;
+        
+        if ( startingTeams.size() < maxTeams )
+            tems.addAll( startingTeams );
+        
+        if ( maxTeams <= 16 ) {
+            
+            int index = 0;
+            while ( tems.size() < maxTeams )
+                tems.add( TeamFactory.createCompositeTeam( index++, matchParams ) );
+            
+            for ( ArenaTeam team : tems ) {
+                
+                if ( team.getMinPlayers() < 16 ) {
+                    needed += team.getMinPlayers();
+                    
+                    if ( team.getMinPlayers() != team.getMaxPlayers() ) {
+                        optional += team.getMaxPlayers() < 1000 ? team.getMaxPlayers() - team.getMinPlayers() 
+                                                                : 1000;
+                    }
+                }
+            }
+        }
+             
+        if ( needed + optional <= 16 ) 
+            scoreboard = new FullScoreboard( matchParams, tems );
+        else
+            scoreboard = new CutoffScoreboard( matchParams, tems );
+    }
+
+    public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
+
+    protected ArenaTeam addToPreviouslyLeftTeam(ArenaPlayer player) {
+        for ( ArenaTeam t : teams ) {
+            if ( t.hasLeft( player ) ) {
+                t.addPlayer( player );
+                nPlayers++;
+                
+                if ( competition != null )
+                    competition.addedToTeam( t, player );
+                
+                if ( scoreboard != null )
+                    scoreboard.addedToTeam( t, player );
+                return t;
+            }
+        }
+        return null;
+    }
+    
     public Collection<ArenaPlayer> getPlayers() {
         List<ArenaPlayer> players = new ArrayList<>();
         for (ArenaTeam at: teams) {
@@ -60,75 +132,8 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public void setWaitingScoreboardTime(int seconds) {
-        if (scoreboard==null)
-            return;
+        if ( scoreboard == null ) return;
         scoreboard.setRemainingSeconds(seconds);
-    }
-
-    public static enum TeamJoinStatus{
-        ADDED, CANT_FIT, ADDED_TO_EXISTING, ADDED_STILL_NEEDS_PLAYERS
-    }
-
-    public static class TeamJoinResult {
-        @Getter final public TeamJoinStatus joinStatus;
-        @Getter final public int remaining;
-
-        public TeamJoinResult(TeamJoinStatus status, int _remaining ) {
-            joinStatus = status; remaining = _remaining; }
-    }
-
-    public AbstractJoinHandler(MatchParams params, Competition _competition, List<ArenaTeam> _teams) {
-        matchParams = params;
-        minTeams = params.getMinTeams();
-        maxTeams = params.getMaxTeams();
-
-        setCompetition( _competition );
-        if ( Defaults.USE_SCOREBOARD )
-            initWaitingScoreboard(_teams);
-    }
-
-    private void initWaitingScoreboard(List<ArenaTeam> startingTeams) {
-        List<ArenaTeam> tems = new ArrayList<>();
-        try {
-            if (maxTeams <= 16) {
-                int needed = 0;
-                int optional = 0;
-                for (int i = 0; i < maxTeams; i++) {
-                    ArenaTeam team = TeamFactory.createCompositeTeam(i, matchParams);
-                    if (team.getMinPlayers() < 16) {
-                        needed += team.getMinPlayers();
-                        if (team.getMinPlayers() != team.getMaxPlayers()) {
-                            optional += team.getMaxPlayers() < 1000 ? team.getMaxPlayers() - team.getMinPlayers() : 1000;
-                        }
-                    }
-                    tems.add(team);
-                }
-                if (needed + optional <= 16) {
-                    scoreboard = new FullScoreboard(matchParams, tems);
-                    return;
-                }
-            }
-        } catch (Throwable e) {
-            Log.printStackTrace(e);
-        }
-        scoreboard = new CutoffScoreboard(matchParams, tems);
-    }
-
-    public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
-
-    protected ArenaTeam addToPreviouslyLeftTeam(ArenaPlayer player) {
-        for (ArenaTeam t: teams){
-            if (t.hasLeft(player)){
-                t.addPlayer(player);
-                nPlayers++;
-                if (competition!=null)
-                    competition.addedToTeam(t,player);
-                if (scoreboard!=null)
-                    scoreboard.addedToTeam(t,player);
-                return t;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -182,13 +187,15 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
 
     @Override
     public boolean addTeam(ArenaTeam team){
-        nPlayers+=team.size();
-        team.setIndex(teams.size());
-        teams.add(team);
-        if (competition!=null)
-            competition.addedTeam(team);
-        if (scoreboard!=null)
-            scoreboard.addedTeam(team);
+        nPlayers += team.size();
+        team.setIndex( teams.size() );
+        teams.add( team );
+        
+        if ( competition != null )
+            competition.addedTeam( team );
+        
+        if ( scoreboard != null )
+            scoreboard.addedTeam( team );
         return true;
     }
 

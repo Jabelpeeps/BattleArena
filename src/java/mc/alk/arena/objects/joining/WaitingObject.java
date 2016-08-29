@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import lombok.Getter;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
+import mc.alk.arena.controllers.joining.AbstractJoinHandler.TeamJoinResult;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -21,50 +22,32 @@ public class WaitingObject {
     @Getter protected final QueueObject originalQueuedObject;
     @Getter protected final Arena arena;
 
-    public WaitingObject(QueueObject qo) throws NeverWouldJoinException {
-        params = qo.getMatchParams();
-        originalQueuedObject = qo;
-        arena = qo.getJoinOptions().getArena();
+    public WaitingObject( QueueObject queue ) throws NeverWouldJoinException {
+        params = queue.getMatchParams();
+        originalQueuedObject = queue;
+        arena = queue.getJoinOptions().getArena();
         
-        if (qo instanceof MatchTeamQObject) {
-            joinHandler = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams(), qo.getTeams());
+        if ( queue instanceof MatchTeamQObject ) {
+            joinHandler = TeamJoinFactory.createTeamJoinHandler(queue.getMatchParams(), queue.getTeams());
             joinable = false;
         } 
         else {
-            joinHandler = TeamJoinFactory.createTeamJoinHandler(qo.getMatchParams());
+            joinHandler = TeamJoinFactory.createTeamJoinHandler(queue.getMatchParams());
             joinable = true;
         }
     }
 
-
     public boolean matches(QueueObject qo) {
-        return joinable && (arena != null ?
-                        arena.matches(qo.getJoinOptions()) :
-                        params.matches(qo.getJoinOptions()));
+        return joinable && (arena != null ? arena.matches(qo.getJoinOptions()) 
+                                          : params.matches(qo.getJoinOptions()));
     }
-    public AbstractJoinHandler.TeamJoinResult join(TeamJoinObject qo) {
-        return joinHandler.joiningTeam(qo);
-    }
-
-    public boolean hasEnough() {
-        return joinHandler.hasEnough(params.getAllowedTeamSizeDifference());
-    }
-
-    public boolean isFull() {
-        return joinHandler.isFull();
-    }
-
-    public Collection<ArenaPlayer> getPlayers() {
-        return joinHandler.getPlayers();
-    }
-
-    public JoinOptions getJoinOptions() {
-        return originalQueuedObject.getJoinOptions();
-    }
-
-    public Collection<ArenaListener> getArenaListeners(){
-        return originalQueuedObject.getListeners();
-    }
+    
+    public TeamJoinResult join( TeamJoinObject qo ) { return joinHandler.joiningTeam( qo ); }
+    public boolean hasEnough() { return joinHandler.hasEnough( params.getAllowedTeamSizeDifference() ); }
+    public boolean isFull() { return joinHandler.isFull(); }
+    public Collection<ArenaPlayer> getPlayers() { return joinHandler.getPlayers(); }
+    public JoinOptions getJoinOptions() { return originalQueuedObject.getJoinOptions(); }
+    public Collection<ArenaListener> getArenaListeners() { return originalQueuedObject.getListeners(); }
 
     @Override
     public String toString() {

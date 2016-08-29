@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 
 
@@ -12,8 +13,8 @@ import mc.alk.arena.objects.ArenaPlayer;
  * @author alkarin
  *
  */
-public class CompositeTeam extends ArenaTeam{
-	final Set<ArenaTeam> oldTeams = new HashSet<>();
+public class CompositeTeam extends ArenaTeam {
+	@Getter final Set<ArenaTeam> oldTeams = new HashSet<>();
 
 	public CompositeTeam() {
 		super();
@@ -25,19 +26,14 @@ public class CompositeTeam extends ArenaTeam{
 		pickupTeam = true;
 	}
 
-	protected CompositeTeam(Collection<ArenaPlayer> players) {
-		super(players);
+	protected CompositeTeam(Collection<ArenaPlayer> _players) {
+		super(_players);
 		pickupTeam = true;
 	}
 
 	protected CompositeTeam(ArenaTeam team) {
 		this();
 		addTeam(team);
-	}
-
-	protected CompositeTeam(Set<ArenaPlayer> tplayers) {
-		super(tplayers);
-		pickupTeam=true;
 	}
 
 	public void addTeam(ArenaTeam t) {
@@ -47,7 +43,8 @@ public class CompositeTeam extends ArenaTeam{
 			oldTeams.addAll(ct.oldTeams);
 			players.addAll(ct.getPlayers());
 			nameChanged = true;
-		} else if (oldTeams.add(t)){
+		} 
+		else if (oldTeams.add(t)){
 			nameChanged = true;
 			players.addAll(t.getPlayers());
 		}
@@ -92,9 +89,6 @@ public class CompositeTeam extends ArenaTeam{
 		}
         return success;
     }
-	public Collection<ArenaTeam> getOldTeams(){
-		return oldTeams;
-	}
 
 	@Override
 	public void clear() {

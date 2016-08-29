@@ -14,13 +14,13 @@ public class TeamFactory {
         return ct;
     }
 
-    public static CompositeTeam createCompositeTeam(int index, MatchParams params, Set<ArenaPlayer> players) {
+    public static ArenaTeam createCompositeTeam(int index, MatchParams params, Set<ArenaPlayer> players) {
         CompositeTeam ct = (CompositeTeam) createCompositeTeam(index, params);
         ct.addPlayers(players);
         return ct;
     }
 
-//    public static CompositeTeam createCompositeTeam(MatchParams params, Set<ArenaPlayer> players) {
+//    public static CompositeTeam createCompositeTeam( MatchParams params, Set<ArenaPlayer> players ) {
 //        CompositeTeam ct = (CompositeTeam) createCompositeTeam(-1, params);
 //        ct.addPlayers(players);
 //		return ct;
@@ -38,5 +38,4 @@ public class TeamFactory {
         TeamUtil.initTeam(at, params);
         return at;
     }
-
 }

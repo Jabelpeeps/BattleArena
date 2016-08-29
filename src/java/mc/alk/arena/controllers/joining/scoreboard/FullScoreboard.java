@@ -22,43 +22,41 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;
-import mc.alk.arena.util.TeamUtil;
 
 public class FullScoreboard implements WaitingScoreboard {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
-
     Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
     ArenaScoreboard scoreboard;
-    ArenaObjective ao;
+    ArenaObjective objective;
     final int minTeams;
     Countdown countdown;
 
 
     public FullScoreboard(MatchParams params, List<ArenaTeam> teams) {
         scoreboard = new ArenaScoreboard( String.valueOf( hashCode()), params);
-        ao = scoreboard.createObjective("waiting",
-                "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
-        ao.setDisplayTeams(false);
+        objective = scoreboard.createObjective( "waiting", "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
+        objective.setDisplayTeams(false);
         minTeams = params.getMinTeams();
         int maxTeams = params.getMaxTeams();
-//        HashMap<ArenaTeam, STeam> teamMap = new HashMap<ArenaTeam, STeam>();
+
         List<ArenaTeam> ateams = new ArrayList<>();
         List<STeam> steams = new ArrayList<>();
+        
         for (int i = 0; i < maxTeams; i++) {
             ArenaTeam team = i < teams.size() ? teams.get(i) : TeamFactory.createCompositeTeam(i, params);
 
             team.setIDString(String.valueOf(team.getIndex()));
             STeam t = scoreboard.addTeam(team);
-//            teamMap.put(team, t);
+
             steams.add(t);
             ateams.add(team);
         }
-        addPlaceholders(ateams, steams, minTeams); /// half
+        addPlaceholders(ateams, steams, minTeams); 
         
         if (    params.getForceStartTime() >0 
                 && params.getForceStartTime() != ArenaSize.MAX
                 && params.getMaxPlayers() != params.getMinPlayers() ) {
-            countdown = new Countdown(BattleArena.getSelf(), params.getForceStartTime(),1,new DisplayCountdown());
+            countdown = new Countdown( BattleArena.getSelf(), params.getForceStartTime(), 1, new DisplayCountdown() );
         }
     }
 
@@ -81,12 +79,12 @@ public class FullScoreboard implements WaitingScoreboard {
             }
         }
 
-        scoreboard.initPoints(ao, es, points);
+        scoreboard.initPoints(objective, es, points);
     }
 
     private int getReqSize(int teamIndex) {
-        return reqPlaceHolderPlayers.containsKey(teamIndex) ?
-                reqPlaceHolderPlayers.get(teamIndex).size() : 0;
+        return reqPlaceHolderPlayers.containsKey(teamIndex) ? reqPlaceHolderPlayers.get(teamIndex).size() 
+                                                            : 0;
     }
 
     @NoArgsConstructor
@@ -100,6 +98,7 @@ public class FullScoreboard implements WaitingScoreboard {
         TempEntry te = new TempEntry();
         String name;
         int index;
+        
         if (!optionalTeam && getReqSize(team.getIndex()) < team.getMinPlayers()) {
             te.r = reqPlaceHolderPlayers.get(team.getIndex());
             if (te.r == null) {
@@ -109,7 +108,8 @@ public class FullScoreboard implements WaitingScoreboard {
             name = "needed";
             te.points = 1;
             index = te.r.size();
-        } else {
+        } 
+        else {
             te.r = opPlaceHolderPlayers.get(team.getIndex());
             if (te.r == null) {
                 te.r = new LinkedList<>();
@@ -117,10 +117,11 @@ public class FullScoreboard implements WaitingScoreboard {
             }
             name = "open";
             te.points = 0;
-            index = optionalTeam ? te.r.size() : team.getMinPlayers() + te.r.size();
+            index = optionalTeam ? te.r.size() 
+                                 : team.getMinPlayers() + te.r.size();
         }
 
-        te.name = "- " + name + " -" + team.getTeamChatColor() + TeamUtil.getTeamChatColor(index);
+        te.name = "- " + name + " -" + team.getTeamChatColor();
         return te;
     }
 
@@ -128,10 +129,11 @@ public class FullScoreboard implements WaitingScoreboard {
         TempEntry te = createEntry(team, t, optionalTeam);
         SEntry e = scoreboard.getEntry(te.name);
         if (e == null) {
-            e = scoreboard.createEntry(OfflinePlayerTeams.getOfflinePlayer(te.name), te.name);
-            ao.addEntry(e, te.points);
-        } else {
-            ao.setPoints(e, te.points);
+            e = scoreboard.createEntry(te.name, te.name);
+            objective.addEntry(e, te.points);
+        } 
+        else {
+            objective.setPoints(e, te.points);
         }
 
         te.r.addLast(e);
@@ -155,7 +157,7 @@ public class FullScoreboard implements WaitingScoreboard {
         removePlaceHolder(team.getIndex());
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
         scoreboard.addedToTeam(t, player);
-        ao.setPoints(player, 10);
+        objective.setPoints(player, 10);
     }
 
     @Override
@@ -207,9 +209,9 @@ public class FullScoreboard implements WaitingScoreboard {
         @Override
         public boolean intervalTick(int secondsRemaining) {
             if (secondsRemaining == 0){
-                ao.setDisplayNameSuffix("");
+                objective.setDisplayNameSuffix("");
             } else {
-                ao.setDisplayNameSuffix(" &e("+secondsRemaining+")");
+                objective.setDisplayNameSuffix(" &e("+secondsRemaining+")");
             }
             return true;
         }

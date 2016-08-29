@@ -19,19 +19,20 @@ import mc.alk.arena.objects.teams.TeamFactory;
 public class AddToLeastFullTeam extends AbstractJoinHandler {
 
     public AddToLeastFullTeam(MatchParams params, Competition competition, List<ArenaTeam> newTeams)
-            throws NeverWouldJoinException{
+                                                                            throws NeverWouldJoinException {
+        
         super(params,competition, newTeams);
         if (minTeams == ArenaSize.MAX || maxTeams == ArenaSize.MAX)
             throw new NeverWouldJoinException("If you add players by adding them to the next team in the list, there must be a finite number of players");
         /// Lets add in all our teams first
         if (minTeams > Defaults.MAX_TEAMS)
-            throw new NeverWouldJoinException("You can't make more than "+Defaults.MAX_TEAMS +" teams");
+            throw new NeverWouldJoinException( "You can't make more than " + Defaults.MAX_TEAMS + " teams" );
         if (newTeams != null){
             for (ArenaTeam at : newTeams) {
                 addTeam(at);
             }
         }
-        for (int i=teams.size();i<minTeams;i++){
+        for ( int i = teams.size(); i < minTeams; i++ ) {
             ArenaTeam team = TeamFactory.createCompositeTeam(i, params);
             addTeam(team);
         }
@@ -110,7 +111,7 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
         /// Try to fit them with an existing team
         List<ArenaTeam> sortedBySize = new ArrayList<>(teams);
         
-        Collections.sort(sortedBySize, (at1, at2) -> { return at1.size() - at2.size(); });
+        Collections.sort( sortedBySize, (at1, at2) -> { return at1.size() - at2.size(); });
         
         for (ArenaTeam baseTeam : sortedBySize){
             TeamJoinResult tjr = teamFits(baseTeam, team);
@@ -136,6 +137,4 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
     public String toString(){
         return "["+competition.getParams().getName() +":JH:AddToLeast]";
     }
-
-
 }

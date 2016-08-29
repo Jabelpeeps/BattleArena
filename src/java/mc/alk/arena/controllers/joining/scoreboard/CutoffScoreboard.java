@@ -27,14 +27,15 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
 
     Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
     @Getter ArenaScoreboard scoreboard;
-    ArenaObjective ao;
+    ArenaObjective objective;
     final int minTeams;
     Countdown countdown;
-    public CutoffScoreboard(MatchParams params, List<ArenaTeam> teams) {
-        scoreboard = new ArenaScoreboard( String.valueOf(this.hashCode()), params);
-        ao = scoreboard.createObjective("waiting",
-                "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
-        ao.setDisplayTeams(false);
+    
+    public CutoffScoreboard( MatchParams params, List<ArenaTeam> teams ) {
+        
+        scoreboard = new ArenaScoreboard( String.valueOf( hashCode() ), params);
+        objective = scoreboard.createObjective( "waiting", "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
+        objective.setDisplayTeams(false);
         minTeams = params.getMinTeams();
         int maxTeams = params.getMaxTeams();
         int count = 0;
@@ -42,9 +43,10 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
         if (maxTeams < 16) {
             ppteam = 15 / maxTeams;
         }
-        for (int i = 0; i <maxTeams && count < 15; i++) {
+        for ( int i = 0; i < maxTeams && count < 15; i++ ) {
             
-            ArenaTeam team = i < teams.size() ? teams.get(i) : TeamFactory.createCompositeTeam(i, params);
+            ArenaTeam team = i < teams.size() ? teams.get(i) 
+                                              : TeamFactory.createCompositeTeam(i, params);
             team.setIDString(String.valueOf(team.getIndex()));
             STeam t = scoreboard.addTeam(team);
             for (int j = 0; j < team.getMaxPlayers() && count < 15 && j < ppteam; j++) {
@@ -52,7 +54,7 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
                 addPlaceholder(team, t, i >= minTeams);
             }
         }
-        if (    params.getForceStartTime() >0 
+        if (    params.getForceStartTime() > 0 
                 && params.getForceStartTime() != ArenaSize.MAX
                 && params.getMaxPlayers() != params.getMinPlayers() ) {
             countdown = new Countdown( BattleArena.getSelf(), params.getForceStartTime(), 1, this);
@@ -62,9 +64,9 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
     @Override
     public boolean intervalTick( int secondsRemaining ) {
         if (secondsRemaining == 0) {
-            ao.setDisplayNameSuffix( "" );
+            objective.setDisplayNameSuffix( "" );
         } else {
-            ao.setDisplayNameSuffix(" &e(" + secondsRemaining + ")" );
+            objective.setDisplayNameSuffix(" &e(" + secondsRemaining + ")" );
         }
         return true;
     }
@@ -84,10 +86,10 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
 
     private void addPlaceholder(ArenaTeam team, STeam t, boolean optionalTeam) {
         String name;
-
         LinkedList<SEntry> r;
         int index;
         int points;
+        
         if (!optionalTeam && getReqSize(team.getIndex()) < team.getMinPlayers()) {
             r = reqPlaceHolderPlayers.get(team.getIndex());
             if (r == null) {
@@ -113,10 +115,10 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
         SEntry e = scoreboard.getEntry(dis);
         if ( e == null ) {
             e = scoreboard.createEntry( name, dis );
-            ao.addEntry(e, points);
+            objective.addEntry(e, points);
         } 
         else {
-            ao.setPoints(e, points);
+            objective.setPoints(e, points);
         }
 
         r.addLast(e);
@@ -138,7 +140,7 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
     public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
         scoreboard.addedToTeam(t, player);
-        ao.setPoints(player, 10);
+        objective.setPoints(player, 10);
         removePlaceHolder(team.getIndex());
     }
     @Override

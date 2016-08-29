@@ -7,15 +7,14 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.Matchup;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-public class MatchTeamQObject extends QueueObject{
+public class MatchTeamQObject extends QueueObject {
 	@Getter final Matchup matchup;
 
 	public MatchTeamQObject(Matchup _matchup){
 		super( _matchup.getJoinOptions() );
-//		matchParams = matchup.getMatchParams();
 		matchup = _matchup;
 		priority = _matchup.getPriority();
-		for (ArenaTeam t: _matchup.getTeams()){
+		for ( ArenaTeam t : _matchup.getTeams() ) {
 			numPlayers += t.size();
 		}
         listeners = _matchup.getArenaListeners();
@@ -31,7 +30,6 @@ public class MatchTeamQObject extends QueueObject{
 	public String toString() { return priority + " " + matchup.toString(); }
 	@Override
 	public List<ArenaTeam> getTeams() { return matchup.getTeams(); }
-
 	@Override
 	public boolean hasTeam(ArenaTeam team) {
 		List<ArenaTeam> teams = matchup.getTeams();
