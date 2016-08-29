@@ -31,18 +31,16 @@ public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
             offlinePlayer = Bukkit.getPlayer( displayName );
 		return offlinePlayer;
 	}
-
+	
     @Override
     public String getDisplayName() { return combinedDisplayName; }
     @Override
     public String getBaseDisplayName() { return displayName; }
-
     @Override
     public void setDisplayName(String _displayName) {
         displayName = MessageUtil.colorChat(_displayName);
         _setDisplayName();
     }
-
     @Override
     public void setDisplayNameSuffix(String suffix) {
         displayNameSuffix = MessageUtil.colorChat(suffix);
@@ -51,7 +49,6 @@ public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
         }
         _setDisplayName();
     }
-
     @Override
     public void setDisplayNamePrefix(String suffix) {
         displayNamePrefix = MessageUtil.colorChat(suffix);
@@ -60,12 +57,10 @@ public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
         }
         _setDisplayName();
     }
-
     private void _setDisplayName() {
         combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix, SAPI.MAX_NAMESIZE);
         offlinePlayer = null;
     }
-
     @Override
     public String toString() { return "[SAPIEntry " + getId() + " : " + getDisplayName() + "]"; }
     @Override

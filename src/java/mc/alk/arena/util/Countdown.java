@@ -28,7 +28,7 @@ public class Countdown implements Runnable {
     long seconds;
 
     public Countdown( Plugin _plugin, int _seconds, int intervalSeconds, CountdownCallback _callback ) {
-        this(_plugin, (long)_seconds, (long) intervalSeconds,_callback);
+        this( _plugin, (long)_seconds, (long) intervalSeconds, _callback );
     }
 
     public Countdown( Plugin _plugin, long _seconds, long intervalSeconds, CountdownCallback _callback){

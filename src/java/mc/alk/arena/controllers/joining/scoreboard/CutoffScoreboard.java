@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
@@ -22,11 +23,11 @@ import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;
 import mc.alk.arena.util.TeamUtil;
 
-public class CutoffScoreboard implements WaitingScoreboard {
+public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
 
     Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
-    ArenaScoreboard scoreboard;
+    @Getter ArenaScoreboard scoreboard;
     ArenaObjective ao;
     final int minTeams;
     Countdown countdown;
@@ -43,7 +44,7 @@ public class CutoffScoreboard implements WaitingScoreboard {
             ppteam = 15 / maxTeams;
         }
         for (int i = 0; i <maxTeams && count < 15; i++) {
-//            Log.debug("&4i = " + i);
+            
             ArenaTeam team = i < teams.size() ? teams.get(i) : TeamFactory.createCompositeTeam(i, params);
             team.setIDString(String.valueOf(team.getIndex()));
             STeam t = scoreboard.addTeam(team);
@@ -55,35 +56,32 @@ public class CutoffScoreboard implements WaitingScoreboard {
         if (    params.getForceStartTime() >0 
                 && params.getForceStartTime() != ArenaSize.MAX
                 && params.getMaxPlayers() != params.getMinPlayers() ) {
-            countdown = new Countdown(BattleArena.getSelf(), params.getForceStartTime(),1,new DisplayCountdown());
+            countdown = new Countdown( BattleArena.getSelf(), params.getForceStartTime(), 1, this);
         }
     }
 
-    class DisplayCountdown implements CountdownCallback {
-        @Override
-        public boolean intervalTick(int secondsRemaining) {
-            if (secondsRemaining == 0){
-                ao.setDisplayNameSuffix("");
-            } else {
-                ao.setDisplayNameSuffix(" &e("+secondsRemaining+")");
-            }
-            return true;
+    @Override
+    public boolean intervalTick( int secondsRemaining ) {
+        if (secondsRemaining == 0) {
+            ao.setDisplayNameSuffix( "" );
+        } else {
+            ao.setDisplayNameSuffix(" &e(" + secondsRemaining + ")" );
         }
+        return true;
     }
-
+    
     @Override
     public void setRemainingSeconds(int seconds) {
         if (countdown !=null){
             countdown.stop();
         }
-        countdown = new Countdown(BattleArena.getSelf(), seconds,1,new DisplayCountdown());
+        countdown = new Countdown( BattleArena.getSelf(), seconds, 1, this );
     }
 
     private int getReqSize(int teamIndex) {
-        return reqPlaceHolderPlayers.containsKey(teamIndex) ?
-                reqPlaceHolderPlayers.get(teamIndex).size() : 0;
+        return reqPlaceHolderPlayers.containsKey(teamIndex) ? reqPlaceHolderPlayers.get(teamIndex).size() 
+                                                            : 0;
     }
-
 
     private void addPlaceholder(ArenaTeam team, STeam t, boolean optionalTeam) {
         String name;
@@ -100,7 +98,8 @@ public class CutoffScoreboard implements WaitingScoreboard {
             name = "needed";
             points = 1;
             index = r.size();
-        } else {
+        } 
+        else {
             r = opPlaceHolderPlayers.get(team.getIndex());
             if (r == null) {
                 r = new LinkedList<>();
@@ -114,9 +113,10 @@ public class CutoffScoreboard implements WaitingScoreboard {
         String dis = "- " + name + " -" + team.getTeamChatColor() + TeamUtil.getTeamChatColor(index);
         SEntry e = scoreboard.getEntry(dis);
         if (e == null) {
-            e = scoreboard.createEntry(OfflinePlayerTeams.getOfflinePlayer(dis), dis);
+            e = scoreboard.createEntry( OfflinePlayerTeams.getOfflinePlayer( name ), dis );
             ao.addEntry(e, points);
-        } else {
+        } 
+        else {
             ao.setPoints(e, points);
         }
 
@@ -135,7 +135,6 @@ public class CutoffScoreboard implements WaitingScoreboard {
         SEntry e = list.removeLast();
         scoreboard.removeEntry(e);
     }
-
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
@@ -143,21 +142,18 @@ public class CutoffScoreboard implements WaitingScoreboard {
         ao.setPoints(player, 10);
         removePlaceHolder(team.getIndex());
     }
-
     @Override
     public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
         for (ArenaPlayer player : players) {
             addedToTeam(team,player);
         }
     }
-
     @Override
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
         scoreboard.removedFromTeam(t,player);
         addPlaceholder(team, t,team.getIndex()>= minTeams);
     }
-
     @Override
     public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
@@ -166,7 +162,6 @@ public class CutoffScoreboard implements WaitingScoreboard {
             addPlaceholder(team, t, team.getIndex()>= minTeams);
         }
     }
-
     @Override
     public boolean addedTeam(ArenaTeam team) {
         scoreboard.createTeamEntry(String.valueOf(team.getIndex()), "");
@@ -175,18 +170,10 @@ public class CutoffScoreboard implements WaitingScoreboard {
         }
         return true;
     }
-
     @Override
     public boolean removedTeam(ArenaTeam team) {
         STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
         scoreboard.removeEntry(t);
         return false;
     }
-
-    @Override
-    public ArenaScoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-
 }

@@ -25,7 +25,7 @@ class OfflinePlayerTeams {
     static OfflinePlayer getOfflinePlayer(String name) {
         OfflinePlayer op = map.get(name);
         if (op == null) {
-            op = Bukkit.getPlayerExact( name );
+            op = Bukkit.getPlayer( name );
             map.put(name, op);
         }
         return op;

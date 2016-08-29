@@ -90,7 +90,5 @@ public class AbridgedScoreboard implements WaitingScoreboard {
     }
 
     @Override
-    public void setRemainingSeconds(int seconds) {
-
-    }
+    public void setRemainingSeconds(int seconds) { }
 }

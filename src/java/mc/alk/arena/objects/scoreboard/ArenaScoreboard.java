@@ -417,6 +417,7 @@ public class ArenaScoreboard {
     }
 
     public SEntry removeEntry(Player p) {
+        if ( p == null ) return null;
         Integer id = idmap.remove(p.getName());
         if (id != null){
             return row.remove(id);
@@ -431,11 +432,11 @@ public class ArenaScoreboard {
         return idmap.containsKey(id) && row.containsKey(idmap.get(id));
     }
     public boolean contains(OfflinePlayer p) {
-        return idmap.containsKey(p.getName()) && row.containsKey(idmap.get(p.getName()));
+        return p != null && idmap.containsKey(p.getName()) && row.containsKey(idmap.get(p.getName()));
     }
     public SEntry getEntry(OfflinePlayer p) {
-        return !idmap.containsKey( p.getName() ) ? null 
-                                                 : row.get( idmap.get( p.getName() ) );
+        return p == null || !idmap.containsKey( p.getName() ) ? null 
+                                                              : row.get( idmap.get( p.getName() ) );
     }
     public SEntry getEntry(String id) {
         return !idmap.containsKey(id) ? null 
