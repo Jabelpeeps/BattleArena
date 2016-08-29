@@ -1,4 +1,4 @@
-package mc.alk.arena.scoreboardapi;
+package mc.alk.arena.objects.scoreboard;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import lombok.Getter;
 import mc.alk.arena.util.MessageUtil;
 
-public class SAPIEntry implements SEntry, Comparable<SEntry>{
+public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
     @Getter private final String id;
     private String displayName;
     @Getter private String displayNameSuffix;
@@ -14,33 +14,28 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
     private String combinedDisplayName;
     protected OfflinePlayer offlinePlayer;
 
-    public SAPIEntry(String id, String displayName){
-		this.id = id;
-        setDisplayName(displayName);
+    public SAPIEntry(String _id, String _displayName){
+		id = _id;
+        setDisplayName(_displayName);
 	}
 
 	@Override
     public OfflinePlayer getOfflinePlayer() {
-        if (offlinePlayer == null) {
-            offlinePlayer = Bukkit.getOfflinePlayer(combinedDisplayName);}
+        if (offlinePlayer == null) 
+            offlinePlayer = Bukkit.getPlayer( displayName );
         return offlinePlayer;
 	}
 
 	public OfflinePlayer getPlayerListName(){
-        if (offlinePlayer == null) {
-            offlinePlayer = Bukkit.getOfflinePlayer(combinedDisplayName);}
+        if (offlinePlayer == null) 
+            offlinePlayer = Bukkit.getPlayer( displayName );
 		return offlinePlayer;
 	}
 
     @Override
-    public String getDisplayName(){
-        return combinedDisplayName;
-    }
-
+    public String getDisplayName() { return combinedDisplayName; }
     @Override
-    public String getBaseDisplayName(){
-        return displayName;
-    }
+    public String getBaseDisplayName() { return displayName; }
 
     @Override
     public void setDisplayName(String _displayName) {
@@ -72,12 +67,7 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
     }
 
     @Override
-    public String toString() {
-        return "[SAPIEntry " + getId() + " : " + getDisplayName() + "]";
-    }
-
+    public String toString() { return "[SAPIEntry " + getId() + " : " + getDisplayName() + "]"; }
     @Override
-    public int compareTo(SEntry o) {
-        return getId().compareTo(o.getId());
-    }
+    public int compareTo(SAPIEntry o) { return id.compareTo(o.id); }
 }

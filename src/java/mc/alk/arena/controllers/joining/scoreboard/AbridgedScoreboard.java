@@ -6,10 +6,10 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
+import mc.alk.arena.objects.scoreboard.STeam;
 import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.arena.scoreboardapi.STeam;
 
 public class AbridgedScoreboard implements WaitingScoreboard {
     final ArenaScoreboard scoreboard;

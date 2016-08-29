@@ -1,56 +1,110 @@
 package mc.alk.arena.objects.scoreboard;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.scoreboardapi.BObjective;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.arena.scoreboardapi.SEntry;
-import mc.alk.arena.scoreboardapi.SObjective;
-import mc.alk.arena.scoreboardapi.SScoreboard;
-import mc.alk.arena.scoreboardapi.STeam;
+import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ScoreMap;
 
 
-public class ArenaObjective implements SObjective, ScoreTracker{
+public class ArenaObjective implements ScoreTracker {
 
     final protected ScoreMap<ArenaTeam> teamPoints = new ScoreMap<>();
     final protected ScoreMap<ArenaPlayer> playerPoints = new ScoreMap<>();
-    final protected SObjective objective;
+    @Getter protected final String id;
+    @Getter protected String criteria;
+    protected String combinedDisplayName;
+    protected String displayName;
+    @Getter protected String displayNameSuffix;
+    @Getter protected String displayNamePrefix;
+    @Getter protected SAPIDisplaySlot displaySlot = SAPIDisplaySlot.NONE;
 
-	public ArenaObjective(String name, String criteria) {
-		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, 50, 0 );
+    @Getter protected ArenaScoreboard scoreboard;
+
+    /// Used for Team support
+    @Getter protected boolean displayPlayers = true;
+    @Getter protected boolean displayTeams = true;
+
+    // 1-1000 scale, not strictly enforced
+    // the lower priorities will not be preempted when set
+    @Getter int priority;
+
+    protected TreeMap<SEntry, ArenaScore> entries = new TreeMap<>();
+    protected Objective objective;
+    Set<SEntry> cur15 = new HashSet<>();
+    int worst = Integer.MAX_VALUE;
+    
+    TreeSet<ArenaScore> scores = new TreeSet<>( 
+            ( o1, o2)  -> {
+                int c = o2.getScore() - o1.getScore();
+                if (c != 0)
+                    return c;
+                return o1.getEntry().getId().compareTo(o2.getEntry().getId());
+            });
+
+    @Getter @AllArgsConstructor 
+    public class ArenaScore {
+        final SEntry entry;
+        @Setter int score;
+    } 
+    
+    public ArenaObjective( ArenaScoreboard board, String _id, String _displayName, String _criteria ) {
+        this( board, _id, _displayName, _criteria, 50 );
+    }
+
+    public ArenaObjective(String _id, String _displayName, String _criteria, int _priority) {
+        this( null, _id, _displayName, _criteria, _priority );
+    }
+
+    public ArenaObjective( ArenaScoreboard board, String _id, String _displayName, String _criteria, int _priority ) {
+        id = _id;
+        criteria = MessageUtil.colorChat(_criteria);
+        priority = _priority;
+        setDisplayName(_displayName);
+        
+        if (board != null)
+            setScoreboard(board);
+    }
+
+	public ArenaObjective(String name, String _criteria) {
+		this( name, _criteria, name, SAPIDisplaySlot.SIDEBAR, 50 );
 	}
 	/**
 	 *
 	 * @param name Objective name
-	 * @param criteria Objective criteria
+	 * @param _criteria Objective criteria
 	 * @param priority: lower priority means it has precedence
 	 */
-	public ArenaObjective(String name, String criteria, int priority) {
-		this( name, criteria, name, SAPIDisplaySlot.SIDEBAR, priority, 0 );
+	public ArenaObjective(String name, String _criteria, int _priority) {
+		this( name, _criteria, name, SAPIDisplaySlot.SIDEBAR, _priority );
 	}
-	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot) {
-		this( name, criteria, displayName, slot, 50, 0 );
+	public ArenaObjective(String name, String _criteria, String _displayName, SAPIDisplaySlot slot) {
+		this( name, _criteria, _displayName, slot, 50 );
 	}
-	public ArenaObjective(String name, String criteria, String displayName, SAPIDisplaySlot slot, int priority) {
-		this( name, criteria, displayName, slot, priority, 0 );
-	}
+	public ArenaObjective(String _id, String _criteria, String _displayName, SAPIDisplaySlot slot, int _priority) {
 
-	public ArenaObjective(String id, String criteria, String displayName, SAPIDisplaySlot slot, int priority, int points) {
-
-		objective = new BObjective( id, displayName, criteria, priority ).setDisplaySlot(slot);
-		if (displayName != null){
-			setDisplayName(displayName);}
+		this( _id, _displayName, _criteria, _priority );
+		setDisplaySlot(slot);
+		if (_displayName != null){
+			setDisplayName(_displayName);}
 	}
 
 	public Integer getPoints(ArenaTeam t) { return teamPoints.get(t); }
@@ -66,10 +120,10 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
 	public void setAllPoints(Match match, int points){
 		for (ArenaTeam t: match.getTeams()){
-			if (objective.isDisplayTeams()){
+			if ( isDisplayTeams() ) {
 				setPoints(t, points);
 			}
-			if (objective.isDisplayPlayers()){
+			if ( isDisplayPlayers() ) {
 				for (ArenaPlayer p : t.getPlayers()){
 					setPoints(p, points);}
 			}
@@ -144,12 +198,12 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	}
 
 	public Integer setPoints(ArenaPlayer p, int points) {
-		objective.setPoints(p.getName(), points);
+		setPoints(p.getName(), points);
 		return playerPoints.setPoints(p, points);
 	}
 
 	public Integer setPoints(ArenaTeam t, int points) {
-		objective.setPoints(t.getIDString(), points);
+		setPoints(t.getIDString(), points);
 		return teamPoints.setPoints(t, points);
 	}
 
@@ -157,86 +211,370 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	public List<ArenaTeam> getLeaders() { return getTeamLeaders(); }
 	@Override
 	public TreeMap<?, Collection<ArenaTeam>> getRanks() { return getTeamRanks(); }
-	@Override
-	public void setScoreBoard(ArenaScoreboard scoreboard) { scoreboard.setObjectiveScoreboard(this); }
-	@Override
-	public void setDisplayName(String displayName) { objective.setDisplayName(displayName); }
+	
     @Override
-    public String getDisplayNameSuffix() { return objective.getDisplayNameSuffix(); }
-    @Override
-	public void setDisplayNameSuffix(String suffix) { objective.setDisplayNameSuffix(suffix); }
-    @Override
-    public String getDisplayNamePrefix() { return objective.getDisplayNamePrefix(); }
-    @Override
-    public void setDisplayNamePrefix(String prefix) { objective.setDisplayNamePrefix(prefix); }
-    @Override
-	public boolean setPoints(SEntry entry, int points) { return objective.setPoints(entry, points); }
-	@Override
-	public SAPIDisplaySlot getDisplaySlot() { return objective.getDisplaySlot(); }
-	@Override
-	public int getPriority() { return objective.getPriority(); }
-	@Override
-	public SObjective setDisplaySlot(SAPIDisplaySlot slot) { objective.setDisplaySlot(slot); return this; }
-	@Override
-	public String getId() { return objective.getId(); }
-	@Override
-	public String getDisplayName() { return objective.getDisplayName(); }
-    @Override
-    public String getBaseDisplayName() { return objective.getBaseDisplayName(); }
-    @Override
-	public boolean setTeamPoints(STeam t, int points) { return objective.setTeamPoints(t, points); }
-	@Override
-	public boolean setPoints(String id, int points) { return objective.setPoints(id, points); }
-	@Override
-	public SEntry addEntry(String id, int points) { return objective.addEntry(id, points); }
-	@Override
-	public void setDisplayPlayers(boolean b) { objective.setDisplayPlayers(b); }
-	@Override
-	public void setDisplayTeams(boolean display) { objective.setDisplayTeams(display); }
+    public void setScoreboard( ArenaScoreboard board ) {
+        scoreboard = board;
+        objective = board.bukkitScoreboard.getObjective(id);
+        
+        if (objective == null)
+            objective = board.bukkitScoreboard.registerNewObjective(id,criteria);
+        _setDisplayName();
+    }
+    /**
+     * prefix + base + suffix must be less than 16 characters
+     * @param displayName the display name of this Objective
+     */
+    public void setDisplayName(String _displayName) {
+        displayName = MessageUtil.colorChat(_displayName);
+        if (objective == null) return;
+        _setDisplayName();
+    }
+    /**
+     * prefix + displayName + suffix must be less than or equal 32 characters
+     * @param suffix set the suffix
+     */
+    public void setDisplayNameSuffix(String suffix) {
+        displayNamePrefix = MessageUtil.colorChat( suffix );
+        if (objective == null) return;
+        _setDisplayName();
+    }
+    /**
+     * prefix + displayName + suffix must be less than or equal 32 characters
+     * @param prefix set the prefix
+     */
+    public void setDisplayNamePrefix(String prefix) {
+        displayNamePrefix = MessageUtil.colorChat( prefix );
+        if (objective == null) return;
+        _setDisplayName();
+    }
 
-	@Override
-	public void setScoreboard(SScoreboard scoreboard) {
-		objective.setScoreboard(scoreboard);
-		scoreboard.registerNewObjective(this);
-	}
+    protected void _setDisplayName(){
+        combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix,
+                                                            SAPI.MAX_OBJECTIVE_DISPLAYNAME_SIZE);
+        if (objective == null) return;
+        objective.setDisplayName( combinedDisplayName );
+    }
 
-    @Override
-    public int getPoints(String id) { return objective.getPoints(id); }
-    @Override
-    public int getPoints(SEntry e) { return objective.getPoints(e); }
-    @Override
-	public String toString() { return objective.toString(); }
-	@Override
-	public boolean isDisplayTeams() { return objective.isDisplayTeams(); }
-	@Override
-	public boolean isDisplayPlayers() { return objective.isDisplayPlayers(); }
-	@Override
-	public SScoreboard getScoreboard() { return objective.getScoreboard(); }
-	@Override
-	public SEntry addEntry(OfflinePlayer player, int points) { return objective.addEntry(player, points); }
-	@Override
-	public SEntry removeEntry(OfflinePlayer player) { return objective.removeEntry(player); }
-	@Override
-	public SEntry removeEntry(String id) { return objective.removeEntry(id); }
-	@Override
-	public boolean addEntry(SEntry entry, int defaultPoints) { return objective.addEntry(entry, defaultPoints); }
-	@Override
-	public SEntry removeEntry(SEntry entry) { return objective.removeEntry(entry); }
-	@Override
-	public boolean contains(SEntry e) { return objective.contains(e); }
-	@Override
-	public STeam addTeam(String id, int points) { return objective.addTeam(id, points); }
-	@Override
-	public boolean addTeam(STeam entry, int points) { return objective.addTeam(entry, points); }
-
-    public void setDisplayName(String displayNamePrefix, String displayName, String displayNameSuffix, STeam team){
-        if (objective instanceof BObjective) {
-            ((BObjective) objective).setDisplayName( String.join( "", displayNamePrefix, displayName,displayNameSuffix ) );
+    public void initPoints(List<SEntry> _entries, List<Integer> points) {
+        for (int i=0;i<_entries.size();i++) {
+            SEntry e = _entries.get(i);
+            int point = points.get(i);
+            ArenaScore score = new ArenaScore(e, point);
+            entries.put(e, score);
+            scores.add(score);
+        }
+        int i = 0;
+        Iterator<ArenaScore> iter = scores.iterator();
+        while(iter.hasNext() && i++ < 16) {
+            ArenaScore sc = iter.next();
+            _setScore(sc.getEntry(), sc.getScore());
         }
     }
 
+    protected boolean setPoints(ArenaScore score, int points) {
+        if ( (score.getEntry() instanceof STeam && isDisplayTeams()) ||
+                (score.getEntry() instanceof SAPIPlayerEntry && isDisplayPlayers()) ||
+                (!(score.getEntry() instanceof SAPIPlayerEntry) && !(score.getEntry() instanceof STeam))){
+            addScore(score, points);
+        } 
+        else if ( score.getScore() != points ) {
+            score.setScore( points );
+        }
+        return true;
+    }
+
+    private void addScore(final ArenaScore e, final int points) {
+        scores.remove(e);
+        e.setScore(points);
+        scores.add(e);
+
+        if (scores.size() <= SAPI.MAX_ENTRIES) {
+            _setScore(e.getEntry(), points);
+            cur15.add(e.getEntry());
+            worst = Math.min(points, worst);
+        } 
+        else {
+            HashSet<SEntry> now15 = new HashSet<>(SAPI.MAX_ENTRIES);
+            ArrayList<ArenaScore> added = new ArrayList<>(2);
+            Iterator<ArenaScore> iter = scores.iterator();
+            for (int i = 0; i < SAPI.MAX_ENTRIES && iter.hasNext(); i++) {
+                ArenaScore sapiScore = iter.next();
+                now15.add(sapiScore.getEntry());
+                if (!cur15.contains(sapiScore.getEntry())) {
+                    added.add(sapiScore);
+                }
+            }
+            cur15.removeAll(now15);
+            for ( SEntry se : cur15 ) {
+                objective.getScoreboard().resetScores(se.getOfflinePlayer().getName());
+            }
+            cur15 = now15;
+            if (added.isEmpty()) {
+                if (cur15.contains(e.getEntry())) 
+                    _setScore(e.getEntry(), points);                
+            } 
+            else {
+                for ( ArenaScore se : added)  {
+                    _setScore(se.getEntry(), se.getScore());
+                }
+            }
+        }
+
+    }
+
+    private void _setScore(final SEntry e, final int points) {
+        Score sc = objective.getScore(e.getOfflinePlayer().getName());
+        if (points != 0) {
+            sc.setScore(points);
+        } 
+        else {
+            /// flip from 1 to 0 (this is needed for board setup to display 0 values of initial entries
+            sc.setScore(1);
+            sc.setScore(0);
+        }
+    }
+    
+    public int getPoints(SEntry l) {
+        OfflinePlayer p = l.getOfflinePlayer();
+        return objective.getScore(p.getName()).getScore();
+    }
+
+    public ArenaObjective setDisplaySlot(SAPIDisplaySlot slot) {
+        displaySlot = slot;
+        if ( scoreboard == null ) return this;
+        
+        scoreboard.setDisplaySlot( slot, this, true );
+                
+        if ( objective != null && scoreboard.getObjective(slot) == this) {
+            objective.setDisplaySlot( slot.toBukkitDisplaySlot() );
+        }
+        return this;
+    }
+
+    public void setDisplayPlayers(boolean display){
+        if (display == displayPlayers ) return;
+        displayPlayers = display;
+        setDisplay();
+    }
+
     @Override
-    public void initPoints(List<SEntry> entries, List<Integer> points) {
-        objective.initPoints(entries, points);
+    public void setDisplayTeams(boolean display){
+        if (display == displayTeams ) return;
+        displayTeams = display;
+        setDisplay();
+    }
+
+    private void setDisplay() {
+        scores.clear();
+        cur15.clear();
+        if ( scoreboard != null) {
+            for ( SEntry entry : scoreboard.getEntries()) {
+                if (!contains(entry)) continue;
+                
+                if ((displayPlayers && entry instanceof SAPIPlayerEntry) ||
+                        (displayTeams && entry instanceof STeam) ||
+                        (!(entry instanceof SAPIPlayerEntry) && !(entry instanceof STeam))) {
+                    ArenaScore sc = entries.get(entry);
+                    addScore(sc, sc.getScore());
+                } 
+                else {
+                    objective.getScoreboard().resetScores(entry.getOfflinePlayer().getName());
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the display name: prefix + base + suffix
+     * @return the display name
+     */
+    public String getDisplayName() { return combinedDisplayName; }
+    /**
+     * Get the base display (without the prefix or suffix)
+     * @return the display name
+     */
+    public String getBaseDisplayName() { return displayName; }
+
+    public SEntry addEntry( OfflinePlayer p, int points ) { return addEntry(p.getName(),points); }
+
+    public SEntry addEntry( String _id, int points ) {
+        SEntry e = scoreboard.getEntry(_id);
+        if (e == null){
+            if (getScoreboard() != null)
+                e = scoreboard.createEntry(_id, _id);
+            else
+                throw new IllegalStateException("You cannot add an entry that hasnt already been created " + _id);
+        }
+        addEntry( e, points );
+        return e;
+    }
+
+    public boolean addEntry( SEntry entry, int points ) {
+        if (entry instanceof STeam) {
+            return addTeam((STeam) entry, points);}
+        
+        boolean has = entries.containsKey(entry);
+        if ( !has ) {
+            getOrCreateSAPIScore(entry, points);
+        } 
+        else {
+            setPoints(getOrCreateSAPIScore(entry), points);
+        }
+        return has;
+    }
+
+    public STeam addTeam( String _id, int points ) {
+        STeam t = scoreboard.getTeam(_id);
+        if ( t != null ) {
+            addTeam( t, points );
+        }
+        return t;
+    }
+
+    public boolean addTeam( STeam entry, int points ) {
+        boolean has = entries.containsKey(entry);
+        ArenaScore sc = getOrCreateSAPIScore(entry, points);
+        if ( !isDisplayPlayers() ) {
+            for ( String e : entry.getPlayers() ) {
+                sc = getOrCreateSAPIScore(scoreboard.createEntry(e));
+                if (isDisplayPlayers()){
+                    setPoints(sc, points);}
+            }
+        }
+        return has;
+    }
+
+    protected final ArenaScore getOrCreateSAPIScore(SEntry e){
+        return getOrCreateSAPIScore( e, 0 );
+    }
+
+    public SEntry removeEntry( OfflinePlayer player ) {
+        SEntry e = scoreboard.getEntry( player );
+        if ( e == null ) return null;
+        return removeEntry(e);
+    }
+
+    public SEntry removeEntry( String _id ) {
+        SEntry e = scoreboard.getEntry(_id);
+        if (e == null) return null;
+        return removeEntry(e);
+    }
+
+    public SEntry removeEntry( SEntry entry ) {
+        return (SEntry) entries.remove( entry );
+    }
+
+    public int getPoints( String _id ) {
+        SEntry l = scoreboard.getEntry(_id);
+        if (l == null) return -1;
+        return getPoints(l);
+    }
+
+    public boolean setPoints( String _id, int points ) {
+        if (scoreboard == null) return false;
+        
+        SEntry l = scoreboard.getEntry(_id);
+        
+        if (l == null) return false;
+        
+        setPoints( l, points );
+        return true;
+    }
+
+    public boolean setPoints( SEntry entry, int points ) {
+        boolean has = entries.containsKey(entry);
+        getOrCreateSAPIScore( entry, points );
+        return has;
+    }
+
+    protected final ArenaScore getOrCreateSAPIScore(SEntry e, int points){
+        if (entries.containsKey(e))
+            return entries.get(e);
+        ArenaScore score = new ArenaScore(e, points);
+        entries.put(e, score);
+        setPoints(score, points);
+        return score;
+    }
+
+    public boolean setTeamPoints( STeam team, int points ) {
+        if (displayTeams) {
+            setPoints(team,points);
+        }
+        if (displayPlayers){
+            for (String p: team.getPlayers()){
+                SEntry e = scoreboard.createEntry(p);
+                if ( e == null ) continue;
+                setPoints( e, points );
+            }
+        }
+        return true;
+    }
+
+    public boolean contains( SEntry e ) { return entries.containsKey(e); }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("&6 --- ").append(this.id).append(" : ").append(this.getDisplayName()).
+                append("&4 : ").append(this.getPriority()).append("\n");
+        if (scoreboard == null){
+            sb.append("&4 Bukkit scoreboard still not set!!");
+            return sb.toString();
+        }
+        Collection<SEntry> es = scoreboard.getEntries();
+        if (objective == null){
+            sb.append("&4 Bukkit Objective still not set!!");
+            return sb.toString();
+        }
+        List<SEntry> zeroes = new ArrayList<>();
+        List<SEntry> skipped = new ArrayList<>();
+        for (SEntry e: es){
+            if (! contains(e) ) {
+                skipped.add(e);
+                continue;
+            }
+            Set<Score> scoresSet = objective.getScoreboard().getScores(e.getOfflinePlayer().getName());
+            for (Score score : scoresSet){
+                if (score.getObjective().equals(objective)){
+                    if (score.getScore() != 0){
+                        if (e instanceof BukkitTeam){
+                            BukkitTeam bt = ((BukkitTeam)e);
+                            sb.append("&e ").append(e.getId()).append(" : ").append(e.getDisplayName()).append(" = ").
+                                    append(score.getScore()).append("  &eteamMembers=\n");
+                            for (String p : bt.getPlayers()){
+                                SEntry ep = getScoreboard().createEntry(p);
+                                String c = contains(ep) ? "&e" : "&8";
+                                sb.append("  ").append(c).append("- &f").append(bt.getPrefix()).append(p).
+                                        append(bt.getSuffix()).append(c).append(" = ").
+                                        append(objective.getScore(p).getScore()).append("\n");
+                            }
+                        } 
+                        else {
+                            sb.append("&6 ").append(e.getId()).append(" : ").append(e.getDisplayName()).append(" = ").
+                                    append(score.getScore()).append("\n");
+                        }
+                    } 
+                    else {
+                        zeroes.add(e);
+                    }
+                }
+            }
+        }
+        if (!skipped.isEmpty()){
+            sb.append(" &cSkipped Entries: ");
+            for (SEntry e: skipped){
+                sb.append("&6 ").append(e.getId()).append(":").
+                        append(e.getDisplayName()).append("&e,");}
+            sb.append("\n");
+        }
+        if (!zeroes.isEmpty()){
+            sb.append(" &eZero Entries: ");
+            for (SEntry e: zeroes){
+                sb.append("&6 '").append(e.getId()).append("':'").
+                        append(e.getDisplayName()).append("'&e,");}
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

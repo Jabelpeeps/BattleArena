@@ -7,14 +7,13 @@ import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
+import mc.alk.arena.objects.scoreboard.STeam;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
-import mc.alk.arena.scoreboardapi.BObjective;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.arena.scoreboardapi.SObjective;
-import mc.alk.arena.scoreboardapi.STeam;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;
 import mc.alk.arena.util.MessageUtil;
@@ -65,10 +64,10 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
         if (as == null) {
             return true;}
         STeam t = as.getTeam(team.getIDString());
-        SObjective ao = as.getObjective(SAPIDisplaySlot.SIDEBAR);
+        ArenaObjective ao = as.getObjective(SAPIDisplaySlot.SIDEBAR);
         
-        if (t!=null && ao != null && ao instanceof BObjective){
-            ((BObjective)ao).setDisplayName(String.join( "", ao.getDisplayNamePrefix(), ao.getBaseDisplayName(),
+        if (t!=null && ao != null ){
+            ao.setDisplayName(String.join( "", ao.getDisplayNamePrefix(), ao.getBaseDisplayName(),
                     MessageUtil.colorChat("&e(" + remaining + ")") ) );
         }
 

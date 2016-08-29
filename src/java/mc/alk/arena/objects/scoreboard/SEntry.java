@@ -1,4 +1,4 @@
-package mc.alk.arena.scoreboardapi;
+package mc.alk.arena.objects.scoreboard;
 
 import org.bukkit.OfflinePlayer;
 

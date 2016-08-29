@@ -1,4 +1,4 @@
-package mc.alk.arena.scoreboardapi;
+package mc.alk.arena.objects.scoreboard;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -31,7 +31,7 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 	@Override
     public OfflinePlayer getOfflinePlayer() {
         if (displayOfflinePlayer == null) {
-            displayOfflinePlayer = Bukkit.getOfflinePlayer(combinedDisplayName);}
+            displayOfflinePlayer = Bukkit.getPlayer(displayName);}
         return displayOfflinePlayer ;
 	}
 

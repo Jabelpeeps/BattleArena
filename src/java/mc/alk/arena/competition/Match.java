@@ -72,6 +72,8 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
+import mc.alk.arena.objects.scoreboard.SEntry;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
@@ -89,9 +91,6 @@ import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.plugins.BTInterface;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.WorldGuardController;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.arena.scoreboardapi.SEntry;
-import mc.alk.arena.scoreboardapi.SObjective;
 import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.InventoryUtil;
@@ -396,7 +395,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
                                         1, 
                                         remaining -> {
                                             
-                                            SObjective obj = scoreboard.getObjective( SAPIDisplaySlot.SIDEBAR );
+                                            ArenaObjective obj = scoreboard.getObjective( SAPIDisplaySlot.SIDEBAR );
                                             
                                             if ( obj != null ) {
                                                 if (    remaining == 0 
@@ -1265,7 +1264,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
             if ( params.getMaxTeamSize() <= 2 ) {
                 ((ScoreTracker)victoryCondition).setDisplayTeams(false);
             }
-            ((ScoreTracker)victoryCondition).setScoreBoard(scoreboard);
+            ((ScoreTracker)victoryCondition).setScoreboard(scoreboard);
         }
     }
 
@@ -1513,7 +1512,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
     }
 
     public void secondTick(int remaining) {
-        SObjective obj = scoreboard.getObjective(SAPIDisplaySlot.SIDEBAR);
+        ArenaObjective obj = scoreboard.getObjective(SAPIDisplaySlot.SIDEBAR);
         if (obj != null){
             obj.setDisplayNameSuffix(" &e("+remaining+")");}
     }

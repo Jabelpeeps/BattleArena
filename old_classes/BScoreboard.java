@@ -1,42 +1,22 @@
 //package mc.alk.arena.scoreboardapi;
 //
-//import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Map.Entry;
-//import java.util.Set;
-//
-//import org.bukkit.Bukkit;
-//import org.bukkit.OfflinePlayer;
-//import org.bukkit.entity.Player;
-//import org.bukkit.plugin.Plugin;
-//import org.bukkit.scoreboard.Objective;
-//import org.bukkit.scoreboard.Score;
-//import org.bukkit.scoreboard.Scoreboard;
-//import org.bukkit.scoreboard.Team;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Getter;
 //import lombok.RequiredArgsConstructor;
-//import mc.alk.arena.controllers.Scheduler;
 //
 //@RequiredArgsConstructor
-//public class BScoreboard implements SScoreboard {
+//public class BScodreboard {
 //
+//    static int ids = 0;
+//    HashMap<Integer, SEntry> row = new HashMap<>();
+//    HashMap<String, Integer> idmap = new HashMap<>();
 //    @Getter protected Scoreboard bukkitScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 //    @Getter protected final Plugin plugin;
 //    @Getter protected final String name;
-//    protected Handler handler = new Handler();
-//    protected Map<String, SObjective> objectives = new HashMap<>();
-//    protected HashMap<SAPIDisplaySlot, SObjective> slots = new HashMap<>();
+//    protected Map<String, BObjective> objectives = new HashMap<>();
+//    protected HashMap<SAPIDisplaySlot, BObjective> slots = new HashMap<>();
 //
 //    HashMap<String,Scoreboard> oldBoards = new HashMap<>();
 //
-//  
-//    @Override
-//    public SObjective registerNewObjective( SObjective obj ) {
+//    public BObjective registerNewObjective( BObjective obj ) {
 //        objectives.put( obj.getId().toUpperCase(), obj );
 //        if ( obj.getScoreboard() == null || !obj.getScoreboard().equals(this) ) {
 //            obj.setScoreboard( this );
@@ -46,9 +26,7 @@
 //        return obj;
 //    }
 //
-//    @Override
-//    public SAPIObjective registerNewObjective(String id, String displayName, String criteria,
-//                                              SAPIDisplaySlot slot) {
+//    public BObjective registerNewObjective(String id, String displayName, String criteria, SAPIDisplaySlot slot) {
 //        BObjective o =  new BObjective( this,id, displayName,criteria);
 //        o.setDisplayName(displayName);
 //        o.setDisplaySlot(slot);
@@ -56,7 +34,6 @@
 //        return o;
 //    }
 //
-//    @Override
 //    public void setScoreboard( Player p) {
 //        if ( p.getScoreboard() != null 
 //                && !oldBoards.containsKey( p.getName() ) )
@@ -69,7 +46,6 @@
 //                });
 //    }
 //
-//    @Override
 //    public void removeScoreboard(Player player) {
 //            Scoreboard b = oldBoards.remove(player.getName());
 //            
@@ -77,10 +53,6 @@
 //                player.setScoreboard(b);
 //            else 
 //                player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());                
-//    }
-//
-//    public void transferOldScoreboards(BScoreboard oldScoreboard) {
-//        oldBoards.putAll(oldScoreboard.oldBoards);
 //    }
 //
 //    @AllArgsConstructor
@@ -116,28 +88,24 @@
 //        }
 //    }
 //
-//    @Override
 //    public void setEntryDisplayName(SEntry e, String name) {
 //        BoardUpdate bu = clearBoard(e);
 //        e.setDisplayName( name );
 //        updateBoard(e, bu);
 //    }
 //
-//    @Override
 //    public void setEntryNamePrefix(SEntry e, String name) {
 //        BoardUpdate bu = clearBoard(e);
 //        e.setDisplayNamePrefix( name );
 //        updateBoard(e, bu);
 //    }
 //
-//    @Override
 //    public void setEntryNameSuffix(SEntry e, String name) {
 //        BoardUpdate bu = clearBoard(e);
 //        e.setDisplayNameSuffix( name );
 //        updateBoard(e, bu);
 //    }
 //
-//    @Override
 //    public SEntry removeEntry(SEntry e) {
 //        bukkitScoreboard.resetScores( e.getBaseDisplayName() ); 
 //        Team t = bukkitScoreboard.getTeam( e.getBaseDisplayName() );
@@ -145,18 +113,21 @@
 //        if ( t != null) 
 //            t.removeEntry( e.getBaseDisplayName() );
 //        
-//        e = handler.removeEntry(e);
-//        if (e != null){
-//            for (SObjective o : getObjectives()) {
-//                o.removeEntry(e);
+//        Integer id = idmap.remove( e.getId() );
+//        
+//        if ( id != null ) {
+//            e = row.remove(id);
+//        }
+//        if ( e != null ) {
+//            for ( BObjective o : getObjectives() ) {
+//                o.removeEntry( e );
 //            }
 //        }
 //        return e;
 //    }
 //
-//    @Override
-//    public SAPITeam createTeamEntry(String id, String displayName) {
-//        SAPITeam st = this.getTeam(id);
+//    public BukkitTeam createTeamEntry(String id, String displayName) {
+//        BukkitTeam st = getTeam(id);
 //        if (st!=null)
 //            return st;
 //        Team t = this.bukkitScoreboard.getTeam(id);
@@ -166,49 +137,43 @@
 //
 //        t.setDisplayName(displayName);
 //        BukkitTeam bt = new BukkitTeam(this, t);
-//        handler.registerEntry(bt);
+//        registerEntry(bt);
 //        return bt;
 //    }
 //
-//    @Override
-//    public SAPITeam getTeam(String id) {
-//        SEntry e = handler.getEntry(id);
-//        return (e == null || !(e instanceof SAPITeam)) ? null : (SAPITeam)e;
+//    public BukkitTeam getTeam(String id) {
+//        SEntry e = getEntry(id);
+//        return (e == null || !(e instanceof BukkitTeam)) ? null : (BukkitTeam)e;
 //    }
 //
-//    public void addAllEntries(SObjective objective) {
-//        for (SEntry entry : handler.getEntries()){
+//    public void addAllEntries(BObjective objective) {
+//        for ( SEntry entry : getEntries() ) {
 //            objective.addEntry(entry, 0);
 //        }
 //    }
 //
-//    @Override
 //    public boolean hasThisScoreboard(Player player) {
 //        return bukkitScoreboard != null && player.getScoreboard() != null && player.getScoreboard().equals(bukkitScoreboard);
 //    }
 //
-//    @Override
-//    public void setDisplaySlot(SAPIDisplaySlot slot, SObjective objective) {
+//    public void setDisplaySlot(SAPIDisplaySlot slot, BObjective objective) {
 //        setDisplaySlot( slot, objective, false );
 //    }
 //
-//    @Override
-//    public void setDisplaySlot(SAPIDisplaySlot slot, SObjective objective, boolean fromObjective) {
+//    public void setDisplaySlot(SAPIDisplaySlot slot, BObjective objective, boolean fromObjective) {
 //        setDisplaySlot( slot, objective, fromObjective, true );
 //    }
 //
-//
-//    boolean setDisplaySlot(final SAPIDisplaySlot slot, final SObjective objective, boolean fromObjective, boolean swap ) {
+//    boolean setDisplaySlot(final SAPIDisplaySlot slot, final BObjective objective, boolean fromObjective, boolean swap ) {
 //        if (!slots.containsKey(slot)){
 //            _setDisplaySlot(slot,objective,fromObjective);
 //            return true;
 //        }
 //        int opriority = slots.get(slot).getPriority();
-//        /// Check to see if we need to move
-//        /// if our new objective priority <= oldpriority
+//        
 //        if (objective.getPriority() <= opriority){
 //            SAPIDisplaySlot swapSlot = slot.swap();
-//            SObjective movingObjective = slots.get(slot);
+//            BObjective movingObjective = slots.get(slot);
 //            if (!slots.containsKey(swapSlot) || opriority <= slots.get(swapSlot).getPriority()) {
 //                _setDisplaySlot(swapSlot,movingObjective,fromObjective);
 //            }
@@ -218,106 +183,121 @@
 //        return false;
 //    }
 //
-//    private void _setDisplaySlot(SAPIDisplaySlot slot, SObjective objective, boolean fromObjective) {
+//    private void _setDisplaySlot(SAPIDisplaySlot slot, BObjective objective, boolean fromObjective) {
 //        slots.put(slot, objective);
 //        if (!fromObjective)
 //            objective.setDisplaySlot(slot);
 //    }
 //
-//    @Override
-//    public SObjective getObjective(SAPIDisplaySlot slot) {
+//    public BObjective getObjective(SAPIDisplaySlot slot) {
 //        return slots.get(slot);
 //    }
 //
-//    @Override
-//    public SObjective getObjective(String id) {
+//    public BObjective getObjective(String id) {
 //        return objectives.get(id.toUpperCase());
 //    }
 //
-//    @Override
-//    public List<SObjective> getObjectives() {
+//    public List<BObjective> getObjectives() {
 //        return new ArrayList<>(objectives.values());
 //    }
 //    
-//    @Override
 //    public String getPrintString() {
 //        StringBuilder sb = new StringBuilder();
-//        for (Entry<SAPIDisplaySlot,SObjective> entry : slots.entrySet()){
+//        for (Entry<SAPIDisplaySlot, BObjective> entry : slots.entrySet()){
 //            sb.append("&5").append(entry.getKey()).append(" : ").append(entry.getValue()).append("\n");
 //        }
 //        return sb.toString();
 //    }
 //
-//    @Override
-//    public SEntry createEntry(OfflinePlayer p) {
-//        return createEntry( p, p.getName() );
-//    }
-//
-//    @Override
-//    public SEntry createEntry(OfflinePlayer p, String displayName) {
-//        return handler.getOrCreateEntry(p, displayName);
-//    }
-//
-//    @Override
-//    public SEntry createEntry(String id, String displayName) {
-//        return handler.getOrCreateEntry(id, displayName);
-//    }
-//    @Override
 //    public SEntry removeEntry(OfflinePlayer p) {
-//        SEntry sb = handler.getEntry(p);
+//        SEntry sb = getEntry(p);
 //        if (sb != null){
 //            return removeEntry(sb);}
 //        return null;
 //    }
-//    
-//    @Override
-//    public SEntry getEntry(String id) {
-//        return handler.getEntry(id);
-//    }
 //
-//    @Override
-//    public SEntry getEntry(OfflinePlayer player) {
-//        return handler.getEntry(player);
-//    }
-//
-//    @Override
-//    public void clear() { objectives.clear(); }
-//
-//    @Override
-//    public SEntry getOrCreateEntry(OfflinePlayer p) {
-//        return handler.getOrCreateEntry(p);
-//    }
-//
-//    @Override
-//    public Collection<SEntry> getEntries() {
-//        return handler.getEntries();
-//    }
-//
-//
-//    @Override
 //    public boolean setEntryDisplayName(String id, String name) {
-//        SEntry e = handler.getEntry(id);
+//        SEntry e = getEntry(id);
 //        if (e == null)
 //            return false;
 //        setEntryDisplayName(e, name);
 //        return true;
 //    }
 //
-//    @Override
 //    public boolean setEntryNamePrefix(String id, String name) {
-//        SEntry e = handler.getEntry(id);
+//        SEntry e = getEntry(id);
 //        if (e == null)
 //            return false;
 //        setEntryNamePrefix(e, name);
 //        return true;
 //    }
 //    
-//    @Override
 //    public boolean setEntryNameSuffix(String id, String name) {
-//        SEntry e = handler.getEntry(id);
+//        SEntry e = getEntry(id);
 //        if (e == null)
 //            return false;
 //        setEntryNameSuffix(e, name);
 //        return true;
 //    }
+//
+//    public void registerEntry(SEntry entry){
+//        if (!contains(entry.getId())){
+//            Integer realid = ids++;
+//            idmap.put(entry.getId(), realid);
+//            row.put(realid, entry);
+//        }
+//    }
+//
+//    public SEntry createEntry( OfflinePlayer p, String displayName ) { 
+//        SEntry e = getEntry(p);
+//        if ( e == null ) {
+//            Integer realid = ids++;
+//            idmap.put( p.getName(), realid );
+//            e = new SAPIPlayerEntry( p, displayName );
+//            row.put(realid, e);
+//        }
+//        return e;
+//    }    
+//    public SEntry createEntry( OfflinePlayer p ) { return createEntry( p.getName() ); }
+//    public SEntry createEntry( String p ) { return createEntry( p, p ); }
+//    
+//    public SEntry createEntry( String id, String displayName ) { 
+//        if (!contains(id)){
+//            Integer realid = ids++;
+//            idmap.put(id, realid);
+//            Player p = Bukkit.getPlayerExact(id);
+//            SEntry l = p == null ? new SAPIEntry( id, displayName ) : new SAPIPlayerEntry( p, displayName );
+//            row.put(realid, l);
+//            return l;
+//        }
+//        return getEntry(id);
+//    }
+//
+//    public SEntry removeEntry(Player p) {
+//        Integer id = idmap.remove(p.getName());
+//        if (id != null){
+//            return row.remove(id);
+//        }
+//        return null;
+//    }
+//    public STeam getTeamEntry(String id) {
+//        SEntry e = getEntry(id);
+//        return e == null || !(e instanceof STeam) ? null : (STeam) e;
+//    }
+//    public boolean contains(String id) {
+//        return idmap.containsKey(id) && row.containsKey(idmap.get(id));
+//    }
+//    public boolean contains(OfflinePlayer p) {
+//        return idmap.containsKey(p.getName()) && row.containsKey(idmap.get(p.getName()));
+//    }
+//    public SEntry getEntry(OfflinePlayer p) {
+//        return !idmap.containsKey( p.getName() ) ? null 
+//                                                 : row.get( idmap.get( p.getName() ) );
+//    }
+//    public SEntry getEntry(String id) {
+//        return !idmap.containsKey(id) ? null 
+//                                      : row.get( idmap.get( id ) );
+//    }
+//    public Collection<SEntry> getEntries() { return new ArrayList<>( row.values() ); }
+//    public void clear() { objectives.clear(); }
 //}

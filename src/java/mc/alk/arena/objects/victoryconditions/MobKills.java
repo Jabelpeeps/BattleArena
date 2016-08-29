@@ -7,9 +7,9 @@ import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.util.DmgDeathUtil;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -119,8 +119,8 @@ public class MobKills extends VictoryCondition implements ScoreTracker{
 	}
 
 	@Override
-	public void setScoreBoard(ArenaScoreboard scoreboard) {
-		this.mkills.setScoreBoard(scoreboard);
+	public void setScoreboard(ArenaScoreboard scoreboard) {
+		this.mkills.setScoreboard(scoreboard);
 		scoreboard.addObjective(mkills);
 	}
 

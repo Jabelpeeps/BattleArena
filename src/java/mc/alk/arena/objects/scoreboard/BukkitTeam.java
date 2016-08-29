@@ -1,4 +1,4 @@
-package mc.alk.arena.scoreboardapi;
+package mc.alk.arena.objects.scoreboard;
 
 import java.util.Collection;
 import java.util.Set;
@@ -8,11 +8,11 @@ import org.bukkit.scoreboard.Team;
 
 import mc.alk.arena.util.MessageUtil;
 
-class BukkitTeam extends SAPIEntry implements STeam {
-    protected SScoreboard board;
+public class BukkitTeam extends SAPIEntry implements STeam {
+    protected ArenaScoreboard board;
 	Team team;
 
-	public BukkitTeam(SScoreboard sScoreboard, Team _team) {
+	public BukkitTeam( ArenaScoreboard sScoreboard, Team _team) {
 		super( _team.getName(), _team.getDisplayName());
 		team = _team;
 		board = sScoreboard;
@@ -24,7 +24,7 @@ class BukkitTeam extends SAPIEntry implements STeam {
 			team.addEntry(p.getName());
 		}
 		if (board != null){
-			for (SObjective o : board.getObjectives()){
+			for (ArenaObjective o : board.getObjectives()){
 				if (o.isDisplayPlayers() && o.contains(this)){
 					for (String player: team.getEntries()){
                         SEntry e = o.getScoreboard().getEntry(player);
@@ -37,17 +37,15 @@ class BukkitTeam extends SAPIEntry implements STeam {
 		}
 	}
     @Override
-    public void addPlayer(OfflinePlayer p) {
-        addPlayer(p, 0);
-    }
+    public void addPlayer(OfflinePlayer p) { addPlayer(p, 0); }
 
     @Override
     public void addPlayer(OfflinePlayer p, int defaultPoints) {
         board.createEntry(p);
 
-        team.addEntry(p.getName()); /// Note: no spigot speed problems
+        team.addEntry(p.getName()); 
         if (board != null && defaultPoints != Integer.MIN_VALUE){
-            for (SObjective o : board.getObjectives()){
+            for (ArenaObjective o : board.getObjectives()){
                 if (o.isDisplayPlayers() && o.contains(this)) {
                     SEntry e = o.getScoreboard().getEntry(p);
                     if (o.getPoints(e) == -1){
@@ -57,43 +55,27 @@ class BukkitTeam extends SAPIEntry implements STeam {
             }
         }
     }
-
-
 	@Override
 	public void removePlayer(OfflinePlayer p){
         board.removeEntry(p);
 		team.removeEntry(p.getName());
 	}
-
 	@Override
-	public Set<String> getPlayers() {
-		return team.getEntries();
-	}
-
+	public Set<String> getPlayers() { return team.getEntries(); }
 	@Override
 	public void setPrefix(String prefix){
 		prefix = MessageUtil.colorChat(prefix);
 		team.setPrefix(prefix);
 	}
-
 	@Override
 	public void setSuffix(String suffix){
 		suffix = MessageUtil.colorChat(suffix);
 		team.setSuffix(suffix);
 	}
-
 	@Override
-	public String getPrefix() {
-		return team.getPrefix();
-	}
-
+	public String getPrefix() { return team.getPrefix(); }
 	@Override
-	public String getSuffix() {
-		return team.getSuffix();
-	}
-
+	public String getSuffix() { return team.getSuffix(); }
     @Override
-    public int size() {
-        return team.getSize();
-    }
+    public int size() { return team.getSize(); }
 }

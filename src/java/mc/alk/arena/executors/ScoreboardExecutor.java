@@ -14,8 +14,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.util.MessageUtil;
 
 /**
@@ -82,7 +82,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
         }
         ArenaObjective objective = new ArenaObjective(label, label, label, SAPIDisplaySlot.SIDEBAR, 60);
         ArenaScoreboard scoreboard = match.getScoreboard();
-        objective.setScoreBoard(scoreboard);
+        objective.setScoreboard(scoreboard);
         scoreboard.addObjective(objective);
 
         objectives.put(matchID, objective);

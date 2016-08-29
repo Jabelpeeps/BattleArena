@@ -14,10 +14,10 @@ import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
+import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.tracker.Tracker;
 public class AllKills extends VictoryCondition implements ScoreTracker {
     final ArenaObjective kills;
@@ -61,8 +61,8 @@ public class AllKills extends VictoryCondition implements ScoreTracker {
     }
 
     @Override
-    public void setScoreBoard(ArenaScoreboard scoreboard) {
-        this.kills.setScoreBoard(scoreboard);
+    public void setScoreboard(ArenaScoreboard scoreboard) {
+        this.kills.setScoreboard(scoreboard);
         scoreboard.addObjective(kills);
     }
 
