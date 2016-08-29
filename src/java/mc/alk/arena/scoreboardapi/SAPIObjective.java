@@ -7,8 +7,9 @@ import org.bukkit.OfflinePlayer;
 
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.util.MessageUtil;
 
-public class SAPIObjective implements SObjective{
+public class SAPIObjective implements SObjective {
     @Getter protected final String id;
     @Getter protected String criteria;
     protected String combinedDisplayName;
@@ -35,7 +36,7 @@ public class SAPIObjective implements SObjective{
 
     public SAPIObjective(String id, String displayName, String criteria, int priority) {
         this.id = id;
-        this.criteria = colorChat(criteria);
+        this.criteria = MessageUtil.colorChat(criteria);
         this.priority = priority;
         setDisplayName(displayName);
         displayPlayers = true;
@@ -55,28 +56,29 @@ public class SAPIObjective implements SObjective{
 
     @Override
     public void setDisplayName(String displayName){
-        this.displayName = colorChat(displayName);
+        displayName = MessageUtil.colorChat(displayName);
         _setDisplayName();
     }
 
     @Override
     public void setDisplayNameSuffix(String suffix) {
-        this.displayNameSuffix = colorChat(suffix);
+        displayNameSuffix = MessageUtil.colorChat(suffix);
         _setDisplayName();
     }
 
     @Override
     public void setDisplayNamePrefix(String prefix) {
-        this.displayNamePrefix = colorChat(prefix);
+        displayNamePrefix = MessageUtil.colorChat(prefix);
         _setDisplayName();
     }
 
     @Override
-    public void setDisplaySlot(SAPIDisplaySlot slot) {
-        this.displaySlot = slot;
+    public SObjective setDisplaySlot(SAPIDisplaySlot slot) {
+        displaySlot = slot;
         if (scoreboard != null){
             scoreboard.setDisplaySlot(slot, this,true);
         }
+        return this;
     }
 
     @Override
@@ -101,9 +103,10 @@ public class SAPIObjective implements SObjective{
             setPoints(team,points);
         }
         if (displayPlayers){
-            for (OfflinePlayer p: team.getPlayers()){
+            for (String p: team.getPlayers()){
                 SEntry e = scoreboard.getOrCreateEntry(p);
-                setPoints(e,points);
+                if ( e == null ) continue;
+                setPoints( e, points );
             }
         }
         return true;
@@ -132,8 +135,6 @@ public class SAPIObjective implements SObjective{
     public int getPoints(SEntry e) {
         return entries.containsKey(e) ? entries.get(e).getScore() : -1;
     }
-
-    public static String colorChat(String msg) { return msg.replace('&', (char) 167); }
 
     @Override
     public SEntry addEntry(OfflinePlayer p, int points) {
@@ -216,7 +217,7 @@ public class SAPIObjective implements SObjective{
         setPoints(sc, points);
         if (isDisplayTeams()){
             setPoints(sc, points);}
-        for (OfflinePlayer e: entry.getPlayers()) {
+        for (String e: entry.getPlayers()) {
             sc = getOrCreateSAPIScore(scoreboard.getOrCreateEntry(e));
             if (isDisplayPlayers()){
                 setPoints(sc, points);}
@@ -235,7 +236,7 @@ public class SAPIObjective implements SObjective{
     }
 
     protected void _setDisplayName() {
-        this.combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix,
+        combinedDisplayName = SAPIUtil.createLimitedString(displayNamePrefix, displayName, displayNameSuffix,
                 SAPI.MAX_OBJECTIVE_DISPLAYNAME_SIZE);
     }
 }

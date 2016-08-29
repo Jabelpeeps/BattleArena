@@ -3,6 +3,8 @@ package mc.alk.arena.scoreboardapi;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import mc.alk.arena.util.MessageUtil;
+
 public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 	OfflinePlayer idOfflinePlayer;
     private String displayName;
@@ -48,13 +50,13 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public void setDisplayName(String displayName) {
-        this.displayName = SAPIObjective.colorChat(displayName);
+        this.displayName = MessageUtil.colorChat(displayName);
         _setDisplayName();
     }
 
     @Override
     public void setDisplayNameSuffix(String suffix) {
-        displayNameSuffix = SAPIObjective.colorChat(suffix);
+        displayNameSuffix = MessageUtil.colorChat(suffix);
         if (displayNameSuffix.length() > 8) {
             displayNameSuffix = displayNameSuffix.substring(0, 9);
         }
@@ -68,7 +70,7 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public void setDisplayNamePrefix(String suffix) {
-        displayNamePrefix = SAPIObjective.colorChat(suffix);
+        displayNamePrefix = MessageUtil.colorChat(suffix);
         if (displayNamePrefix.length() > 8) {
             displayNamePrefix = displayNamePrefix.substring(0, 9);
         }

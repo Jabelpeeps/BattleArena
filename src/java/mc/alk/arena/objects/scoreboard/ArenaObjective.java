@@ -7,7 +7,6 @@ import java.util.TreeMap;
 
 import org.bukkit.OfflinePlayer;
 
-import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchResult;
@@ -15,7 +14,6 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.scoreboardapi.BObjective;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
-import mc.alk.arena.scoreboardapi.SAPIFactory;
 import mc.alk.arena.scoreboardapi.SEntry;
 import mc.alk.arena.scoreboardapi.SObjective;
 import mc.alk.arena.scoreboardapi.SScoreboard;
@@ -50,14 +48,11 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 
 	public ArenaObjective(String id, String criteria, String displayName, SAPIDisplaySlot slot, int priority, int points) {
 
-		objective = (Defaults.TESTSERVER 
-		        || !Defaults.USE_SCOREBOARD) ? SAPIFactory.createSAPIObjective( id, displayName, criteria, slot, priority ) 
-		                                     : SAPIFactory.createObjective( id, displayName, criteria, slot, priority );
+		objective = new BObjective( id, displayName, criteria, priority ).setDisplaySlot(slot);
 		if (displayName != null){
 			setDisplayName(displayName);}
 	}
 
-	public void setDisplaySlot(ArenaDisplaySlot sidebar) { objective.setDisplaySlot(sidebar.toSAPI()); }
 	public Integer getPoints(ArenaTeam t) { return teamPoints.get(t); }
 
 	public void setAllPoints(int points) {
@@ -181,7 +176,7 @@ public class ArenaObjective implements SObjective, ScoreTracker{
 	@Override
 	public int getPriority() { return objective.getPriority(); }
 	@Override
-	public void setDisplaySlot(SAPIDisplaySlot slot) { objective.setDisplaySlot(slot); }
+	public SObjective setDisplaySlot(SAPIDisplaySlot slot) { objective.setDisplaySlot(slot); return this; }
 	@Override
 	public String getId() { return objective.getId(); }
 	@Override

@@ -22,9 +22,6 @@ import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamHandler;
-import mc.alk.arena.scoreboardapi.SAPI;
-import mc.alk.arena.scoreboardapi.SAPIFactory;
-import mc.alk.arena.scoreboardapi.SScoreboard;
 import mc.alk.arena.util.Log;
 
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
@@ -86,7 +83,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         maxTeams = params.getMaxTeams();
 
         setCompetition( _competition );
-        if ( Defaults.USE_SCOREBOARD && SAPI.hasBukkitScoreboard() )
+        if ( Defaults.USE_SCOREBOARD )
             initWaitingScoreboard(_teams);
     }
 
@@ -118,15 +115,6 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
-
-    public void transferOldScoreboards(SScoreboard newScoreboard){
-        if (scoreboard == null)
-            return;
-        SAPIFactory.transferOldScoreboards(
-                scoreboard.getScoreboard() != null ? scoreboard.getScoreboard().getBScoreboard() 
-                                                   : scoreboard.getScoreboard()
-                , newScoreboard );
-    }
 
     protected ArenaTeam addToPreviouslyLeftTeam(ArenaPlayer player) {
         for (ArenaTeam t: teams){

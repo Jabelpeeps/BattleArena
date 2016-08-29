@@ -14,7 +14,6 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.ScoreboardFactory;
 import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
@@ -22,8 +21,8 @@ import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.scoreboardapi.SEntry;
 import mc.alk.arena.scoreboardapi.STeam;
 import mc.alk.arena.util.Countdown;
-import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.Countdown.CountdownCallback;
+import mc.alk.arena.util.TeamUtil;
 
 public class FullScoreboard implements WaitingScoreboard {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
@@ -36,7 +35,7 @@ public class FullScoreboard implements WaitingScoreboard {
 
 
     public FullScoreboard(MatchParams params, List<ArenaTeam> teams) {
-        scoreboard = ScoreboardFactory.createScoreboard(String.valueOf(this.hashCode()), params);
+        scoreboard = new ArenaScoreboard( String.valueOf( hashCode()), params);
         ao = scoreboard.createObjective("waiting",
                 "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
         ao.setDisplayTeams(false);

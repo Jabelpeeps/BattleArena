@@ -2,7 +2,6 @@ package mc.alk.arena.scoreboardapi;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.bukkit.scoreboard.Score;
 
 import mc.alk.arena.util.Log;
 
-public class BObjective extends SAPIObjective{
+public class BObjective extends SAPIObjective {
     Objective o;
 
     TreeSet<SAPIScore> scores;
@@ -35,15 +34,13 @@ public class BObjective extends SAPIObjective{
         super(id,displayName, criteria,priority);
         if (board != null)
             setScoreboard(board);
-        scores = new TreeSet<>(new Comparator<SAPIScore>() {
-            @Override
-            public int compare(SAPIScore o1, SAPIScore o2) {
-                int c = o2.getScore() - o1.getScore();
-                if (c != 0)
-                    return c;
-                return o1.getEntry().getId().compareTo(o2.getEntry().getId());
-            }
-        });
+        scores = new TreeSet<>( 
+                ( o1, o2)  -> {
+                        int c = o2.getScore() - o1.getScore();
+                        if (c != 0)
+                            return c;
+                        return o1.getEntry().getId().compareTo(o2.getEntry().getId());
+                });
     }
 
     @Override
@@ -80,13 +77,11 @@ public class BObjective extends SAPIObjective{
 
     @Override
     public void setScoreboard(SScoreboard board) {
-        if (!(board instanceof BScoreboard))
-            throw new IllegalStateException("To use BukkitObjectives you must use BukkitScoreboards");
         super.setScoreboard(board);
 
-        o = ((BScoreboard)board).board.getObjective(id);
+        o = board.bukkitScoreboard.getObjective(id);
         if (o == null)
-            o = ((BScoreboard)board).board.registerNewObjective(id,criteria);
+            o = board.bukkitScoreboard.registerNewObjective(id,criteria);
         setDisplayName(getDisplayName());
     }
 
@@ -151,8 +146,8 @@ public class BObjective extends SAPIObjective{
                 }
             }
             cur15.removeAll(now15);
-            for (SEntry se : cur15) {
-                o.getScoreboard().resetScores(se.getOfflinePlayer());
+            for ( SEntry se : cur15 ) {
+                o.getScoreboard().resetScores(se.getOfflinePlayer().getName());
             }
             cur15 = now15;
             if (added.isEmpty()) {
@@ -169,7 +164,7 @@ public class BObjective extends SAPIObjective{
     }
 
     private void _setScore(final SEntry e, final int points) {
-        Score sc = o.getScore(e.getOfflinePlayer());
+        Score sc = o.getScore(e.getOfflinePlayer().getName());
         if (points != 0) {
             sc.setScore(points);
         } else {
@@ -183,17 +178,18 @@ public class BObjective extends SAPIObjective{
     @Override
     public int getPoints(SEntry l) {
         OfflinePlayer p = l.getOfflinePlayer();
-        return o.getScore(p).getScore();
+        return o.getScore(p.getName()).getScore();
     }
 
     @Override
-    public void setDisplaySlot(SAPIDisplaySlot slot) {
+    public SObjective setDisplaySlot(SAPIDisplaySlot slot) {
         super.setDisplaySlot(slot);
         if (scoreboard == null)
-            return;
+            return this;
         if (o != null && scoreboard.getObjective(slot)==this){
             o.setDisplaySlot(toBukkitDisplaySlot(slot));
         }
+        return this;
     }
 
     @Override
@@ -226,7 +222,7 @@ public class BObjective extends SAPIObjective{
                     SAPIScore sc = entries.get(entry);
                     addScore(sc, sc.getScore());
                 } else {
-                    o.getScoreboard().resetScores(entry.getOfflinePlayer());
+                    o.getScoreboard().resetScores(entry.getOfflinePlayer().getName());
                 }
             }
         }
@@ -269,7 +265,7 @@ public class BObjective extends SAPIObjective{
                 skipped.add(e);
                 continue;
             }
-            Set<Score> scores = o.getScoreboard().getScores(e.getOfflinePlayer());
+            Set<Score> scores = o.getScoreboard().getScores(e.getOfflinePlayer().getName());
             for (Score score : scores){
                 if (score.getObjective().equals(o)){
                     if (score.getScore() != 0){
@@ -277,10 +273,10 @@ public class BObjective extends SAPIObjective{
                             BukkitTeam bt = ((BukkitTeam)e);
                             sb.append("&e ").append(e.getId()).append(" : ").append(e.getDisplayName()).append(" = ").
                                     append(score.getScore()).append("  &eteamMembers=\n");
-                            for (OfflinePlayer p : bt.getPlayers()){
+                            for (String p : bt.getPlayers()){
                                 SEntry ep = this.getScoreboard().getOrCreateEntry(p);
                                 String c = this.contains(ep) ? "&e" : "&8";
-                                sb.append("  ").append(c).append("- &f").append(bt.getPrefix()).append(p.getName()).
+                                sb.append("  ").append(c).append("- &f").append(bt.getPrefix()).append(p).
                                         append(bt.getSuffix()).append(c).append(" = ").
                                         append(o.getScore(p).getScore()).append("\n");
                             }

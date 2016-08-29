@@ -1,27 +1,27 @@
 package mc.alk.arena.scoreboardapi;
 
-import org.bukkit.OfflinePlayer;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SAPITeam extends SAPIEntry implements STeam{
-	protected SAPIScoreboard board;
+import org.bukkit.OfflinePlayer;
 
-	public SAPITeam(SAPIScoreboard board, String id, String displayName) {
+public class SAPITeam extends SAPIEntry implements STeam{
+	protected SScoreboard board;
+
+	public SAPITeam(SScoreboard board, String id, String displayName) {
 		super(id, displayName);
 		this.board = board;
 	}
 
 	@Override
     public void addPlayer(OfflinePlayer p) {
-		this.board.createEntry(p);
+		board.createEntry(p);
 	}
 
     @Override
     public void addPlayer(OfflinePlayer p, int defaultPoints) {
-        this.board.createEntry(p);
+        board.createEntry(p);
         /// no points currently for sapiteams
     }
 
@@ -34,12 +34,12 @@ public class SAPITeam extends SAPIEntry implements STeam{
 
 	@Override
     public void removePlayer(OfflinePlayer p) {
-		this.board.removeEntry(p);
+		board.removeEntry(p);
 	}
 
 	@Override
-    public Set<OfflinePlayer> getPlayers() {
-		return new HashSet<OfflinePlayer>(0);
+    public Set<String> getPlayers() {
+		return new HashSet<>(0);
 	}
 
 	@Override
@@ -66,6 +66,4 @@ public class SAPITeam extends SAPIEntry implements STeam{
     public int size() {
         return 0;
     }
-
-
 }

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import lombok.Getter;
+import mc.alk.arena.util.MessageUtil;
 
 public class SAPIEntry implements SEntry, Comparable<SEntry>{
     @Getter private final String id;
@@ -11,7 +12,6 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
     @Getter private String displayNameSuffix;
     @Getter private String displayNamePrefix;
     private String combinedDisplayName;
-    /// Note : Spigots "getOfflinePlayer(...)" seems to be extremely slow, so cache it if possible
     protected OfflinePlayer offlinePlayer;
 
     public SAPIEntry(String id, String displayName){
@@ -44,13 +44,13 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public void setDisplayName(String _displayName) {
-        displayName = SAPIObjective.colorChat(_displayName);
+        displayName = MessageUtil.colorChat(_displayName);
         _setDisplayName();
     }
 
     @Override
     public void setDisplayNameSuffix(String suffix) {
-        displayNameSuffix = SAPIObjective.colorChat(suffix);
+        displayNameSuffix = MessageUtil.colorChat(suffix);
         if (displayNameSuffix.length() > 8) {
             displayNameSuffix = displayNameSuffix.substring(0, 9);
         }
@@ -59,7 +59,7 @@ public class SAPIEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public void setDisplayNamePrefix(String suffix) {
-        displayNamePrefix = SAPIObjective.colorChat(suffix);
+        displayNamePrefix = MessageUtil.colorChat(suffix);
         if (displayNamePrefix.length() > 8) {
             displayNamePrefix = displayNamePrefix.substring(0, 9);
         }

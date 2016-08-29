@@ -1,16 +1,15 @@
 package mc.alk.arena.controllers.joining.scoreboard;
 
+import java.util.Collection;
+
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.ScoreboardFactory;
 import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.scoreboardapi.SAPIDisplaySlot;
 import mc.alk.arena.scoreboardapi.STeam;
-
-import java.util.Collection;
 
 public class AbridgedScoreboard implements WaitingScoreboard {
     final ArenaScoreboard scoreboard;
@@ -18,7 +17,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
 
 
     public AbridgedScoreboard(MatchParams params) {
-        scoreboard = ScoreboardFactory.createScoreboard(String.valueOf(this.hashCode()), params);
+        scoreboard = new ArenaScoreboard( String.valueOf(this.hashCode()), params);
         ao = scoreboard.createObjective("waiting",
                 "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
         ao.setDisplayPlayers(false);

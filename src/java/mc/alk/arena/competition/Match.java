@@ -72,7 +72,6 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.ScoreboardFactory;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
@@ -183,7 +182,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if ( listeners != null )
             addArenaListeners( listeners );
         
-        scoreboard = ScoreboardFactory.createScoreboard( this, params );
+        scoreboard = new ArenaScoreboard( params.getName(), params );
 
         matchMessager = new MatchMessager(this);
         arena.setMatch(this);
@@ -337,7 +336,6 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         teamJoinHandler.setCompetition( this );
         joinHandler = teamJoinHandler;
         teams = joinHandler.getTeams();
-        teamJoinHandler.transferOldScoreboards( scoreboard.getBScoreboard() );
         
         for ( int i = 0; i < teams.size(); i++ ) {
             teams.get(i).setIndex(i);

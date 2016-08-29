@@ -14,7 +14,7 @@ public interface STeam extends SEntry {
 
 	public void removePlayer(OfflinePlayer p);
 
-	public Set<? extends OfflinePlayer> getPlayers();
+	public Set<String> getPlayers();
 
 	public void setPrefix(String prefix);
 

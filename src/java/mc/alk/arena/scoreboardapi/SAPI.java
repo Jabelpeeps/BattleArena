@@ -17,7 +17,4 @@ public class SAPI {
     /** Maximum criteria size for objectives */
     public static final int MAX_OBJECTIVE_CRITERIA_SIZE = 32;
 
-    public static boolean hasBukkitScoreboard() {
-        return SAPIFactory.hasBukkitScoreboard();
-    }
 }
