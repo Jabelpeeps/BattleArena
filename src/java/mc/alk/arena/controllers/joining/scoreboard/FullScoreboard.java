@@ -70,12 +70,12 @@ public class FullScoreboard implements WaitingScoreboard {
                 TempEntry te = createEntry(at, st, j >= minTeams);
                 SEntry e = scoreboard.getEntry(te.name);
                 if (e == null) {
-                    e = scoreboard.createEntry(OfflinePlayerTeams.getOfflinePlayer(te.name), te.name);
+                    e = scoreboard.createEntry( te.name, te.name);
                 }
                 te.r.addLast(e);
                 es.add(e);
                 points.add(te.points);
-                st.addPlayer(e.getOfflinePlayer(), Integer.MIN_VALUE);
+                st.addPlayer(OfflinePlayerTeams.getOfflinePlayer(te.name), Integer.MIN_VALUE);
             }
         }
 
@@ -137,7 +137,7 @@ public class FullScoreboard implements WaitingScoreboard {
         }
 
         te.r.addLast(e);
-        t.addPlayer(e.getOfflinePlayer());
+        t.addPlayer( OfflinePlayerTeams.getOfflinePlayer(te.name) );
     }
 
     private void removePlaceHolder(int teamIndex){

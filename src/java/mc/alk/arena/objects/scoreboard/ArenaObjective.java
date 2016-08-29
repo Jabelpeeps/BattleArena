@@ -331,9 +331,9 @@ public class ArenaObjective implements ScoreTracker {
     }
     
     public int getPoints(SEntry l) {
-        OfflinePlayer p = l.getOfflinePlayer();
+        String p = l.getBaseDisplayName();
         if ( p == null ) return 0;
-        return objective.getScore(p.getName()).getScore();
+        return objective.getScore( p ).getScore();
     }
 
     public ArenaObjective setDisplaySlot(SAPIDisplaySlot slot) {

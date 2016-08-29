@@ -41,6 +41,8 @@ public class BukkitTeam extends SAPIEntry implements STeam {
 
     @Override
     public void addPlayer(OfflinePlayer p, int defaultPoints) {
+        if ( p == null ) return;
+        
         board.createEntry(p);
 
         team.addEntry(p.getName()); 
@@ -60,6 +62,7 @@ public class BukkitTeam extends SAPIEntry implements STeam {
         board.removeEntry(p);
 		team.removeEntry(p.getName());
 	}
+	
 	@Override
 	public Set<String> getPlayers() { return team.getEntries(); }
 	@Override

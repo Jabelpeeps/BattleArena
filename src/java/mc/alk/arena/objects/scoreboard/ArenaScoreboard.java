@@ -149,15 +149,12 @@ public class ArenaScoreboard {
         registerNewObjective(scores);
         addAllEntries(scores);
     }
-
     public List<STeam> getTeams() { return new ArrayList<>( teams.values() ); }
 
-    public ArenaObjective registerNewObjective(String objectiveName,
-                                           String criteria, String displayName, SAPIDisplaySlot slot) {
+    public ArenaObjective registerNewObjective( String objectiveName, String criteria, String displayName, SAPIDisplaySlot slot) {
         return createObjective(objectiveName,criteria, displayName,slot);
     }
 
- 
     public boolean setEntryDisplayName(ArenaPlayer player, String name) {
         return setEntryDisplayName(player.getName(), name);
     }

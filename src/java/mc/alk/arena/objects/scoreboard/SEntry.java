@@ -1,13 +1,11 @@
 package mc.alk.arena.objects.scoreboard;
 
-import org.bukkit.OfflinePlayer;
-
 public interface SEntry {
-    /**
-     * Get the offline player denoted by this Entry
-     * @return OfflinePlayer
-     */
-	public OfflinePlayer getOfflinePlayer();
+//    /**
+//     * Get the offline player denoted by this Entry
+//     * @return OfflinePlayer
+//     */
+//	public OfflinePlayer getOfflinePlayer();
 
     /**
      * Get the id of this entry (offlineplayer name)

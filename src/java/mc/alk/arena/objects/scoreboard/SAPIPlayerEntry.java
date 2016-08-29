@@ -1,15 +1,15 @@
 package mc.alk.arena.objects.scoreboard;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import lombok.Getter;
 import mc.alk.arena.util.MessageUtil;
 
 public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 	OfflinePlayer idOfflinePlayer;
     private String displayName;
-    private String displayNameSuffix;
-    private String displayNamePrefix;
+    @Getter private String displayNameSuffix;
+    @Getter private String displayNamePrefix;
     private String combinedDisplayName;
     OfflinePlayer displayOfflinePlayer;
 
@@ -28,26 +28,12 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
             displayOfflinePlayer = p;}
 	}
 
-	@Override
-    public OfflinePlayer getOfflinePlayer() {
-        if (displayOfflinePlayer == null) {
-            displayOfflinePlayer = Bukkit.getPlayer(displayName);}
-        return displayOfflinePlayer ;
-	}
-
     @Override
-	public String getId() {
-		return idOfflinePlayer.getName();
-	}
-
+	public String getId() { return idOfflinePlayer.getName(); }
     @Override
-    public String getDisplayName(){
-        return combinedDisplayName;
-    }
-
+    public String getDisplayName() { return combinedDisplayName; }
     @Override
-    public String getBaseDisplayName() {return displayName;}
-
+    public String getBaseDisplayName() { return displayName; }
     @Override
     public void setDisplayName(String displayName) {
         this.displayName = MessageUtil.colorChat(displayName);
@@ -64,22 +50,12 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
     }
 
     @Override
-    public String getDisplayNameSuffix() {
-        return displayNameSuffix;
-    }
-
-    @Override
     public void setDisplayNamePrefix(String suffix) {
         displayNamePrefix = MessageUtil.colorChat(suffix);
         if (displayNamePrefix.length() > 8) {
             displayNamePrefix = displayNamePrefix.substring(0, 9);
         }
         _setDisplayName();
-    }
-
-    @Override
-    public String getDisplayNamePrefix() {
-        return displayNamePrefix;
     }
 
     private void _setDisplayName(){

@@ -112,17 +112,17 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
         }
 
         String dis = "- " + name + " -" + team.getTeamChatColor();
-        SEntry e = scoreboard.getEntry(dis);
-        if ( e == null ) {
-            e = scoreboard.createEntry( name, dis );
-            objective.addEntry(e, points);
+        SEntry entry = scoreboard.getEntry(dis);
+        if ( entry == null ) {
+            entry = scoreboard.createEntry( name, dis );
+            objective.addEntry(entry, points);
         } 
         else {
-            objective.setPoints(e, points);
+            objective.setPoints(entry, points);
         }
 
-        r.addLast(e);
-        t.addPlayer(e.getOfflinePlayer());
+        r.addLast(entry);
+        t.addPlayer( OfflinePlayerTeams.getOfflinePlayer( entry.getBaseDisplayName() ) );
     }
 
     private void removePlaceHolder(int teamIndex){
