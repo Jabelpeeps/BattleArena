@@ -130,18 +130,18 @@ public class TeamUtil {
         boolean alwaysTeamNames = false;
         if (index != -1){
             StateGraph tops = teamParams.getStateGraph();
-            team.setTeamChatColor(TeamUtil.getTeamChatColor(index));
+            team.setTeamChatColor( getTeamChatColor(index));
             if (tops != null){
                 if (tops.hasAnyOption(TransitionOption.WOOLTEAMS) && teamParams.getMaxTeamSize() > 1 ||
                         tops.hasAnyOption(TransitionOption.ALWAYSWOOLTEAMS)){
-                    team.setHeadItem(TeamUtil.getTeamHead(index));
+                    team.setHeadItem( getTeamHead(index));
                 }
                 alwaysTeamNames = tops.hasAnyOption(TransitionOption.ALWAYSTEAMNAMES);
             }
 
             final String name;
             if (!isTeamParam || teamParams.getDisplayName() == null) {
-                name = TeamUtil.getTeamName(index);
+                name = getTeamName(index);
                 if ( alwaysTeamNames ||
                         (!team.hasSetName() && team.getDisplayName().length() > Defaults.MAX_TEAM_NAME_APPEND)){
                     team.setDisplayName(name);

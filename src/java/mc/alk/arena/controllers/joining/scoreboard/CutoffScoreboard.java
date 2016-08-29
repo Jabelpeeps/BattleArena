@@ -21,7 +21,6 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;
-import mc.alk.arena.util.TeamUtil;
 
 public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
     Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
@@ -110,10 +109,10 @@ public class CutoffScoreboard implements WaitingScoreboard, CountdownCallback {
             index = optionalTeam ? r.size() : team.getMinPlayers() + r.size();
         }
 
-        String dis = "- " + name + " -" + team.getTeamChatColor() + TeamUtil.getTeamChatColor(index);
+        String dis = "- " + name + " -" + team.getTeamChatColor();
         SEntry e = scoreboard.getEntry(dis);
-        if (e == null) {
-            e = scoreboard.createEntry( OfflinePlayerTeams.getOfflinePlayer( name ), dis );
+        if ( e == null ) {
+            e = scoreboard.createEntry( name, dis );
             ao.addEntry(e, points);
         } 
         else {
