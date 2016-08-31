@@ -56,120 +56,89 @@ public class Arena extends AreaContainer {
     public Arena() {
         super( "arena", LocationType.ARENA );
     }
-
+    
     /**
      * Called after construction or after persistance variables have been assigned, whichever is later
      */
-    void privateInit(){
-        try { init(); }catch( Exception e ) { Log.printStackTrace(e); }
+    public void publicInit(){
+        try { init(); } catch( Exception e ) { Log.printStackTrace(e); }
     }
     /**
      * private Arena crate events, calls create for subclasses to be able to override
      */
-    void privateCreate(){
-        try{create();}catch(Exception e){Log.printStackTrace(e);}
+    public void publicCreate(){
+        try { create(); } catch( Exception e ) { Log.printStackTrace(e); }
     }
-
     /**
      * private Arena delete events, calls delete for subclasses to be able to override
      */
-    void privateDelete(){
-        try{delete();}catch(Exception e){Log.printStackTrace(e);}
+    public void publicDelete(){
+        try { delete(); } catch( Exception e)  { Log.printStackTrace(e); }
     }
-
     /**
      * private Arena onOpen events, calls onOpen for subclasses to be able to override
      */
-    void privateOnOpen(){
-        try{onOpen();}catch(Exception e){Log.printStackTrace(e);}
+    public void publicOnOpen(){
+        try { onOpen(); } catch( Exception e ) { Log.printStackTrace(e); }
     }
-
-    /**
-     * private Arena onBegin events, calls onBegin for subclasses to be able to override
-     */
-    void privateOnBegin(){
-        try{onBegin();}catch(Exception e){Log.printStackTrace(e);}
-    }
-
     /**
      * private Arena onPrestart events, calls onPrestart for subclasses to be able to override
      */
-    void privateOnPrestart(){
+    public void publicOnPrestart(){
         try{onPrestart();}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onStart events, calls onStart for subclasses to be able to override
      */
-    void privateOnStart(){
+    public void publicOnStart(){
         startSpawns();
         try{onStart();}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onStart events, calls onStart for subclasses to be able to override
      */
-    void privateOnVictory(MatchResult result){
+    public void publicOnVictory(MatchResult result){
         stopSpawns();
         try{onVictory(result);}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onComplete events, calls onComplete for subclasses to be able to override
      */
-    void privateOnComplete(){
+    public void publicOnComplete(){
         stopSpawns();
         try{onComplete();}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onCancel events, calls onCancel for subclasses to be able to override
      */
-    void privateOnCancel(){
+    public void publicOnCancel(){
         stopSpawns();
         try{onCancel();}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onFinish events, calls onFinish for subclasses to be able to override
      */
-    void privateOnFinish(){
+    public void publicOnFinish(){
         try{onFinish();}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onEnter events, calls onEnter for subclasses to be able to override
      */
-    void privateOnEnter(ArenaPlayer player, ArenaTeam team){
+    public void publicOnEnter(ArenaPlayer player, ArenaTeam team){
         try{onEnter(player,team);}catch(Exception e){Log.printStackTrace(e);}
     }
-    /**
-     * private Arena onEnterWaitRoom events, calls onEnterWaitRoom for subclasses to be able to override
-     */
-    void privateOnEnterWaitRoom(ArenaPlayer player, ArenaTeam team){
-        try{onEnterWaitRoom(player, team);}catch(Exception e){Log.printStackTrace(e);}
-    }
-
-    /**
-     * private Arena onEnterWaitRoom events, calls onEnterWaitRoom for subclasses to be able to override
-     */
-    void privateOnEnterSpectate(ArenaPlayer player, ArenaTeam team){
-        try{onEnterSpectate(player, team);}catch(Exception e){Log.printStackTrace(e);}
-    }
-
     /**
      * private Arena onJoin events, calls onJoin for subclasses to be able to override
      * Happens when a player joins a team
      */
-    void privateOnJoin(ArenaPlayer player, ArenaTeam team){
+    public void publicOnJoin(ArenaPlayer player, ArenaTeam team){
         try{onJoin(player, team);}catch(Exception e){Log.printStackTrace(e);}
     }
-
     /**
      * private Arena onLeave events, calls onLeave for subclasses to be able to override
      * Happens when a player leaves a team
      */
-    void privateOnLeave(ArenaPlayer player, ArenaTeam team){
+    public void publicOnLeave(ArenaPlayer player, ArenaTeam team){
         try{onLeave(player, team);}catch(Exception e){Log.printStackTrace(e);}
     }
 
@@ -194,6 +163,7 @@ public class Arena extends AreaContainer {
      */
     protected void onOpen() {}
 
+    protected void onBegin() { }
     /**
      * Called when a player joins the Event
      * @param player the player
@@ -208,11 +178,6 @@ public class Arena extends AreaContainer {
      * @param team the team they were on
      */
     protected void onLeave(ArenaPlayer player, ArenaTeam team) {}
-
-    /**
-     * Called when the match is first called upon to begin starting
-     */
-    protected void onBegin() {}
 
     /**
      * Called after onBegin and before onStart
@@ -251,20 +216,6 @@ public class Arena extends AreaContainer {
      * @param team : the team they were in
      */
     protected void onEnter(ArenaPlayer player, ArenaTeam team) {}
-
-    /**
-     * Called if a player is teleported into a waiting room before a match
-     * @param player ArenaPlayer
-     * @param team: the team they are in
-     */
-    protected void onEnterWaitRoom(ArenaPlayer player, ArenaTeam team) {}
-
-    /**
-     * Called if a player is teleported into a spectator room before a match
-     * @param player ArenaPlayer
-     * @param team: the team they are in
-     */
-    protected void onEnterSpectate(ArenaPlayer player, ArenaTeam team) {}
 
     /**
      * Called when a player is exiting the match (usually through a death)

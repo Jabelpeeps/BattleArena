@@ -33,9 +33,10 @@ import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaControllerInterface;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.arenas.Persistable;
+import mc.alk.arena.objects.exceptions.InvalidOptionException;
+import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.exceptions.RegionNotFound;
 import mc.alk.arena.objects.options.EventOpenOptions;
 import mc.alk.arena.objects.options.TransitionOption;
@@ -299,29 +300,28 @@ public class ArenaSerializer extends BaseConfig {
         cs = cs.getConfigurationSection("persistable");
         Persistable.yamlToObjects(arena, cs,Arena.class);
         updateRegions(arena);
-        ArenaControllerInterface aci = new ArenaControllerInterface(arena);
-        aci.init();
+        arena.publicInit();
         bac.addArena(arena);
 
         if (arena.getParams().hasAnyOption(TransitionOption.ALWAYSOPEN)) {
-            Scheduler.scheduleSynchronousTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        EventOpenOptions eoo = EventOpenOptions.parseOptions(
-                                new String[]{"COPYPARAMS"}, null, arena.getParams());
-                        Arena a = bac.reserveArena(arena);
-                        if (a == null) {
-                            Log.warn("&cArena &6" + arena.getName() + " &cwas set to always open but could not be reserved");
-                        } else {
-                            eoo.setSecTillStart(0);
-                            bac.createAndAutoMatch(arena, eoo);
+            Scheduler.scheduleSynchronousTask( 
+                    () -> {
+                        try {
+                            EventOpenOptions eoo = EventOpenOptions.parseOptions( new String[]{"COPYPARAMS"}, 
+                                                                                  null, 
+                                                                                  arena.getParams());
+                            Arena a = bac.reserveArena(arena);
+                            if (a == null) {
+                                Log.warn("&cArena &6" + arena.getName() + " &cwas set to always open but could not be reserved");
+                            } 
+                            else {
+                                eoo.setSecTillStart(0);
+                                bac.createAndAutoMatch(arena, eoo);
+                            }
+                        } catch ( InvalidOptionException | NeverWouldJoinException | IllegalStateException e ) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+                    });
         }
         return arena;
     }

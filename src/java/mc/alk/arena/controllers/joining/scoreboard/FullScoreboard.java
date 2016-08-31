@@ -1,42 +1,22 @@
 package mc.alk.arena.controllers.joining.scoreboard;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import lombok.NoArgsConstructor;
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.scoreboard.ArenaObjective;
-import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
 import mc.alk.arena.objects.scoreboard.SEntry;
 import mc.alk.arena.objects.scoreboard.STeam;
-import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.arena.util.Countdown;
-import mc.alk.arena.util.Countdown.CountdownCallback;
+import mc.alk.arena.util.PlayerUtil;
 
-public class FullScoreboard implements WaitingScoreboard {
-    Map<Integer, LinkedList<SEntry>> reqPlaceHolderPlayers = new HashMap<>();
-    Map<Integer, LinkedList<SEntry>> opPlaceHolderPlayers = new HashMap<>();
-    ArenaScoreboard scoreboard;
-    ArenaObjective objective;
-    final int minTeams;
-    Countdown countdown;
-
+public class FullScoreboard extends AbstractWaitingScoreBoard {
 
     public FullScoreboard(MatchParams params, List<ArenaTeam> teams) {
-        scoreboard = new ArenaScoreboard( String.valueOf( hashCode()), params);
-        objective = scoreboard.createObjective( "waiting", "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
-        objective.setDisplayTeams(false);
-        minTeams = params.getMinTeams();
+        super( params );
+        
         int maxTeams = params.getMaxTeams();
 
         List<ArenaTeam> ateams = new ArrayList<>();
@@ -52,22 +32,16 @@ public class FullScoreboard implements WaitingScoreboard {
             ateams.add(team);
         }
         addPlaceholders(ateams, steams, minTeams); 
-        
-        if (    params.getForceStartTime() >0 
-                && params.getForceStartTime() != ArenaSize.MAX
-                && params.getMaxPlayers() != params.getMinPlayers() ) {
-            countdown = new Countdown( BattleArena.getSelf(), params.getForceStartTime(), 1, new DisplayCountdown() );
-        }
     }
 
-    private void addPlaceholders(List<ArenaTeam> ateams, List<STeam> steams, int minTeams) {
+    private void addPlaceholders(List<ArenaTeam> ateams, List<STeam> steams, int _minTeams) {
         List<SEntry> es = new ArrayList<>();
         List<Integer> points = new ArrayList<>();
         for (int i=0;i < ateams.size();i++) {
             ArenaTeam at = ateams.get(i);
             STeam st = steams.get(i);
             for (int j = 0; j < ateams.get(i).getMaxPlayers(); j++) {
-                TempEntry te = createEntry(at, st, j >= minTeams);
+                TempEntry te = createEntry(at, st, j >= _minTeams);
                 SEntry e = scoreboard.getEntry(te.name);
                 if (e == null) {
                     e = scoreboard.createEntry( te.name, te.name);
@@ -75,16 +49,10 @@ public class FullScoreboard implements WaitingScoreboard {
                 te.r.addLast(e);
                 es.add(e);
                 points.add(te.points);
-                st.addPlayer(OfflinePlayerTeams.getOfflinePlayer(te.name), Integer.MIN_VALUE);
+                st.addPlayer( PlayerUtil.getOfflinePlayer(te.name), Integer.MIN_VALUE );
             }
         }
-
-        scoreboard.initPoints(objective, es, points);
-    }
-
-    private int getReqSize(int teamIndex) {
-        return reqPlaceHolderPlayers.containsKey(teamIndex) ? reqPlaceHolderPlayers.get(teamIndex).size() 
-                                                            : 0;
+        objective.initPoints( es, points );
     }
 
     @NoArgsConstructor
@@ -97,8 +65,6 @@ public class FullScoreboard implements WaitingScoreboard {
     private TempEntry createEntry(ArenaTeam team, STeam t, boolean optionalTeam){
         TempEntry te = new TempEntry();
         String name;
-        int index;
-        
         if (!optionalTeam && getReqSize(team.getIndex()) < team.getMinPlayers()) {
             te.r = reqPlaceHolderPlayers.get(team.getIndex());
             if (te.r == null) {
@@ -107,7 +73,6 @@ public class FullScoreboard implements WaitingScoreboard {
             }
             name = "needed";
             te.points = 1;
-            index = te.r.size();
         } 
         else {
             te.r = opPlaceHolderPlayers.get(team.getIndex());
@@ -117,15 +82,13 @@ public class FullScoreboard implements WaitingScoreboard {
             }
             name = "open";
             te.points = 0;
-            index = optionalTeam ? te.r.size() 
-                                 : team.getMinPlayers() + te.r.size();
         }
-
         te.name = "- " + name + " -" + team.getTeamChatColor();
         return te;
     }
 
-    private void addPlaceholder(ArenaTeam team, STeam t, boolean optionalTeam) {
+    @Override
+    protected void addPlaceholder(ArenaTeam team, STeam t, boolean optionalTeam) {
         TempEntry te = createEntry(team, t, optionalTeam);
         SEntry e = scoreboard.getEntry(te.name);
         if (e == null) {
@@ -135,12 +98,12 @@ public class FullScoreboard implements WaitingScoreboard {
         else {
             objective.setPoints(e, te.points);
         }
-
         te.r.addLast(e);
-        t.addPlayer( OfflinePlayerTeams.getOfflinePlayer(te.name) );
+        t.addPlayer( PlayerUtil.getOfflinePlayer(te.name) );
     }
 
-    private void removePlaceHolder(int teamIndex){
+    @Override
+    protected void removePlaceHolder(int teamIndex){
         LinkedList<SEntry> list = reqPlaceHolderPlayers.get(teamIndex);
         if (list == null || list.isEmpty()) {
             list = opPlaceHolderPlayers.get(teamIndex);
@@ -150,78 +113,5 @@ public class FullScoreboard implements WaitingScoreboard {
         }
         SEntry e = list.removeLast();
         scoreboard.removeEntry(e);
-    }
-
-    @Override
-    public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
-        removePlaceHolder(team.getIndex());
-        STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
-        scoreboard.addedToTeam(t, player);
-        objective.setPoints(player, 10);
-    }
-
-    @Override
-    public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
-        for (ArenaPlayer player : players) {
-            addedToTeam(team,player);
-        }
-    }
-
-    @Override
-    public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {
-        STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
-        scoreboard.removedFromTeam(t,player);
-        addPlaceholder(team, t,team.getIndex()>= minTeams);
-    }
-
-    @Override
-    public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
-        STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
-        for (ArenaPlayer player : players) {
-            scoreboard.removedFromTeam(team,player);
-            addPlaceholder(team, t, team.getIndex()>= minTeams);
-        }
-    }
-
-    @Override
-    public boolean addedTeam(ArenaTeam team) {
-        scoreboard.createTeamEntry(String.valueOf(team.getIndex()), "");
-        for (ArenaPlayer ap : team.getPlayers()) {
-            addedToTeam(team, ap);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean removedTeam(ArenaTeam team) {
-        STeam t = scoreboard.getTeam(String.valueOf(team.getIndex()));
-        scoreboard.removeEntry(t);
-        return false;
-    }
-
-    @Override
-    public ArenaScoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-
-    class DisplayCountdown implements CountdownCallback {
-        @Override
-        public boolean intervalTick(int secondsRemaining) {
-            if (secondsRemaining == 0){
-                objective.setDisplayNameSuffix("");
-            } else {
-                objective.setDisplayNameSuffix(" &e("+secondsRemaining+")");
-            }
-            return true;
-        }
-    }
-
-    @Override
-    public void setRemainingSeconds(int seconds) {
-        if (countdown !=null){
-            countdown.stop();
-        }
-        countdown = new Countdown(BattleArena.getSelf(), seconds,1,new DisplayCountdown());
     }
 }

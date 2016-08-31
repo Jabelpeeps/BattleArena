@@ -66,7 +66,6 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.PlayerSave;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaControllerInterface;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.joining.TeamJoinObject;
@@ -887,10 +886,9 @@ public class BAExecutor extends CustomCommandExecutor {
 
         arena.setSpawnLoc(0, 0, new FixedLocation(sender.getLocation()));
         arenaController.addArena(arena);
-        ArenaControllerInterface aci = new ArenaControllerInterface(arena);
-        aci.create();
+        arena.publicCreate();
         new ArenaCreateEvent(arena).callEvent();
-        aci.init();
+        arena.publicInit(); 
 
         MessageUtil.sendMessage(sender, "&2You have created the arena &6" + arena);
         MessageUtil.sendMessage(sender, "&2A spawn point has been created where you are standing");

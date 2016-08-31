@@ -1,9 +1,5 @@
 package mc.alk.arena.objects.scoreboard;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
-
-import mc.alk.arena.Defaults;
-
 /**
  * @author alkarin
  */
@@ -12,9 +8,7 @@ public class SAPIUtil {
                                                String name,
                                                String suffix, 
                                                int maxCharLength ) {
-        if ( Defaults.DEBUG ) 
-            Log.info( "SAPIUtil.createLimitedString() called with:- " + System.lineSeparator() +
-                      "prefix='" + prefix + "'  name='" + name + "'  suffix='" + suffix + "'" );
+
         StringBuilder sb = new StringBuilder();
         /// all < length
         int s = (prefix != null ? prefix.length() : 0) + name.length() +

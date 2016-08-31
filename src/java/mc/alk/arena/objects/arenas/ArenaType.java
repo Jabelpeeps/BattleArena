@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.bukkit.plugin.Plugin;
 
+import lombok.Getter;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.util.CaseInsensitiveMap;
@@ -22,16 +23,16 @@ public class ArenaType implements Comparable<ArenaType> {
 
     static int count = 0;
 
-    final String name;
-    final Plugin ownerPlugin;
+    @Getter final String name;
+    @Getter final Plugin plugin;
     final int id = count++;
     final Set<ArenaType> compatibleTypes = new HashSet<>();
 
-    private ArenaType(final String name, Plugin plugin) {
-        this.name = name;
-        this.ownerPlugin = plugin;
-        if (!types.containsKey(name)) {
-            types.put(name, this);
+    private ArenaType( String _name, Plugin _plugin) {
+        name = _name;
+        plugin = _plugin;
+        if (!types.containsKey(_name)) {
+            types.put(_name, this);
         }
     }
 
@@ -70,17 +71,9 @@ public class ArenaType implements Comparable<ArenaType> {
         return sb.toString();
     }
 
-    public int ordinal() {
-        return id;
-    }
+    public int ordinal() { return id; }
 
-    public String getName() {
-        return name;
-    }
-
-    private void addCompatibleType(ArenaType at) {
-        compatibleTypes.add(at);
-    }
+    private void addCompatibleType(ArenaType at) { compatibleTypes.add(at); }
 
     @Override
     public int compareTo(ArenaType type) {
@@ -100,13 +93,7 @@ public class ArenaType implements Comparable<ArenaType> {
     }
 
     @Override
-    public int hashCode() {
-        return id;
-    }
-
-    public Plugin getPlugin() {
-        return ownerPlugin;
-    }
+    public int hashCode() { return id; }
 
     public static ArenaType fromString(final String arenatype) {
         if (arenatype == null) {
@@ -134,7 +121,7 @@ public class ArenaType implements Comparable<ArenaType> {
             classes.put(uarenaType, arenaClass);
         }
         if (!types.containsKey(uarenaType)) {
-            new ArenaType(arenaType, plugin);
+            return new ArenaType(arenaType, plugin);
         }
         return types.get(uarenaType);
     }
@@ -145,7 +132,7 @@ public class ArenaType implements Comparable<ArenaType> {
             factories.put(uarenaType, factory);
         }
         if (!types.containsKey(uarenaType)) {
-            new ArenaType(arenaType, plugin);
+            return new ArenaType(arenaType, plugin);
         }
         return types.get(uarenaType);
     }
@@ -211,7 +198,7 @@ public class ArenaType implements Comparable<ArenaType> {
             arenaParams.setParent(ParamController.getMatchParams(arenaParams));
             arena.setParams(arenaParams);
             if (init) {
-                arena.privateInit();
+                arena.publicInit();
             }
             return arena;
         }

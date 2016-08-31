@@ -2,6 +2,7 @@ package mc.alk.arena.controllers.joining.scoreboard;
 
 import java.util.Collection;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
@@ -12,7 +13,7 @@ import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class AbridgedScoreboard implements WaitingScoreboard {
-    final ArenaScoreboard scoreboard;
+    @Getter final ArenaScoreboard scoreboard;
     final ArenaObjective ao;
 
 
@@ -25,9 +26,10 @@ public class AbridgedScoreboard implements WaitingScoreboard {
 
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
-        STeam t = scoreboard.addedToTeam(team, player);
+        STeam t = scoreboard.addTeam( team );
+        scoreboard.addedToTeam( t, player);
         scoreboard.setScoreboard(player.getPlayer());
-        setTeamSuffix(team,t);
+        setTeamSuffix( team, t );
         ao.setTeamPoints(t, team.size());
     }
 
@@ -45,7 +47,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
     @Override
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {
         STeam t = scoreboard.getTeam(team.getIDString());
-        scoreboard.removedFromTeam(team,player);
+        scoreboard.removeFromTeam(team,player);
         setTeamSuffix(team, t);
         ao.setTeamPoints(t, team.size());
     }
@@ -54,7 +56,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
     public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
         STeam t = scoreboard.getTeam(team.getIDString());
         for (ArenaPlayer player : players) {
-            scoreboard.removedFromTeam(team,player);
+            scoreboard.removeFromTeam(team,player);
             setTeamSuffix(team, t);
         }
         ao.setTeamPoints(t, team.size());
@@ -82,11 +84,6 @@ public class AbridgedScoreboard implements WaitingScoreboard {
         STeam t = scoreboard.getTeam(team.getIDString());
         scoreboard.removeEntry(t);
         return false;
-    }
-
-    @Override
-    public ArenaScoreboard getScoreboard() {
-        return scoreboard;
     }
 
     @Override

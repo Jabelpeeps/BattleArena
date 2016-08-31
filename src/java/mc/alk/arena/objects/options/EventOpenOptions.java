@@ -64,7 +64,7 @@ public class EventOpenOptions {
 	int announceInterval = 0, secTillStart = -1;
 
 	public static EventOpenOptions parseOptions(String[] args, Set<Integer> ignoreArgs, final MatchParams params)
-			throws InvalidOptionException{
+			throws InvalidOptionException {
 		EventOpenOptions eoo = new EventOpenOptions();
         MatchParams mp = null;
         for (String op: args){

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -56,18 +57,15 @@ public abstract class ArenaTeam {
 
 	public ArenaTeam() {}
 	
-	protected ArenaTeam(ArenaPlayer p) {
+	protected ArenaTeam( ArenaPlayer p ) {
 		players.add(p);
-		nameChanged = true;
 	}
-	protected ArenaTeam(Collection<ArenaPlayer> teammates) {
-		players.addAll(teammates);
-		nameChanged = true;
+	protected ArenaTeam( Collection<ArenaPlayer> teammates ) {
+		players.addAll( teammates );
 	}
-	protected ArenaTeam(ArenaPlayer p, Collection<ArenaPlayer> teammates) {
-		players.add(p);
-		players.addAll(teammates);
-		nameChanged = true;
+	protected ArenaTeam( ArenaPlayer p, Collection<ArenaPlayer> teammates ) {
+		players.add( p );
+		players.addAll( teammates );
 	}
 	
     public void reset() {
@@ -79,30 +77,25 @@ public abstract class ArenaTeam {
 	}
     
 	protected String createName() {
-		if (nameManuallySet || !nameChanged)
-			return name;
+		if ( nameManuallySet || !nameChanged ) return name;
 		
-		/// Sort the names and then append them together
 		ArrayList<String> list = new ArrayList<>(players.size());
 		
-		for (ArenaPlayer p:players)
-		    list.add(p.getName());
+		for ( ArenaPlayer p : players )
+		    list.add( p.getName() );
 		
-		for (ArenaPlayer p:leftPlayers)
-		    list.add(p.getName());
+		for ( ArenaPlayer p : leftPlayers )
+		    list.add( p.getName() );
 		
-		if (list.size() > 1)
-			Collections.sort(list);
+		if ( list.size() > 1 )
+			Collections.sort( list );
 		
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
+		StringJoiner joiner = new StringJoiner( ", " );
 		
-		for (String s: list) {
-			if (!first) sb.append(", ");
-			sb.append(s);
-			first = false;
+		for ( String s : list ) {
+		    joiner.add( s );
 		}
-		name = sb.toString();
+		name = joiner.toString();
 		nameChanged = false;
 		return name;
 	}
@@ -138,28 +131,31 @@ public abstract class ArenaTeam {
 		return living.isEmpty() || living.size() <= offline;
 	}
 
-    public boolean hasMember(ArenaPlayer p) { return players.contains(p); }
-    public boolean hasLeft(ArenaPlayer p) { return leftPlayers.contains(p); }
+    public boolean hasSetName() { return nameManuallySet; }
+    public boolean hasMember( ArenaPlayer p ) { return players.contains(p); }
+    public boolean hasLeft( ArenaPlayer p ) { return leftPlayers.contains(p); }
     public boolean hasAliveMember(ArenaPlayer p) { return hasMember(p) && !deadPlayers.contains(p); }
+    public void setAlive() { deadPlayers.clear(); }
+    public void setAlive( ArenaPlayer player ) { deadPlayers.remove( player ); }
+    public ArenaStat getStat() { return getStat( currentParams ); }
+    public ArenaStat getStat( MatchParams params ) { return Tracker.getInterface( params ).getTeamRecord( name ); }
 	
 	public void setHealth( int health ) {
-	    for ( ArenaPlayer p: players ) 
+	    for ( ArenaPlayer p : players ) 
 	        p.getPlayer().setHealth(health); 
     }
 	public void setHunger( int hunger ) {
-	    for ( ArenaPlayer p: players ) 
+	    for ( ArenaPlayer p : players ) 
 	        p.getPlayer().setFoodLevel(hunger);
 	}
 
+    public int size() { return players.size(); }
     public String getName() { return createName(); }
 
     public void setName(String _name) {
 		name = _name;
 		nameManuallySet = true;
 	}
-
-    public void setAlive() { deadPlayers.clear(); }
-	public void setAlive(ArenaPlayer player){ deadPlayers.remove(player); }
 
     public boolean isDead() {
 		if (deadPlayers.size() >= players.size())
@@ -176,14 +172,12 @@ public abstract class ArenaTeam {
 	}
 
 	public boolean isReady() {
-		for (ArenaPlayer ap: getLivingPlayers()){
+		for ( ArenaPlayer ap : getLivingPlayers() ) {
 			if (!ap.isReady())
 				return false;
 		}
 		return true;
 	}
-
-    public int size() {return players.size();}
 
     public int addDeath(ArenaPlayer teamMemberWhoDied) {
 		Integer d = deaths.get(teamMemberWhoDied);
@@ -217,13 +211,8 @@ public abstract class ArenaTeam {
 		return nkills;
 	}
 
-    public Integer getNDeaths(ArenaPlayer p) {
-		return deaths.get(p);
-	}
-
-    public Integer getNKills(ArenaPlayer p) {
-		return kills.get(p);
-	}
+    public Integer getNDeaths(ArenaPlayer p) { return deaths.get(p); }
+    public Integer getNKills(ArenaPlayer p) { return kills.get(p); }
 
 	/**
 	 *
@@ -244,20 +233,22 @@ public abstract class ArenaTeam {
 		}
 		return true;
 	}
+    
     public void sendSystemMessage( String node, Object... args ) {
-        sendMessage( MessageHandler.getSystemMessage( node, args) );
+        sendMessage( MessageHandler.getSystemMessage( node, args ) );
     }
-    public void sendMessage(String message) {
+    
+    public void sendMessage( String message ) {
 		for ( ArenaPlayer p : players )
 			MessageUtil.sendMessage( p, message );
 	}
-    public void sendToOtherMembers(ArenaPlayer player, String message) {
+    public void sendToOtherMembers( ArenaPlayer player, String message ) {
 		for ( ArenaPlayer p : players ) 
-			if ( !p.equals(player) )
+			if ( !p.equals( player ) )
 				MessageUtil.sendMessage( p, message );
 	}
 
-    public String getDisplayName(){ return displayName == null ? getName() : displayName; }
+    public String getDisplayName() { return displayName == null ? createName() : displayName; }
 
     public void setDisplayName(String teamName){
         displayName = teamName;
@@ -330,10 +321,6 @@ public abstract class ArenaTeam {
 		return sb.toString();
 	}
 
-    public boolean hasSetName() {
-		return nameManuallySet;
-	}
-
     public int getPriority() {
 		int priority = Integer.MAX_VALUE;
 		for (ArenaPlayer ap: players){
@@ -385,7 +372,7 @@ public abstract class ArenaTeam {
 		nameChanged = true;
 	}
 
-	public void clear(){
+	public void clear() {
 		players.clear();
 		deadPlayers.clear();
 		leftPlayers.clear();
@@ -418,12 +405,5 @@ public abstract class ArenaTeam {
 		String _name = getDisplayName();
 		return _name.length() > Defaults.MAX_SCOREBOARD_NAME_SIZE ? _name.substring(0,Defaults.MAX_SCOREBOARD_NAME_SIZE) 
 		                                                          : _name;
-	}
-
-	public ArenaStat getStat() {
-		return getStat( currentParams );
-	}
-	public ArenaStat getStat(MatchParams params){
-        return Tracker.getInterface( params ).getTeamRecord( name );
 	}
 }

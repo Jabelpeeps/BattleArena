@@ -75,6 +75,6 @@ public class SAPIPlayerEntry implements SEntry, Comparable<SEntry>{
 
     @Override
     public int compareTo(SEntry o) {
-        return this.getId().compareTo(o.getId());
+        return getId().compareTo(o.getId());
     }
 }

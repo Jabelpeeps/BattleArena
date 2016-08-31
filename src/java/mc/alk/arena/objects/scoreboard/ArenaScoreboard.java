@@ -41,8 +41,8 @@ public class ArenaScoreboard {
     protected Map<String, ArenaObjective> objectives = new HashMap<>();
     protected HashMap<SAPIDisplaySlot, ArenaObjective> slots = new HashMap<>();
 
-    HashMap<String,Scoreboard> oldBoards = new HashMap<>();
-    final HashMap<ArenaTeam,STeam> teams = new HashMap<>();
+    HashMap<String, Scoreboard> oldBoards = new HashMap<>();
+    final HashMap<ArenaTeam, STeam> teams = new HashMap<>();
     boolean colorPlayerNames = Defaults.USE_COLORNAMES;
     
     @AllArgsConstructor
@@ -112,12 +112,11 @@ public class ArenaScoreboard {
         return t;
     }
     
-    public STeam addedToTeam(ArenaTeam team, ArenaPlayer player) {
+    public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
         STeam t = teams.get(team);
         if (t == null){
             t = addTeam(team);}
-        addedToTeam(t,player);
-        return t;
+        addedToTeam( t, player );
     }
 
     public void addedToTeam(STeam team, ArenaPlayer player){
@@ -125,34 +124,25 @@ public class ArenaScoreboard {
         setScoreboard(player.getPlayer());
     }
 
-    public STeam removedFromTeam(ArenaTeam team, ArenaPlayer player) {
-        STeam t = teams.get(team);
-        if (t == null) {
-            Log.err(teams.size() + "  Removing from a team that doesn't exist player=" + player.getName() + "   team=" + team + "  " + team.getId());
-            return null;
+    public void removeFromTeam( ArenaTeam team, ArenaPlayer player ) {
+        removeFromTeam( teams.get( team ), player );
+    }
+    public void removeFromTeam( STeam _team, ArenaPlayer player ) {
+        if ( _team == null ) {
+            Log.err(teams.size() + "  Removing from a team that doesn't exist player=" + player.getName() + "   team=" + _team );
+            return;
         }
-        removedFromTeam(t,player);
-        return t;
+        _team.removePlayer( player.getPlayer() );
+        removeScoreboard( player.getPlayer() );
     }
 
-    public void removedFromTeam(STeam team, ArenaPlayer player){
-        team.removePlayer(player.getPlayer());
-        removeScoreboard(player.getPlayer());
+    public void addObjective( ArenaObjective scores ) {
+        registerNewObjective( scores );
+        addAllEntries( scores );
     }
-    public void leaving(ArenaTeam team, ArenaPlayer player) {
-        removedFromTeam(team,player);
-    }
-    public void setDead(ArenaTeam team, ArenaPlayer player) {
-        removedFromTeam(team,player);
-    }
-    public void addObjective(ArenaObjective scores) {
-        registerNewObjective(scores);
-        addAllEntries(scores);
-    }
-    public List<STeam> getTeams() { return new ArrayList<>( teams.values() ); }
 
     public ArenaObjective registerNewObjective( String objectiveName, String criteria, String displayName, SAPIDisplaySlot slot) {
-        return createObjective(objectiveName,criteria, displayName,slot);
+        return createObjective( objectiveName, criteria, displayName, slot );
     }
 
     public boolean setEntryDisplayName(ArenaPlayer player, String name) {
@@ -163,22 +153,6 @@ public class ArenaScoreboard {
     }
     public boolean setEntryNameSuffix(ArenaPlayer player, String name) {
         return setEntryNameSuffix(player.getName(), name);
-    }
-
-    public void setObjectiveScoreboard(ArenaObjective objective) {
-        objective.setScoreboard(this);
-    }
-
-    public void setPoints(ArenaObjective objective, ArenaTeam team, int points) {
-        objective.setPoints(team, points);
-    }
-
-    public void setPoints(ArenaObjective objective, ArenaPlayer player, int points) {
-        objective.setPoints(player, points);
-    }
-
-    public void initPoints(ArenaObjective objective, List<SEntry> es, List<Integer> points) {
-        objective.initPoints(es, points);
     }
 
     public ArenaObjective registerNewObjective( ArenaObjective obj ) {
@@ -203,8 +177,8 @@ public class ArenaScoreboard {
                 });
     }
 
-    public void removeScoreboard(Player player) {
-            Scoreboard b = oldBoards.remove(player.getName());
+    public void removeScoreboard( Player player ) {
+            Scoreboard b = oldBoards.remove( player.getName() );
             
             if ( b != null ) 
                 player.setScoreboard(b);
@@ -294,7 +268,8 @@ public class ArenaScoreboard {
 
     public BukkitTeam getTeam(String id) {
         SEntry e = getEntry(id);
-        return (e == null || !(e instanceof BukkitTeam)) ? null : (BukkitTeam)e;
+        return (e == null || !(e instanceof BukkitTeam)) ? null 
+                                                         : (BukkitTeam) e;
     }
 
     public void addAllEntries(ArenaObjective objective) {
@@ -311,7 +286,6 @@ public class ArenaScoreboard {
     public void setDisplaySlot(SAPIDisplaySlot slot, ArenaObjective objective, boolean fromObjective) {
         setDisplaySlot( slot, objective, fromObjective, true );
     }
-
     boolean setDisplaySlot(final SAPIDisplaySlot slot, final ArenaObjective objective, boolean fromObjective, boolean swap ) {
         if (!slots.containsKey(slot)){
             _setDisplaySlot(slot,objective,fromObjective);
@@ -337,9 +311,12 @@ public class ArenaScoreboard {
             objective.setDisplaySlot(slot);
     }
 
+    public Collection<SEntry> getEntries() { return new ArrayList<>( row.values() ); }
+    public List<STeam> getTeams() { return new ArrayList<>( teams.values() ); }
     public ArenaObjective getObjective(SAPIDisplaySlot slot) { return slots.get( slot ); }
     public ArenaObjective getObjective(String id) { return objectives.get( id.toUpperCase() ); }
     public List<ArenaObjective> getObjectives() { return new ArrayList<>( objectives.values() ); }
+    public void clear() { objectives.clear(); }
     
     public String getPrintString() {
         StringBuilder sb = new StringBuilder();
@@ -439,8 +416,6 @@ public class ArenaScoreboard {
         return !idmap.containsKey(id) ? null 
                                       : row.get( idmap.get( id ) );
     }
-    public Collection<SEntry> getEntries() { return new ArrayList<>( row.values() ); }
-    public void clear() { objectives.clear(); }
     @Override
     public String toString(){
         return getPrintString();

@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import lombok.Getter;
 import mc.alk.arena.util.MessageUtil;
 
-public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
+public class SAPIEntry implements SEntry, Comparable<SEntry>{
     @Getter private final String id;
     private String displayName;
     @Getter private String displayNameSuffix;
@@ -57,5 +57,5 @@ public class SAPIEntry implements SEntry, Comparable<SAPIEntry>{
     @Override
     public String toString() { return "[SAPIEntry " + getId() + " : " + getDisplayName() + "]"; }
     @Override
-    public int compareTo(SAPIEntry o) { return id.compareTo(o.id); }
+    public int compareTo(SEntry o) { return id.compareTo(o.getId() ); }
 }

@@ -1,9 +1,11 @@
 package mc.alk.arena.util;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -84,4 +86,19 @@ public class PlayerUtil {
         player.setAllowFlight(enable);
         player.setFlying(enable);
     }
+
+    public static OfflinePlayer getOfflinePlayer(String name) {
+        OfflinePlayer op = PlayerUtil.map.get(name);
+        
+        if ( op == null ) {
+            op = Bukkit.getPlayerExact( name );
+            
+            if ( op == null ) return null;
+        }
+        PlayerUtil.map.put(name, op);
+        
+        return op;
+    }
+
+    public static HashMap<String, OfflinePlayer> map = new HashMap<>();
 }

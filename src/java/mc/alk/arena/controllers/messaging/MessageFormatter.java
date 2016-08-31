@@ -114,7 +114,7 @@ public class MessageFormatter{
                             if (!first) sb.append(", ");
                             TeamNames tn = getTeamNames(t);
                             if (tn == null){
-                                sb.append(t.getDisplayName());
+                                sb.append( t.getDisplayName() );
                             } else if (tn.longName != null){
                                 sb.append(tn.longName);
                             } else if (tn.shortName != null){
@@ -122,7 +122,7 @@ public class MessageFormatter{
                             } else if (tn.name != null){
                                 sb.append(tn.name);
                             } else {
-                                sb.append(t.getDisplayName());
+                                sb.append( t.getDisplayName() );
                             }
                             first = false;
                         }
@@ -454,9 +454,6 @@ public class MessageFormatter{
 	private static String replaceEach(String text, String[] searchList, String[] replacementList,
 			boolean repeat, int timeToLive)
 	{
-
-		// mchyzer Performance note: This creates very few new objects (one major goal)
-		// let me know if there are performance requests, we can create a harness to measure
 
 		if (text == null || text.length() == 0 || searchList == null ||
 				searchList.length == 0 || replacementList == null || replacementList.length == 0)
