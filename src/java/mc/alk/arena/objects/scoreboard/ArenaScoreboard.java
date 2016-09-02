@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Objective;
@@ -98,30 +97,29 @@ public class ArenaScoreboard {
         return t;
     }
     
-    public STeam removeTeam(ArenaTeam team) {
-        STeam t = teams.remove(team);
-        if (t != null){
-            removeEntry(t);
-            for ( ArenaObjective o : getObjectives() ) {
-                o.removeEntry(t);
-                for (String player: t.getPlayers()){
-                    o.removeEntry(player);
+    public void removeTeam(ArenaTeam team) {
+        STeam sTeam = teams.remove(team);
+        if ( sTeam != null ) {
+            removeEntry( sTeam );
+            for ( ArenaObjective objective : getObjectives() ) {
+                objective.removeEntry( sTeam );
+                for ( String player : sTeam.getPlayers() ) {
+                    objective.removeEntry( player );
                 }
             }
         }
-        return t;
     }
     
     public void addedToTeam(ArenaTeam team, ArenaPlayer player) {
-        STeam t = teams.get(team);
-        if (t == null){
-            t = addTeam(team);}
+        STeam t = teams.get( team );
+        if ( t == null )
+            t = addTeam( team );
         addedToTeam( t, player );
     }
 
     public void addedToTeam(STeam team, ArenaPlayer player){
-        team.addPlayer(player.getPlayer());
-        setScoreboard(player.getPlayer());
+        team.addPlayer( player.getPlayer() );
+        setScoreboard( player.getPlayer() );
     }
 
     public void removeFromTeam( ArenaTeam team, ArenaPlayer player ) {
@@ -143,16 +141,6 @@ public class ArenaScoreboard {
 
     public ArenaObjective registerNewObjective( String objectiveName, String criteria, String displayName, SAPIDisplaySlot slot) {
         return createObjective( objectiveName, criteria, displayName, slot );
-    }
-
-    public boolean setEntryDisplayName(ArenaPlayer player, String name) {
-        return setEntryDisplayName(player.getName(), name);
-    }
-    public boolean setEntryNamePrefix(ArenaPlayer player, String name) {
-        return setEntryNamePrefix(player.getName(), name);
-    }
-    public boolean setEntryNameSuffix(ArenaPlayer player, String name) {
-        return setEntryNameSuffix(player.getName(), name);
     }
 
     public ArenaObjective registerNewObjective( ArenaObjective obj ) {
@@ -213,21 +201,21 @@ public class ArenaScoreboard {
         }
     }
 
-    public void setEntryDisplayName(SEntry e, String name) {
+    public void setEntryDisplayName(SEntry e, String _name) {
         BoardUpdate bu = clearBoard(e);
-        e.setDisplayName( name );
+        e.setDisplayName( _name );
         updateBoard(e, bu);
     }
 
-    public void setEntryNamePrefix(SEntry e, String name) {
+    public void setEntryNamePrefix(SEntry e, String _name) {
         BoardUpdate bu = clearBoard(e);
-        e.setDisplayNamePrefix( name );
+        e.setDisplayNamePrefix( _name );
         updateBoard(e, bu);
     }
 
-    public void setEntryNameSuffix(SEntry e, String name) {
+    public void setEntryNameSuffix(SEntry e, String _name) {
         BoardUpdate bu = clearBoard(e);
-        e.setDisplayNameSuffix( name );
+        e.setDisplayNameSuffix( _name );
         updateBoard(e, bu);
     }
 
@@ -235,7 +223,7 @@ public class ArenaScoreboard {
         bukkitScoreboard.resetScores( e.getBaseDisplayName() ); 
         Team t = bukkitScoreboard.getTeam( e.getBaseDisplayName() );
         
-        if ( t != null) 
+        if ( t != null ) 
             t.removeEntry( e.getBaseDisplayName() );
         
         Integer id = idmap.remove( e.getId() );
@@ -326,35 +314,21 @@ public class ArenaScoreboard {
         return sb.toString();
     }
 
-    public SEntry removeEntry(OfflinePlayer p) {
-        SEntry sb = getEntry(p);
-        if (sb != null){
-            return removeEntry(sb);}
-        return null;
+    public void removeEntry( String _name ) {
+        SEntry sb = getEntry( _name );
+        if ( sb != null ) removeEntry( sb );
     }
-
-    public boolean setEntryDisplayName(String id, String name) {
+    public void setEntryDisplayName(String id, String _name) {
         SEntry e = getEntry(id);
-        if (e == null)
-            return false;
-        setEntryDisplayName(e, name);
-        return true;
+        if ( e != null ) setEntryDisplayName( e, _name );
     }
-
-    public boolean setEntryNamePrefix(String id, String name) {
+    public void setEntryNamePrefix(String id, String _name) {
         SEntry e = getEntry(id);
-        if (e == null)
-            return false;
-        setEntryNamePrefix(e, name);
-        return true;
+        if ( e != null ) setEntryNamePrefix( e, _name );
     }
-    
-    public boolean setEntryNameSuffix(String id, String name) {
+    public void setEntryNameSuffix(String id, String _name) {
         SEntry e = getEntry(id);
-        if (e == null)
-            return false;
-        setEntryNameSuffix(e, name);
-        return true;
+        if ( e != null ) setEntryNameSuffix( e, _name );
     }
 
     public void registerEntry(SEntry entry){
@@ -364,18 +338,7 @@ public class ArenaScoreboard {
             row.put(realid, entry);
         }
     }
-
-    public SEntry createEntry( OfflinePlayer p, String displayName ) { 
-        SEntry e = getEntry(p);
-        if ( e == null ) {
-            Integer realid = ids++;
-            idmap.put( p.getName(), realid );
-            e = new SAPIPlayerEntry( p, displayName );
-            row.put(realid, e);
-        }
-        return e;
-    }    
-    public SEntry createEntry( OfflinePlayer p ) { return createEntry( p.getName() ); }
+  
     public SEntry createEntry( String p ) { return createEntry( p, p ); }
     
     public SEntry createEntry( String id, String displayName ) { 
@@ -389,15 +352,7 @@ public class ArenaScoreboard {
         }
         return getEntry(id);
     }
-
-    public SEntry removeEntry(Player p) {
-        if ( p == null ) return null;
-        Integer id = idmap.remove(p.getName());
-        if (id != null){
-            return row.remove(id);
-        }
-        return null;
-    }
+   
     public STeam getTeamEntry(String id) {
         SEntry e = getEntry(id);
         return e == null || !(e instanceof STeam) ? null : (STeam) e;
@@ -405,13 +360,7 @@ public class ArenaScoreboard {
     public boolean contains(String id) {
         return idmap.containsKey(id) && row.containsKey(idmap.get(id));
     }
-    public boolean contains(OfflinePlayer p) {
-        return p != null && idmap.containsKey(p.getName()) && row.containsKey(idmap.get(p.getName()));
-    }
-    public SEntry getEntry(OfflinePlayer p) {
-        return p == null || !idmap.containsKey( p.getName() ) ? null 
-                                                              : row.get( idmap.get( p.getName() ) );
-    }
+    
     public SEntry getEntry(String id) {
         return !idmap.containsKey(id) ? null 
                                       : row.get( idmap.get( id ) );

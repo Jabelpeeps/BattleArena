@@ -1,27 +1,21 @@
-package mc.alk.arena.controllers.joining.scoreboard;
+package mc.alk.arena.objects.scoreboard;
 
 import java.util.Collection;
 
 import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.scoreboard.ArenaObjective;
-import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
-import mc.alk.arena.objects.scoreboard.STeam;
-import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class AbridgedScoreboard implements WaitingScoreboard {
     @Getter final ArenaScoreboard scoreboard;
-    final ArenaObjective ao;
-
+    final ArenaObjective objective;
 
     public AbridgedScoreboard(MatchParams params) {
         scoreboard = new ArenaScoreboard( String.valueOf(this.hashCode()), params);
-        ao = scoreboard.createObjective("waiting",
+        objective = scoreboard.createObjective("waiting",
                 "Queue Players", "&6Waiting Players", SAPIDisplaySlot.SIDEBAR, 100);
-        ao.setDisplayPlayers(false);
+        objective.setDisplayPlayers(false);
     }
 
     @Override
@@ -30,7 +24,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
         scoreboard.addedToTeam( t, player);
         scoreboard.setScoreboard(player.getPlayer());
         setTeamSuffix( team, t );
-        ao.setTeamPoints(t, team.size());
+        objective.setTeamPoints(t, team.size());
     }
 
     @Override
@@ -41,7 +35,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
             scoreboard.setScoreboard(player.getPlayer());
             setTeamSuffix(team, t);
         }
-        ao.setTeamPoints(t, team.size());
+        objective.setTeamPoints(t, team.size());
     }
 
     @Override
@@ -49,7 +43,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
         STeam t = scoreboard.getTeam(team.getIDString());
         scoreboard.removeFromTeam(team,player);
         setTeamSuffix(team, t);
-        ao.setTeamPoints(t, team.size());
+        objective.setTeamPoints(t, team.size());
     }
 
     @Override
@@ -59,7 +53,7 @@ public class AbridgedScoreboard implements WaitingScoreboard {
             scoreboard.removeFromTeam(team,player);
             setTeamSuffix(team, t);
         }
-        ao.setTeamPoints(t, team.size());
+        objective.setTeamPoints(t, team.size());
     }
 
     private void setTeamSuffix(ArenaTeam team, STeam t) {

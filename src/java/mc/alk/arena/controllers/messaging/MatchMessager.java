@@ -49,26 +49,6 @@ public class MatchMessager extends MessageSerializer {
 		                                                 : AnnouncementOptions.getDefaultChannel(true,state);
 	}
 
-	public void sendOnVictoryMsg(Collection<ArenaTeam> winners, Collection<ArenaTeam> losers) {
-		sendOnVictoryMsg( getChannel( MatchState.ONVICTORY ), winners,losers );
-	}
-
-	public void sendOnDrawMessage(Collection<ArenaTeam> drawers, Collection<ArenaTeam> losers) {
-		sendOnDrawMsg( getChannel( MatchState.ONVICTORY ), drawers, losers );
-	}
-
-	public void sendOnIntervalMsg(int remaining, Collection<ArenaTeam> currentLeaders) {
-		sendOnIntervalMsg( getChannel( MatchState.ONMATCHINTERVAL ), currentLeaders, remaining );
-	}
-
-	public void sendTimeExpired() {
-		sendTimeExpired(getChannel(MatchState.ONMATCHTIMEEXPIRED));
-	}
-
-	public void sendCountdownTillPrestart(int remaining) {
-		sendCountdownTillPrestart( getChannel( MatchState.ONCOUNTDOWNTOEVENT ), remaining );
-	}
-
     public void sendOnPreStartMsg(List<ArenaTeam> teams) {
         sendOnPreStartMsg( teams, getChannel( MatchState.ONPRESTART ) );
     }
@@ -114,7 +94,7 @@ public class MatchMessager extends MessageSerializer {
         }
     }
 
-    public void sendOnVictoryMsg(Channel serverChannel, Collection<ArenaTeam> victors, Collection<ArenaTeam> losers) {
+    public void sendOnVictoryMsg(Collection<ArenaTeam> victors, Collection<ArenaTeam> losers) {
         
         int size = (victors != null ? victors.size() : 0) + (losers != null ? losers.size() : 0);
         final String nTeamPath = getStringPathFromSize(size);
@@ -143,17 +123,24 @@ public class MatchMessager extends MessageSerializer {
                 break;
             }
         }
-        sendVictory( serverChannel, victors, losers, matchParams, 
+        sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers, matchParams, 
                         typedot + nTeamPath + ".victory", 
                         typedot + nTeamPath + ".loss",
                         typedot + nTeamPath + ".server_victory" );
     }
+    
+    public void sendOnDrawMessage(Collection<ArenaTeam> drawers, Collection<ArenaTeam> losers) {
 
-    public void sendOnDrawMsg( Channel serverChannel, Collection<ArenaTeam> drawers, Collection<ArenaTeam> losers ) {
-        int size = (drawers != null ? drawers.size() : 0) + (losers != null ? losers.size() : 0);
-        final String nTeamPath = getStringPathFromSize(size);
-        sendVictory(serverChannel,null,drawers,matchParams,typedot+nTeamPath+".draw",typedot+nTeamPath+".draw",
-                typedot+nTeamPath+".server_draw");
+        int size = ( drawers != null ? drawers.size() 
+                                     : 0 ) + 
+                   ( losers != null ? losers.size() 
+                                    : 0 );
+        String nTeamPath = getStringPathFromSize(size);
+        
+        sendVictory( getChannel( MatchState.ONVICTORY ), null, drawers, matchParams, 
+                        typedot + nTeamPath + ".draw", 
+                        typedot + nTeamPath + ".draw",
+                        typedot + nTeamPath + ".server_draw" );
     }
 
     public void sendYourTeamNotReadyMsg(ArenaTeam t1) {
@@ -184,14 +171,13 @@ public class MatchMessager extends MessageSerializer {
         team.sendToOtherMembers(player,msgf.getFormattedMessage(message));
     }
 
-    public void sendOnIntervalMsg(Channel serverChannel, Collection<ArenaTeam> currentLeaders, int remaining) {
+    public void sendOnIntervalMsg( int remaining, Collection<ArenaTeam> currentLeaders ) {
 
-        String msg;
         Message message = getNodeMessage("match.interval_update");
         Set<MessageOption> ops = message.getOptions();
         MessageFormatter msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message, ops);
         msgf.formatCommonOptions(currentLeaders, remaining);
-        msg = msgf.getFormattedMessage(message);
+        String msg = msgf.getFormattedMessage(message);
         
         if ( currentLeaders.isEmpty()) {
 //          msg = match.getParams().getPrefix()+"&e ends in &4" +timeStr;
@@ -221,7 +207,7 @@ public class MatchMessager extends MessageSerializer {
                     msg = msg.replaceAll("\\{teams\\}", teamStr);       
         }
         MatchMessageEvent event = new MatchIntervalMessageEvent( match, MatchState.ONMATCHINTERVAL, 
-                                                                 serverChannel, "", msg, remaining );
+                                                                 getChannel( MatchState.ONMATCHINTERVAL ), "", msg, remaining );
         match.callEvent(event);
         String emessage = event.getMatchMessage();
         if (emessage != null && !emessage.isEmpty())
@@ -232,8 +218,11 @@ public class MatchMessager extends MessageSerializer {
             event.getServerChannel().broadcast(emessage);
     }
 
-    public void sendTimeExpired(Channel serverChannel) {
-        MatchMessageEvent event = new MatchTimeExpiredMessageEvent(match,MatchState.ONMATCHTIMEEXPIRED,serverChannel,"", "");
+    public void sendTimeExpired() {
+
+        MatchMessageEvent event = new MatchTimeExpiredMessageEvent( match, 
+                                                                    MatchState.ONMATCHTIMEEXPIRED,
+                                                                    getChannel( MatchState.ONMATCHTIMEEXPIRED ), "", "" );
         match.callEvent(event);
         String message = event.getMatchMessage();
         if (message != null && !message.isEmpty())
@@ -248,7 +237,7 @@ public class MatchMessager extends MessageSerializer {
     }
 
     public String getMessage(String node, Map<String, String> params) {
-        String text = this.getNodeText(node);
+        String text = getNodeText(node);
         return text == null ? null : format(text,params);
     }
 
@@ -263,7 +252,7 @@ public class MatchMessager extends MessageSerializer {
     }
 
     public String format(String text, Map<String, String> params) {
-        if (params == null || params.isEmpty())
+        if ( params == null || params.isEmpty())
             return text;
         String[] searchList =new String[params.size()];
         String[] replaceList =new String[params.size()];
@@ -275,19 +264,21 @@ public class MatchMessager extends MessageSerializer {
         }
         return MessageFormatter.replaceEach(text, searchList, replaceList);
     }
-
-    public void sendCountdownTillPrestart(Channel serverChannel, int seconds) {
+    
+    public void sendCountdownTillPrestart( int remaining ) {
+        
+        Channel channel = getChannel( MatchState.ONCOUNTDOWNTOEVENT );
         Message message = getNodeMessage("event.countdownTillEvent");
         Message serverMessage = getNodeMessage("event.server_countdownTillEvent");
         Set<MessageOption> ops = message.getOptions();
-        if (serverChannel != Channels.NullChannel){
-            ops.addAll(serverMessage.getOptions());
+        
+        if ( channel != Channels.NullChannel ) {
+            ops.addAll( serverMessage.getOptions() );
         }
-        MessageFormatter msgf = new MessageFormatter(this, match.getParams(), 0, message, ops);
-        msgf.formatCommonOptions(null,seconds);
-        if (serverChannel != Channels.NullChannel){
-            String msg = msgf.getFormattedMessage(serverMessage);
-            serverChannel.broadcast(msg);
-        }
+        MessageFormatter msgf = new MessageFormatter( this, match.getParams(), 0, message, ops );
+        msgf.formatCommonOptions( null, remaining );
+        
+        if ( channel != Channels.NullChannel ) 
+            channel.broadcast( msgf.getFormattedMessage( serverMessage ) );
     }
 }

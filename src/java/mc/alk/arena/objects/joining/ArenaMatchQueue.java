@@ -69,17 +69,16 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.MinMax;
 
 public class ArenaMatchQueue implements ArenaListener, Listener {
-    static final boolean DEBUG = false;
     static boolean disabledAllCommands;
     final private static HashSet<String> disabledCommands = new HashSet<>();
     final private static HashSet<String> enabledCommands = new HashSet<>();
     final List<WaitingObject> joinHandlers = new LinkedList<>();
-    final Map<WaitingObject, IdTime> forceTimers = Collections.synchronizedMap(new HashMap<WaitingObject, IdTime>());
+    final Map<WaitingObject, IdTime> forceTimers = Collections.synchronizedMap(new HashMap<>());
     final protected Map<UUID, WaitingObject> inQueue = new HashMap<>();
     final protected MethodController methodController = new MethodController("QC");
     final private Map<ArenaType, ArenaQueue> arenaqueue = new ConcurrentHashMap<>();
     final Map<ArenaType,LinkedList<FoundMatch>> delayedReadyMatches = new HashMap<>();
-    final private Map<ArenaType, Integer> runningMatchTypes = Collections.synchronizedMap(new HashMap<ArenaType, Integer>());
+    final private Map<ArenaType, Integer> runningMatchTypes = Collections.synchronizedMap(new HashMap<>());
 
     final static Map<ArenaType, Integer> inQueueForGame = new HashMap<>();
     final static Map<Arena, Integer> inQueueForArena = new HashMap<>();

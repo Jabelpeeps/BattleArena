@@ -297,12 +297,12 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     }
 
     private EventParams verifyEventParams(Command command) throws IllegalArgumentException {
-        MatchParams mp = ParamController.getEventParamCopy(command.getName());
+        MatchParams mp = ParamController.getMatchParamCopy(command.getName());
         if (mp != null){
             return (EventParams)mp;
         }
         for (String alias : command.getAliases()){
-            mp = ParamController.getEventParamCopy(alias);
+            mp = ParamController.getMatchParamCopy(alias);
             if (mp != null)
                 return (EventParams) mp;
         }

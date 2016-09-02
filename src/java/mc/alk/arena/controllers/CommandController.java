@@ -83,6 +83,4 @@ public class CommandController {
         }
         return false; // by default, no command should be cancelled.
     }
-    
-    
 }

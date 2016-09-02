@@ -422,7 +422,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         if ( currentTimer != null ) 
             Bukkit.getScheduler().cancelTask(currentTimer);
         
-        currentTimer = Scheduler.scheduleSynchronousTask( () -> startMatch(), (10 * 20L ) );
+        currentTimer = Scheduler.scheduleSynchronousTask( () -> startMatch(), ( 10 * 20L ) );
     }
 
     void startMatch(){
@@ -1046,7 +1046,7 @@ public abstract class Match extends Competition implements Runnable, ArenaContro
         }
         if (nLivesPerPlayer != 1 && nLivesPerPlayer != ArenaSize.MAX) {
             player.getMetaData().setLivesLeft(nLivesPerPlayer);
-            SEntry e = scoreboard.getEntry(player.getPlayer());
+            SEntry e = scoreboard.getEntry(player.getPlayer().getName());
             if (e!=null)
                 scoreboard.setEntryNameSuffix(e, "(" + nLivesPerPlayer + ")");
         }

@@ -39,15 +39,7 @@ public class EventController {
 		registeredExecutors.put(command.toLowerCase(),executor);
 	}
 
-	public static EventExecutor getEventExecutor(AbstractComp event){
-		return registeredExecutors.get(event.getName().toLowerCase());
-	}
-
 	public static EventExecutor getEventExecutor(String eventType){
 		return registeredExecutors.get(eventType.toLowerCase());
-	}
-
-	public static boolean isEventType(String name) {
-		return ParamController.getEventParamCopy(name) != null;
 	}
 }

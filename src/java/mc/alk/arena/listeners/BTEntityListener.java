@@ -87,9 +87,9 @@ public class BTEntityListener implements Listener {
 			target = ((Player)targetEntity).getName();
 			targetPlayer = true;
 		} else if (targetEntity instanceof Tameable){
-			target = "Tamed" + targetEntity.getType().getName();
+			target = "Tamed" + targetEntity.getType().getEntityClass().getSimpleName();
 		} else {
-			target = targetEntity.getType().getName();
+			target = targetEntity.getType().getEntityClass().getSimpleName();
 		}
 		/// Should we be tracking this person
 		if (targetPlayer && (TrackerController.dontTrack(target))){
@@ -139,11 +139,11 @@ public class BTEntityListener implements Listener {
 					killer = at.getName();
 				} 
 				else {
-					killer = damager.getType().getName();
+					killer = damager.getType().getEntityClass().getSimpleName();
 				}
 			} 
 			else { 
-				killer = damager.getType().getName();
+				killer = damager.getType().getEntityClass().getSimpleName();
 			}
 		} else {
 			if (lastDamageCause == null || lastDamageCause.getCause() == null)

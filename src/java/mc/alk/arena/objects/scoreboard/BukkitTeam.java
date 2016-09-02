@@ -43,13 +43,13 @@ public class BukkitTeam extends SAPIEntry implements STeam {
     public void addPlayer(OfflinePlayer p, int defaultPoints) {
         if ( p == null ) return;
         
-        board.createEntry(p);
+        board.createEntry( p.getName() );
 
         team.addEntry(p.getName()); 
         if (board != null && defaultPoints != Integer.MIN_VALUE){
             for (ArenaObjective o : board.getObjectives()){
                 if (o.isDisplayPlayers() && o.contains(this)) {
-                    SEntry e = o.getScoreboard().getEntry(p);
+                    SEntry e = o.getScoreboard().getEntry(p.getName());
                     if (o.getPoints(e) == -1){
                         o.addEntry(p, 0);
                     }
@@ -59,22 +59,15 @@ public class BukkitTeam extends SAPIEntry implements STeam {
     }
 	@Override
 	public void removePlayer(OfflinePlayer p){
-        board.removeEntry(p);
-		team.removeEntry(p.getName());
-	}
-	
+        board.removeEntry( p.getName() );
+		team.removeEntry( p.getName() );
+	}	
 	@Override
 	public Set<String> getPlayers() { return team.getEntries(); }
 	@Override
-	public void setPrefix(String prefix){
-		prefix = MessageUtil.colorChat(prefix);
-		team.setPrefix(prefix);
-	}
+	public void setPrefix( String prefix ) { team.setPrefix( MessageUtil.colorChat( prefix ) ); }
 	@Override
-	public void setSuffix(String suffix){
-		suffix = MessageUtil.colorChat(suffix);
-		team.setSuffix(suffix);
-	}
+	public void setSuffix( String suffix ) { team.setSuffix( MessageUtil.colorChat( suffix ) ); }
 	@Override
 	public String getPrefix() { return team.getPrefix(); }
 	@Override

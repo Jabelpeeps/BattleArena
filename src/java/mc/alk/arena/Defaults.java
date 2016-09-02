@@ -93,7 +93,7 @@ public class Defaults {
     
     public static boolean TESTSERVER = false;
     public static boolean DEBUG_STRESS = false;
-    public static boolean DEBUG_MSGS = false;
+    public static boolean DEBUG_MSGS = true;
     public static boolean DEBUG_COMMANDS = false;
     public static boolean DEBUG_TIMINGS = false;
 

@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 
+import lombok.Setter;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.messaging.MessageFormatter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -23,7 +25,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class MessageSerializer extends BaseConfig {
 
-	private static MessageSerializer defaultMessages;
+	@Setter private static MessageSerializer defaultMessages;
 	private HashMap<String, MessageOptions> msgOptions = new HashMap<>();
     final private static HashMap<String, MessageSerializer> files = new HashMap<>();
     final protected MatchParams matchParams;
@@ -71,16 +73,18 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public void initMessageOptions(){
-		if (config == null) return;
+		if ( config == null ) return;
 		
 		msgOptions.clear();
-		Set<String> keys = config.getKeys(true);
+		Set<String> keys = config.getKeys( true );
 		keys.remove("version");
-		for (String key: keys){
+		for ( String key : keys ) {
 			Object obj = config.get(key);
-			if (obj == null || obj instanceof MemorySection)
-				continue;
-			msgOptions.put(key, new MessageOptions(String.valueOf(obj)));
+			if ( obj == null ) continue;
+			
+			String options = String.valueOf( obj );
+			if ( Defaults.DEBUG_MSGS ) Log.info( options );
+			msgOptions.put( key, new MessageOptions( options ) );
 		}
 	}
 
@@ -118,10 +122,6 @@ public class MessageSerializer extends BaseConfig {
 
 	public static void loadDefaults() {
 		if (defaultMessages != null) defaultMessages.reloadFile();
-	}
-
-	public static void setDefaultConfig(MessageSerializer messageSerializer) {
-		defaultMessages = messageSerializer;
 	}
 
 	protected static String getStringPathFromSize(int size) {

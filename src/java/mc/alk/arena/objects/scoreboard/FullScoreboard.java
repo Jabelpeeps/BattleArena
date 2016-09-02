@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.joining.scoreboard;
+package mc.alk.arena.objects.scoreboard;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -6,8 +6,6 @@ import java.util.List;
 
 import lombok.NoArgsConstructor;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.scoreboard.SEntry;
-import mc.alk.arena.objects.scoreboard.STeam;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.util.PlayerUtil;

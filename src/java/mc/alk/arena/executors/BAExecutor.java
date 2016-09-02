@@ -1120,7 +1120,7 @@ public class BAExecutor extends CustomCommandExecutor {
         if (!canJoin(player)) {
             return true;
         }
-        if (EventController.isEventType(mp.getName())) {
+        if ( ParamController.getMatchParams(mp.getName()) != null ) {
             return MessageUtil.sendMessage(player, "&4[Duel] &cYou can't duel someone in an Event type!");
         }
         // / Parse the duel options

@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.joining.scoreboard;
+package mc.alk.arena.objects.scoreboard;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,12 +10,6 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.scoreboard.ArenaObjective;
-import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
-import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
-import mc.alk.arena.objects.scoreboard.SEntry;
-import mc.alk.arena.objects.scoreboard.STeam;
-import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Countdown;
 import mc.alk.arena.util.Countdown.CountdownCallback;

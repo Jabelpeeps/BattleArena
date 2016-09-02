@@ -127,7 +127,7 @@ public class SpawnSerializer {
        if (is != null && et != null) {
             int keysize = key.length();
             int isizedif = Math.abs(is.getType().name().length() - keysize);
-            int esizedif = Math.abs(et.getName().length() - keysize);
+            int esizedif = Math.abs(et.getEntityClass().getSimpleName().length() - keysize);
             if (isizedif <= esizedif) {
                 spawns.add(new ItemSpawn(is));
             } 

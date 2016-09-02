@@ -291,7 +291,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
                 mc.sendCantFitTeam(team);
                 break;
         }
-
         return null;
     }
 
@@ -351,8 +350,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     public String getInfo() {
         return StateOptions.getInfo(params, params.getName());
     }
-
-    public boolean canLeaveTeam(ArenaPlayer p) {return canLeave(p);}
 
     /**
      * Broadcast to all players in the Event
@@ -420,31 +417,31 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     @Override
-    public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {/* do nothing */}
+    public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) { }
     @Override
-    public void addedToTeam(ArenaTeam team, ArenaPlayer player) {/* do nothing */}
+    public void addedToTeam(ArenaTeam team, ArenaPlayer player) { }
     @Override
-    public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {/* do nothing */}
+    public void removedFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) { }
     @Override
-    public void removedFromTeam(ArenaTeam team, ArenaPlayer player) {/* do nothing */}
+    public void removedFromTeam(ArenaTeam team, ArenaPlayer player) { }
     @Override
-    public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     @Override
-    public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     @Override
-    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     @Override
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
         player.removeCompetition(this);
     }
     @Override
-    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     @Override
-    public void onPostEnter(ArenaPlayer player,ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPostEnter(ArenaPlayer player,ArenaPlayerTeleportEvent apte) { }
     @Override
-    public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     @Override
-    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {/* do nothing */}
+    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     @EventHandler( priority=EventPriority.MONITOR )
     public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){

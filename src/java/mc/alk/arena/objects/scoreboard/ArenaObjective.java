@@ -130,7 +130,6 @@ public class ArenaObjective implements ScoreTracker {
 		setPoints( team,points + oldPoints );
 		return points + oldPoints;
 	}
-
 	public Integer addPoints(ArenaPlayer ap, int points) {
 		int oldPoints = playerPoints.getPoints(ap);
 		setPoints( ap, points + oldPoints );
@@ -142,7 +141,6 @@ public class ArenaObjective implements ScoreTracker {
 		setPoints( team, oldPoints - points );
 		return oldPoints - points;
 	}
-
 	public int subtractPoints(ArenaPlayer ap, int points) {
 		int oldPoints = playerPoints.getPoints(ap);
 		setPoints( ap, oldPoints - points );
@@ -196,7 +194,6 @@ public class ArenaObjective implements ScoreTracker {
 		setPoints(p.getName(), points);
 		return playerPoints.setPoints(p, points);
 	}
-
 	public Integer setPoints(ArenaTeam t, int points) {
 		setPoints(t.getIDString(), points);
 		return teamPoints.setPoints(t, points);

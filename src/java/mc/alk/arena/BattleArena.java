@@ -146,7 +146,7 @@ public class BattleArena extends JavaPlugin {
         new YamlFileUpdater(this).updateMessageSerializer(self, defaultMessages);
         
         defaultMessages.loadAll();
-        MessageSerializer.setDefaultConfig(defaultMessages);
+        MessageSerializer.setDefaultMessages(defaultMessages);
 
         bAExecutor = new BAExecutor();
         pluginListener.loadAll(); 

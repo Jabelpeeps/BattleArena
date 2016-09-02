@@ -100,7 +100,6 @@ public class ParamController {
     public static MatchParams getMatchParamCopy(ArenaType type){
         return getMatchParamCopy(type.getName());
     }
-
     /**
      * Return a copy of the found matchparams
      * @param type ArenaType
@@ -108,21 +107,8 @@ public class ParamController {
      */
     public static MatchParams getMatchParamCopy(String type){
         MatchParams mp = types.get(type);
-        if (mp == null)
-            return null;
+        if ( mp == null ) return null;
         return mp instanceof EventParams ? new EventParams(mp) : new MatchParams(mp);
-    }
-
-    /**
-     * Return a copy of the found event params
-     * @param type ArenaType
-     * @return EventParams
-     */
-    public static EventParams getEventParamCopy(String type){
-        MatchParams mp = types.get(type);
-        if (mp == null || !(mp instanceof EventParams))
-            return null;
-        return new EventParams(mp);
     }
 
     public static String getAvaibleTypes(Set<String> disabled) {
@@ -163,8 +149,5 @@ public class ParamController {
 
     public static EventParams copyParams(EventParams params) {
         return new EventParams(params);
-
     }
-
-
 }

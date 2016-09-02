@@ -106,7 +106,7 @@ public class ArenaMatch extends Match {
         
         if (nLivesPerPlayer != ArenaSize.MAX) {
             int curLives = nLivesPerPlayer - nDeaths;
-            SEntry e = scoreboard.getEntry(target.getPlayer());
+            SEntry e = scoreboard.getEntry(target.getPlayer().getName());
             if (e != null)
                 scoreboard.setEntryNameSuffix(e, curLives <= 1 ? "" : "&4(" + curLives + ")");
         }
@@ -270,7 +270,7 @@ public class ArenaMatch extends Match {
                                         if (!scoreboard.hasThisScoreboard(p.getPlayer())) {
                                             scoreboard.setScoreboard(p.getPlayer());
                                         }
-                                        SEntry e = scoreboard.getEntry(p.getPlayer());
+                                        SEntry e = scoreboard.getEntry(p.getPlayer().getName());
                                         if (e != null) {
                                             /// Either set the seconds remaining, or back to the current lives
                                             if (secs > 0) {
