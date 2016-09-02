@@ -69,7 +69,9 @@ public class ArenaMatch extends Match {
     @ArenaEventHandler( suppressCastWarnings = true, bukkitPriority = EventPriority.MONITOR )
     public void onPlayerDeath(PlayerDeathEvent event) {
         ArenaPlayer target = PlayerController.toArenaPlayer(event.getEntity());
+        
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
+        
         if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) {
             return;
         }
@@ -220,6 +222,7 @@ public class ArenaMatch extends Match {
     @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         ArenaPlayer p = PlayerController.toArenaPlayer(event.getPlayer());
+        
         if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
 
         if (isWon()) return;

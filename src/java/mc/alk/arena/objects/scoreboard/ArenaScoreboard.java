@@ -244,8 +244,8 @@ public class ArenaScoreboard {
             e = row.remove(id);
         }
         if ( e != null ) {
-            for ( ArenaObjective o : getObjectives() ) {
-                o.removeEntry( e );
+            for ( ArenaObjective objective : getObjectives() ) {
+                objective.removeEntry( e );
             }
         }
         return e;

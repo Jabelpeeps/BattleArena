@@ -124,6 +124,7 @@ match:
     interval_update: '{prefix} Game ends in {time}.'
     interval_update_winning: '&6{winner}&e leads with &6{winnerpointsfor} &ekills and &6{winnerpointsagainst} deaths'
     interval_update_tied: 'Is tied between &6{teams}'
+    
     oneTeam: ### 1 team matches
         prestart: '&eYour {matchname}&e starts in {time}.'
         server_prestart: '&6{prefix} {teamshort1} is entering the {matchname}!'
@@ -139,6 +140,7 @@ match:
         draw: "&eThe {matchname}&e has ended in a draw"
         server_victory: '{prefix} {winnerlong}&e was victorious in the {matchname}!'
         server_draw: "{prefix} ended in a draw!"
+    
     twoTeams: ## 1 team vs another team
         prestart: '&eYour {matchname}&e match against {otherteam}&e starts in {time}.'
         server_prestart: '&6{prefix} {teamshort1}&6 vs {teamshort2}&6!'
@@ -157,6 +159,7 @@ match:
         draw: "&eThe {matchname}&e has ended in a draw"
         server_victory: '{prefix} {winnerlong}&e defeated {loserlong}!'
         server_draw: '{teamlong1}&e drew {teamlong2}!'
+
     multipleTeams: ## many teams against each other
         prestart: '{prefix}&6 {matchname} starts in {time}.'
         server_prestart: '&6{prefix} Participants: {participants} &6'

@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
+
 import lombok.Setter;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.events.matches.MatchIntervalMessageEvent;
@@ -81,9 +84,14 @@ public class MatchMessager extends MessageSerializer {
     private void sendMessageToTeams( Channel serverChannel, Collection<ArenaTeam> teams, 
                                         String path, String serverpath, Integer seconds ) {
         
-        final String nTeamPath = getStringPathFromSize(teams.size());
+        String nTeamPath = getStringPathFromSize(teams.size());
         Message message = getNodeMessage( typedot + nTeamPath + "." + path );
         Message serverMessage = getNodeMessage( typedot + nTeamPath + "." + serverpath );
+        
+        if ( Defaults.DEBUG ) 
+            Log.info( "sendMessageToTeams() has found these messages:-  nTeamPath='" + nTeamPath + 
+                        "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
+
         Set<MessageOption> ops = message.getOptions();
         
         if (serverChannel != Channels.NullChannel){

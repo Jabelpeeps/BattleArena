@@ -88,11 +88,11 @@ public class MessageSerializer extends BaseConfig {
 		return defaultMessages != null ? defaultMessages.getNodeMessage(path) : null;
 	}
 
-	public Message getNodeMessage(String path) {
-		if (config != null && config.contains(path)){
-			return new Message(config.getString(path), msgOptions.get(path));
+	public Message getNodeMessage( String path ) {
+		if ( config != null && config.contains( path ) ) {
+			return new Message( config.getString( path ), msgOptions.get( path ));
 		}
-		if (this != defaultMessages){
+		if ( this != defaultMessages ) {
 			return defaultMessages.getNodeMessage(path);
 		}
         return null;

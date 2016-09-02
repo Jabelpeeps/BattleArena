@@ -446,20 +446,14 @@ public class ArenaObjective implements ScoreTracker {
         return getOrCreateSAPIScore( e, 0 );
     }
 
-    public SEntry removeEntry( OfflinePlayer player ) {
-        SEntry e = scoreboard.getEntry( player );
-        if ( e == null ) return null;
-        return removeEntry(e);
-    }
-
-    public SEntry removeEntry( String _id ) {
+    public void removeEntry( String _id ) {
         SEntry e = scoreboard.getEntry(_id);
-        if (e == null) return null;
-        return removeEntry(e);
+        if ( e != null ) 
+            removeEntry(e);
     }
 
-    public SEntry removeEntry( SEntry entry ) {
-        return entries.remove( entry ).entry;
+    public void removeEntry( SEntry entry ) {      
+        entries.remove( entry );
     }
 
     public int getPoints( String _id ) {
