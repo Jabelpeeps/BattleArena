@@ -57,7 +57,6 @@ import mc.alk.arena.serializers.ArenaControllerSerializer;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.BAClassesSerializer;
 import mc.alk.arena.serializers.BAConfigSerializer;
-import mc.alk.arena.serializers.BaseConfig;
 import mc.alk.arena.serializers.EventScheduleSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.serializers.SignSerializer;
@@ -67,7 +66,6 @@ import mc.alk.arena.serializers.TeamHeadSerializer;
 import mc.alk.arena.serializers.YamlFileUpdater;
 import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.FileLogger;
-import mc.alk.arena.util.FileUpdater;
 import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
@@ -108,7 +106,6 @@ public class BattleArena extends JavaPlugin {
     public void onEnable() {
         self = this;
         PluginDescriptionFile pdfFile = getDescription();
-//        pluginname = pdfFile.getName();
         version = pdfFile.getVersion();
         Log.setLogger(getLogger());
         
@@ -117,26 +114,28 @@ public class BattleArena extends JavaPlugin {
 
         /// Create our plugin folder if its not there
         final File dir = getDataFolder();
-        FileUpdater.makeIfNotExists(dir);
-        FileUpdater.makeIfNotExists(new File(dir + "/competitions"));
-        FileUpdater.makeIfNotExists(new File(dir + "/messages"));
-        FileUpdater.makeIfNotExists(new File(dir + "/saves"));
-        FileUpdater.makeIfNotExists(new File(dir + "/modules"));
-        FileUpdater.makeIfNotExists(new File(dir + "/otherPluginConfigs"));
-        FileUpdater.makeIfNotExists(new File(dir + "/victoryConditions"));
+        FileUtil.makeIfNotExists(dir);
+        FileUtil.makeIfNotExists(new File(dir + "/competitions"));
+        FileUtil.makeIfNotExists(new File(dir + "/messages"));
+        FileUtil.makeIfNotExists(new File(dir + "/saves"));
+        FileUtil.makeIfNotExists(new File(dir + "/modules"));
+        FileUtil.makeIfNotExists(new File(dir + "/otherPluginConfigs"));
+        FileUtil.makeIfNotExists(new File(dir + "/victoryConditions"));
         Tracker.loadConfigs();
 
 
         Class<?> clazz = getClass();       
-        for ( String c : new String[]{ "HeroesConfig", "McMMOConfig", "WorldGuardConfig" } ) {
-            
-            String source = "/default_files/otherPluginConfigs/" + c + ".yml";
-            String dest = dir.getPath() + "/otherPluginConfigs/" + c + ".yml";
-            new BaseConfig().setConfig( FileUtil.load( clazz, dest, source ) );
+        for ( String each : new String[]{ "HeroesConfig", "McMMOConfig", "WorldGuardConfig" } ) {
+     
+            FileUtil.load( clazz, 
+                           dir.getPath() + "/otherPluginConfigs/" + each + ".yml", 
+                           "/default_files/otherPluginConfigs/" + each + ".yml" );
         }
-        for ( String c : new String[]{ "AllKills", "KillLimit", "MobKills","PlayerKills" } ) {
-            new BaseConfig().setConfig( FileUtil.load( clazz, dir.getPath() + "/victoryConditions/" + c + ".yml",
-                                                        "/default_files/victoryConditions/" + c + ".yml" ) );
+        
+        for ( String each : new String[]{ "AllKills", "KillLimit", "MobKills","PlayerKills" } ) {
+            FileUtil.load( clazz, 
+                           dir.getPath() + "/victoryConditions/" + each + ".yml",
+                           "/default_files/victoryConditions/" + each + ".yml" );
         }
 
         MessageSerializer defaultMessages = new MessageSerializer( "default", null );

@@ -12,8 +12,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.messaging.MessageHandler;
 import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.messaging.MessageHandler;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 public class MessageUtil {

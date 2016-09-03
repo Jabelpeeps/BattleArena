@@ -1,9 +1,8 @@
-package mc.alk.arena.controllers.messaging;
+package mc.alk.arena.objects.messaging;
 
 import java.util.List;
 
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.util.Log;

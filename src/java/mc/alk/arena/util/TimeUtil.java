@@ -2,7 +2,7 @@ package mc.alk.arena.util;
 
 import java.text.SimpleDateFormat;
 
-import mc.alk.arena.controllers.messaging.MessageHandler;
+import mc.alk.arena.objects.messaging.MessageHandler;
 
 
 public class TimeUtil {

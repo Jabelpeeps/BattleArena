@@ -8,15 +8,17 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.RequiredArgsConstructor;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.util.TeamUtil;
 
-
+@RequiredArgsConstructor
 public class ArenaDebugger {
 	static HashMap<Arena,ArenaDebugger> arenas = null;
-
-
+    final Arena arena;
+    HashMap<Location, ItemStack> oldBlocks = new HashMap<>(); /// Used for debugging with show/hide spawns
+    
 	public static ArenaDebugger getDebugger(Arena arena){
 		if (arenas == null){
 			arenas = new HashMap<>();
@@ -30,19 +32,11 @@ public class ArenaDebugger {
 		return ad;
 	}
 
-
 	public static void removeDebugger(ArenaDebugger ad) {
 		arenas.remove(ad.arena);
 		if (arenas.isEmpty()){
 			arenas = null;
 		}
-	}
-
-    final Arena arena;
-	HashMap<Location, ItemStack> oldBlocks = new HashMap<>(); /// Used for debugging with show/hide spawns
-
-	public ArenaDebugger(Arena arena) {
-		this.arena = arena;
 	}
 
 	static public Location getLocKey(Location l){

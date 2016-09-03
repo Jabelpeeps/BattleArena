@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.messaging;
+package mc.alk.arena.objects.messaging;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Set;
 import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -325,7 +324,7 @@ public class MessageFormatter{
 
 
 	public class TeamNames{
-		public String longName = null, shortName = null, name = null;
+		public String longName, shortName, name;
 	}
 
 
@@ -339,7 +338,6 @@ public class MessageFormatter{
 		return tn;
 	}
 
-
 	private ArenaTeam getOtherTeam(ArenaTeam t, Collection<ArenaTeam> teams) {
 		for (ArenaTeam oteam: teams){
 			if (oteam.getId() != t.getId()){
@@ -352,13 +350,13 @@ public class MessageFormatter{
 	private String formatTeamName(Message message, ArenaTeam t) {
 		if (t== null)
 			return null;
-		Set<MessageOption> ops = message.getOptions();
-		String[] searchList = new String[ops.size()];
-		String[] replaceList = new String[ops.size()];
+		Set<MessageOption> options = message.getOptions();
+		String[] searches = new String[options.size()];
+		String[] replaces = new String[options.size()];
 
 		int i=0;
 
-		for (MessageOption mop : ops){
+		for (MessageOption mop : options){
 			if (mop == null)
 				continue;
 
@@ -372,12 +370,12 @@ public class MessageFormatter{
 			default:
 				continue;
 			}
-			searchList[i] = mop.getReplaceString();
-			replaceList[i] = repl;
+			searches[i] = mop.getReplaceString();
+			replaces[i] = repl;
 			i++;
 		}
 
-		return replaceEach(message.getMessage(), searchList, replaceList);
+		return replaceEach(message.getMessage(), searches, replaces);
 	}
 
 	public static String replaceEach(String text, String[] searchList, String[] replacementList) {
@@ -399,7 +397,6 @@ public class MessageFormatter{
 	public String getFormattedMessage(Message message) {
 		return replaceEach(message.getMessage(), searchList, replaceList);
 	}
-
 
 	/**
      * This code is from StringUtils version 3 from Apache.  Bukkit is using the older version of this code
@@ -452,12 +449,10 @@ public class MessageFormatter{
 	 * @since 2.4
 	 */
 	private static String replaceEach(String text, String[] searchList, String[] replacementList,
-			boolean repeat, int timeToLive)
-	{
+			boolean repeat, int timeToLive) {
 
 		if (text == null || text.length() == 0 || searchList == null ||
-				searchList.length == 0 || replacementList == null || replacementList.length == 0)
-		{
+				searchList.length == 0 || replacementList == null || replacementList.length == 0) {
 			return text;
 		}
 
@@ -489,8 +484,7 @@ public class MessageFormatter{
 		// NOTE: logic duplicated below START
 		for (int i = 0; i < searchLength; i++) {
 			if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-					searchList[i].length() == 0 || replacementList[i] == null)
-			{
+					searchList[i].length() == 0 || replacementList[i] == null) {
 				continue;
 			}
 			tempIndex = text.indexOf(searchList[i]);
@@ -547,8 +541,7 @@ public class MessageFormatter{
 			// NOTE: logic mostly duplicated above START
 			for (int i = 0; i < searchLength; i++) {
 				if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-						searchList[i].length() == 0 || replacementList[i] == null)
-				{
+						searchList[i].length() == 0 || replacementList[i] == null) {
 					continue;
 				}
 				tempIndex = text.indexOf(searchList[i], start);
@@ -556,7 +549,8 @@ public class MessageFormatter{
 				// see if we need to keep searching for this
 				if (tempIndex == -1) {
 					noMoreMatchesForReplIndex[i] = true;
-				} else {
+				} 
+				else {
 					if (textIndex == -1 || tempIndex < textIndex) {
 						textIndex = tempIndex;
 						replaceIndex = i;
@@ -564,7 +558,6 @@ public class MessageFormatter{
 				}
 			}
 			// NOTE: logic duplicated above END
-
 		}
 		int textLength = text.length();
 		for (int i = start; i < textLength; i++) {
@@ -574,7 +567,6 @@ public class MessageFormatter{
 		if (!repeat) {
 			return result;
 		}
-
 		return replaceEach(result, searchList, replacementList, true, timeToLive - 1);
 	}
 

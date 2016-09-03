@@ -146,8 +146,7 @@ public class ArenaType implements Comparable<ArenaType> {
      * @return Arena
      */
     public static Arena createArena(String arenaName, MatchParams arenaParams) {
-        ArenaType arenaType = arenaParams.getType();
-        return createArena(arenaType, arenaName, arenaParams, true);
+        return createArena( arenaParams.getType(), arenaName, arenaParams, true );
     }
 
     /**
@@ -160,8 +159,7 @@ public class ArenaType implements Comparable<ArenaType> {
      * @return Arena
      */
     public static Arena createArena(String arenaName, MatchParams arenaParams, boolean init) {
-        ArenaType arenaType = arenaParams.getType();
-        return createArena(arenaType, arenaName, arenaParams, init);
+        return createArena( arenaParams.getType(), arenaName, arenaParams, init );
     }
 
     private static Arena createArena(ArenaType arenaType, String arenaName, MatchParams arenaParams, boolean init) {

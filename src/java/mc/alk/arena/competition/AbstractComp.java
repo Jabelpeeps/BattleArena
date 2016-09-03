@@ -24,9 +24,6 @@ import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
-import mc.alk.arena.controllers.messaging.EventMessageImpl;
-import mc.alk.arena.controllers.messaging.EventMessager;
-import mc.alk.arena.controllers.messaging.MessageHandler;
 import mc.alk.arena.events.events.EventCancelEvent;
 import mc.alk.arena.events.events.EventCompletedEvent;
 import mc.alk.arena.events.events.EventFinishedEvent;
@@ -44,7 +41,8 @@ import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.joining.TeamJoinObject;
-import mc.alk.arena.objects.messaging.EventMessageHandler;
+import mc.alk.arena.objects.messaging.EventMessenger;
+import mc.alk.arena.objects.messaging.MessageHandler;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
@@ -58,7 +56,7 @@ import mc.alk.arena.util.MessageUtil;
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {
     @Getter final String name; 
     @Getter protected EventParams params; 
-    EventMessager mc; 
+    @Getter @Setter EventMessenger messenger; 
     Countdown timer; 
     @Setter protected AbstractJoinHandler teamJoinHandler; 
     @Getter protected EventState state; 
@@ -75,9 +73,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         transitionTo(EventState.CLOSED);
         name = _params.getName();
         teamJoinHandler = TeamJoinFactory.createTeamJoinHandler(_params, this);
-        if (mc == null)
-            mc = new EventMessager(this);
-        mc.setMessageHandler(new EventMessageImpl(this));
+        messenger = new EventMessenger(this);
     }
 
     public void openEvent() {
@@ -89,12 +85,12 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
 
         stopTimer();
         transitionTo(EventState.OPEN);
-        mc.sendEventOpenMsg();
+        messenger.sendEventOpenMsg();
     }
 
     public void autoEvent(){
         openEvent();
-        mc.sendCountdownTillEvent(params.getSecondsTillStart());
+        messenger.sendCountdownTillEvent(params.getSecondsTillStart());
         timer = new Countdown(BattleArena.getSelf(),(long)params.getSecondsTillStart(),
                 (long)params.getAnnouncementInterval(), this);
     }
@@ -147,9 +143,9 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     protected void setEventResult(MatchResult result, boolean announce) {
         if (announce){
             if (result.hasVictor()){
-                mc.sendEventVictory(result.getVictors(), result.getLosers());
+                messenger.sendEventVictory(result.getVictors(), result.getLosers());
             } else {
-                mc.sendEventDraw(result.getDrawers(), result.getLosers());
+                messenger.sendEventDraw(result.getDrawers(), result.getLosers());
             }
         }
         callEvent(new EventResultEvent(this,result));
@@ -175,7 +171,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         stopTimer();
         List<ArenaTeam> newTeams = new ArrayList<>(teams);
         callEvent(new EventCancelEvent(this));
-        mc.sendEventCancelled(newTeams);
+        messenger.sendEventCancelled(newTeams);
         endEvent();
     }
 
@@ -280,15 +276,15 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
             case ADDED:
                 for (ArenaPlayer player: tqo.getTeam().getPlayers()){
                     player.addCompetition(this);}
-                mc.sendTeamJoined(tqo.getTeam());
+                messenger.sendTeamJoinedEvent(tqo.getTeam());
                 break;
             case ADDED_STILL_NEEDS_PLAYERS:
-                mc.sendWaitingForMorePlayers(team, tjr.remaining);
+                messenger.sendWaitingForMorePlayers(team, tjr.remaining);
                 for (ArenaPlayer player: tqo.getTeam().getPlayers()){
                     player.addCompetition(this);}
                 break;
             case CANT_FIT:
-                mc.sendCantFitTeam(team);
+                messenger.sendCantFitTeam(team);
                 break;
         }
         return null;
@@ -309,22 +305,22 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         }
         return size;
     }
-
-    /**
-     * Set a Message handler to override default Event messages
-     * @param handler EventMessageHandler
-     */
-    public void setMessageHandler(EventMessageHandler handler){
-        mc.setMessageHandler(handler);
-    }
-
-    /**
-     * Return the Message Handler for this Event
-     * @return EventMessageHandler
-     */
-    public EventMessageHandler getMessageHandler(){
-        return mc.getMessageHandler();
-    }
+//
+//    /**
+//     * Set a Message handler to override default Event messages
+//     * @param handler EventMessageHandler
+//     */
+//    public void setMessenger(EventMessenger handler){
+//        messenger.setMessageHandler(handler);
+//    }
+//
+//    /**
+//     * Return the Message Handler for this Event
+//     * @return EventMessageHandler
+//     */
+//    public EventMessenger getMessager(){
+//        return messenger.getMessageHandler();
+//    }
 
     public abstract String getResultString();
 
@@ -370,11 +366,11 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
             if (this.hasEnough() ){
                 startEvent();
             } else {
-                mc.sendEventCancelledDueToLackOfPlayers(getPlayers());
+                messenger.sendEventCancelledDueToLackOfPlayers(getPlayers());
                 cancelEvent();
             }
         } else {
-            mc.sendCountdownTillEvent(remaining);
+            messenger.sendCountdownTillEvent(remaining);
         }
         return true;
     }
@@ -396,7 +392,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     public void setSilent(boolean silent) {
-        mc.setSilent(silent);
+        messenger.setSilent(silent);
     }
 
     @Override

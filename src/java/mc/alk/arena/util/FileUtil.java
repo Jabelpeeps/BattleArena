@@ -1,8 +1,6 @@
 package mc.alk.arena.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,54 +10,54 @@ import mc.alk.arena.BattleArena;
 
 public class FileUtil {
 
-	@SuppressWarnings( "resource" )
-    public static InputStream getInputStream(Class<?> clazz, File file) {
-		InputStream inputStream = null;
-		if (file.exists()){
-			try {
-				return new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				Log.printStackTrace(e);
-			}
-		}
-		String path = file.getPath();
-		/// Load from pluginJar
-		inputStream = clazz.getResourceAsStream(path);
-		
-		if (inputStream == null)
-			inputStream = clazz.getClassLoader().getResourceAsStream(path);
-		
-		return inputStream;
-	}
-
-	@SuppressWarnings( "resource" )
-    public static InputStream getInputStream(Class<?> clazz, File defaultFile, File defaultPluginFile) {
-		InputStream inputStream = null;
-		if (defaultPluginFile.exists()){
-			try {
-				inputStream = new FileInputStream(defaultPluginFile);
-			} catch (FileNotFoundException e) {
-				Log.printStackTrace(e);
-			}
-		}
-
-		/// Try to load a default file from the given plugin
-		/// Load from ExtensionPlugin.Jar
-		if (inputStream == null)
-			inputStream = clazz.getResourceAsStream(defaultPluginFile.getPath());
-		
-		if (inputStream == null) /// will this work to fix the problems in windows??
-			inputStream = clazz.getClassLoader().getResourceAsStream(defaultPluginFile.getPath());
-		/// Load from the defaults
-		/// Load from BattleArena.jar
-		if (inputStream == null)
-			inputStream = BattleArena.getSelf().getClass().getResourceAsStream(defaultFile.getPath());
-		
-		if (inputStream == null)
-			inputStream = BattleArena.getSelf().getClass().getClassLoader().getResourceAsStream(defaultFile.getPath());
-		
-		return inputStream;
-	}
+//	@SuppressWarnings( "resource" )
+//    public static InputStream getInputStream(Class<?> clazz, File file) {
+//		InputStream inputStream = null;
+//		if (file.exists()){
+//			try {
+//				return new FileInputStream(file);
+//			} catch (FileNotFoundException e) {
+//				Log.printStackTrace(e);
+//			}
+//		}
+//		String path = file.getPath();
+//		/// Load from pluginJar
+//		inputStream = clazz.getResourceAsStream(path);
+//		
+//		if (inputStream == null)
+//			inputStream = clazz.getClassLoader().getResourceAsStream(path);
+//		
+//		return inputStream;
+//	}
+//
+//	@SuppressWarnings( "resource" )
+//    public static InputStream getInputStream(Class<?> clazz, File defaultFile, File defaultPluginFile) {
+//		InputStream inputStream = null;
+//		if (defaultPluginFile.exists()){
+//			try {
+//				inputStream = new FileInputStream(defaultPluginFile);
+//			} catch (FileNotFoundException e) {
+//				Log.printStackTrace(e);
+//			}
+//		}
+//
+//		/// Try to load a default file from the given plugin
+//		/// Load from ExtensionPlugin.Jar
+//		if (inputStream == null)
+//			inputStream = clazz.getResourceAsStream(defaultPluginFile.getPath());
+//		
+//		if (inputStream == null) /// will this work to fix the problems in windows??
+//			inputStream = clazz.getClassLoader().getResourceAsStream(defaultPluginFile.getPath());
+//		/// Load from the defaults
+//		/// Load from BattleArena.jar
+//		if (inputStream == null)
+//			inputStream = BattleArena.getSelf().getClass().getResourceAsStream(defaultFile.getPath());
+//		
+//		if (inputStream == null)
+//			inputStream = BattleArena.getSelf().getClass().getClassLoader().getResourceAsStream(defaultFile.getPath());
+//		
+//		return inputStream;
+//	}
 
 	public static boolean hasResource(Class<?> clazz, String default_file) {
 		
@@ -89,6 +87,7 @@ public class FileUtil {
 	public static File load( String config_file, String default_file ) {
 	    return load( BattleArena.class, config_file, default_file );
 	}
+	
 	public static File load(Class<?> clazz, String config_file, String default_file ) {
 	    
 		File file = new File( config_file );
@@ -127,4 +126,23 @@ public class FileUtil {
             output.write( buf, 0, len );
         }
 	}
+
+    public static void deleteIfExists(File file) {
+        if ( file.exists()) file.delete();
+    }
+
+    public static void makeIfNotExists(File file) {
+        if ( !file.exists()) file.mkdir();
+    }
+
+    public static void moveIfExists(File file, File file2) {
+        if (file.exists()){
+            try {
+                FileUpdater.renameTo(file, file2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            deleteIfExists(file);
+        }
+    }
 }

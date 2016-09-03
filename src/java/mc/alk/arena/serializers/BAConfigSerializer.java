@@ -25,7 +25,6 @@ import mc.alk.arena.executors.EventExecutor;
 import mc.alk.arena.executors.TournamentExecutor;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.EventParams;
-import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaFactory;
@@ -114,15 +113,15 @@ public class BAConfigSerializer extends BaseConfig {
         File compDir = new File(dir.getPath() + "/competitions");
 
         /// Load all default types
-        for (String comp : allTypes) {
+        for ( String comp : allTypes ) {
             
-            String capComp = StringUtils.capitalize(comp);
-            CustomCommandExecutor executor = comp.equalsIgnoreCase("duel") ? new DuelExecutor() : null;
+            String capComp = StringUtils.capitalize( comp );
+            CustomCommandExecutor executor = comp.equalsIgnoreCase( "duel" ) ? new DuelExecutor() : null;
             APIRegistrationController.registerCompetition( plugin, capComp, capComp, ArenaFactory.DEFAULT, executor,
-                                                           new File(compDir + "/" + capComp + "Config.yml"),
-                                                           new File(compDir + "/" + capComp + "Messages.yml"),
-                                                           new File("/default_files/competitions/" + capComp + "Config.yml"),
-                                                           new File(dir.getPath() + "/saves/arenas.yml"));
+                                                           new File( compDir + "/" + capComp + "Config.yml" ),
+                                                           new File( compDir + "/" + capComp + "Messages.yml" ),
+                                                           new File( "/default_files/competitions/" + capComp + "Config.yml" ),
+                                                           new File( dir.getPath() + "/saves/arenas.yml" ) );
         }
 
         /// These commands arent specified in the config, so manually add.
@@ -131,29 +130,25 @@ public class BAConfigSerializer extends BaseConfig {
         ArenaType.addAliasForType("Colosseum", "col");
 
         /// And lastly.. add our tournament which is different than the rest
-        ArenaType.register("Tourney", Arena.class, plugin);
+        ArenaType.register( "Tourney", Arena.class, plugin );
         
-        File cf = FileUtil.load( BattleArena.getSelf().getClass(), 
-                                 dir.getPath() + "/competitions/TourneyConfig.yml",
-                                 "/default_files/competitions/TourneyConfig.yml" );
-        
-        ConfigSerializer cs = new ConfigSerializer( plugin, cf, "Tourney" );
-        MatchParams mp;
+        ConfigSerializer cs = new ConfigSerializer( plugin, 
+                                                    FileUtil.load( BattleArena.getSelf().getClass(), 
+                                                                   dir.getPath() + "/competitions/TourneyConfig.yml",
+                                                                   "/default_files/competitions/TourneyConfig.yml" ), 
+                                                    "Tourney" );
         try {
-            mp = cs.loadMatchParams();
-            EventParams ep = new EventParams(mp);
-            ep.setParent(ParamController.getMatchParams(Defaults.DEFAULT_CONFIG_NAME));
-            EventOpenOptions.parseOptions(new String[]{}, null, ep);
-            try {
-                EventExecutor executor = new TournamentExecutor();
-                BattleArena.getSelf().getCommand("tourney").setExecutor(executor);
-                EventController.addEventExecutor("tourney", "tourney", executor);
-                ParamController.addMatchParams(ep);
-            } catch (Exception e) {
-                Log.err("Tourney could not be added");
-            }
-        } catch (Exception e) {
-            Log.printStackTrace(e);
+            EventParams ep = new EventParams( cs.loadMatchParams() );
+            ep.setParent( ParamController.getMatchParams( Defaults.DEFAULT_CONFIG_NAME ) );
+            EventOpenOptions.parseOptions( new String[]{}, null, ep );
+            EventExecutor executor = new TournamentExecutor();
+            BattleArena.getSelf().getCommand( "tourney" ).setExecutor( executor );
+            EventController.addEventExecutor( "tourney", "tourney", executor );
+            ParamController.addMatchParams( ep );
+        } 
+        catch ( Exception e ) {
+            Log.err( "Tourney could not be added" );
+            e.printStackTrace();
         }
     }
 
@@ -388,10 +383,6 @@ public class BAConfigSerializer extends BaseConfig {
     }
 
     public ConfigurationSection getWorldGuardConfig() {
-        /// Look for it in the old location first, config.yml
-        if (config.contains("defaultWGFlags")) {
-            return config;
-        }
         return loadOtherConfigSection(
                 BattleArena.getSelf().getDataFolder() + "/otherPluginConfigs/WorldGuardConfig.yml" );
     }

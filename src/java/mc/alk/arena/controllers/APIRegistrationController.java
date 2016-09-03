@@ -1,20 +1,14 @@
 package mc.alk.arena.controllers;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +16,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.executors.BAExecutor;
@@ -37,93 +32,94 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.serializers.ArenaSerializer;
 import mc.alk.arena.serializers.ConfigSerializer;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.util.FileUpdater;
 import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.Log;
 
 public class APIRegistrationController {
 
-    final static Set<String> delayedInits = Collections.synchronizedSet(new HashSet<String>());
+    final static Set<String> delayedInits = Collections.synchronizedSet( new HashSet<String>() );
 
-    private static boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
-        if (fullFile.exists()) {
-            return true;
-        }
-        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName) ) ) {
-            return inputStream != null && createFile(fullFile, name, cmd, inputStream);
-        }
-    }
+//    private static boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
+//        if (fullFile.exists()) {
+//            return true;
+//        }
+//        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName) ) ) {
+//            return inputStream != null && createFile(fullFile, name, cmd, inputStream);
+//        }
+//    }
+//
+//    private static boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
+//                                                            String fullFileName, String name, String cmd) throws IOException {
+//        
+//        if ( pluginFile != null && pluginFile.exists() )  return true; 
+//        
+//        if ( name == null || name.isEmpty() || cmd == null ) return false;
+//        
+//        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fullFileName)) ) {
+//            return createFile(pluginFile, name, cmd, inputStream);  
+//        }
+//        catch ( NullPointerException e ) {
+//            if ( defaultFile != null && defaultPluginFile != null ) {
+//                try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), defaultFile, defaultPluginFile) ) {
+//                    return createFile(pluginFile, name, cmd, inputStream);  
+//                }
+//            }
+//        }
+//        return false;
+//        
+//    }
 
-    private static boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
-                                                            String fullFileName, String name, String cmd) throws IOException {
-        
-        if ( pluginFile != null && pluginFile.exists() )  return true; 
-        
-        if ( name == null || name.isEmpty() || cmd == null ) return false;
-        
-        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fullFileName)) ) {
-            return createFile(pluginFile, name, cmd, inputStream);  
-        }
-        catch ( NullPointerException e ) {
-            if ( defaultFile != null && defaultPluginFile != null ) {
-                try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), defaultFile, defaultPluginFile) ) {
-                    return createFile(pluginFile, name, cmd, inputStream);  
-                }
-            }
-        }
-        return false;
-        
-    }
+//    private static boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
+//        String line;
+//        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+//        BufferedWriter fw;
+//        try {
+//            fw = new BufferedWriter(new FileWriter(pluginFile));
+//        } catch (IOException e) {
+//            Log.printStackTrace(e);
+//            return false;
+//        }
+//        try {
+//            while ((line = br.readLine()) != null) {
+//                line = line.replaceAll("<name>", name).replaceAll("<cmd>", cmd);
+//                fw.write(line + "\n");
+//            }
+//        } catch (IOException e) {
+//            Log.printStackTrace(e);
+//            return false;
+//        } finally {
+//            try {
+//                fw.close();
+//            } catch (Exception e) {
+//                Log.printStackTrace(e);
+//            }
+//            try {
+//                br.close();
+//            } catch (Exception e) {
+//                Log.printStackTrace(e);
+//            }
+//        }
+//        return true;
+//    }
 
-    private static boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
-        String line;
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-        BufferedWriter fw;
-        try {
-            fw = new BufferedWriter(new FileWriter(pluginFile));
-        } catch (IOException e) {
-            Log.printStackTrace(e);
-            return false;
-        }
-        try {
-            while ((line = br.readLine()) != null) {
-                line = line.replaceAll("<name>", name).replaceAll("<cmd>", cmd);
-                fw.write(line + "\n");
-            }
-        } catch (IOException e) {
-            Log.printStackTrace(e);
-            return false;
-        } finally {
-            try {
-                fw.close();
-            } catch (Exception e) {
-                Log.printStackTrace(e);
-            }
-            try {
-                br.close();
-            } catch (Exception e) {
-                Log.printStackTrace(e);
-            }
-        }
-        return true;
-    }
-
-    private static void setCommandToExecutor(JavaPlugin plugin, String wantedCommand, CommandExecutor executor) {
-        if (!setCommandToExecutor(plugin, wantedCommand, executor, false)) {
-            Log.info("[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap.");
+    private static void setCommandToExecutor( JavaPlugin plugin, String wantedCommand, CommandExecutor executor ) {
+        
+        if ( !setCommandToExecutor( plugin, wantedCommand, executor, false ) ) {
+            Log.info( "[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap." );
             List<String> aliases = new ArrayList<>();
-            ArenaBukkitCommand arenaCommand = new ArenaBukkitCommand(wantedCommand, "", "", aliases, BattleArena.getSelf(), executor);
-            CommandController.registerCommand(arenaCommand);
+            ArenaBukkitCommand arenaCommand = 
+                    new ArenaBukkitCommand( wantedCommand, "", "", aliases, BattleArena.getSelf(), executor );
+            CommandController.registerCommand( arenaCommand );
         }
     }
 
-    private static boolean setCommandToExecutor(JavaPlugin plugin, String command, CommandExecutor executor, boolean displayError) {
+    private static boolean setCommandToExecutor( JavaPlugin plugin, String command, CommandExecutor executor, boolean displayError ) {
         try {
-            plugin.getCommand(command).setExecutor(executor);
+            plugin.getCommand( command ).setExecutor( executor );
             return true;
-        } catch (Exception e) {
-            if (displayError) {
-                Log.err(plugin.getName() + " command " + command + " was not found in plugin.yml.");
+        } catch ( Exception e ) {
+            if ( displayError ) {
+                Log.err( plugin.getName() + " command " + command + " was not found in plugin.yml." );
             }
             return false;
         }
@@ -136,19 +132,19 @@ public class APIRegistrationController {
     public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
                                                CustomCommandExecutor executor ) {
         File dir = plugin.getDataFolder();
-        File configFile = new File(dir.getAbsoluteFile() + "/" + name + "Config.yml");
-        File msgFile = new File(dir.getAbsoluteFile() + "/" + name + "Messages.yml");
-        File defaultArenaFile = new File(dir.getAbsoluteFile() + "/arenas.yml");
+        File configFile = new File( dir.getAbsoluteFile() + "/" + name + "Config.yml" );
+        File msgFile = new File( dir.getAbsoluteFile() + "/" + name + "Messages.yml" );
+        File defaultArenaFile = new File( dir.getAbsoluteFile() + "/arenas.yml" );
         
-        return registerCompetition(plugin, name, cmd, factory, executor, configFile, msgFile, defaultArenaFile);
+        return registerCompetition( plugin, name, cmd, factory, executor, configFile, msgFile, defaultArenaFile );
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    private static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
                                                CustomCommandExecutor executor, File configFile, File messageFile, 
                                                File defaultArenaFile ) {
         
         return registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile,
-                            new File( plugin.getDataFolder() + "/" + name + "Config.yml" ), defaultArenaFile );
+                new File( plugin.getDataFolder() + "default_files/competitions/" + name + "Config.yml" ), defaultArenaFile );
     }
 
     public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
@@ -156,10 +152,10 @@ public class APIRegistrationController {
                                                File defaultPluginConfigFile, File defaultArenaFile ) {
         try {
             return _registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile, 
-                                                   defaultPluginConfigFile, defaultArenaFile );
-        } catch (Exception e) {
-            Log.err("[BattleArena] could not register " + plugin.getName() + " " + name);
-            Log.err("[BattleArena] config " + configFile);
+                                                               defaultPluginConfigFile, defaultArenaFile );
+        } catch ( Exception e ) {
+            Log.err( "[BattleArena] could not register " + plugin.getName() + " " + name );
+            Log.err( "[BattleArena] config " + configFile );
             Log.printStackTrace(e);
             return true;
         }
@@ -170,50 +166,47 @@ public class APIRegistrationController {
                                                  File defaultPluginConfigFile, File defaultArenaFile ) 
                                                          throws IOException, ConfigException, InvalidOptionException {
         /// Create our plugin folder if its not there
-        File dir = plugin.getDataFolder();
-        FileUpdater.makeIfNotExists(dir);
+        FileUtil.makeIfNotExists( plugin.getDataFolder() );
 
         /// Define our config files
-        String configFileName = name + "Config.yml";
-        String defaultConfigFileName = "defaultConfig.yml";
-        File compDir = configFile.getParentFile().getAbsoluteFile();
+//        String configFileName = name + "Config.yml";
+//        String defaultConfigFileName = "defaultConfig.yml";
+//        File compDir = configFile.getParentFile().getAbsoluteFile();
 
-        File pluginFile = new File(compDir.getPath() + File.separator + configFileName);
-        File defaultFile = new File("default_files/competitions/" + File.separator + defaultConfigFileName);
+//        File pluginFile = new File( compDir.getPath() + File.separator + configFileName);
+//        File defaultFile = new File("default_files/competitions/" + File.separator + defaultConfigFileName);
 
         /// Set a delayed init on this plugin and folder to load custom types
-        if (!delayedInits.contains(plugin.getName())) {
-            delayedInits.add(plugin.getName());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                    new DelayedRegistrationHandler(plugin, compDir, defaultArenaFile));
-        }
-
-        if (!loadFile(plugin, defaultFile, defaultPluginConfigFile, pluginFile,
-                name + "Config.yml", name, cmd)) {
-            Log.err(plugin.getName() + " " + pluginFile.getName() + " could not be loaded!");
-            Log.err("defaultFile=" + defaultFile.getAbsolutePath());
-            Log.err("defaultPluginFile=" + (defaultPluginConfigFile != null ? defaultPluginConfigFile.getAbsolutePath() : "null"));
-            Log.err("pluginFile=" + pluginFile.getAbsolutePath());
+        if ( !delayedInits.contains( plugin.getName() ) ) {
+            delayedInits.add( plugin.getName() );
+            Scheduler.scheduleSynchronousTask( new DelayedRegistrationHandler( plugin, defaultArenaFile ) );
             return false;
         }
 
-        ConfigSerializer config = new ConfigSerializer(plugin, pluginFile, name);
-        if (config.getConfigurationSection(name) == null) {
-            Log.err(plugin.getName() + " " + pluginFile.getName() + " config file could not be loaded!");
+        if ( FileUtil.load( plugin.getClass(), configFile.getPath(), defaultPluginConfigFile.getPath() ) == null ) {
+            Log.err( plugin.getName() + " " + configFile.getName() + " could not be loaded!" );
+            Log.err( "defaultFile=" + defaultPluginConfigFile.getPath() );
+            return false;
+        }
+
+        ConfigSerializer config = new ConfigSerializer( plugin, configFile, name );
+        
+        if ( config.getConfigurationSection( name ) == null ) {
+            Log.err( plugin.getName() + " " + configFile.getName() + " config file could not be loaded!" );
             return false;
         }
         /// What is our game type ? spleef, ctf, etc
-        final ArenaType gameType = ConfigSerializer.getArenaGameType(config.getConfigurationSection(name));
+        ArenaType gameType = ConfigSerializer.getArenaGameType( config.getConfigurationSection( name ) );
         
-        if (factory == null) {
-            if (gameType != null) {
-                factory = ArenaType.getArenaFactory(gameType);
+        if ( factory == null ) {
+            if ( gameType != null ) {
+                factory = ArenaType.getArenaFactory( gameType );
             } else {
-                Class<? extends Arena> ac = ConfigSerializer.getArenaClass(config.getConfigurationSection(name));
-                factory = BattleArena.createArenaFactory(ac);
+                Class<? extends Arena> ac = ConfigSerializer.getArenaClass( config.getConfigurationSection( name ) );
+                factory = BattleArena.createArenaFactory( ac );
             }
-            if (factory == null) {
-                factory = BattleArena.createArenaFactory(Arena.class);
+            if ( factory == null ) {
+                factory = BattleArena.createArenaFactory( Arena.class );
             }
         }
         /// load or register our arena type
@@ -236,40 +229,39 @@ public class APIRegistrationController {
 
         MessageSerializer ms = null;
 
-        if ( loadFile( plugin, messageFile, name + "Messages.yml", name, cmd) ) {
-            ms = new MessageSerializer(name, mp);
-        } else if (gameType != null) {
-            RegisteredCompetition regComp = CompetitionController.getCompetition(plugin, gameType.getName());
+        if ( FileUtil.load( plugin.getClass(), messageFile.getPath(), messageFile.getPath() ) == null ) {
+            ms = new MessageSerializer( name, mp );
+        } 
+        else if ( gameType != null ) {
+            RegisteredCompetition regComp = CompetitionController.getCompetition( plugin, gameType.getName() );
             if (regComp != null) {
-                ms = MessageSerializer.getMessageSerializer(gameType.getName());
+                ms = MessageSerializer.getMessageSerializer( gameType.getName() );
             }
         }
-        if (ms != null) {
-            ms.setConfig(messageFile);
+        if ( ms != null ) {
+            ms.setConfig( messageFile );
             ms.loadAll();
-            MessageSerializer.addMessageSerializer(name, ms);
+            MessageSerializer.addMessageSerializer( name, ms );
         }
-
         /// Everything nearly successful, register our competition
-        RegisteredCompetition rc = new RegisteredCompetition(plugin, name);
+        RegisteredCompetition rc = new RegisteredCompetition( plugin, name );
 
-        if (executor == null && gameType != null) {
-            RegisteredCompetition comp = CompetitionController.getCompetition(plugin, gameType.getName());
-            if (comp != null) {
+        if ( executor == null && gameType != null ) {
+            RegisteredCompetition comp = CompetitionController.getCompetition( plugin, gameType.getName() );
+            if ( comp != null ) 
                 executor = comp.getCustomExecutor();
-            }
-        } else {
-            rc.setCustomExecutor(executor);
-        }
+        } 
+        else 
+            rc.setCustomExecutor( executor );
 
         createExecutor(plugin, cmd, executor, mp);
         rc.setConfigSerializer(config);
-        CompetitionController.addRegisteredCompetition(rc);
+        CompetitionController.addRegisteredCompetition( rc );
 
         /// Load our arenas
         ArenaSerializer as = new ArenaSerializer( plugin, defaultArenaFile ); 
         as.loadArenas( at );
-        rc.setArenaSerializer(as);
+        rc.setArenaSerializer( as );
 
         return true;
     }
@@ -312,46 +304,35 @@ public class APIRegistrationController {
         }
     }
 
+    @AllArgsConstructor
     static class DelayedRegistrationHandler implements Runnable {
 
         final JavaPlugin plugin;
-        final File compDir;
         final File arenaFile;
-
-        DelayedRegistrationHandler(JavaPlugin _plugin, File _compDir, File _arenaFile) {
-            plugin = _plugin;
-            compDir = _compDir;
-            arenaFile = _arenaFile;
-        }
 
         @Override
         public void run() {
-            if (!plugin.isEnabled()) {
-                return;
-            }
-            FileFilter fileFilter = new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return file.toString().matches(".*Config.yml$");
-                }
-            };
-            if (!compDir.exists()) {
-                return;
-            }
-            for (File file : compDir.listFiles(fileFilter)) {
-                String n = file.getName().substring(0, file.getName().length() - "Config.yml".length());
-                if (ArenaType.contains(n) || n.contains(".")) { /// we already loaded this type, or bad type
-                    continue;
-                }
-                File configFile = new File(compDir + "/" + n + "Config.yml");
-                File msgFile = new File(compDir + "/" + n + "Messages.yml");
-                if (!APIRegistrationController.registerCompetition(
-                        plugin, n /*name*/, n /*command*/, null /*Arena class*/,
-                        null /*executor*/, configFile, msgFile, null, arenaFile)) {
-                    Log.err("[BattleArena] Unable to load custom competition " + n);
+            if ( !plugin.isEnabled() ) return;
+            
+            File compDir = plugin.getDataFolder();
+            
+            if ( !compDir.exists() ) return;
+            
+            FileFilter fileFilter = (file) -> file.toString().matches( ".*Config.yml$" );
+            
+            for ( File file : compDir.listFiles( fileFilter ) ) {
+                String name = file.getName().substring( 0, file.getName().length() - "Config.yml".length() );
+                
+                if ( ArenaType.contains(name) || name.contains(".") ) continue;
+                                    /// we already loaded this type, or bad type
+                
+                if ( !APIRegistrationController.registerCompetition( plugin, name, name, null, null, 
+                                                                     new File( compDir + "/" + name + "Config.yml" ), 
+                                                                     new File( compDir + "/" + name + "Messages.yml" ), 
+                                                                     null, arenaFile ) ) {
+                    Log.err( "[BattleArena] Unable to load custom competition " + name );
                 }
             }
         }
     }
-
 }

@@ -192,24 +192,6 @@ public class FileUpdater {
         } 
     }
 
-    public static void deleteIfExists(File file) {
-        if (file.exists()) file.delete();
-    }
-    public static void makeIfNotExists(File file) {
-        if (!file.exists()) file.mkdir();
-    }
-
-    public static void moveIfExists(File file, File file2) {
-        if (file.exists()){
-            try {
-                FileUpdater.renameTo(file, file2);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            deleteIfExists(file);
-        }
-    }
-
     public static boolean isWindows() {
         return System.getProperty("os.name").toUpperCase().contains("WINDOWS");
     }

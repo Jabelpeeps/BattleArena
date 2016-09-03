@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.messaging;
+package mc.alk.arena.objects.messaging;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,10 +16,6 @@ import mc.alk.arena.events.matches.MatchMessageEvent;
 import mc.alk.arena.events.matches.MatchTimeExpiredMessageEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
-import mc.alk.arena.objects.messaging.AnnouncementOptions;
-import mc.alk.arena.objects.messaging.Channel;
-import mc.alk.arena.objects.messaging.Channels;
-import mc.alk.arena.objects.messaging.Message;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.VictoryCondition;
@@ -33,7 +29,6 @@ public class MatchMessager extends MessageSerializer {
     final Match match;
     final String typeName;
     final String typedot = "match.";
-	final AnnouncementOptions bos;
 	@Setter boolean silent = false;
 
 	public MatchMessager( Match m ){
@@ -123,10 +118,10 @@ public class MatchMessager extends MessageSerializer {
                 break;
             }
         }
-        sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers, matchParams, 
-                        typedot + nTeamPath + ".victory", 
-                        typedot + nTeamPath + ".loss",
-                        typedot + nTeamPath + ".server_victory" );
+        sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers,
+                     typedot + nTeamPath + ".victory", 
+                     typedot + nTeamPath + ".loss",
+                     typedot + nTeamPath + ".server_victory" );
     }
     
     public void sendOnDrawMessage(Collection<ArenaTeam> drawers, Collection<ArenaTeam> losers) {
@@ -137,10 +132,10 @@ public class MatchMessager extends MessageSerializer {
                                     : 0 );
         String nTeamPath = getStringPathFromSize(size);
         
-        sendVictory( getChannel( MatchState.ONVICTORY ), null, drawers, matchParams, 
-                        typedot + nTeamPath + ".draw", 
-                        typedot + nTeamPath + ".draw",
-                        typedot + nTeamPath + ".server_draw" );
+        sendVictory( getChannel( MatchState.ONVICTORY ), null, drawers,
+                     typedot + nTeamPath + ".draw", 
+                     typedot + nTeamPath + ".draw",
+                     typedot + nTeamPath + ".server_draw" );
     }
 
     public void sendYourTeamNotReadyMsg(ArenaTeam t1) {
@@ -161,14 +156,14 @@ public class MatchMessager extends MessageSerializer {
         t1.sendMessage(msgf.getFormattedMessage(message));
     }
 
-    @Override
+//    @Override
     public void sendAddedToTeam(ArenaTeam team, ArenaPlayer player) {
-        Message message = getNodeMessage("common.added_to_team");
+        Message message = getNodeMessage( "common.added_to_team" );
         Set<MessageOption> ops = message.getOptions();
-        MessageFormatter msgf = new MessageFormatter(this, match.getParams(), 1, message, ops);
-        msgf.formatTeamOptions(team, false);
-        msgf.formatPlayerOptions(player);
-        team.sendToOtherMembers(player,msgf.getFormattedMessage(message));
+        MessageFormatter msgf = new MessageFormatter( this, match.getParams(), 1, message, ops );
+        msgf.formatTeamOptions( team, false );
+        msgf.formatPlayerOptions( player );
+        team.sendToOtherMembers( player, msgf.getFormattedMessage( message ) );
     }
 
     public void sendOnIntervalMsg( int remaining, Collection<ArenaTeam> currentLeaders ) {
