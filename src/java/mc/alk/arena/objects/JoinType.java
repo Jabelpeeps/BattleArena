@@ -1,13 +1,13 @@
 package mc.alk.arena.objects;
 
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public enum JoinType {
 	QUEUE("Queue"), JOINPHASE("JoinPhase");
 
 	final String name;
-	private JoinType(String name){
-		this.name = name;
-	}
+	
 	@Override
 	public String toString(){return name;}
 

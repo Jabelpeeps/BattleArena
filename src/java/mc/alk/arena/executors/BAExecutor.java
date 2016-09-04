@@ -50,6 +50,7 @@ import mc.alk.arena.events.players.ArenaPlayerJoinEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent.QuitReason;
 import mc.alk.arena.listeners.PlayerHolder;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaLocation;
@@ -59,7 +60,6 @@ import mc.alk.arena.objects.CompetitionSize;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.ContainerState;
 import mc.alk.arena.objects.Duel;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.PlayerSave;
@@ -169,36 +169,30 @@ public class BAExecutor extends CustomCommandExecutor {
     }
 
     @MCCommand( cmds = {"join", "j"}, usage = "add [options]", helpOrder = 1 )
-    public boolean join(ArenaPlayer player, MatchParams mp, String args[]) {
+    public boolean join( ArenaPlayer player, MatchParams mp, String args[] ) {
         return join(player, mp, args, false);
     }
 
-    public boolean join(ArenaPlayer player, final MatchParams omp, String args[], boolean adminJoin) {
+    private boolean join( ArenaPlayer player, final MatchParams omp, String args[], boolean adminJoin ) {
         
         JoinOptions jp;
         try {
-            jp = JoinOptions.parseOptions(omp, player, Arrays.copyOfRange(args, 1, args.length));
+            jp = JoinOptions.parseOptions( omp, player, Arrays.copyOfRange( args, 1, args.length ) );
         } 
-        catch (InvalidOptionException e) {
+        catch ( InvalidOptionException | NumberFormatException e ) {
             return MessageUtil.sendMessage(player, e.getMessage());
         } 
-        catch (Exception e) {
-            Log.printStackTrace(e);
-            return MessageUtil.sendMessage(player, e.getMessage());
-        }
-        return join(player, omp, jp, adminJoin);
+        return join( player, omp, jp, adminJoin );
     }
 
-    public boolean join(ArenaPlayer player, final MatchParams omp, JoinOptions jp, boolean adminJoin) {
+    public boolean join( ArenaPlayer player, MatchParams omp, JoinOptions jp, boolean adminJoin ) {
 
-        final StateGraph ops = omp.getStateGraph();
+        StateGraph ops = omp.getStateGraph();
         if (ops == null) {
             return MessageUtil.sendMessage(player, "&cThis match type has no valid options, contact an admin to fix");
         }
 
-        if (isDisabled(player.getPlayer(), omp) && !Permissions.isAdmin(player.getPlayer())) {
-            return true;
-        }
+        if ( isDisabled( player.getPlayer(), omp ) && !Permissions.isAdmin(player.getPlayer())) return true;
 
         if (!adminJoin && !Permissions.hasMatchPerm(player.getPlayer(), omp, "join")) {
             return MessageUtil.sendSystemMessage(player, "no_join_perms", omp.getCommand());
@@ -393,7 +387,7 @@ public class BAExecutor extends CustomCommandExecutor {
         if (disabled.contains(mp.getName())) {
             
             MessageUtil.sendSystemMessage(sender, "match_disabled", mp.getName());
-            final String enabled = ParamController.getAvaibleTypes(disabled);
+            String enabled = ParamController.getAvaibleTypes(disabled);
             
             if (enabled.isEmpty()) {
                 return MessageUtil.sendSystemMessage(sender, "all_disabled");

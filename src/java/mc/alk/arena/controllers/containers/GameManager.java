@@ -25,7 +25,6 @@ import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaListener;
@@ -108,13 +107,10 @@ public class GameManager implements PlayerHolder {
 
 	@Override
 	public CompetitionState getState() { return MatchState.NONE; }
-
 	@Override
 	public boolean isHandled(ArenaPlayer player) { return handled.contains(player); }
-
 	@Override
 	public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) { return false; }
-
 	@Override
 	public void callEvent(BAEvent event) { methodController.callEvent(event); }
 	@Override

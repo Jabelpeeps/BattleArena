@@ -76,6 +76,6 @@ public class Log {
 
     public static void trace(int id, String msg) {
         info(msg);
-        NotifierUtil.notify(id, colorChat(msg));
+//        NotifierUtil.notify(id, colorChat(msg));
     }
 }

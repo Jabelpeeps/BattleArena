@@ -105,7 +105,7 @@ public class JoinOptions {
     }
 
     public static JoinOptions parseOptions(final MatchParams omp, ArenaPlayer player, String[] args)
-            throws InvalidOptionException, NumberFormatException{
+            throws InvalidOptionException, NumberFormatException {
         JoinOptions jos = new JoinOptions();
         MatchParams mp = new MatchParams(omp.getType());
         mp.setParent(omp);

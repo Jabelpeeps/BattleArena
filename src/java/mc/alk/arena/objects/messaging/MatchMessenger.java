@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
-
 import lombok.Setter;
-import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.events.matches.MatchIntervalMessageEvent;
@@ -63,9 +60,9 @@ public class MatchMessenger extends MessageSerializer {
         Message message = getNodeMessage( typedot + nTeamPath + "." + path );
         Message serverMessage = getNodeMessage( typedot + nTeamPath + "." + serverpath );
         
-        if ( Defaults.DEBUG ) 
-            Log.info( "sendMessageToTeams() has found these messages:-  nTeamPath='" + nTeamPath + 
-                        "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
+//        if ( Defaults.DEBUG ) 
+//            Log.info( "sendMessageToTeams() has found these messages:-  nTeamPath='" + nTeamPath + 
+//                        "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
 
         Set<MessageOption> ops = message.getOptions();
         
@@ -156,7 +153,6 @@ public class MatchMessenger extends MessageSerializer {
         t1.sendMessage(msgf.getFormattedMessage(message));
     }
 
-//    @Override
     public void sendAddedToTeam(ArenaTeam team, ArenaPlayer player) {
         Message message = getNodeMessage( "common.added_to_team" );
         Set<MessageOption> ops = message.getOptions();

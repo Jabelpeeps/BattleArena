@@ -8,8 +8,8 @@ import java.util.Map;
 
 import mc.alk.arena.controllers.containers.LobbyContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;

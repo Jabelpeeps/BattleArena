@@ -28,8 +28,8 @@ import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.containers.AreaContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.ArenaParams;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.Arena;
@@ -262,21 +262,21 @@ public class ArenaSerializer extends BaseConfig {
         /// Wait room spawns
         locs = SerializerUtil.parseLocations(cs.getConfigurationSection("waitRoomLocations"));
         if (locs != null){
-            RoomContainer rc = RoomController.getOrCreateRoom(arena,LocationType.WAITROOM);
+            RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.WAITROOM);
             setSpawns(rc, locs);
         }
 
         /// Spectate spawns
         locs = SerializerUtil.parseLocations(cs.getConfigurationSection("spectateLocations"));
         if (locs != null){
-            RoomContainer rc = RoomController.getOrCreateRoom(arena,LocationType.SPECTATE);
+            RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.SPECTATE);
             setSpawns(rc, locs);
         }
 
         /// Visitor spawns
         locs = SerializerUtil.parseLocations(cs.getConfigurationSection("visitorLocations"));
         if (locs != null) {
-            RoomContainer rc = RoomController.getOrCreateRoom(arena,LocationType.VISITOR);
+            RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.VISITOR);
             setSpawns(rc, locs);
         }
 

@@ -48,7 +48,10 @@ public class TransitionController {
      * @param teams: which teams to affect
      * @param onlyInMatch: only perform the actions on people still in the arena match
      */
-    public static void transition( PlayerHolder am, CompetitionState transition, Collection<ArenaTeam> teams, boolean onlyInMatch){
+    public static void transition( PlayerHolder am, 
+                                   CompetitionState transition, 
+                                   Collection<ArenaTeam> teams, 
+                                   boolean onlyInMatch ) {
         if ( teams == null ) return;
         
         boolean first = true;
@@ -58,26 +61,31 @@ public class TransitionController {
         }
     }
 
-    public static boolean transition( PlayerHolder am, CompetitionState transition, ArenaTeam team, boolean onlyInMatch) {
+    public static boolean transition( PlayerHolder am, CompetitionState transition, ArenaTeam team, boolean onlyInMatch ) {
         return transition( am, transition, team, onlyInMatch, true );
     }
 
-    static boolean transition( PlayerHolder am, CompetitionState transition, ArenaTeam team, boolean onlyInMatch,
-                                                                              boolean performOncePerTransitionOptions ) {
-        StateOptions mo = am.getParams().getStateOptions(transition);
-        if (mo == null) return true;
+    static boolean transition( PlayerHolder am, 
+                               CompetitionState transition, 
+                               ArenaTeam team, 
+                               boolean onlyInMatch,
+                               boolean performOncePerTransitionOptions ) {
         
-        if (performOncePerTransitionOptions && (am instanceof ArenaController)){
+        StateOptions mo = am.getParams().getStateOptions( transition );
+        if ( mo == null ) return true;
+        
+        if ( performOncePerTransitionOptions && am instanceof ArenaController ) {
             ArenaController ac = (ArenaController) am;
+            
             /// Options that don't affect players first
-            if (WorldGuardController.hasWorldGuard() && ac.getArena() != null && ac.getArena().hasRegion()){
+            if ( WorldGuardController.hasWorldGuard() && ac.getArena() != null && ac.getArena().hasRegion() ) {
                 WorldGuardRegion region = ac.getArena().getWorldGuardRegion();
                 /// Clear the area
-                if ( mo.hasOption(TransitionOption.WGCLEARREGION) ) 
-                    WorldGuardController.clearRegion(region);
+                if ( mo.hasOption( TransitionOption.WGCLEARREGION ) ) 
+                    WorldGuardController.clearRegion( region );
 
-                if ( mo.hasOption(TransitionOption.WGRESETREGION) ) 
-                    WorldGuardController.pasteSchematic(region);
+                if ( mo.hasOption( TransitionOption.WGRESETREGION ) ) 
+                    WorldGuardController.pasteSchematic( region );
             }
         }
         for ( ArenaPlayer p : team.getPlayers() ) {
@@ -86,18 +94,27 @@ public class TransitionController {
         return true;
     }
 
-    public static boolean transition( PlayerHolder am,  CompetitionState transition,
-                                      ArenaPlayer player, ArenaTeam team, boolean onlyInMatch) {
+    public static boolean transition( PlayerHolder am,  
+                                      CompetitionState transition,
+                                      ArenaPlayer player, 
+                                      ArenaTeam team, 
+                                      boolean onlyInMatch ) {
+        
         if ( team != null && team.getIndex() != -1 ) {
-            MatchParams mp = am.getParams().getTeamParams(team.getIndex());
+            MatchParams mp = am.getParams().getTeamParams( team.getIndex() );
             if ( mp != null )
                 return transition( am, transition, player, team, onlyInMatch, mp.getStateGraph() );
         }
         return transition( am, transition, player, team, onlyInMatch, am.getParams().getStateGraph() );
     }
 
-    private static boolean transition( PlayerHolder am, CompetitionState transition, ArenaPlayer player, 
-                                                    ArenaTeam team, boolean onlyInMatch, StateGraph tops ) {
+    private static boolean transition( PlayerHolder am, 
+                                       CompetitionState transition, 
+                                       ArenaPlayer player, 
+                                       ArenaTeam team, 
+                                       boolean onlyInMatch, 
+                                       StateGraph tops ) {
+        
         if (tops == null) return true;
         
         StateOptions mo = tops.getOptions(transition);

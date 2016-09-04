@@ -33,10 +33,10 @@ import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeleportController;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.RegisteredCompetition;
 import mc.alk.arena.objects.arenas.Arena;
@@ -358,7 +358,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 337 )
     public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, SpawnIndex index) {
-        return teleportToSpawn(sender,arena,LocationType.ARENA, index);
+        return teleportToSpawn(sender,arena, LocationType.ARENA, index);
     }
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 338 )

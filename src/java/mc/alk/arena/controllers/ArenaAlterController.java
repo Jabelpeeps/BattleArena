@@ -16,8 +16,8 @@ import lombok.AllArgsConstructor;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
@@ -38,11 +38,11 @@ import mc.alk.arena.util.Util;
 
 public class ArenaAlterController {
 
-    public static class ArenaOptionPair{
+    public static class ArenaOptionPair {
         public ChangeType ao;
         public Object value;
     }
-    
+
     @AllArgsConstructor
     public enum ChangeType{
         WAITROOM(true,true),
@@ -184,7 +184,8 @@ public class ArenaAlterController {
             case LOBBY: success = changeLobbySpawn(player, params,(SpawnIndex)value); break;
             case ADDREGION: success = addWorldGuardRegion(player,arena); break;
             default:
-                MessageUtil.sendMessage(sender,ChatColor.RED+ "Option: &6" + ct+"&c does not exist. \n&cValid options are &6"+ChangeType.getValidList());
+                MessageUtil.sendMessage( sender, 
+                        ChatColor.RED + "Option: &6" + ct + "&c does not exist. \n&cValid options are &6" + ChangeType.getValidList() );
                 break;
         }
         if (success)
@@ -290,7 +291,7 @@ public class ArenaAlterController {
     private static boolean changeWaitroomSpawn(Player sender, Arena arena,
                                                BattleArenaController ac,SpawnIndex index) {
         Location loc = sender.getLocation();
-        RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.WAITROOM);
+        RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.WAITROOM);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
         return MessageUtil.sendMessage(sender,"&2waitroom for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
@@ -300,7 +301,7 @@ public class ArenaAlterController {
     private static boolean changeSpectateSpawn(Player sender, Arena arena,
                                                BattleArenaController ac, SpawnIndex index) {
         Location loc = sender.getLocation();
-        RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.SPECTATE);
+        RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.SPECTATE);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
         return MessageUtil.sendMessage(sender,"&2spectator room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
@@ -310,7 +311,7 @@ public class ArenaAlterController {
     private static boolean changeVisitorSpawn(Player sender, Arena arena,
                                               BattleArenaController ac, SpawnIndex index) {
         Location loc = sender.getLocation();
-        RoomContainer rc = RoomController.getOrCreateRoom(arena, LocationType.VISITOR);
+        RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.VISITOR);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
         return MessageUtil.sendMessage(sender,"&2Visitor room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+

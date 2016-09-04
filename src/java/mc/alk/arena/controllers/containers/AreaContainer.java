@@ -13,7 +13,6 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.ArenaMatch;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.events.ArenaEventHandler;
@@ -31,7 +30,6 @@ public class AreaContainer extends AbstractAreaContainer{
         super(_name);
         type = _type;
     }
-
     public AreaContainer(String _name, MatchParams _params, LocationType _type){
         super(_name);
         setParams(_params);

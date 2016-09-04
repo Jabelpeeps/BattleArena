@@ -1,7 +1,5 @@
 package mc.alk.arena.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -10,11 +8,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.bukkit.entity.Player;
 
-import mc.alk.arena.objects.MessageListener;
-
 public class NotifierUtil {
     public static Map<String,Set<UUID>> listeners = new ConcurrentHashMap<>();
-    public static Map<Integer,List<MessageListener>> compListeners = new ConcurrentHashMap<>();
 
 	public static void notify(String type, String msg) {
         if (listeners.get(type)== null)
@@ -65,23 +60,4 @@ public class NotifierUtil {
 	public static boolean hasListener(String type) {
 		return listeners.containsKey(type) && !listeners.get(type).isEmpty();
 	}
-
-
-    public static void notify(int id, String msg) {
-        List<MessageListener> list = compListeners.get(id);
-        if (list == null)
-            return;
-        for (MessageListener ml : list){
-            ml.receiveMessage(msg);
-        }
-    }
-
-    public static void addMatchListener(int id, MessageListener l ){
-        List<MessageListener> list = compListeners.get(id);
-        if (list == null) {
-            list = new ArrayList<>();
-            compListeners.put(id, list);
-        }
-        list.add(l);
-    }
 }

@@ -33,7 +33,6 @@ import mc.alk.arena.events.matches.MatchCreatedEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.EventState;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.Matchup;

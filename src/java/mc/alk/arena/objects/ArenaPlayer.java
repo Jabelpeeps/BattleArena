@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.controllers.containers.AreaContainer;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.spawns.EntitySpawn;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.spawns.SpawnInstance;
@@ -44,7 +45,7 @@ public class ArenaPlayer {
     /** The players team, *this is not their self formed team* */
     @Setter ArenaTeam team;
     /** The current location of the player (in arena, lobby, etc)*/
-    @Getter @Setter ArenaLocation curLocation = new ArenaLocation(AreaContainer.HOMECONTAINER, null , LocationType.HOME);
+    @Getter @Setter ArenaLocation curLocation = new ArenaLocation(AreaContainer.HOMECONTAINER, null, LocationType.HOME);
     @Setter List<SpawnInstance> mobs;
     /** Has the player specified they are "ready" by clicking a block or sign */
     @Getter @Setter boolean isReady;

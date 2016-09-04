@@ -6,7 +6,6 @@ import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.LocationType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.options.StateOptions;
@@ -15,8 +14,11 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
 
-public interface PlayerHolder extends Listener, ArenaListener{
-	/**
+public interface PlayerHolder extends Listener, ArenaListener {
+    
+	enum LocationType { NONE, HOME, ARENA, WAITROOM, LOBBY, COURTYARD, SPECTATE, VISITOR, ANY }
+	
+    /**
 	 * Add an arena listener
 	 * @param arenaListener ArenaListener
 	 */

@@ -1,5 +1,7 @@
 package mc.alk.arena.objects.signs;
 
+import org.bukkit.Location;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -8,8 +10,6 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
-
-import org.bukkit.Location;
 
 /**
  * @author alkarin
@@ -23,14 +23,16 @@ class ArenaJoinSign extends ArenaCommandSign{
     }
 
     @Override
-    public void performAction(ArenaPlayer player) {
+    public void performAction( ArenaPlayer player ) {
         JoinOptions jops = joinOptions.clone();
         try {
             jops.setPlayer(player);
             BattleArena.getBAExecutor().join(player, matchParams, joinOptions, !Defaults.USE_SIGN_PERMS);
-        } catch (InvalidOptionException e) {
+        } 
+        catch (InvalidOptionException e) {
             MessageUtil.sendMessage(player, e.getMessage());
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             Log.printStackTrace(e);
             MessageUtil.sendMessage(player, e.getMessage());
         }

@@ -124,14 +124,14 @@ public class WorldGuardController {
 
     public static boolean pasteSchematic(CommandSender sender, Vector position, String schematic, World world) {
         
-        final WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
-        final WorldEdit we = wep.getWorldEdit();
+        WorldEditPlugin wep = WorldEditUtil.getWorldEditPlugin();
+        WorldEdit we = wep.getWorldEdit();
         LocalPlayer actor = wep.wrapCommandSender(sender);
         
         com.sk89q.worldedit.world.World w = (com.sk89q.worldedit.world.World) new BukkitWorld(world);
         
         WorldData wd = w.getWorldData();
-        final LocalSession session = we.getSession( actor );
+        LocalSession session = we.getSession( actor );
         session.setUseInventory(false);
         EditSession editSession = new EditSession((LocalWorld) w, -1);
         
@@ -239,7 +239,7 @@ public class WorldGuardController {
         
         if ( w == null ) return false;
 
-        return wgp.getRegionContainer().get( w ).hasRegion( id );
+        return wgp.getRegionManager( w ).hasRegion( id );
     }
 
     public static ProtectedRegion updateProtectedRegion(Player p, String id) throws Exception {

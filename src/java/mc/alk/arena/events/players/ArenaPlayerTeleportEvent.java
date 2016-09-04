@@ -1,10 +1,10 @@
 package mc.alk.arena.events.players;
 
 import lombok.Getter;
+import mc.alk.arena.controllers.TeleportLocationController.TeleportDirection;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.LocationType;
-import mc.alk.arena.objects.TeleportDirection;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
