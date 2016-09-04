@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -66,8 +64,8 @@ public class MethodController {
                          HashMap<Class<? extends BAEvent>,
                                  List<ArenaEventMethod>>> matchEventMethods = new HashMap<>();
     
-    final private HashMap<Class<? extends Event>, SortedSet<RListener>> bukkitMethods = new HashMap<>();
-    final private HashMap<Class<? extends BAEvent>, SortedSet<RListener>> matchMethods = new HashMap<>();
+    final private HashMap<Class<? extends Event>, List<RListener>> bukkitMethods = new HashMap<>();
+    final private HashMap<Class<? extends BAEvent>, List<RListener>> matchMethods = new HashMap<>();
     final static Set<MethodController> controllers = new HashSet<>();
     static int controllerCount = 0;
 
@@ -177,7 +175,7 @@ public class MethodController {
 
     private void updateEvent( ArenaListener listener, MatchState matchState,
                               Collection<UUID> players, Class<? extends Event> event) {
-        SortedSet<RListener> rls = bukkitMethods.get(event);
+        List<RListener> rls = bukkitMethods.get(event);
         if (rls == null || rls.isEmpty()){
             return;}
         if (Defaults.DEBUG_EVENTS) System.out.println("updateEventListener "+  event.getSimpleName() +"    " + matchState);
@@ -221,7 +219,7 @@ public class MethodController {
 
     private void updateBAEvent(ArenaListener listener, MatchState matchState,
                                Collection<UUID> players, Class<? extends BAEvent> event ) {
-        SortedSet<RListener> rls = matchMethods.get(event);
+        List<RListener> rls = matchMethods.get(event);
         if (rls == null || rls.isEmpty()){
             return;}
         if (Defaults.DEBUG_EVENTS) System.out.println("updateBAEventListener "+  event.getSimpleName() +"    " + matchState);
@@ -466,11 +464,11 @@ public class MethodController {
         matchEventMethods.put(alClass, matchTypeMap);
     }
 
-    private boolean removeListener(ArenaListener listener, HashMap<?,SortedSet<RListener>> methods) {
+    private boolean removeListener(ArenaListener listener, HashMap<?,List<RListener>> methods) {
         
         synchronized( methods ) {
             
-            for ( SortedSet<RListener> rls : methods.values() ) {
+            for ( List<RListener> rls : methods.values() ) {
                 Iterator<RListener> iter = rls.iterator();
                 
                 while( iter.hasNext() ) {
@@ -556,14 +554,15 @@ public class MethodController {
         
         if (list == null || list.isEmpty()) return;
 
-        SortedSet<RListener> rls = bukkitMethods.get(clazz);
+        List<RListener> rls = bukkitMethods.get(clazz);
         if ( rls == null ) {
-            rls = new TreeSet<>();
+            rls = new ArrayList<>();
             bukkitMethods.put(clazz, rls);
         }
         for ( ArenaEventMethod mem : list ) {
             rls.add( new RListener( listener, mem ) );
         }
+        Collections.sort( rls );
     }
 
     private void addBAEventMethod( ArenaListener listener, 
@@ -574,15 +573,16 @@ public class MethodController {
         List<ArenaEventMethod> list = map.get(clazz);
         if (list == null || list.isEmpty())
             return;
-        SortedSet<RListener> rls = matchMethods.get(clazz);
+        List<RListener> rls = matchMethods.get(clazz);
         if (rls == null){
-            rls = new TreeSet<>();
+            rls = new ArrayList<>();
             matchMethods.put(clazz, rls);
         }
         for ( ArenaEventMethod mem : list ) {
             RListener rl = new RListener(listener, mem);
             rls.add(rl);
         }
+        Collections.sort( rls );
     }
 
     public void deconstruct() {
