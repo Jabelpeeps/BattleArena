@@ -57,33 +57,27 @@ public class JoinOptions {
     /** All options for joining */
     final Map<JoinOption,Object> options = new EnumMap<>(JoinOption.class);
     /** Location they have joined from */
-    @Setter Location joinLocation = null;
+    @Setter Location joinLocation;
     @Getter @Setter MatchParams matchParams;
     MinMax teamSize;
     /** When the player joined, (defaults to when the JoinOptions was created) */
-    @Getter @Setter long joinTime;
-
-    public JoinOptions(){
-        joinTime = System.currentTimeMillis();
-    }
+    @Getter @Setter long joinTime = System.currentTimeMillis();
 
     public boolean nearby(Arena arena, double distance) {
-        if (joinLocation == null)
-            return false;
+        if ( joinLocation == null ) return false;
+        
         UUID wid = joinLocation.getWorld().getUID();
         Location arenajoinloc = arena.getJoinLocation();
-        if (arenajoinloc != null){
-            return (wid == arenajoinloc.getWorld().getUID() &&
-                    arenajoinloc.distance(joinLocation) <= distance);
+        
+        if ( arenajoinloc != null ) {
+            return  wid == arenajoinloc.getWorld().getUID() 
+                    && arenajoinloc.distance( joinLocation ) <= distance;
         }
 
-        for (List<SpawnLocation> list : arena.getSpawns()){
-            for (SpawnLocation l : list){
-                if (l.getLocation().getWorld().getUID() != wid)
-                    return false;
-                if (l.getLocation().distance(joinLocation) <= distance)
-                    return true;
-
+        for ( List<SpawnLocation> list : arena.getSpawns() ){
+            for ( SpawnLocation l : list)  {
+                if ( l.getLocation().getWorld().getUID() != wid ) return false;
+                if ( l.getLocation().distance( joinLocation ) <= distance ) return true;
             }
         }
         return false;
@@ -213,33 +207,13 @@ public class JoinOptions {
         return sb.toString();
     }
 
-    public boolean hasWantedTeamSize() {
-        return options.containsKey(JoinOption.WANTEDTEAMSIZE);
-    }
-
-    public boolean hasOption(JoinOption option) {
-        return options.containsKey(option);
-    }
-
-    public Object getOption(JoinOption option) {
-        return options.get(option);
-    }
-
-    public Object setOption(JoinOption option, Object value) {
-        return options.put(option, value);
-    }
-
-    public boolean hasArena() {
-        return options.containsKey(JoinOption.ARENA) && options.get(JoinOption.ARENA)!=null;
-    }
-
-    public Arena getArena() {
-        return hasArena() ? (Arena) options.get(JoinOption.ARENA) : null;
-    }
-
-    public void setArena(Arena arena) {
-        options.put(JoinOption.ARENA, arena);
-    }
+    public boolean hasWantedTeamSize() { return options.containsKey( JoinOption.WANTEDTEAMSIZE ); }
+    public boolean hasOption( JoinOption option ) { return options.containsKey( option ); }
+    public Object getOption( JoinOption option ) { return options.get( option ); }
+    public Object setOption( JoinOption option, Object value ) { return options.put( option, value ); }
+    public boolean hasArena() { return options.containsKey( JoinOption.ARENA ) && options.get( JoinOption.ARENA ) != null; }
+    public Arena getArena() { return hasArena() ? (Arena) options.get( JoinOption.ARENA ) : null; }
+    public void setArena( Arena arena ) { options.put( JoinOption.ARENA, arena ); }
 
     @Override
     public JoinOptions clone() {

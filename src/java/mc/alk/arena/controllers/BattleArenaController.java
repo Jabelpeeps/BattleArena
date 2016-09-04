@@ -152,7 +152,6 @@ public class BattleArenaController implements ArenaListener, Listener {
         }
     }
 
-
     private void restoreStates(Match am, Arena arena){
         if (arena == null)
             arena = am.getArena();
@@ -165,11 +164,8 @@ public class BattleArenaController implements ArenaListener, Listener {
     }
 
     public void startMatch(Match arenaMatch) {
-        /// arenaMatch run calls.... broadcastMessage ( which unfortunately is not thread safe)
-        /// So we have to schedule a sync task... again
         Bukkit.getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), arenaMatch);
     }
-
 
     @ArenaEventHandler
     public void matchFinished(MatchFinishedEvent event){
@@ -308,24 +304,23 @@ public class BattleArenaController implements ArenaListener, Listener {
     private JoinResult joinExistingMatch(TeamJoinObject tqo) {
         JoinResult jr = new JoinResult();
         jr.params = tqo.getMatchParams();
-        if (unfilled_matches.isEmpty()) {
-            return jr;
-        }
-        MatchParams params = tqo.getMatchParams();
-        List<Match> matches = unfilled_matches.get(params.getType());
-        if (matches == null)
-            return jr;
-        for (Match match : matches) {
+        if ( unfilled_matches.isEmpty() ) return jr;
+
+        List<Match> matches = unfilled_matches.get( jr.params.getType() );
+        if ( matches == null ) return jr;
+        
+        for ( Match match : matches ) {
             /// We dont want people joining in a non waitroom state
-            if (!match.canStillJoin()) {
-                continue;}
-            if (!match.getParams().matches(tqo.getJoinOptions()) || !match.getArena().matches(tqo.getJoinOptions())) {
-                continue;}
-            AbstractJoinHandler tjh = match.getTeamJoinHandler();
-            if (tjh == null)
+            if ( !match.canStillJoin() ) continue;
+            
+            if ( !match.getParams().matches( tqo.getJoinOptions() ) 
+                    || !match.getArena().matches( tqo.getJoinOptions() ) )
                 continue;
-            AbstractJoinHandler.TeamJoinResult tjr = tjh.joiningTeam(tqo);
-            switch (tjr.joinStatus) {
+            
+            AbstractJoinHandler tjh = match.getTeamJoinHandler();
+            if ( tjh == null ) continue;
+            
+            switch ( tjh.joiningTeam( tqo ).joinStatus ) {
                 case ADDED:
                 case ADDED_TO_EXISTING:
                 case ADDED_STILL_NEEDS_PLAYERS:
@@ -621,7 +616,6 @@ public class BattleArenaController implements ArenaListener, Listener {
                 am.cancelMatch();
             }
         }
-
         amq.stop();
         amq.removeAllArenas();
         allArenas.clear();

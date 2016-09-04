@@ -6,7 +6,7 @@ public interface ArenaRegion extends YamlSerializable {
 
     public boolean valid();
 
-    public String getID();
+    public String getRegionName();
 
     public String getWorldName();
 

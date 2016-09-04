@@ -122,15 +122,17 @@ public class TransitionController {
         
         if ( Defaults.DEBUG_TRANSITIONS ) 
             Log.info( "-- transition " + am.getClass().getSimpleName() + "  " + transition + " p= " + player.getName() +
-                " ops=" + am.getParams().getArenaStateGraph().getOptions( transition ) + " onlyInMatch=" + onlyInMatch +
-                " inArena=" + am.isHandled( player ) + " dead=" + player.isDead() + ":" + player.getHealth() + 
-                " online=" + player.isOnline() + " clearInv=" +
-                am.getParams().getArenaStateGraph().hasOptionAt( transition, TransitionOption.CLEARINVENTORY ) );
+                " ops=" + mo + " onlyInMatch=" + onlyInMatch + " inArena=" + am.isHandled( player ) + " dead=" + player.isDead()
+                + ":" + player.getHealth() + " online=" + player.isOnline() + " clearInv=" +
+                am.getParams().getStateGraph().hasOptionAt( transition, TransitionOption.CLEARINVENTORY ) );
         
-        boolean insideArena = am.isHandled(player);
-        boolean teleportIn = mo.hasOption(TransitionOption.TELEPORTIN);
-        boolean teleportRoom = mo.hasAnyOption( TransitionOption.TELEPORTSPECTATE, TransitionOption.TELEPORTLOBBY, 
-                TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM);
+        boolean insideArena = am.isHandled( player );
+        boolean teleportIn = mo.hasOption( TransitionOption.TELEPORTIN );
+        boolean teleportRoom = mo.hasAnyOption( TransitionOption.TELEPORTSPECTATE, 
+                                                TransitionOption.TELEPORTLOBBY, 
+                                                TransitionOption.TELEPORTMAINLOBBY, 
+                                                TransitionOption.TELEPORTWAITROOM, 
+                                                TransitionOption.TELEPORTMAINWAITROOM );
  
         /// If the flag onlyInMatch is set, we should leave if the player isnt inside.  disregard if we are teleporting people in
         if ( onlyInMatch 

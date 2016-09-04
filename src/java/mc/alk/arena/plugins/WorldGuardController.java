@@ -231,7 +231,7 @@ public class WorldGuardController {
     }
 
     public static boolean hasRegion( ArenaRegion region ) {
-        return hasRegion( region.getWorldName(), region.getID() );
+        return hasRegion( region.getWorldName(), region.getRegionName() );
     }
 
     public static boolean hasRegion(String world, String id) {
@@ -274,7 +274,7 @@ public class WorldGuardController {
     }
 
     public static void clearRegion(WorldGuardRegion region) {
-        clearRegion( region.getRegionWorld(), region.getID() );
+        clearRegion( region.getRegionWorld(), region.getRegionName() );
     }
 
     public static void clearRegion(String world, String id) {
@@ -303,7 +303,7 @@ public class WorldGuardController {
     }
 
     public static boolean setFlag(WorldGuardRegion region, String flag, boolean enable) {
-        return setFlag( region.getRegionWorld(), region.getID(), flag, enable );
+        return setFlag( region.getRegionWorld(), region.getRegionName(), flag, enable );
     }
 
     public static StateFlag getStateFlag(String flagString) {
@@ -336,7 +336,7 @@ public class WorldGuardController {
     }
 
     public static boolean addMember(String playerName, WorldGuardRegion region) {
-        return addMember(playerName, region.getRegionWorld(), region.getID());
+        return addMember(playerName, region.getRegionWorld(), region.getRegionName());
     }
 
     public static boolean addMember(String playerName, String regionWorld, String id) {
@@ -344,7 +344,7 @@ public class WorldGuardController {
     }
 
     public static boolean removeMember(String playerName, WorldGuardRegion region) {
-        return removeMember(playerName, region.getRegionWorld(), region.getID());
+        return removeMember(playerName, region.getRegionWorld(), region.getRegionName());
     }
 
     public static boolean removeMember(String playerName, String regionWorld, String id) {
@@ -372,13 +372,13 @@ public class WorldGuardController {
     }
 
     public boolean contains(Location location, WorldGuardRegion region) {
-        ProtectedRegion pr = getRegion(region.getWorldName(), region.getID());
+        ProtectedRegion pr = getRegion(region.getWorldName(), region.getRegionName());
         return pr != null
                 && pr.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     public static boolean hasPlayer(String playerName, WorldGuardRegion region) {
-        ProtectedRegion pr = getRegion(region.getWorldName(), region.getID());
+        ProtectedRegion pr = getRegion(region.getWorldName(), region.getRegionName());
         
         if ( pr == null ) return true;
 
@@ -391,7 +391,7 @@ public class WorldGuardController {
     }
 
     public static boolean trackRegion(ArenaRegion region) throws RegionNotFound {
-        return trackRegion(region.getWorldName(), region.getID());
+        return trackRegion(region.getWorldName(), region.getRegionName());
     }
 
     public static boolean trackRegion(String world, String id) throws RegionNotFound {
@@ -441,7 +441,7 @@ public class WorldGuardController {
     }
     
     public static boolean pasteSchematic(WorldGuardRegion region) {
-        return pasteSchematic(region.getRegionWorld(), region.getID());
+        return pasteSchematic(region.getRegionWorld(), region.getRegionName());
     }
     
     public static boolean pasteSchematic(String worldName, String id) {

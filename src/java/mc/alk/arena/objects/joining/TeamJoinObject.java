@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.util.Log;
 
 public class TeamJoinObject extends QueueObject {
 	@Getter final ArenaTeam team;
@@ -17,6 +19,9 @@ public class TeamJoinObject extends QueueObject {
 		team = _team;
 		priority = _team.getPriority();
 		numPlayers += _team.size();
+		
+		if ( Defaults.DEBUG_TRANSITIONS )
+		    Log.info( " new TeamJoinObject:- " + toString() );
 	}
 
 	@Override

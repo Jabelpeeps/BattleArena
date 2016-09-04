@@ -38,7 +38,7 @@ public class ArenaParams {
     @Setter Integer forceStartTime;
 
     @Getter StateGraph arenaStateGraph;
-    StateGraph mergedStateGraph;
+    protected StateGraph mergedStateGraph;
     @Setter String tableName;
 
     @Getter ArenaParams parent;

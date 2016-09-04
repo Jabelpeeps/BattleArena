@@ -31,7 +31,7 @@ public class PlayerMoveListener implements ArenaListener{
             if (event.getFrom().getBlockX() != event.getTo().getBlockX()
                     || event.getFrom().getBlockY() != event.getTo().getBlockY()
                     || event.getFrom().getBlockZ() != event.getTo().getBlockZ()){
-                if (WorldGuardController.isLeavingArea(event.getFrom(), event.getTo(),w,region.getID())){
+                if (WorldGuardController.isLeavingArea(event.getFrom(), event.getTo(),w,region.getRegionName())){
                     event.setCancelled(true);}
             }
         }
