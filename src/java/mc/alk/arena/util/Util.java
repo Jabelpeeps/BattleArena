@@ -11,7 +11,7 @@ public class Util {
 
 	static public void printStackTrace(){
 		/// I've left in this accidentally too many times, make sure DEBUGGING is now on before printing
-		if (Defaults.DEBUG_MSGS)
+		if (Defaults.DEBUG)
 			for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 				System.out.println(ste);}
 	}

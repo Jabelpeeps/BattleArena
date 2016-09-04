@@ -95,18 +95,18 @@ public class Defaults {
     
     public static boolean TESTSERVER = false;
     public static boolean DEBUG_STRESS = false;
-    public static boolean DEBUG_MSGS = true;
+    public static boolean DEBUG_MSGS = false;
     public static boolean DEBUG_COMMANDS = false;
     public static boolean DEBUG_TIMINGS = false;
-
-    public static int TIME_BETWEEN_CLASS_CHANGE = 3;
-    public static final int MAX_SPAWNS = 100;
-
     public static boolean DEBUG_VIRTUAL = false;
     public static boolean DEBUG_TRANSITIONS = true;
     public static boolean DEBUG_STORAGE = false;
     public static boolean DEBUG_TRACKING = false;
     public static boolean DEBUG_MATCH_TEAMS = false;
+
+    public static int TIME_BETWEEN_CLASS_CHANGE = 3;
+    public static final int MAX_SPAWNS = 100;
+
 
     public static boolean ALLOW_ADMIN_CMDS_IN_Q_OR_MATCH = true;
     public static boolean ENABLE_TELEPORT_FIX = false;

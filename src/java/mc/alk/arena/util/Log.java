@@ -57,7 +57,7 @@ public class Log {
 
 	public static void debug(String msg){
 		msg = MessageUtil.colorChat(msg);
-		if (Defaults.DEBUG_MSGS){
+		if (Defaults.DEBUG){
 			try{
 				MessageUtil.sendMessage(Bukkit.getConsoleSender(),msg);
 			} catch (Exception e){
