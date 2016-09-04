@@ -2,7 +2,6 @@ package mc.alk.arena.controllers;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -139,7 +138,7 @@ public class APIRegistrationController {
         return registerCompetition( plugin, name, cmd, factory, executor, configFile, msgFile, defaultArenaFile );
     }
 
-    private static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
                                                CustomCommandExecutor executor, File configFile, File messageFile, 
                                                File defaultArenaFile ) {
         
@@ -164,7 +163,7 @@ public class APIRegistrationController {
     private static boolean _registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
                                                  CustomCommandExecutor executor, File configFile, File messageFile, 
                                                  File defaultPluginConfigFile, File defaultArenaFile ) 
-                                                         throws IOException, ConfigException, InvalidOptionException {
+                                                         throws ConfigException, InvalidOptionException {
         /// Create our plugin folder if its not there
         FileUtil.makeIfNotExists( plugin.getDataFolder() );
 
@@ -180,7 +179,6 @@ public class APIRegistrationController {
         if ( !delayedInits.contains( plugin.getName() ) ) {
             delayedInits.add( plugin.getName() );
             Scheduler.scheduleSynchronousTask( new DelayedRegistrationHandler( plugin, defaultArenaFile ) );
-            return false;
         }
 
         if ( FileUtil.load( plugin.getClass(), configFile.getPath(), defaultPluginConfigFile.getPath() ) == null ) {
@@ -329,7 +327,7 @@ public class APIRegistrationController {
                 if ( !APIRegistrationController.registerCompetition( plugin, name, name, null, null, 
                                                                      new File( compDir + "/" + name + "Config.yml" ), 
                                                                      new File( compDir + "/" + name + "Messages.yml" ), 
-                                                                     null, arenaFile ) ) {
+                                                                     arenaFile ) ) {
                     Log.err( "[BattleArena] Unable to load custom competition " + name );
                 }
             }
