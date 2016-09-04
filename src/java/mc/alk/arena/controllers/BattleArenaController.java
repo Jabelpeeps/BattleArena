@@ -56,7 +56,7 @@ public class BattleArenaController implements ArenaListener, Listener {
 
     private boolean stop = false;
 
-    final private Set<Match> running_matches = Collections.synchronizedSet(new CopyOnWriteArraySet<Match>());
+    final private Set<Match> running_matches = Collections.synchronizedSet( new CopyOnWriteArraySet<>() );
     final private Map<ArenaType,List<Match>> unfilled_matches = new HashMap<>();
     @Getter static private Map<String, Arena> allArenas = new ConcurrentHashMap<>();
     final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<>();
@@ -341,7 +341,7 @@ public class BattleArenaController implements ArenaListener, Listener {
 
     public boolean isInQue(ArenaPlayer p) { return amq.isInQue( p ); }
     public void addMatchup(MatchTeamQObject m) { amq.join( m ); }
-    public Arena reserveArena(Arena arena) { return amq.reserveArena( arena ); }
+    public Arena reserveArena(Arena arena) { return amq.removeArena( arena ); }
     public static Arena getArena(String arenaName) { return allArenas.get( arenaName.toUpperCase() ); }
 
     public Arena removeArena(Arena arena) {
@@ -468,7 +468,8 @@ public class BattleArenaController implements ArenaListener, Listener {
         return reasons;
     }
 
-    public boolean hasArenaSize(int i) {return getArenaBySize(i) != null;}
+    public boolean hasArenaSize(int i) { return getArenaBySize(i) != null; }
+    
     public Arena getArenaBySize(int i) {
         for (Arena a : allArenas.values()){
             if (a.getParams().matchesTeamSize(i)){
@@ -658,7 +659,6 @@ public class BattleArenaController implements ArenaListener, Listener {
         amq.resume();
     }
 
-
     public Collection<ArenaTeam> purgeQueue() {
         return amq.purgeQueue();
     }
@@ -711,7 +711,6 @@ public class BattleArenaController implements ArenaListener, Listener {
         return amq;
     }
 
-
     public List<Match> getRunningMatches(MatchParams params){
         List<Match> list = new ArrayList<>();
         synchronized(running_matches){
@@ -743,5 +742,4 @@ public class BattleArenaController implements ArenaListener, Listener {
             arena.setAllContainerState(ContainerState.OPEN);
         }
     }
-
 }

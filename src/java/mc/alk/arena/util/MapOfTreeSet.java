@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Concurrent Map of List
  * @author alkarin
@@ -13,25 +16,14 @@ import java.util.TreeSet;
  * @param <K>
  * @param <V>
  */
-public class MapOfTreeSet<K,V> extends HashMap<K,TreeSet<V>>{
-    
+@AllArgsConstructor @RequiredArgsConstructor
+public class MapOfTreeSet<K, V> extends HashMap<K,TreeSet<V>>{    
     private static final long serialVersionUID = 1L;
-    Comparator<V> comparator = null;
     final Class<V> vClass;
-
-    public MapOfTreeSet(Class<V> valueParameterClass) {
-        super();
-        vClass = valueParameterClass;
-    }
-
-    public MapOfTreeSet(Class<V> valueParameterClass, Comparator<V> _comparator) {
-        comparator = _comparator;
-        vClass = valueParameterClass;
-    }
+    Comparator<V> comparator = null;
 
     public boolean add(K k, V v) {
-        synchronized(this){
-            
+        synchronized(this){           
             TreeSet<V> set = get(k);
             if (set == null){
                 if (comparator != null)
@@ -55,8 +47,7 @@ public class MapOfTreeSet<K,V> extends HashMap<K,TreeSet<V>>{
     }
 
     @SuppressWarnings( "unchecked" )
-    public V[] getSafe(K k){
-        
+    public V[] getSafe(K k){       
         TreeSet<V> set = get(k);
         synchronized (this) {
             if (set == null) return null;

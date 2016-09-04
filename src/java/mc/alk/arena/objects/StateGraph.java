@@ -194,9 +194,7 @@ public class StateGraph {
 		return list;
 	}
    
-	final Comparator<CompetitionState> compComp = (o1, o2) -> {
-	    return o1.globalOrdinal() - o2.globalOrdinal();
-	};
+	final Comparator<CompetitionState> compComp = (o1, o2) -> o1.globalOrdinal() - o2.globalOrdinal();
 	
 	public String getOptionString() {
         return getOptionString(null);

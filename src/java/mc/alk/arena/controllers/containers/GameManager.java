@@ -128,7 +128,7 @@ public class GameManager implements PlayerHolder {
 	public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
 		if (handled.add(player)){
             if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&2onPreJoin  t=" + player.getTeam());
-            PlayerStoreController.getPlayerStoreController().storeScoreboard(player);
+            PlayerStoreController.INSTANCE.storeScoreboard(player);
 			TransitionController.transition(this, MatchState.ONENTER, player, null, false);
 			updateBukkitEvents(MatchState.ONENTER, player);
 			
@@ -161,7 +161,7 @@ public class GameManager implements PlayerHolder {
 		if (EssentialsUtil.isEnabled())
 			BAPlayerListener.setBackLocation(player, null);
 		
-        PlayerStoreController.getPlayerStoreController().restoreScoreboard(player);
+        PlayerStoreController.INSTANCE.restoreScoreboard(player);
         
         if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPostQuit  t=" + player.getTeam());
 	}
@@ -198,6 +198,5 @@ public class GameManager implements PlayerHolder {
 			}
 		}
 	}
-
     public void setTeleportTime(ArenaPlayer player, ArenaLocation location) { }
 }

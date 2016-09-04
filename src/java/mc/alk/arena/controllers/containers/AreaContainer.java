@@ -37,24 +37,14 @@ public class AreaContainer extends AbstractAreaContainer{
         setParams(_params);
         type = _type;
     }
-
+    
+    public void cancel() { players.clear(); }
+    public Collection<UUID> getInsidePlayers() { return players; }
+    public boolean hasSpawns() { return !spawns.isEmpty(); }
     @Override
-    public LocationType getLocationType() {
-        return LocationType.LOBBY;
-    }
-
-    public void cancel() {
-        players.clear();
-    }
-
-    public Collection<UUID> getInsidePlayers() {
-        return players;
-    }
-
+    public LocationType getLocationType() { return LocationType.LOBBY; }
     @Override
-    public ArenaTeam getTeam(ArenaPlayer player) {
-        return player.getTeam();
-    }
+    public ArenaTeam getTeam(ArenaPlayer player) { return player.getTeam(); }
 
     @ArenaEventHandler
     public void onPlayerInteract(PlayerInteractEvent event){
@@ -71,10 +61,6 @@ public class AreaContainer extends AbstractAreaContainer{
                 ArenaMatch.respawnClick(event,this, respawnTimer);
             } 
         }
-    }
-
-    public boolean hasSpawns() {
-        return !spawns.isEmpty();
     }
 
     private boolean addPlayer(ArenaPlayer player) {
@@ -99,40 +85,25 @@ public class AreaContainer extends AbstractAreaContainer{
             }
         }
         if (Defaults.DEBUG_TRACE) Log.trace(1111, getName()+"  "+ player.getName() + "   !!!&4removed  " + removed + " t=" + player.getTeam());
-        if (removed){
-            updateBukkitEvents(MatchState.ONLEAVE, player);
-        }
+        
+        if (removed) updateBukkitEvents(MatchState.ONLEAVE, player);
+
         return removed;
     }
     @Override
-    public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        onPostEnter(player,apte);
-    }
-
+    public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { onPostEnter( player, apte ); }
     @Override
-    public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        addPlayer(player);
-    }
-
+    public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { addPlayer( player ); }
     @Override
     public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-
     @Override
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-
     @Override
     public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-
     @Override
-    public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        addPlayer(player);
-    }
-
+    public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { addPlayer( player ); }
     @Override
-    public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        removePlayer(player);
-    }
-
+    public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { removePlayer( player ); }
     @Override
     public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
@@ -146,8 +117,7 @@ public class AreaContainer extends AbstractAreaContainer{
         for (int i=0;i<locs.size(); i++ ){
             if (locs.get(i) != null){
                 for (SpawnLocation loc : locs.get(i)){
-                    sb.append("[").append(i + 1).append(":").
-                            append(Util.getLocString(loc)).append("] ");
+                    sb.append("[").append(i + 1).append(":").append( Util.getLocString(loc) ).append("] ");
                 }
             }
         }

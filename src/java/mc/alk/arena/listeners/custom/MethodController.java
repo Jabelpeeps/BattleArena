@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +32,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.events.BAEvent;
-import mc.alk.arena.listeners.custom.RListener.RListenerPriorityComparator;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaListener;
@@ -65,8 +66,8 @@ public class MethodController {
                          HashMap<Class<? extends BAEvent>,
                                  List<ArenaEventMethod>>> matchEventMethods = new HashMap<>();
     
-    final private HashMap<Class<? extends Event>,List<RListener>> bukkitMethods = new HashMap<>();
-    final private HashMap<Class<? extends BAEvent>,List<RListener>> matchMethods = new HashMap<>();
+    final private HashMap<Class<? extends Event>, SortedSet<RListener>> bukkitMethods = new HashMap<>();
+    final private HashMap<Class<? extends BAEvent>, SortedSet<RListener>> matchMethods = new HashMap<>();
     final static Set<MethodController> controllers = new HashSet<>();
     static int controllerCount = 0;
 
@@ -176,7 +177,7 @@ public class MethodController {
 
     private void updateEvent( ArenaListener listener, MatchState matchState,
                               Collection<UUID> players, Class<? extends Event> event) {
-        List<RListener> rls = bukkitMethods.get(event);
+        SortedSet<RListener> rls = bukkitMethods.get(event);
         if (rls == null || rls.isEmpty()){
             return;}
         if (Defaults.DEBUG_EVENTS) System.out.println("updateEventListener "+  event.getSimpleName() +"    " + matchState);
@@ -219,8 +220,8 @@ public class MethodController {
     }
 
     private void updateBAEvent(ArenaListener listener, MatchState matchState,
-                               Collection<UUID> players, final Class<? extends BAEvent> event) {
-        final List<RListener> rls = matchMethods.get(event);
+                               Collection<UUID> players, Class<? extends BAEvent> event ) {
+        SortedSet<RListener> rls = matchMethods.get(event);
         if (rls == null || rls.isEmpty()){
             return;}
         if (Defaults.DEBUG_EVENTS) System.out.println("updateBAEventListener "+  event.getSimpleName() +"    " + matchState);
@@ -246,7 +247,7 @@ public class MethodController {
         }
     }
 
-    private BukkitEventHandler getCreate(Class<? extends Event> event, ArenaEventMethod mem){
+    private BukkitEventHandler getCreate( Class<? extends Event> event, ArenaEventMethod mem ) {
         HashMap<Type,BukkitEventHandler> gels = eventListeners.get(mem.getBukkitPriority());
         if (gels == null){
             gels = new HashMap<>();
@@ -270,7 +271,7 @@ public class MethodController {
     }
 
     private static List<ArenaEventMethod> getMethods(ArenaListener ael, Class<? extends Event> eventClass) {
-        HashMap<Class<? extends Event>,List<ArenaEventMethod>> typeMap = bukkitEventMethods.get(ael.getClass());
+        HashMap<Class<? extends Event>, List<ArenaEventMethod>> typeMap = bukkitEventMethods.get(ael.getClass());
         if (Defaults.DEBUG_EVENTS) 
             System.out.println("!! getEvent "+ael.getClass()+ " " +eventClass+"  methods="+
                 (typeMap==null?"null" :typeMap.size() +":"+ (typeMap.get(eventClass) != null ? typeMap.get(eventClass).size() : 0) ) );
@@ -279,13 +280,13 @@ public class MethodController {
         return typeMap.get(eventClass);
     }
 
-    private static Map<Class<? extends Event>,List<ArenaEventMethod>> getBukkitMethods(ArenaListener ael) {
+    private static Map<Class<? extends Event>, List<ArenaEventMethod>> getBukkitMethods(ArenaListener ael) {
         if (Defaults.DEBUG_EVENTS) 
             System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
         return bukkitEventMethods.get(ael.getClass());
     }
 
-    private static Map<Class<? extends BAEvent>,List<ArenaEventMethod>> getMatchMethods(ArenaListener ael) {
+    private static Map<Class<? extends BAEvent>, List<ArenaEventMethod>> getMatchMethods(ArenaListener ael) {
         if (Defaults.DEBUG_EVENTS) 
             System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
         return matchEventMethods.get(ael.getClass());
@@ -459,17 +460,17 @@ public class MethodController {
                 mths.add( new ArenaEventMethod( method, bukkitEvent, beginState,
                         endState, cancelState, priority, bukkitPriority, baEvent ) );
             }
-            Collections.sort( mths, (o1, o2) -> { return o1.getPriority().compareTo( o2.getPriority() ); });
+            Collections.sort( mths, (o1, o2) -> o1.getPriority().compareTo( o2.getPriority() ) );
         }
         bukkitEventMethods.put(alClass, bukkitTypeMap);
         matchEventMethods.put(alClass, matchTypeMap);
     }
 
-    private boolean removeListener(ArenaListener listener, HashMap<?,List<RListener>> methods) {
+    private boolean removeListener(ArenaListener listener, HashMap<?,SortedSet<RListener>> methods) {
         
         synchronized( methods ) {
             
-            for ( List<RListener> rls : methods.values() ) {
+            for ( SortedSet<RListener> rls : methods.values() ) {
                 Iterator<RListener> iter = rls.iterator();
                 
                 while( iter.hasNext() ) {
@@ -524,7 +525,6 @@ public class MethodController {
         }
     }
 
-
     /**
      * Add a subset of the events found in the listener to the MethodController
      * @param listener ArenaListener
@@ -547,40 +547,42 @@ public class MethodController {
         }
     }
 
-
-    private void addEventMethod(ArenaListener listener, Map<Class<? extends Event>, List<ArenaEventMethod>> map,
-                                Class<? extends Event> clazz) {
+    private void addEventMethod( ArenaListener listener, 
+                                 Map<Class<? extends Event>, 
+                                 List<ArenaEventMethod>> map,
+                                 Class<? extends Event> clazz ) {
         
         List<ArenaEventMethod> list = map.get(clazz);
         
         if (list == null || list.isEmpty()) return;
 
-        List<RListener> rls = bukkitMethods.get(clazz);
+        SortedSet<RListener> rls = bukkitMethods.get(clazz);
         if ( rls == null ) {
-            rls = new ArrayList<>();
+            rls = new TreeSet<>();
             bukkitMethods.put(clazz, rls);
         }
         for ( ArenaEventMethod mem : list ) {
-            rls.add(new RListener( listener, mem ) );
+            rls.add( new RListener( listener, mem ) );
         }
-        Collections.sort(rls, new RListenerPriorityComparator());
     }
 
-    private void addBAEventMethod(ArenaListener listener, Map<Class<? extends BAEvent>, List<ArenaEventMethod>> map,
-                                  Class<? extends BAEvent> clazz) {
+    private void addBAEventMethod( ArenaListener listener, 
+                                   Map<Class<? extends BAEvent>, 
+                                   List<ArenaEventMethod>> map,
+                                   Class<? extends BAEvent> clazz ) {
+        
         List<ArenaEventMethod> list = map.get(clazz);
         if (list == null || list.isEmpty())
             return;
-        List<RListener> rls = matchMethods.get(clazz);
+        SortedSet<RListener> rls = matchMethods.get(clazz);
         if (rls == null){
-            rls = new ArrayList<>();
+            rls = new TreeSet<>();
             matchMethods.put(clazz, rls);
         }
-        for (ArenaEventMethod mem: list){
+        for ( ArenaEventMethod mem : list ) {
             RListener rl = new RListener(listener, mem);
             rls.add(rl);
         }
-        Collections.sort(rls, new RListenerPriorityComparator());
     }
 
     public void deconstruct() {
@@ -632,9 +634,6 @@ public class MethodController {
                 if ( arenalistener != null ) {
                     
                     MapOfTreeSet<UUID,RListener> lists2 = arenalistener.getListeners();
-                    
-//                    String str = StringUtils.join(PlayerController.UUIDToPlayerList(bel.getSpecificArenaPlayerListener().getPlayers()), ", ");
-                    
                     String str = StringUtils.join( arenalistener.getPlayers(), ", " );
                     String has = bel.hasListeners() ? "&2true" : "&cfalse";
                     

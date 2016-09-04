@@ -189,8 +189,8 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         if (state == EventState.CLOSED || state == EventState.FINISHED)
             return;
         Matchup m = matchups.get(am);
-        if (m==null){
-            eventCancelled();
+        if ( m == null ) {
+            cancelEvent();
             Log.err("[BA Error] match completed but not found in tournament");
             return;
         }

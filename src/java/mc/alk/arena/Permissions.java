@@ -35,7 +35,7 @@ public class Permissions {
 
     public static void givePlayerInventoryPerms(Player p) {
         if (BattleArena.getSelf().isEnabled()) {
-            if (Defaults.DEBUG_TRACE) Log.info("Giving inventory perms=" + p.getName());
+            if (Defaults.DEBUG_PERMS) Log.info("Giving inventory perms=" + p.getName());
 
             if (Defaults.PLUGIN_MULTI_INV) /// Give the multiinv permission node to ignore this player
                 p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTI_INV_IGNORE_NODE, true, ticks);
@@ -46,7 +46,7 @@ public class Permissions {
             if (Defaults.PLUGIN_MULITVERSE_INV) /// Give the multiverse-inventories permission node to ignore this player
                 p.getPlayer().addAttachment(BattleArena.getSelf(), Permissions.MULTIVERSE_INV_IGNORE_NODE, true, ticks);
             
-            if (Defaults.DEBUG_TRACE) Log.info("End giving inventory perms=" + p.getName());
+            if (Defaults.DEBUG_PERMS) Log.info("End giving inventory perms=" + p.getName());
         }
     }
 

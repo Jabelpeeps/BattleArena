@@ -131,5 +131,4 @@ class BukkitEventHandler {
     public void invokeArenaEvent(Set<ArenaListener> listeners, Event event) {
         if (arenaEventListener != null) arenaEventListener.invokeEvent(listeners, event);
     }
-
 }

@@ -63,10 +63,10 @@ public class TransitionController {
     }
 
     static boolean transition( PlayerHolder am, CompetitionState transition, ArenaTeam team, boolean onlyInMatch,
-                              boolean performOncePerTransitionOptions ) {
+                                                                              boolean performOncePerTransitionOptions ) {
         StateOptions mo = am.getParams().getStateOptions(transition);
-        if (mo == null)
-            return true;
+        if (mo == null) return true;
+        
         if (performOncePerTransitionOptions && (am instanceof ArenaController)){
             ArenaController ac = (ArenaController) am;
             /// Options that don't affect players first
@@ -103,11 +103,12 @@ public class TransitionController {
         StateOptions mo = tops.getOptions(transition);
         if (mo == null) return true;
         
-        if (Defaults.DEBUG_TRANSITIONS) 
-            Log.info("-- transition "+am.getClass().getSimpleName()+"  " + transition + " p= " +player.getName() +
-                " ops="+am.getParams().getArenaStateGraph().getOptions(transition)+" onlyInMatch="+onlyInMatch+
-                " inArena="+am.isHandled(player) + " dead="+player.isDead()+":"+player.getHealth()+" online="+player.isOnline()+" clearInv=" +
-                am.getParams().getArenaStateGraph().hasOptionAt(transition, TransitionOption.CLEARINVENTORY));
+        if ( Defaults.DEBUG_TRANSITIONS ) 
+            Log.info( "-- transition " + am.getClass().getSimpleName() + "  " + transition + " p= " + player.getName() +
+                " ops=" + am.getParams().getArenaStateGraph().getOptions( transition ) + " onlyInMatch=" + onlyInMatch +
+                " inArena=" + am.isHandled( player ) + " dead=" + player.isDead() + ":" + player.getHealth() + 
+                " online=" + player.isOnline() + " clearInv=" +
+                am.getParams().getArenaStateGraph().hasOptionAt( transition, TransitionOption.CLEARINVENTORY ) );
         
         boolean insideArena = am.isHandled(player);
         boolean teleportIn = mo.hasOption(TransitionOption.TELEPORTIN);
@@ -115,15 +116,19 @@ public class TransitionController {
                 TransitionOption.TELEPORTMAINLOBBY, TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM);
  
         /// If the flag onlyInMatch is set, we should leave if the player isnt inside.  disregard if we are teleporting people in
-        if ( onlyInMatch && (!insideArena && !(teleportIn || teleportRoom) ||
-                am instanceof Match && !((Match)am).isInMatch(player) &&
-                        player.getCompetition()!=null && !player.getCompetition().equals(am) ) ) {
-            return true;}
+        if ( onlyInMatch 
+                && (!insideArena && !(teleportIn || teleportRoom) 
+                        || am instanceof Match 
+                        && !((Match)am).isInMatch(player) 
+                        && player.getCompetition() != null 
+                        && !player.getCompetition().equals(am) ) ) {
+            return true;
+        }
 
         boolean teleportOut = mo.hasAnyOption( TransitionOption.TELEPORTOUT, TransitionOption.TELEPORTTO );
         boolean wipeInventory = mo.hasOption( TransitionOption.CLEARINVENTORY );
 
-        List<PotionEffect> effects = mo.getEffects()!=null ? new ArrayList<>(mo.getEffects()) : null;
+        List<PotionEffect> effects = mo.getEffects() != null ? new ArrayList<>( mo.getEffects() ) : null;
         Integer hunger = mo.getHunger();
 
         int teamIndex = team == null ? -1 : team.getIndex();
@@ -141,7 +146,7 @@ public class TransitionController {
         }
 
         boolean storeAll = mo.hasOption(TransitionOption.STOREALL);
-        PlayerStoreController psc = PlayerStoreController.getPlayerStoreController();
+        PlayerStoreController psc = PlayerStoreController.INSTANCE;
         boolean armorTeams = tops.hasAnyOption(TransitionOption.ARMORTEAMS);
         boolean woolTeams = tops.hasAnyOption(TransitionOption.WOOLTEAMS);
 
@@ -220,8 +225,7 @@ public class TransitionController {
                 EffectUtil.enchantPlayer(p, effects);
             } 
             catch (Exception e){
-                if (!Defaults.DEBUG_VIRTUAL)
-                    Log.warn("BattleArena "+p.getName()+" was not enchanted");
+                if ( !Defaults.DEBUG_VIRTUAL ) Log.warn( "BattleArena " + p.getName() + " was not enchanted" );
             }
             if (Defaults.ANNOUNCE_GIVEN_ITEMS){
                 String prizeMsg = mo.getPrizeMsg(null, prizeMoney);
@@ -231,7 +235,7 @@ public class TransitionController {
             if (teleportIn){
                 transition(am, MatchState.ONSPAWN, player, team, false);
             }
-            /// else we have a subste of the options we should always do regardless if they are alive or not
+            /// else we have a subseT of the options we should always do regardless if they are alive or not
         }  
         else if (teleportOut) {
 //            if (mo.hasOption(TransitionOption.REMOVEPERMS)) removePerms(player, mo.getRemovePerms());

@@ -113,7 +113,7 @@ public class BattleArena extends JavaPlugin {
                 Bukkit.getConsoleSender(), "&4[" + pluginname + "] &6v" + version + "&f enabling!");
 
         /// Create our plugin folder if its not there
-        final File dir = getDataFolder();
+        File dir = getDataFolder();
         FileUtil.makeIfNotExists(dir);
         FileUtil.makeIfNotExists(new File(dir + "/competitions"));
         FileUtil.makeIfNotExists(new File(dir + "/messages"));
@@ -139,7 +139,6 @@ public class BattleArena extends JavaPlugin {
         }
 
         MessageSerializer defaultMessages = new MessageSerializer( "default", null );
-        
         defaultMessages.setConfig( FileUtil.load( clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml" ) );
         
         new YamlFileUpdater(this).updateMessageSerializer(self, defaultMessages);
@@ -186,7 +185,7 @@ public class BattleArena extends JavaPlugin {
 
         bAConfigSerializer.loadDefaults(); /// Load our defaults for BattleArena, has to happen before classes are loaded
 
-        classesSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/classes.yml", "/default_files/classes.yml")); /// Load classes
+        classesSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/classes.yml", "/default_files/classes.yml"));
         classesSerializer.loadAll();
 
         /// Spawn Groups need to be loaded before the arenas
@@ -194,7 +193,7 @@ public class BattleArena extends JavaPlugin {
         ss.setConfig(FileUtil.load(clazz, dir.getPath() + "/spawns.yml", "/default_files/spawns.yml"));
 
         TeamHeadSerializer ts = new TeamHeadSerializer();
-        ts.setConfig(FileUtil.load(clazz, dir.getPath() + "/teamConfig.yml", "/default_files/teamConfig.yml")); /// Load team Colors
+        ts.setConfig(FileUtil.load(clazz, dir.getPath() + "/teamConfig.yml", "/default_files/teamConfig.yml"));
         ts.loadAll();
 
         arenaEditorExecutor = new ArenaEditorExecutor();
@@ -246,7 +245,7 @@ public class BattleArena extends JavaPlugin {
                             es.startNext();
                         else if (Defaults.START_CONTINUOUS)
                             es.start();           
-                });
+                }, 40 );
         Log.info("&4[" + pluginname + "] &6v" + BattleArena.version + "&f enabled!");
     }
 

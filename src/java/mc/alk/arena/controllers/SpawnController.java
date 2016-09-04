@@ -8,16 +8,15 @@ import org.bukkit.plugin.Plugin;
 
 import lombok.AllArgsConstructor;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.util.CaseInsensitiveMap;
 import mc.alk.arena.util.Log;
 
 public class SpawnController {
-
-    static final boolean DEBUG_SPAWNS = false;
-    static Plugin plugin = BattleArena.getSelf();
     
+    static Plugin plugin = BattleArena.getSelf();    
     static CaseInsensitiveMap<SpawnInstance> allSpawns = new CaseInsensitiveMap<>();
     PriorityQueue<NextSpawn> spawnQ;
     Map<Long, TimedSpawn> timedSpawns;
@@ -29,9 +28,10 @@ public class SpawnController {
         Long timeToNext;
     }
 
-    public SpawnController(Map<Long, TimedSpawn> spawnGroups) {
-        timedSpawns = spawnGroups;
-    }
+    public SpawnController(Map<Long, TimedSpawn> spawnGroups) { timedSpawns = spawnGroups; }
+    
+    public static void registerSpawn( String s, SpawnInstance sg ) { allSpawns.put( s, sg ); }
+    public static SpawnInstance getSpawnable( String name ) { return allSpawns.get( name ); }
 
     public void stop() {
         if (timerId != null) {
@@ -50,9 +50,7 @@ public class SpawnController {
     }
 
     public void start() {
-
         if (timedSpawns != null && !timedSpawns.isEmpty()) {
-
             spawnQ = new PriorityQueue<>(timedSpawns.size(), (o1, o2) -> o1.timeToNext.compareTo(o2.timeToNext));
             
             for (TimedSpawn is : timedSpawns.values()) {
@@ -72,18 +70,17 @@ public class SpawnController {
 
     @AllArgsConstructor
     public class SpawnNextEvent implements Runnable {
-
-        Long nextTimeToSpawn = null;
+        Long nextTimeToSpawn;
 
         @Override
         public void run() {
-            if (DEBUG_SPAWNS) {
+            if (Defaults.DEBUG_SPAWNS) {
                 Log.info("SpawnNextEvent::run " + nextTimeToSpawn);
             }
-
+            
             for (NextSpawn next : spawnQ) { 
                 next.timeToNext -= nextTimeToSpawn;
-                if (DEBUG_SPAWNS) {
+                if (Defaults.DEBUG_SPAWNS) {
                     Log.info("     " + next.timeToNext + "  " + next.is + "   ");
                 }
             }
@@ -99,29 +96,17 @@ public class SpawnController {
                     if (ns.timeToNext <= 0)  {
                         continue;
                     }
-                    
                     spawnQ.add(ns);
                 }
             }
-
             ns = spawnQ.peek();
-            if (ns == null) { 
-                return;
-            }
+            if (ns == null) return;
+            
             nextTimeToSpawn = ns.timeToNext;
-            if (DEBUG_SPAWNS) {
+            if (Defaults.DEBUG_SPAWNS) {
                 Log.info("run SpawnNextEvent " + spawnQ.size() + "  next=" + nextTimeToSpawn);
             }
             timerId = Scheduler.scheduleSynchronousTask( new SpawnNextEvent(nextTimeToSpawn), nextTimeToSpawn * 20 );
         }
     }
-
-    public static void registerSpawn(String s, SpawnInstance sg) {
-        allSpawns.put(s, sg);
-    }
-
-    public static SpawnInstance getSpawnable(String name) {
-        return allSpawns.get(name);
-    }
-
 }

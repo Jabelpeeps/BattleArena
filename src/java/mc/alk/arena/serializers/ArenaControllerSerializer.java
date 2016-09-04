@@ -149,57 +149,53 @@ public class ArenaControllerSerializer extends BaseConfig{
 		Map<UUID,GameMode> gameModes = new HashMap<>();
 		Map<UUID, PInv> items = new HashMap<>();
 
-		for (PlayerRestoreController prc: prcs.values()){
-			final UUID id = prc.getUUID();
-			if (prc.getTeleportLocation() != null)
-				playerLocs.put(id, prc.getTeleportLocation());
-			if (prc.isKill())
-				dieOnReenter.add(id);
-			if (prc.isClearInventory())
-				clearInventoryReenter.add(id);
-			if (prc.getGamemode()!=null)
-				gameModes.put(id, prc.getGamemode());
-			if (prc.getItem() != null){
-				items.put(id, prc.getItem());}
+		for ( PlayerRestoreController prc : prcs.values() ) {
+			UUID id = prc.getUUID();
+			if ( prc.getTeleportLocation() != null ) playerLocs.put( id, prc.getTeleportLocation() );
+			if ( prc.isKill() ) dieOnReenter.add( id );
+			if ( prc.isClearInventory() ) clearInventoryReenter.add( id );
+			if ( prc.getGamemode() != null ) gameModes.put( id, prc.getGamemode() );
+			if ( prc.getItem() != null ) items.put( id, prc.getItem() );
 		}
 
 		ConfigurationSection cs = config.createSection("tpOnReenter");
-		for (UUID player : playerLocs.keySet()){
+		for ( UUID player : playerLocs.keySet() ) {
 			ConfigurationSection pc = cs.createSection(player.toString());
 			Location loc = playerLocs.get(player);
 			pc.set("loc", SerializerUtil.getLocString(loc));
 		}
 
 		cs = config.createSection("dieOnReenter");
-		for (UUID player : dieOnReenter){
-			cs.createSection(player.toString());}
-
+		for ( UUID player : dieOnReenter ) {
+			cs.createSection(player.toString());
+		}
 		cs = config.createSection("clearInventoryOnReenter");
-		for (UUID player : clearInventoryReenter){
-			cs.createSection(player.toString());}
-
+		for ( UUID player : clearInventoryReenter ) {
+			cs.createSection(player.toString());
+		}
 		cs = config.createSection("restoreGameModeOnReenter");
-		for (Entry<UUID,GameMode> entry: gameModes.entrySet()){
+		for ( Entry<UUID, GameMode> entry : gameModes.entrySet() ) {
 			ConfigurationSection pc = cs.createSection(entry.getKey().toString());
 			pc.set("gamemode", entry.getValue().toString());
 		}
-
 		cs = config.createSection("restoreInv");
-		for (UUID name: items.keySet()){
+		for ( UUID name : items.keySet() ) {
 			ConfigurationSection pcs = cs.createSection(name.toString());
 			PInv inv = items.get(name);
 			List<String> stritems = new ArrayList<>();
 			for (ItemStack is : inv.armor){
 				if (is == null || is.getType() == Material.AIR)
 					continue;
-				stritems.add(InventoryUtil.getItemString(is));}
+				stritems.add(InventoryUtil.getItemString(is));
+			}
 			pcs.set("armor", stritems);
 
 			stritems = new ArrayList<>();
-			for (ItemStack is : inv.contents){
+			for (ItemStack is : inv.contents) {
 				if (is == null || is.getType() == Material.AIR)
 					continue;
-				stritems.add(InventoryUtil.getItemString(is));}
+				stritems.add(InventoryUtil.getItemString(is));
+			}
 			pcs.set("contents", stritems);
 		}
 

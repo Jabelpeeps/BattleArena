@@ -28,8 +28,7 @@ public class TeleportLocationController {
     
     static Random rand = new Random();
     
-    public static void teleport(PlayerHolder am, ArenaTeam team,
-            ArenaPlayer player, StateOptions mo, int teamIndex) {
+    public static void teleport( PlayerHolder am, ArenaTeam team, ArenaPlayer player, StateOptions mo, int teamIndex ) {
         player.markOldLocation();
         MatchParams mp = am.getParams();
 
@@ -38,27 +37,28 @@ public class TeleportLocationController {
         ArenaLocation dest = getArenaLocation(am, team, player, mo, teamIndex);
         ArenaLocation src = player.getCurLocation();
         src.setLocation(player.getLocation());
-        if (Defaults.DEBUG_TRACE) {
+        
+        if (Defaults.DEBUG_TRACE) 
             Log.info(" ########### @@ " + player.getCurLocation() + "  -->  " + am.getTeam(player));
-        }
 
-        TeleportDirection td = calcTeleportDirection(src, dest);
-        ArenaPlayerTeleportEvent apte = new ArenaPlayerTeleportEvent(mp.getType(), player, team, src, dest, td);
+        ArenaPlayerTeleportEvent apte = 
+                new ArenaPlayerTeleportEvent( mp.getType(), player, team, src, dest, calcTeleportDirection( src, dest ) );
 
-        movePlayer(player, apte, mp);
+        movePlayer( player, apte, mp );
     }
 
-    public static void teleportOut(PlayerHolder am, ArenaTeam team,
-            ArenaPlayer player, StateOptions mo) {
+    public static void teleportOut( PlayerHolder am, ArenaTeam team, ArenaPlayer player, StateOptions mo ) {
         MatchParams mp = am.getParams();
         Location loc = null;
         ArenaLocation src = player.getCurLocation();
-        final LocationType type = LocationType.HOME;
-        if (mo.hasOption(TransitionOption.TELEPORTTO)) {
+        LocationType type = LocationType.HOME;
+        
+        if ( mo.hasOption( TransitionOption.TELEPORTTO ) ) {
             loc = mo.getTeleportToLoc();
-        } else {
+        } 
+        else {
             SpawnLocation sloc = player.getOldLocation();
-            if (sloc != null) loc = sloc.getLocation(); // Prevent NPE
+            if ( sloc != null ) loc = sloc.getLocation(); 
             /// TODO
             /// This is a bit of a kludge, sometimes we are "teleporting them out"
             /// when they are already out... so need to rethink how this can happen and should it
@@ -67,31 +67,29 @@ public class TeleportLocationController {
             }
         }
         if (loc == null) {
-            Log.err(BattleArena.getNameAndVersion() + " Teleporting to a null location!  teleportTo=" + mo.hasOption(TransitionOption.TELEPORTTO));
+            Log.err( BattleArena.getNameAndVersion() + 
+                    " Teleporting to a null location!  teleportTo=" + mo.hasOption( TransitionOption.TELEPORTTO ) );
         }
 
-        ArenaLocation dest = new ArenaLocation(AbstractAreaContainer.HOMECONTAINER, loc, type);
-        ArenaPlayerTeleportEvent apte = new ArenaPlayerTeleportEvent(am.getParams().getType(),
-                player, team, src, dest, TeleportDirection.OUT);
-        if (movePlayer(player, apte, mp)) {
+        ArenaLocation dest = new ArenaLocation( AbstractAreaContainer.HOMECONTAINER, loc, type );
+        ArenaPlayerTeleportEvent apte = 
+                new ArenaPlayerTeleportEvent( am.getParams().getType(), player, team, src, dest, TeleportDirection.OUT );
+        
+        if ( movePlayer( player, apte, mp ) )
             player.clearOldLocation();
-        }
     }
 
     private static boolean movePlayer(ArenaPlayer player, ArenaPlayerTeleportEvent apte, MatchParams mp) {
         PlayerHolder src = apte.getSrcLocation().getPlayerHolder();
         PlayerHolder dest = apte.getDestLocation().getPlayerHolder();
         TeleportDirection td = apte.getDirection();
+        
         if (Defaults.DEBUG_TRACE) {
             Log.info(" ###########  " + player.getCurLocation() + "  -->  " + dest.getLocationType());
-        }
-        if (Defaults.DEBUG_TRACE) {
             Log.info(" ---- << -- " + player.getName() + "   src=" + src + "   dest=" + dest + "    td=" + td);
         }
 
-        switch (td) {
-            case RESPAWN:
-                break;
+        switch ( td ) {
             case FIRSTIN:
                 GameManager.getGameManager( mp ).onPreJoin(player, apte);
                 dest.onPreJoin(player, apte);
@@ -115,8 +113,6 @@ public class TeleportLocationController {
         }
         player.setCurLocation(apte.getDestLocation());
         switch (td) {
-            case RESPAWN:
-                break;
             case FIRSTIN:
                 GameManager.getGameManager( mp ).onPostJoin(player, apte);
                 dest.onPostJoin(player, apte);
@@ -145,13 +141,14 @@ public class TeleportLocationController {
         return TeleportDirection.IN;
     }
 
-    private static ArenaLocation getArenaLocation(PlayerHolder am, ArenaTeam team,
-            ArenaPlayer player, StateOptions tops, int teamIndex) {
-        final MatchParams mp = am.getParams();
-        final boolean randomRespawn = tops.hasOption(TransitionOption.RANDOMRESPAWN);
+    private static ArenaLocation getArenaLocation( PlayerHolder am, ArenaTeam team, ArenaPlayer player, 
+                                                                        StateOptions tops, int teamIndex ) {
+        MatchParams mp = am.getParams();
+        boolean randomRespawn = tops.hasOption(TransitionOption.RANDOMRESPAWN);
         SpawnLocation l;
-        final LocationType type;
-        final PlayerHolder ph;
+        LocationType type;
+        PlayerHolder ph;
+        
         if (Defaults.DEBUG_TRACE) {
             Log.info(" team=" + team + " teamindex = " + teamIndex + "  " + am.getClass().getSimpleName() + "  " + am);
         }
@@ -182,7 +179,7 @@ public class TeleportLocationController {
             l = ph.getSpawn(teamIndex, randomRespawn);
         } 
         else { // They should teleportIn, aka to the Arena
-            final Arena arena;
+            Arena arena;
             if (am instanceof Arena) {
                 arena = (Arena) am;
             } else if (am instanceof Match) {
@@ -199,5 +196,4 @@ public class TeleportLocationController {
         }
         return new ArenaLocation(ph, l.getLocation(), type);
     }
-
 }

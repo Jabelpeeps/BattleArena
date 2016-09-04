@@ -72,8 +72,7 @@ public class ConfigSerializer extends BaseConfig {
     }
 
     public static MatchParams loadMatchParams( BaseConfig config, String name )
-                                                            throws ConfigException, InvalidOptionException {
-        
+                                                            throws ConfigException, InvalidOptionException {      
         ConfigurationSection cs = config.getConfig();
         
         if (config.getConfigurationSection(name) != null) 
@@ -214,6 +213,8 @@ public class ConfigSerializer extends BaseConfig {
 
     private static StateGraph loadTransitionOptions(ConfigurationSection cs, MatchParams mp)
             throws InvalidOptionException {
+        if ( Defaults.DEBUG_TRACE ) Log.info( "Loading TransistionOptions from:-" + cs.getName() );
+        
         StateGraph allTops = new StateGraph();
         boolean found = false;
         
@@ -252,7 +253,7 @@ public class ConfigSerializer extends BaseConfig {
                 allTops.removeStateOptions(cstate);
                 continue;}
             found = true;
-            if (Defaults.DEBUG_TRACE) Log.info("[ARENA] transition= " + cstate +" "+tops);
+            if ( Defaults.DEBUG_TRACE ) Log.info( "[ARENA] transition= " + cstate + " " + tops );
 
             if (cstate == MatchState.ONCOMPLETE){
                 if (allTops.hasOptionAt(MatchState.ONLEAVE, TransitionOption.CLEARINVENTORY)){
@@ -260,7 +261,7 @@ public class ConfigSerializer extends BaseConfig {
                 }
                 StateOptions cancelOps = new StateOptions(tops);
                 allTops.addStateOptions(MatchState.ONCANCEL, cancelOps);
-                if (Defaults.DEBUG_TRACE) Log.info("[ARENA] transition= " + MatchState.ONCANCEL +" "+cancelOps);
+                if ( Defaults.DEBUG_TRACE ) Log.info("[ARENA] transition= " + MatchState.ONCANCEL + " " + cancelOps );
             } 
             else if (cstate == MatchState.ONLEAVE){
                 if (tops.hasOption(TransitionOption.TELEPORTOUT)){

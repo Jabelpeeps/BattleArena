@@ -97,7 +97,6 @@ public class ArenaObjective implements ScoreTracker {
 		this( name, _criteria, _displayName, slot, 50 );
 	}
 	public ArenaObjective( String _id, String _criteria, String _displayName, SAPIDisplaySlot slot, int _priority ) {
-
 		this( _id, _displayName, _criteria, _priority );
 		setDisplaySlot(slot);
 	}
@@ -125,18 +124,18 @@ public class ArenaObjective implements ScoreTracker {
 		}
 	}
 
-	public Integer addPoints(ArenaTeam team, int points) {
+	public int addPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);
 		setPoints( team,points + oldPoints );
 		return points + oldPoints;
 	}
-	public Integer addPoints(ArenaPlayer ap, int points) {
+	public int addPoints(ArenaPlayer ap, int points) {
 		int oldPoints = playerPoints.getPoints(ap);
 		setPoints( ap, points + oldPoints );
 		return points + oldPoints;
 	}
 
-	public Integer subtractPoints(ArenaTeam team, int points) {
+	public int subtractPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);
 		setPoints( team, oldPoints - points );
 		return oldPoints - points;
@@ -147,13 +146,11 @@ public class ArenaObjective implements ScoreTracker {
 		return oldPoints - points;
 	}
 
-	public List<ArenaTeam> getTeamLeaders() { return teamPoints.getLeaders(); }
-	public TreeMap<Integer, Collection<ArenaTeam>> getTeamRanks() { return teamPoints.getRankings(); }
 	public List<ArenaPlayer> getPlayerLeaders() { return playerPoints.getLeaders(); }
 	public TreeMap<Integer, Collection<ArenaPlayer>> getPlayerRanks() { return playerPoints.getRankings(); }
 
 	public MatchResult getMatchResult(Match match){
-		TreeMap<Integer,Collection<ArenaTeam>> ranks = getTeamRanks();
+		TreeMap<Integer, Collection<ArenaTeam>> ranks = getRanks();
 		/// Deal with teams that haven't scored and possibly aren't inside the ranks
 		HashSet<ArenaTeam> unfoundTeams = new HashSet<>(match.getAliveTeams());
 		for (Collection<ArenaTeam> t : ranks.values()){
@@ -190,19 +187,19 @@ public class ArenaObjective implements ScoreTracker {
         return result;
 	}
 
-	public Integer setPoints(ArenaPlayer p, int points) {
+	public int setPoints(ArenaPlayer p, int points) {
 		setPoints(p.getName(), points);
 		return playerPoints.setPoints(p, points);
 	}
-	public Integer setPoints(ArenaTeam t, int points) {
+	public int setPoints(ArenaTeam t, int points) {
 		setPoints(t.getIDString(), points);
 		return teamPoints.setPoints(t, points);
 	}
 
 	@Override
-	public List<ArenaTeam> getLeaders() { return getTeamLeaders(); }
+	public List<ArenaTeam> getLeaders() { return teamPoints.getLeaders(); }
 	@Override
-	public TreeMap<?, Collection<ArenaTeam>> getRanks() { return getTeamRanks(); }
+	public TreeMap<Integer, Collection<ArenaTeam>> getRanks() { return teamPoints.getRankings(); }
 	
     @Override
     public void setScoreboard( ArenaScoreboard board ) {
@@ -249,7 +246,7 @@ public class ArenaObjective implements ScoreTracker {
     }
 
     public void initPoints(List<SEntry> _entries, List<Integer> points) {
-        for (int i=0;i<_entries.size();i++) {
+        for ( int i = 0; i < _entries.size(); i++ ) {
             SEntry e = _entries.get(i);
             int point = points.get(i);
             ArenaScore score = new ArenaScore(e, point);

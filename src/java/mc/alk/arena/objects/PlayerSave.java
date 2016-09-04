@@ -162,7 +162,7 @@ public class PlayerSave {
     }
 
     public void restoreItems() {
-        if (items ==null) return;
+        if (items == null) return;
         InventoryUtil.addToInventory(player.getPlayer(), items);
         items = null;
     }
@@ -174,9 +174,9 @@ public class PlayerSave {
     }
 
     public void storeMatchItems() {
-        final UUID id = player.getUniqueId();
+        UUID id = player.getUniqueId();
         player.getPlayer().closeInventory();
-        final PInv pinv = new PInv(player.getInventory());
+        PInv pinv = new PInv(player.getInventory());
         
         if (matchItems == null) {
             InventorySerializer.saveInventory(id, pinv);

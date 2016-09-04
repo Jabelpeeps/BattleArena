@@ -26,17 +26,19 @@ public class KillLimit extends VictoryCondition implements ScoreTracker{
     final int numKills;
     final int playerKillPoints;
 
-    public KillLimit(Match match, ConfigurationSection section) {
-        super(match);
+    public KillLimit(Match _match, ConfigurationSection section) {
+        super(_match);
         numKills = section.getInt("numKills", 50);
         playerKillPoints = section.getInt("points.player", 1);
-        String displayName = section.getString("displayName","&4Kill Limit");
-        String criteria = section.getString("criteria", "&eFirst to &4" + numKills);
-        kills = new ArenaObjective(getClass().getSimpleName(),displayName, criteria,
-                SAPIDisplaySlot.SIDEBAR, 60);
-        boolean isRated = match.getParams().isRated();
-        boolean soloRating = !match.getParams().isTeamRating();
-        sc = (isRated && soloRating) ? Tracker.getInterface( match.getParams() ) : null;
+        
+        kills = new ArenaObjective( getClass().getSimpleName(),
+                                    section.getString( "displayName","&4Kill Limit" ), 
+                                    section.getString( "criteria", "&eFirst to &4" + numKills ),
+                                    SAPIDisplaySlot.SIDEBAR, 
+                                    60 );
+        boolean isRated = _match.getParams().isRated();
+        boolean soloRating = !_match.getParams().isTeamRating();
+        sc = (isRated && soloRating) ? Tracker.getInterface( _match.getParams() ) : null;
     }
 
     @ArenaEventHandler(priority=ArenaEventPriority.LOW)
@@ -58,29 +60,21 @@ public class KillLimit extends VictoryCondition implements ScoreTracker{
         } 
         else {
             Collection<ArenaTeam> leaders = kills.getLeaders();
-            if (leaders.size() > 1){
+            if (leaders.size() > 1)
                 event.setCurrentDrawers(leaders);
-            } 
-            else {
+            else
                 event.setCurrentLeaders(leaders);
-            }
         }
     }
     @Override
-    public List<ArenaTeam> getLeaders() {
-        return kills.getTeamLeaders();
-    }
+    public List<ArenaTeam> getLeaders() { return kills.getLeaders(); }
     @Override
-    public TreeMap<Integer,Collection<ArenaTeam>> getRanks() {
-        return kills.getTeamRanks();
-    }
+    public TreeMap<Integer, Collection<ArenaTeam>> getRanks() { return kills.getRanks(); }
     @Override
     public void setScoreboard(ArenaScoreboard scoreboard) {
         kills.setScoreboard(scoreboard);
         scoreboard.addObjective(kills);
     }
     @Override
-    public void setDisplayTeams(boolean display) {
-        kills.setDisplayPlayers(display);
-    }
+    public void setDisplayTeams(boolean display) { kills.setDisplayPlayers(display); }
 }

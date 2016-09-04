@@ -9,37 +9,26 @@ import mc.alk.arena.objects.events.ArenaEventMethod;
 import mc.alk.arena.objects.events.ArenaEventPriority;
 
 @AllArgsConstructor
-class RListener {
+class RListener implements Comparator<RListener> {
     @Getter final private ArenaListener listener;
-    final private ArenaEventMethod mem;
+    @Getter final private ArenaEventMethod method;
 
-
-	public boolean hasSpecificPlayerMethod(){
-		return mem.hasSpecificPlayerMethod();
-	}
-
-	public boolean hasSpecificArenaPlayerMethod(){
-		return mem.hasSpecificArenaPlayerMethod();
-	}
-
-	public ArenaEventMethod getMethod() { return mem; }
-
-	public ArenaEventPriority getPriority() { return mem.getPriority(); }
+	public boolean hasSpecificPlayerMethod() { return method.hasSpecificPlayerMethod(); }
+	public boolean hasSpecificArenaPlayerMethod() { return method.hasSpecificArenaPlayerMethod(); }
+	public ArenaEventPriority getPriority() { return method.getPriority(); }
 
 	@Override
 	public String toString(){
-		return "["+this.listener.getClass().getSimpleName()+" : " + this.mem +"]";
+		return "[" + listener.getClass().getSimpleName() + " : " + method + "]";
 	}
 
-	public static class RListenerPriorityComparator implements Comparator<RListener>{
-		@Override
-		public int compare(RListener o1, RListener o2) {
-			int c = o1.getMethod().getPriority().compareTo(o2.getMethod().getPriority());
-			if (c != 0)
-				return c;
-			if (o1.getListener() == o2.getListener()){
-				return o1.getMethod().getCallMethod().getName().compareTo(o2.getMethod().getCallMethod().getName());}
-			return o1.getListener().getClass().toString().compareTo(o2.getListener().getClass().toString());
-		}
+	@Override
+    public int compare( RListener o1, RListener o2 ) {
+		int c = o1.getMethod().getPriority().compareTo(o2.getMethod().getPriority());
+		if (c != 0)
+			return c;
+		if (o1.getListener() == o2.getListener()){
+			return o1.getMethod().getCallMethod().getName().compareTo(o2.getMethod().getCallMethod().getName());}
+		return o1.getListener().getClass().toString().compareTo(o2.getListener().getClass().toString());
 	}
 }

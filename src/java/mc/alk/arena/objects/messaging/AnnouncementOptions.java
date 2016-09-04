@@ -64,10 +64,6 @@ public class AnnouncementOptions {
 				return;
 			}
 			break;
-		case DONTANNOUNCE:
-			break;
-		case SERVER:
-			break;
 		case WORLD:
 			if (value == null){
 				Log.err(BattleArena.getNameAndVersion() + "config.yml Announcement option world needs a value. Defaulting to Server Announcement");
@@ -83,24 +79,21 @@ public class AnnouncementOptions {
 			} 
 			break;
 		default:
-			break;
-
 		}
 		ops.put(bo, value);
 	}
 
 	public Channel getChannel(boolean match, MatchState state) {
-		Map<MatchState, Map<AnnouncementOption,Object>> options = match ? matchOptions : eventOptions;
-		Map<AnnouncementOption,Object> ops = options.get(state);
-		/// Dont announce
-		if (ops == null || ops.containsKey(AnnouncementOption.DONTANNOUNCE))
+		Map<AnnouncementOption,Object> ops = ( match ? matchOptions 
+		                                             : eventOptions ).get(state);
+		
+		if ( ops == null || ops.containsKey( AnnouncementOption.DONTANNOUNCE ) )
 			return Channels.NullChannel;
 
-		/// Channel option enabled
-		if (ops.containsKey(AnnouncementOption.CHANNEL)){
-			String hcChannelName = (String) ops.get(AnnouncementOption.CHANNEL);
-			if (chatPlugin == null){
-				Log.warn(BattleArena.getNameAndVersion()+" channel plugin is not enabled, ignoring config.yml announcement option channel="+hcChannelName);
+		if ( ops.containsKey( AnnouncementOption.CHANNEL ) ) {
+			String hcChannelName = (String) ops.get( AnnouncementOption.CHANNEL );
+			if ( chatPlugin == null ) {
+				Log.warn( BattleArena.getNameAndVersion() + " channel plugin is not enabled, ignoring config.yml announcement option channel=" + hcChannelName );
 				return Channels.ServerChannel;
 			}
 			Channel channel = chatPlugin.getChannel(hcChannelName);
@@ -112,8 +105,8 @@ public class AnnouncementOptions {
 		}
 		if (ops.containsKey(AnnouncementOption.WORLD)){
 			World w = Bukkit.getWorld((String)ops.get(AnnouncementOption.WORLD));
-			if (w != null){
-				return new WorldChannel(w);}
+			if (w != null)
+				return new Channels.WorldChannel(w);
 		}
 		return Channels.ServerChannel;
 	}

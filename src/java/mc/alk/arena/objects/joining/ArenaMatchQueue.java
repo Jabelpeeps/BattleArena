@@ -247,7 +247,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             while (iter.hasNext()) {
                 o = iter.next();
                 if (!o.matches(qo)) {
-                    continue;}
+                    continue;
+                }
 
                 TeamJoinResult r = o.join(qo);
 
@@ -568,10 +569,10 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
         return null;
     }
-
-    public Arena reserveArena(Arena arena) {
-        return removeArena(arena);
-    }
+//
+//    public Arena reserveArena(Arena arena) {
+//        return removeArena(arena);
+//    }
 
     @Override
     public String toString(){
@@ -724,27 +725,26 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
     @ArenaEventHandler
     public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event) {
-        WaitingObject wo = removeFromQueue(event.getPlayer(), true);
-        if (wo != null) {
-            ArenaPlayer ap = event.getPlayer();
+        ArenaPlayer ap = event.getPlayer();
+        WaitingObject wo = removeFromQueue( ap, true );
+        if ( wo != null ) {
             event.addMessage(MessageHandler.getSystemMessage("you_left_queue", wo.getParams().getName()));
             /// They are inbetween.. but let match handle
-            if (ap.getCompetition()!=null && ap.getCompetition() instanceof Match){
-                return;
-            }
+            if ( ap.getCompetition() != null && ap.getCompetition() instanceof Match ) return;
+
             PlayerSave ps = ap.getMetaData().getJoinRequirements();
-            if (ps!=null){
-                new PlayerStoreController(ps).restoreAll(event.getPlayer());
+            if ( ps != null ) {
+                PlayerStoreController.save(ps).restoreAll(event.getPlayer());
             }
         }
     }
 
     @ArenaEventHandler
     public void onPlayerChangeWorld(PlayerTeleportEvent event){
-        if (event.isCancelled())
-            return;
-        if (event.getFrom().getWorld().getUID() != event.getTo().getWorld().getUID() &&
-                !event.getPlayer().hasPermission(Permissions.TELEPORT_BYPASS_PERM)){
+        if (event.isCancelled()) return;
+        
+        if (    event.getFrom().getWorld().getUID() != event.getTo().getWorld().getUID() 
+                && !event.getPlayer().hasPermission( Permissions.TELEPORT_BYPASS_PERM ) ) {
             ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
             if (removeFromQueue(ap, true)!=null){
                 MessageUtil.sendMessage(ap, "&cYou have been removed from the queue for changing worlds");
@@ -764,8 +764,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     public static void setDisabledCommands(List<String> commands) {
-        if (commands == null)
-            return;
+        if (commands == null) return;
+        
         disabledCommands.clear();
         if (commands.contains("all")) {
             disabledAllCommands = true;
@@ -784,11 +784,10 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             enabledCommands.add("/" + s.toLowerCase());}
     }
 
-    class AnnounceInterval {
-        
-        AnnounceInterval(final ArenaMatchQueue amq, final WaitingObject wo, IdTime idt, final long timeMillis) {
+    class AnnounceInterval {       
+        AnnounceInterval( WaitingObject wo, IdTime idt, long timeMillis) {
             
-            Countdown c = new Countdown(BattleArena.getSelf(), timeMillis/1000, 30L, 
+            Countdown c = new Countdown( BattleArena.getSelf(), timeMillis/1000, 30L, 
                 ( secondsRemaining ) -> {
                         if (secondsRemaining > 0 || secondsRemaining < 0) {
                             
@@ -798,18 +797,17 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
                                     wo.getParams(), secondsRemaining * 1000L, players.size(), null );
                             MessageUtil.sendMessage( players, msg );
                         } 
-                        else if (!amq.forceStart(wo, null, true) && wo.getParams().isCancelIfNotEnoughPlayers()) {
-                            amq.remove(wo);
+                        else if (!forceStart(wo, null, true) && wo.getParams().isCancelIfNotEnoughPlayers()) {
+                            remove(wo);
                         }
                         return true;
-                
                 });
             c.setCancelOnExpire(false);
             idt.c = c;
             forceTimers.put(wo, idt);
         }
-
     }
+    
     private boolean timeExpired(WaitingObject wo){
         IdTime idt = forceTimers.get(wo);
         return idt != null && System.currentTimeMillis() - idt.time >= 0;
@@ -824,8 +822,8 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return null;
     }
 
-    private IdTime updateTimer(final WaitingObject to) {
-        Long time = (System.currentTimeMillis() + to.getParams().getForceStartTime()*1000);
+    private IdTime updateTimer( WaitingObject to) {
+        Long time = System.currentTimeMillis() + to.getParams().getForceStartTime() * 1000;
         return updateTimer(to, time);
     }
 
@@ -836,16 +834,15 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
      * @param to QueueObject
      * @return IdTime
      */
-    private IdTime updateTimer(final WaitingObject to, Long time) {
+    private IdTime updateTimer( WaitingObject to, Long time ) {
         IdTime idt = forceTimers.get(to);
         if (idt == null){
             idt = new IdTime();
             idt.time = time;
-            new AnnounceInterval(this, to, idt, time-System.currentTimeMillis());
+            new AnnounceInterval( to, idt, time-System.currentTimeMillis());
         }
         return idt;
     }
-
 
     public int getNumberOpenMatches(ArenaType type){
         Integer count = runningMatchTypes.get(type);

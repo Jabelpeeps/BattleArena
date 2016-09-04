@@ -19,7 +19,7 @@ import mc.alk.arena.util.MessageUtil;
 public class SignUpdateListener implements Listener {
     
     MapOfTreeSet<String,ArenaCommandSign> arenaSigns =
-            new MapOfTreeSet<>(ArenaCommandSign.class,  ( o1, o2 ) -> { return o1.hashCode() - o2.hashCode(); });
+            new MapOfTreeSet<>( ArenaCommandSign.class, ( o1, o2 ) -> o1.hashCode() - o2.hashCode() );
 
 
     private String getMatchState(String str){

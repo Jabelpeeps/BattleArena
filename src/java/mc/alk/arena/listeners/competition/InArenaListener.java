@@ -34,16 +34,16 @@ public enum InArenaListener implements Listener {
     public void onArenaPlayerEnterEvent(ArenaPlayerEnterMatchEvent event){
         if (Defaults.DEBUG_TRACE)Log.info( "  - onArenaPlayerEnterEvent " + event.getPlayer().getName());
         inArena.add(event.getPlayer().getUniqueId());
-        if (listening.getAndSet(true))
-            return;
-        if (!registered.getAndSet(true)){
-            if (timerid != null){
-                Bukkit.getScheduler().cancelTask(timerid);
-                timerid= null;
+        
+        if ( listening.getAndSet( true ) ) return;
+        
+        if ( !registered.getAndSet( true ) ) {
+            if ( timerid != null ) {
+                Bukkit.getScheduler().cancelTask( timerid );
+                timerid = null;
             }
-
-            for (Listener l: listeners){
-                Bukkit.getPluginManager().registerEvents(l, BattleArena.getSelf());
+            for ( Listener l : listeners ) {
+                Bukkit.getPluginManager().registerEvents( l, BattleArena.getSelf() );
             }
         }
     }
@@ -53,49 +53,25 @@ public enum InArenaListener implements Listener {
         if (Defaults.DEBUG_TRACE)Log.info( "  - onArenaPlayerLeaveEvent " + event.getPlayer().getName());
 
         if (inArena.remove(event.getPlayer().getUniqueId()) && inArena.isEmpty()){
-            listening.set(false);
-            if (timerid != null){
-                Scheduler.cancelTask(timerid);}
-            timerid = Scheduler.scheduleSynchronousTask(new Runnable(){
-                @Override
-                public void run() {
-                    if (registered.getAndSet(false)){
-                        for (Listener l: listeners){
-                            HandlerList.unregisterAll(l);
-                        }
-                    }
-                    timerid = null;
-                }
-            },600L);
+            listening.set( false );
+            
+            if ( timerid != null ) {
+                Scheduler.cancelTask( timerid );
+            }
+            timerid = Scheduler.scheduleSynchronousTask( 
+                    () -> {
+                            if ( registered.getAndSet( false ) ) {
+                                for ( Listener l : listeners ) {
+                                    HandlerList.unregisterAll( l );
+                                }
+                            }
+                            timerid = null;       
+                    }, 600L );
         }
     }
-
-    public boolean isPlayerInArena(UUID id) {
-        return inArena.contains(id);
-    }
-
-    public static boolean inArena(UUID id) {
-        return INSTANCE.inArena.contains(id);
-    }
-    public static boolean inArena(Player player) {
-        return INSTANCE.inArena.contains( player.getUniqueId() );
-    }
-
-    public static boolean inQueue(UUID id) {
-        return BattleArena.getBAController().getArenaMatchQueue().isInQue(id);
-    }
-//    @Deprecated
-//    /**
-//     * Will be switching over to using UUID
-//     */
-//    public static boolean inQueue(String name) {
-//        Player p = ServerUtil.findOnlinePlayer(name);
-//        return p != null && BattleArena.getBAController().getArenaMatchQueue().isInQue( p.getUniqueId() );
-//    }
-
-    public static void addListener(Listener listener){
-        INSTANCE.listeners.add(listener);
-    }
-
-
+    public boolean isPlayerInArena( UUID id ) { return inArena.contains(id); }
+    public static boolean inArena( UUID id ) { return INSTANCE.inArena.contains(id); }
+    public static boolean inArena( Player player ) { return INSTANCE.inArena.contains( player.getUniqueId() ); }
+    public static boolean inQueue( UUID id ) { return BattleArena.getBAController().getArenaMatchQueue().isInQue(id); }
+    public static void addListener( Listener listener ) { INSTANCE.listeners.add( listener ); }
 }

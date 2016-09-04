@@ -135,7 +135,6 @@ public class MessageSerializer extends BaseConfig {
 	protected void sendVictory( Channel serverChannel, 
 	                            Collection<ArenaTeam> victors, 
 	                            Collection<ArenaTeam> losers, 
-//	                            MatchParams mp, 
 	                            String winnerpath,
 	                            String loserpath, 
 	                            String serverPath ) {

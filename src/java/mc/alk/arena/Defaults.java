@@ -86,8 +86,10 @@ public class Defaults {
     /// DEBUG OPTIONS
     public static final boolean DEBUG = true;
     public static final boolean DEBUG_TRACE = true;
+    public static final boolean DEBUG_PERMS = false;
     public static final boolean DEBUG_EVENTS = false;
     public static final boolean DEBUG_SCHEDULER = false;
+    public static final boolean DEBUG_SPAWNS = true;
     public static final boolean TESTSERVER_DEBUG = false;
     public static final String  DEFAULT_CONFIG_NAME = "Default";
     
@@ -101,7 +103,7 @@ public class Defaults {
     public static final int MAX_SPAWNS = 100;
 
     public static boolean DEBUG_VIRTUAL = false;
-    public static boolean DEBUG_TRANSITIONS = false;
+    public static boolean DEBUG_TRANSITIONS = true;
     public static boolean DEBUG_STORAGE = false;
     public static boolean DEBUG_TRACKING = false;
     public static boolean DEBUG_MATCH_TEAMS = false;

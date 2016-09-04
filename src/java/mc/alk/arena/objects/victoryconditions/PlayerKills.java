@@ -51,9 +51,9 @@ public class PlayerKills extends VictoryCondition implements ScoreTracker{
     }
 
     @Override
-    public List<ArenaTeam> getLeaders() { return kills.getTeamLeaders(); }
+    public List<ArenaTeam> getLeaders() { return kills.getLeaders(); }
     @Override
-    public TreeMap<Integer,Collection<ArenaTeam>> getRanks() { return kills.getTeamRanks(); }
+    public TreeMap<Integer,Collection<ArenaTeam>> getRanks() { return kills.getRanks(); }
     @Override
     public void setDisplayTeams(boolean display) { kills.setDisplayTeams(display); }
 

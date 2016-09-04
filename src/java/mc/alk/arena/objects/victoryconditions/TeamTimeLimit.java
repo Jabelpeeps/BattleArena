@@ -20,31 +20,28 @@ import mc.alk.arena.util.MessageUtil;
 
 public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit, CountdownCallback {
 
-    Countdown timer; /// Timer for when victory condition is time based
+    Countdown timer;
     int announceInterval;
     final ArenaTeam team;
 
-    public TeamTimeLimit(Match match, ArenaTeam team) {
-        super(match);
-        this.team = team;
+    public TeamTimeLimit( Match _match, ArenaTeam _team ) {
+        super(_match);
+        team = _team;
     }
-    public void startCountdown(){
-        timer = new Countdown(BattleArena.getSelf(),match.getParams().getMatchTime(), 1, this);
+    public void startCountdown() {
+        timer = new Countdown( BattleArena.getSelf(), match.getParams().getMatchTime(), 1, this );
     }
+    public void stopCountdown() { cancelTimers(); }
 
-    public void stopCountdown() {
-        cancelTimers();
-    }
-
-    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
-    public void onFinished(MatchFinishedEvent event){
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
+    public void onFinished(MatchFinishedEvent event) {
         cancelTimers();
     }
 
     private void cancelTimers() {
-        if (timer != null){
+        if ( timer != null ) {
             timer.stop();
-            timer =null;
+            timer = null;
         }
     }
 
@@ -70,14 +67,8 @@ public class TeamTimeLimit extends VictoryCondition implements DefinesTimeLimit,
             ao.setDisplayName(String.join( "", ao.getDisplayNamePrefix(), ao.getBaseDisplayName(),
                     MessageUtil.colorChat("&e(" + remaining + ")") ) );
         }
-
         return true;
     }
-
-
     @Override
-    public int getTime() {
-        return match.getParams().getMatchTime();
-    }
-
+    public int getTime() { return match.getParams().getMatchTime(); }
 }

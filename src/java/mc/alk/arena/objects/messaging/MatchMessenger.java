@@ -25,13 +25,13 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 
 
-public class MatchMessager extends MessageSerializer {
+public class MatchMessenger extends MessageSerializer {
     final Match match;
     final String typeName;
     final String typedot = "match.";
 	@Setter boolean silent = false;
 
-	public MatchMessager( Match m ){
+	public MatchMessenger( Match m ){
 	    super(ParamController.getMatchParams(m.getParams()).getName(), m.getParams());
 		bos = m.getParams().getAnnouncementOptions();     
 		match = m;

@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.apache.commons.lang.mutable.MutableBoolean;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import mc.alk.arena.util.AutoClearingTimer.LongObject;
 import mc.alk.arena.util.Cache.CacheObject;
 
 
-
 public class AutoClearingTimer<Key> extends Cache<Key, LongObject<Key>>{
-
+ 
 	public AutoClearingTimer() {
 		super( new CacheSerializer<Key,LongObject<Key>>() {
 			@Override
@@ -20,20 +21,10 @@ public class AutoClearingTimer<Key> extends Cache<Key, LongObject<Key>>{
 		});
 	}
 
-	public static class LongObject<K> extends CacheObject<K,Long> {
-		K key;
-		Long val;
-		public LongObject(K key){
-			this.key = key;
-			val = System.currentTimeMillis();
-		}
-		@Override
-		public K getKey() {
-			return key;
-		}
-		public Long getValue() {
-			return val;
-		}
+	@RequiredArgsConstructor @Getter
+	public static class LongObject<Key> extends CacheObject<Key, Long> {
+		final Key key;
+		Long value = System.currentTimeMillis();
 	}
 
 	public boolean withinTime(Key key, Long timeInterval) {
@@ -45,6 +36,6 @@ public class AutoClearingTimer<Key> extends Cache<Key, LongObject<Key>>{
 	}
 
 	public void put(Key key){
-		this.put(new LongObject<>(key));
+		put( new LongObject<>(key) );
 	}
 }

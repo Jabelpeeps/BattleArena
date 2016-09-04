@@ -158,16 +158,15 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         }
     }
 
-    public void cancelEvent() {
-        eventCancelled();
-    }
-
     public void eventCompleted(){
         callEvent(new EventCompletedEvent(this));
         endEvent();
     }
-
-    protected void eventCancelled(){
+    
+    public void cancelEvent() {
+//        eventCancelled();
+//    }
+//    protected void eventCancelled(){
         stopTimer();
         List<ArenaTeam> newTeams = new ArrayList<>(teams);
         callEvent(new EventCancelEvent(this));

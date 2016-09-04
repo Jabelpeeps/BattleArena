@@ -13,51 +13,42 @@ import mc.alk.arena.util.Countdown.CountdownCallback;
 
 public class TimeLimit extends VictoryCondition implements DefinesTimeLimit, CountdownCallback {
 
-    Countdown timer; /// Timer for when victory condition is time based
+    Countdown timer;
     int announceInterval;
 
-    public TimeLimit(Match _match) {
-        super(_match);
-    }
+    public TimeLimit(Match _match) { super(_match); }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
     public void onStart(MatchStartEvent event){
         cancelTimers();
         announceInterval =match.getParams().getIntervalTime();
         timer = new Countdown(BattleArena.getSelf(),match.getParams().getMatchTime(), announceInterval, this);
     }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
     public void onVictory(MatchResultEvent event){
         if (event.isMatchEnding())
             cancelTimers();
     }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
-    public void onFinished(MatchFinishedEvent event){
-        cancelTimers();
-    }
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
+    public void onFinished(MatchFinishedEvent event) { cancelTimers(); }
 
     private void cancelTimers() {
-        if (timer != null){
+        if ( timer != null ) {
             timer.stop();
-            timer =null;
+            timer = null;
         }
     }
-
     @Override
     public boolean intervalTick(int remaining){
-        if (remaining <= 0){
+        if (remaining <= 0)
             match.timeExpired();
-        } else {
-            if (remaining % announceInterval ==0)
+        else if (remaining % announceInterval == 0 )
                 match.intervalTick(remaining);
-        }
+        
         return true;
     }
-
     @Override
-    public int getTime() {
-        return match.getParams().getMatchTime();
-    }
+    public int getTime() { return match.getParams().getMatchTime(); }
 }
