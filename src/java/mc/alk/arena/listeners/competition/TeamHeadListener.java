@@ -1,5 +1,7 @@
 package mc.alk.arena.listeners.competition;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
+
 import mc.alk.arena.controllers.PlayerStoreController;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveMatchEvent;
@@ -9,11 +11,9 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.TeamUtil;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
-
 public class TeamHeadListener implements ArenaListener{
 
-	@ArenaEventHandler(priority=ArenaEventPriority.HIGH)
+	@ArenaEventHandler( priority = ArenaEventPriority.HIGH )
 	public void onPlayerInventoryClick(InventoryClickEvent event) {
 		if (event.getSlot() == 39/*Helm Slot*/)
 			event.setCancelled(true);

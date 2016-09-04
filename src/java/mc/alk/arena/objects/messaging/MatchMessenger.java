@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import lombok.Setter;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.events.matches.MatchIntervalMessageEvent;
@@ -18,6 +19,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.victoryconditions.VictoryCondition;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesLeaderRanking;
 import mc.alk.arena.serializers.MessageSerializer;
+import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 
@@ -60,9 +62,9 @@ public class MatchMessenger extends MessageSerializer {
         Message message = getNodeMessage( typedot + nTeamPath + "." + path );
         Message serverMessage = getNodeMessage( typedot + nTeamPath + "." + serverpath );
         
-//        if ( Defaults.DEBUG ) 
-//            Log.info( "sendMessageToTeams() has found these messages:-  nTeamPath='" + nTeamPath + 
-//                        "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
+        if ( Defaults.DEBUG ) 
+            Log.info( "sendMessageToTeams():-  path=" + path + "  serverpath=" + serverpath + "nTeamPath='" + nTeamPath + 
+                        "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
 
         Set<MessageOption> ops = message.getOptions();
         
