@@ -13,7 +13,7 @@ import mc.alk.arena.util.Log;
 
 public class BaseConfig { 
 	@Getter protected FileConfiguration config;
-	@Getter File file = null;
+	@Getter File file;
  
 	public int getInt(String node,int defaultValue) { return config.getInt(node, defaultValue); }
 	public boolean getBoolean(String node, boolean defaultValue) { return config.getBoolean(node, false); }
@@ -22,8 +22,7 @@ public class BaseConfig {
 	public ConfigurationSection getConfigurationSection(String node) { return config.getConfigurationSection(node); }
 	public BaseConfig setConfig( String _file ) { return setConfig( new File(_file) ); }
 
-	public BaseConfig setConfig(File _file){
-		file = _file;
+	public BaseConfig setConfig(File _file) {
 		if (!_file.exists()){
 			try {
 				if (!_file.createNewFile()){
@@ -36,7 +35,7 @@ public class BaseConfig {
 				return null;
 			}
 		}
-
+        file = _file;
 		config = new YamlConfiguration();
 		try {
 			config.load(_file);

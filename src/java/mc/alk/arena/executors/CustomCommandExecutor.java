@@ -77,8 +77,6 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, String[] args, 
                                 int curIndex, AtomicInteger numUsedStrings ) {
         
-//        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "CustomCommandExecutor.verifyArgs() entered" );
-        
         if (EventParams.class == clazz) return verifyEventParams(command);        
         else if (MatchParams.class == clazz) return verifyMatchParams(command);        
         else if (CurrentSelection.class == clazz) return verifyCurrentSelection(sender);

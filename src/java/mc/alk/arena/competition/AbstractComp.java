@@ -189,16 +189,16 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         HandlerList.unregisterAll(this);
     }
 
-    public boolean canJoin(){
-        return isOpen();
-    }
+//    public boolean canJoin(){
+//        return isOpen();
+//    }
+//
+//    public boolean canJoin(ArenaTeam t){
+//        return isOpen();
+//    }
 
-    public boolean canJoin(ArenaTeam t){
-        return isOpen();
-    }
-
-    @Override
-    public abstract boolean canLeave(ArenaPlayer p);
+//    @Override
+//    public abstract boolean canLeave(ArenaPlayer p);
 
     @Override
     protected void transitionTo(CompetitionState _state){
@@ -269,19 +269,23 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
             js = JoinResult.JoinStatus.NOTOPEN;
             return js;
         }
-        AbstractJoinHandler.TeamJoinResult tjr = teamJoinHandler.joiningTeam(tqo);
-        switch(tjr.joinStatus){
-            case ADDED_TO_EXISTING: /* drop down into added */
+        AbstractJoinHandler.TeamJoinResult tjr = teamJoinHandler.joiningTeam( tqo );
+        switch( tjr.joinStatus ) {
+//            case ADDED_TO_EXISTING: /* drop down into added */
             case ADDED:
-                for (ArenaPlayer player: tqo.getTeam().getPlayers()){
-                    player.addCompetition(this);}
-                messenger.sendTeamJoinedEvent(tqo.getTeam());
+                for ( ArenaPlayer player : tqo.getTeam().getPlayers() ) {
+                    player.addCompetition( this );
+                }
+                messenger.sendTeamJoinedEvent( tqo.getTeam() );
                 break;
-            case ADDED_STILL_NEEDS_PLAYERS:
-                messenger.sendWaitingForMorePlayers(team, tjr.remaining);
-                for (ArenaPlayer player: tqo.getTeam().getPlayers()){
-                    player.addCompetition(this);}
+                
+            case STILL_NEEDS_PLAYERS:
+                messenger.sendWaitingForMorePlayers( team, tjr.remaining );
+                for (ArenaPlayer player : tqo.getTeam().getPlayers() ) {
+                    player.addCompetition( this );
+                }
                 break;
+                
             case CANT_FIT:
                 messenger.sendCantFitTeam(team);
                 break;
@@ -289,12 +293,12 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return null;
     }
 
-    public String getCommand(){return params.getCommand();}
+    public String getCommand() { return params.getCommand(); }
     public String getDisplayName() { return getName(); }
-    public boolean isRunning() {return state == EventState.RUNNING;}
-    public boolean isOpen() {return state == EventState.OPEN;}
-    public boolean isClosed() {return state == EventState.CLOSED;}
-    public boolean isFinished() {return state== EventState.FINISHED;}
+    public boolean isRunning() { return state == EventState.RUNNING; }
+    public boolean isOpen() { return state == EventState.OPEN; }
+    public boolean isClosed() { return state == EventState.CLOSED; }
+    public boolean isFinished() { return state == EventState.FINISHED; }
 
     public int getNTeams() {
         int size = 0;
@@ -304,22 +308,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         }
         return size;
     }
-//
-//    /**
-//     * Set a Message handler to override default Event messages
-//     * @param handler EventMessageHandler
-//     */
-//    public void setMessenger(EventMessenger handler){
-//        messenger.setMessageHandler(handler);
-//    }
-//
-//    /**
-//     * Return the Message Handler for this Event
-//     * @return EventMessageHandler
-//     */
-//    public EventMessenger getMessager(){
-//        return messenger.getMessageHandler();
-//    }
 
     public abstract String getResultString();
 
@@ -349,11 +337,14 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     /**
      * Broadcast to all players in the Event
      */
-    public void broadcast(String msg){for (ArenaTeam t : teams){t.sendMessage(msg);}}
+    public void broadcast( String msg ) {
+        for ( ArenaTeam t : teams ) {
+            t.sendMessage( msg );
+        }
+    }
 
     public Long getTimeTillStart() {
-        if (timer == null)
-            return null;
+        if ( timer == null ) return null;
         return timer.getTimeRemaining();
     }
 

@@ -154,10 +154,10 @@ public class ArenaScoreboard {
     }
 
     public void setScoreboard( Player p) {
-        if ( p.getScoreboard() != null 
-                && !oldBoards.containsKey( p.getName() ) )
+        if (    p.getScoreboard() != null 
+                && !oldBoards.containsKey( p.getName() ) ) {
             oldBoards.put( p.getName(), p.getScoreboard() );
-        
+        }
         Scheduler.scheduleSynchronousTask( 
                 () -> {
                     if ( oldBoards.containsKey( p.getName() ) ) 

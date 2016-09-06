@@ -21,26 +21,27 @@ import mc.alk.arena.objects.exceptions.InvalidEventException;
 
 
 public class BAEventController implements Listener {
-	private Map<String, Map<EventState,List<AbstractComp>>> allEvents = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Map<EventState, List<AbstractComp>>> allEvents = Collections.synchronizedMap(new HashMap<>());
 
-	public static class SizeEventPair{
-		public Integer nEvents = 0;
-		public AbstractComp event = null;
+	public static class SizeEventPair {
+		public int nEvents = 0;
+		public AbstractComp event;
 	}
 
 	public SizeEventPair getUniqueEvent(MatchParams eventParams) {
-		final String key = getKey(eventParams);
+		String key = getKey(eventParams);
 		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		SizeEventPair result = new SizeEventPair();
-		if (events == null || events.isEmpty())
+		if ( events == null || events.isEmpty() )
 			return result;
-		result.nEvents = 0;
+
 		AbstractComp event = null;
-		for (List<AbstractComp> list: events.values()){
+		for ( List<AbstractComp> list : events.values() ) {
 			result.nEvents += list.size();
-			for (AbstractComp evt: list){
-				if (evt != null){
-					if (event != null){
+			
+			for ( AbstractComp evt : list ) {
+				if ( evt != null ) {
+					if ( event != null ) {
 						result.event = null;
 						return result;
 					}
@@ -54,12 +55,11 @@ public class BAEventController implements Listener {
 
 	public AbstractComp getEvent(ArenaPlayer p) {
 	    
-		/// maybe ArenaPlayers can have a sense of which event has them...
-		for (Map<EventState,List<AbstractComp>> map : allEvents.values()){
-			for (List<AbstractComp> list: map.values()){
-				for (AbstractComp event: list){
-					if (event.hasPlayer(p)){
-						return event;}
+		for ( Map<EventState, List<AbstractComp>> map : allEvents.values() ) {
+			for ( List<AbstractComp> list : map.values() ) {
+				for ( AbstractComp event : list ) {
+					if ( event.hasPlayer( p ) )
+						return event;
 				}
 			}
 		}
@@ -85,22 +85,22 @@ public class BAEventController implements Listener {
 		return false;
 	}
 
-	public boolean hasOpenEvent(EventParams eventParam) {
+	public boolean hasOpenEvent( EventParams eventParam ) {
 		final String key = getKey(eventParam);
 		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
         return events != null && events.get(EventState.OPEN) != null;
     }
 
-	private String getKey(final AbstractComp event){
+	private String getKey( AbstractComp event ){
 		return getKey(event.getParams());
 	}
 
-	private String getKey(final MatchParams eventParams){
+	private String getKey( MatchParams eventParams) {
 		return eventParams.getCommand().toUpperCase();
 	}
 
 	public void addOpenEvent(AbstractComp event) throws InvalidEventException {
-		final String key = getKey(event);
+		String key = getKey(event);
 		Map<EventState, List<AbstractComp>> map = allEvents.get(key);
 		if (map == null){
 			map = Collections.synchronizedMap(new EnumMap<EventState,List<AbstractComp>>(EventState.class));
@@ -117,7 +117,7 @@ public class BAEventController implements Listener {
 	}
 
 	public AbstractComp getOpenEvent(EventParams eventParams) {
-		final String key = getKey(eventParams);
+		String key = getKey(eventParams);
 		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		if (events == null)
 			return null;
@@ -128,10 +128,12 @@ public class BAEventController implements Listener {
 	public void startEvent(AbstractComp event) throws Exception {
 		if (event.getState() != EventState.OPEN)
 			throw new Exception("Event was not open!");
-		final String key = getKey(event);
+		
+		String key = getKey(event);
 		AbstractComp evt = getOpenEvent(event.getParams());
-		if (evt != event){
-			throw new Exception("Trying to start the wrong open event!");}
+		if (evt != event)
+			throw new Exception("Trying to start the wrong open event!");
+		
 		Map<EventState, List<AbstractComp>> map = allEvents.get(key);
 		if (map == null){
 			map = Collections.synchronizedMap(new EnumMap<EventState,List<AbstractComp>>(EventState.class));

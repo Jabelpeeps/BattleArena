@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
-
 import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.MatchParams;
@@ -21,6 +19,7 @@ import mc.alk.arena.objects.messaging.MessageFormatter;
 import mc.alk.arena.objects.messaging.MessageOptions;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.util.Log;
 
 
 public class MessageSerializer extends BaseConfig {
@@ -63,8 +62,6 @@ public class MessageSerializer extends BaseConfig {
 		return files.get(name.toUpperCase());
 	}
 
-	public void loadAll() { initMessageOptions(); }
-
 	public static void reloadConfig(String params) {
 		MessageSerializer ms = files.get( params.toUpperCase() );
 		if ( ms != null ) {
@@ -74,7 +71,10 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public void initMessageOptions(){
-		if ( config == null ) return;
+		if ( config == null ) {
+		    Log.info( "MessageSerialiser.initMessageOptions() called when config still null!" );
+		    return;
+		}
 		
 		msgOptions.clear();
 		Set<String> keys = config.getKeys( true );

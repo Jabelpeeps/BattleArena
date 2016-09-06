@@ -1,5 +1,6 @@
 package mc.alk.arena.objects.messaging;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +13,6 @@ public class Message {
     final private MessageOptions options;
     
     public Set<MessageOption> getOptions() {
-        return options.getOptions();
+        return options != null ? options.getOptions() : new HashSet<>();
     }
 }

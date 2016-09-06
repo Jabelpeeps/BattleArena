@@ -19,7 +19,7 @@ public class ItemSpawn extends SpawnInstance{
 		if (uid != null && !uid.isDead()){
 			return;
 		}
-		uid = loc.getWorld().dropItemNaturally(loc, is);
+		uid = location.getWorld().dropItemNaturally(location, is);
 	}
 
     @Override

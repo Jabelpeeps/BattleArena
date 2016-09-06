@@ -18,23 +18,24 @@ import mc.alk.arena.objects.teams.TeamFactory;
 
 public class AddToLeastFullTeam extends AbstractJoinHandler {
 
-    public AddToLeastFullTeam(MatchParams params, Competition competition, List<ArenaTeam> newTeams)
+    public AddToLeastFullTeam(MatchParams params, Competition _competition, List<ArenaTeam> newTeams)
                                                                             throws NeverWouldJoinException {
+        super( params, _competition, newTeams );
         
-        super(params,competition, newTeams);
-        if (minTeams == ArenaSize.MAX || maxTeams == ArenaSize.MAX)
-            throw new NeverWouldJoinException("If you add players by adding them to the next team in the list, there must be a finite number of players");
-        /// Lets add in all our teams first
-        if (minTeams > Defaults.MAX_TEAMS)
+        if ( minTeams == ArenaSize.MAX || maxTeams == ArenaSize.MAX )
+            throw new NeverWouldJoinException( 
+                    "If you add players by adding them to the next team in the list, there must be a finite number of players" );
+        
+        if ( minTeams > Defaults.MAX_TEAMS )
             throw new NeverWouldJoinException( "You can't make more than " + Defaults.MAX_TEAMS + " teams" );
-        if (newTeams != null){
-            for (ArenaTeam at : newTeams) {
-                addTeam(at);
+        
+        if ( newTeams != null ) { 
+            for ( ArenaTeam at : newTeams ) {
+                addTeam( at );
             }
         }
         for ( int i = teams.size(); i < minTeams; i++ ) {
-            ArenaTeam team = TeamFactory.createCompositeTeam(i, params);
-            addTeam(team);
+            addTeam( TeamFactory.createCompositeTeam( i, params ) );
         }
     }
 
@@ -73,13 +74,14 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             ArenaTeam oldTeam = addToPreviouslyLeftTeam(team.getPlayers().iterator().next());
             if (oldTeam != null){
                 team.setIndex(oldTeam.getIndex());
-                return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,oldTeam.getMinPlayers() - oldTeam.size());
+                return new TeamJoinResult( TeamJoinStatus.ADDED ,oldTeam.getMinPlayers() - oldTeam.size() );
             }
         }
         /// Try to let them join their specified team if possible
         JoinOptions jo = tqo.getJoinOptions();
         if (jo != null && jo.hasOption(JoinOption.TEAM)){
             Integer index = (Integer) jo.getOption(JoinOption.TEAM);
+            
             if (index < maxTeams){ /// they specified a team index within range
                 ArenaTeam baseTeam= teams.get(index);
                 TeamJoinResult tjr = teamFits(baseTeam, team);
@@ -102,33 +104,30 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             team.setIndex(ct.getIndex());
             if (ct.size() <= ct.getMaxPlayers()){
                 addTeam(ct);
-                if (ct.size() >= ct.getMinPlayers()) {
-                    return new TeamJoinResult(TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size());
+                
+                if ( ct.size() >= ct.getMinPlayers() ) {
+                    return new TeamJoinResult( TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size() );
                 }
-                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size());
+                return new TeamJoinResult( TeamJoinStatus.STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size() );
             }
         }
         /// Try to fit them with an existing team
         List<ArenaTeam> sortedBySize = new ArrayList<>(teams);
         
-        Collections.sort( sortedBySize, (at1, at2) -> { return at1.size() - at2.size(); });
+        Collections.sort( sortedBySize, (at1, at2) -> at1.size() - at2.size() );
         
-        for (ArenaTeam baseTeam : sortedBySize){
-            TeamJoinResult tjr = teamFits(baseTeam, team);
-            if (tjr != CANTFIT)
-                return tjr;
+        for ( ArenaTeam baseTeam : sortedBySize ) {
+            TeamJoinResult tjr = teamFits( baseTeam, team );
+            if ( tjr != CANTFIT ) return tjr;
         }
         return CANTFIT;
     }
 
-    private TeamJoinResult teamFits(ArenaTeam baseTeam, ArenaTeam team) {
-        if ( baseTeam.size() + team.size() <= baseTeam.getMaxPlayers()){
-            team.setIndex(baseTeam.getIndex());
-            addToTeam(baseTeam, team.getPlayers());
-            if (baseTeam.size() == 0){
-                return new TeamJoinResult(TeamJoinStatus.ADDED, baseTeam.getMinPlayers() - baseTeam.size());
-            }
-            return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING, baseTeam.getMinPlayers() - baseTeam.size());
+    private TeamJoinResult teamFits( ArenaTeam baseTeam, ArenaTeam team ) {
+        if ( baseTeam.size() + team.size() <= baseTeam.getMaxPlayers() ) {
+            team.setIndex( baseTeam.getIndex() );
+            addToTeam( baseTeam, team.getPlayers() );
+            return new TeamJoinResult( TeamJoinStatus.ADDED, baseTeam.getMinPlayers() - baseTeam.size() );
         }
         return CANTFIT;
     }

@@ -42,7 +42,7 @@ public class SpawnGroup extends SpawnInstance implements Spawnable{
 
 	@Override
 	public void setLocation(Location l) {
-		this.loc = l;
+		this.location = l;
 		for (SpawnInstance spawn: spawns){
 			spawn.setLocation(l);
 		}

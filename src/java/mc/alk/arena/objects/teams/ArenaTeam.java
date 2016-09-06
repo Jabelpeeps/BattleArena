@@ -236,8 +236,7 @@ public abstract class ArenaTeam {
     
     public void sendSystemMessage( String node, Object... args ) {
         sendMessage( MessageHandler.getSystemMessage( node, args ) );
-    }
-    
+    }    
     public void sendMessage( String message ) {
 		for ( ArenaPlayer p : players )
 			MessageUtil.sendMessage( p, message );
@@ -259,19 +258,18 @@ public abstract class ArenaTeam {
     public boolean equals(Object other) {
 		if (this == other) return true;
 		if (!(other instanceof ArenaTeam)) return false;
-		return this.hashCode() == other.hashCode();
+		return hashCode() == other.hashCode();
 	}
 
 	@Override
     public int hashCode() { return id;}
-
 	@Override
     public String toString(){ return "[" + getDisplayName() + "]"; }
 	
     public boolean hasTeam(ArenaTeam team){
 		if (team instanceof CompositeTeam){
 			for (ArenaTeam t: ((CompositeTeam)team).getOldTeams()){
-				if (this.hasTeam(t))
+				if ( hasTeam(t) )
 					return true;
 			}
 			return false;
@@ -288,9 +286,9 @@ public abstract class ArenaTeam {
 			sb.append("&6").append(p.getName());
 			boolean isAlive = hasAliveMember(p);
 			boolean online = p.isOnline();
-			final String inmatch = insideMatch == null? "": ((insideMatch.contains(p.getUniqueId())) ? "&e(in)" : "&4(out)");
-			final int k = kills.containsKey(p) ? kills.get(p) : 0;
-			final int d = deaths.containsKey(p) ? deaths.get(p) : 0;
+			String inmatch = insideMatch == null? "": ((insideMatch.contains(p.getUniqueId())) ? "&e(in)" : "&4(out)");
+			int k = kills.containsKey(p) ? kills.get(p) : 0;
+			int d = deaths.containsKey(p) ? deaths.get(p) : 0;
 			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");
 			sb.append("&e:").append(isAlive ? "&ah=" + p.getHealth() : "&40").
                     append((!online) ? "&4(O)" : "").append(inmatch).append("&e ");
@@ -301,8 +299,8 @@ public abstract class ArenaTeam {
     public String getTeamSummary() {
 		StringBuilder sb = new StringBuilder("&6"+getDisplayName());
 		for (ArenaPlayer p: players){
-			final int k = kills.containsKey(p) ? kills.get(p) : 0;
-			final int d = deaths.containsKey(p) ? deaths.get(p) : 0;
+			int k = kills.containsKey(p) ? kills.get(p) : 0;
+			int d = deaths.containsKey(p) ? deaths.get(p) : 0;
 			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");
 		}
 		return sb.toString();
@@ -323,7 +321,7 @@ public abstract class ArenaTeam {
 
     public int getPriority() {
 		int priority = Integer.MAX_VALUE;
-		for (ArenaPlayer ap: players){
+		for ( ArenaPlayer ap : players ) {
 			if ( Permissions.getPriority( ap ) < priority)
 				priority = Permissions.getPriority( ap );
 		}
@@ -358,6 +356,7 @@ public abstract class ArenaTeam {
 
 	public void addPlayers(Collection<ArenaPlayer> _players) {
 		players.addAll(_players);
+        leftPlayers.removeAll(_players);
 		nameChanged = true;
 	}
 

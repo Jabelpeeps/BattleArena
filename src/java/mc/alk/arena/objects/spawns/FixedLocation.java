@@ -1,15 +1,16 @@
 package mc.alk.arena.objects.spawns;
 
-import mc.alk.arena.objects.exceptions.SerializationException;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.util.Map;
+import mc.alk.arena.objects.exceptions.SerializationException;
 
 /**
  * @author alkarin
  */
-public class FixedLocation extends Location implements SpawnLocation{
+public class FixedLocation extends Location implements SpawnLocation {
     public FixedLocation(World world, double x, double y, double z) {
         super(world, x, y, z);
     }
@@ -19,29 +20,15 @@ public class FixedLocation extends Location implements SpawnLocation{
     }
 
     @Override
-    public Location getLocation() {
-        return this;
-    }
+    public Location getLocation() { return this; }
+    @Override
+    public Location getUpperCorner() { return this; }
+    @Override
+    public Location getLowerCorner() { return this; }
 
     @Override
-    public Object yamlToObject(Map<String, Object> map, String value) throws SerializationException {
-        return null;
-    }
-
+    public Object yamlToObject(Map<String, Object> map, String value) throws SerializationException { return null; }
     @Override
-    public Object objectToYaml() throws SerializationException {
-        return null;
-    }
-
-    @Override
-    public Location getUpperCorner() {
-        return this;
-    }
-
-    @Override
-    public Location getLowerCorner() {
-        return this;
-    }
-
+    public Object objectToYaml() throws SerializationException { return null; }
 
 }

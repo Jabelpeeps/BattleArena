@@ -22,7 +22,7 @@ import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.Scheduler;
-import mc.alk.arena.controllers.TeamController;
+import mc.alk.arena.controllers.TeamController.TeamListener;
 import mc.alk.arena.controllers.TeleportController;
 import mc.alk.arena.controllers.WatchController;
 import mc.alk.arena.executors.ArenaEditorExecutor;
@@ -79,7 +79,6 @@ public class BattleArena extends JavaPlugin {
     private final static SignUpdateListener signUpdateListener = new SignUpdateListener();
     @Getter private static BattleArenaController bAController = new BattleArenaController(signUpdateListener);
     @Getter static BAEventController bAEventController = new BAEventController();
-    @Getter private final static TeamController teamController = TeamController.INSTANCE;
     @Getter private final static EventController eventController = new EventController();
     @Getter private final static ArenaEditor arenaEditor = new ArenaEditor();
     @Getter private final static DuelController duelController = new DuelController();
@@ -122,28 +121,24 @@ public class BattleArena extends JavaPlugin {
         FileUtil.makeIfNotExists(new File(dir + "/otherPluginConfigs"));
         FileUtil.makeIfNotExists(new File(dir + "/victoryConditions"));
         Tracker.loadConfigs();
-
-
-        Class<?> clazz = getClass();       
+      
         for ( String each : new String[]{ "HeroesConfig", "McMMOConfig", "WorldGuardConfig" } ) {
      
-            FileUtil.load( clazz, 
-                           dir.getPath() + "/otherPluginConfigs/" + each + ".yml", 
+            FileUtil.load( dir.getPath() + "/otherPluginConfigs/" + each + ".yml", 
                            "/default_files/otherPluginConfigs/" + each + ".yml" );
         }
         
         for ( String each : new String[]{ "AllKills", "KillLimit", "MobKills","PlayerKills" } ) {
-            FileUtil.load( clazz, 
-                           dir.getPath() + "/victoryConditions/" + each + ".yml",
+            FileUtil.load( dir.getPath() + "/victoryConditions/" + each + ".yml",
                            "/default_files/victoryConditions/" + each + ".yml" );
         }
 
         MessageSerializer defaultMessages = new MessageSerializer( "default", null );
-        defaultMessages.setConfig( FileUtil.load( clazz, dir.getPath() + "/messages.yml", "/default_files/messages.yml" ) );
+        defaultMessages.setConfig( FileUtil.load( dir.getPath() + "/messages.yml", "/default_files/messages.yml" ) );
         
         new YamlFileUpdater(this).updateMessageSerializer(self, defaultMessages);
         
-        defaultMessages.loadAll();
+        defaultMessages.initMessageOptions();
         MessageSerializer.setDefaultMessages(defaultMessages);
 
         bAExecutor = new BAExecutor();
@@ -153,7 +148,7 @@ public class BattleArena extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(playerListener, this);
         Bukkit.getPluginManager().registerEvents(pluginListener, this);
         Bukkit.getPluginManager().registerEvents(signListener, this);
-        Bukkit.getPluginManager().registerEvents(teamController, this);
+        Bukkit.getPluginManager().registerEvents(new TeamListener(), this);
         Bukkit.getPluginManager().registerEvents(new TeleportController(), this);
         Bukkit.getPluginManager().registerEvents(InArenaListener.INSTANCE, this);
         Bukkit.getPluginManager().registerEvents(signUpdateListener, this);
@@ -175,9 +170,9 @@ public class BattleArena extends JavaPlugin {
         VictoryType.register(Custom.class, this);
 
         /// Load our configs, then arenas
-        bAConfigSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/config.yml", "/config.yml"));
+        bAConfigSerializer.setConfig(FileUtil.load( dir.getPath() + "/config.yml", "/config.yml"));
         try {
-            YamlFileUpdater.updateBaseConfig(this, bAConfigSerializer);
+            YamlFileUpdater.updateBaseConfig( this, bAConfigSerializer );
         } 
         catch (Exception e) {
             Log.printStackTrace(e);
@@ -185,22 +180,22 @@ public class BattleArena extends JavaPlugin {
 
         bAConfigSerializer.loadDefaults(); /// Load our defaults for BattleArena, has to happen before classes are loaded
 
-        classesSerializer.setConfig(FileUtil.load(clazz, dir.getPath() + "/classes.yml", "/default_files/classes.yml"));
+        classesSerializer.setConfig(FileUtil.load( dir.getPath() + "/classes.yml", "/default_files/classes.yml"));
         classesSerializer.loadAll();
 
         /// Spawn Groups need to be loaded before the arenas
         SpawnSerializer ss = new SpawnSerializer();
-        ss.setConfig(FileUtil.load(clazz, dir.getPath() + "/spawns.yml", "/default_files/spawns.yml"));
+        ss.setConfig( FileUtil.load( dir.getPath() + "/spawns.yml", "/default_files/spawns.yml" ) );
 
         TeamHeadSerializer ts = new TeamHeadSerializer();
-        ts.setConfig(FileUtil.load(clazz, dir.getPath() + "/teamConfig.yml", "/default_files/teamConfig.yml"));
+        ts.setConfig( FileUtil.load( dir.getPath() + "/teamConfig.yml", "/default_files/teamConfig.yml" ) );
         ts.loadAll();
 
         arenaEditorExecutor = new ArenaEditorExecutor();
         
         /// Set our commands
         getCommand("watch").setExecutor(bAExecutor);
-        getCommand("arenateam").setExecutor(new TeamExecutor(bAExecutor));
+        getCommand("arenateam").setExecutor(new TeamExecutor());
         getCommand("arenaAlter").setExecutor(arenaEditorExecutor);
         getCommand("battleArena").setExecutor(new BattleArenaExecutor());
         getCommand("battleArenaDebug").setExecutor(new BattleArenaDebugExecutor());
@@ -238,7 +233,6 @@ public class BattleArena extends JavaPlugin {
                         /// Load up our signs
                         signSerializer.setConfig(dir.getPath() + "/saves/signs.yml");
                         signSerializer.loadAll(signUpdateListener);
-//                        signUpdateListener.updateAllSigns(); 
         
                         eventSchedulerSerializer.loadAll();
                         if (Defaults.START_NEXT)
@@ -283,8 +277,8 @@ public class BattleArena extends JavaPlugin {
         for (MatchParams mp : ParamController.getAllParams()) {
             String fileName = "defaultMessages.yml";
             MessageSerializer ms = new MessageSerializer(mp.getName(), null);
-            ms.setConfig(FileUtil.load(this.getClass(), f.getAbsolutePath() + "/" + mp.getName() + "Messages.yml", "/default_files/" + fileName));
-            ms.loadAll();
+            ms.setConfig( FileUtil.load( f.getAbsolutePath() + "/" + mp.getName() + "Messages.yml", "/default_files/" + fileName));
+            ms.initMessageOptions();;
             MessageSerializer.addMessageSerializer(mp.getName(), ms);
         }
     }
@@ -302,7 +296,7 @@ public class BattleArena extends JavaPlugin {
      * @return true or false: whether they are in the system
      */
     public static boolean inSystem( Player player, boolean showReasons ) {
-        return !getBAExecutor().canJoin( PlayerController.toArenaPlayer(player), showReasons );
+        return !bAExecutor.canJoin( PlayerController.toArenaPlayer(player), showReasons );
     }
 
     /**

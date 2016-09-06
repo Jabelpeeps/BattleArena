@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import lombok.AllArgsConstructor;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
@@ -104,49 +105,46 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         public Long time;
     }
 
+    @AllArgsConstructor
     public class FoundMatch {
-        public Arena arena;
-        public WaitingObject wo;
-        MatchParams params;
-        public AbstractJoinHandler joinHandler;
+        private Arena arena;
+        protected WaitingObject wo;
+        protected MatchParams params;
+        private AbstractJoinHandler joinHandler;
 
         public Match startMatch() {
             incNumberOpenMatches(params.getType());
-            if (wo != null)
-                removeTimer(wo); 
+            
+            if ( wo != null ) removeTimer( wo ); 
 
-            final Match m = new ArenaMatch(arena, params, wo != null ? wo.getArenaListeners() : null);
-            final boolean hasJoinHandler = joinHandler != null && joinHandler.getTeams() != null;
-            final boolean timedStart = wo != null && wo.createsOnJoin() && wo.getParams().getForceStartTime() > 0;
-            if (hasJoinHandler) 
-                m.hookTeamJoinHandler(joinHandler);
+            Match m = new ArenaMatch(arena, params, wo != null ? wo.getArenaListeners() : null);
+            boolean hasJoinHandler = joinHandler != null && joinHandler.getTeams() != null;
+            boolean timedStart = wo != null && wo.createsOnJoin() && wo.getParams().getForceStartTime() > 0;
+            
+            if ( hasJoinHandler ) m.hookTeamJoinHandler( joinHandler );
                 
-            MatchCreatedEvent mce = new MatchCreatedEvent(m, wo);
-            m.callEvent(mce);
+            m.callEvent( new MatchCreatedEvent( m, wo ) );
 
-            if (hasJoinHandler) {
-                addCompetition(joinHandler,m);}
+            if ( hasJoinHandler ) addCompetition( joinHandler, m );
 
             m.open();
-            if (timedStart){
-                m.setTimedStart(wo.getParams().getForceStartTime(), 30);}
+            
+            if ( timedStart ) m.setTimedStart( wo.getParams().getForceStartTime(), 30 );
 
             Scheduler.scheduleSynchronousTask( 
-                    () -> { if ( hasJoinHandler )  removeFromQueue(joinHandler);
-
-                            if ( !timedStart )  m.run();
+                    () -> { if ( hasJoinHandler ) removeFromQueue( joinHandler );
+                            if ( !timedStart ) m.run();
                     });
             return m;
         }
 
-        private void addCompetition(AbstractJoinHandler _joinHandler, Match m) {
-            for (ArenaTeam t : _joinHandler.getTeams()) {
-                for (ArenaPlayer ap : t.getPlayers()) {
-                    ap.addCompetition(m);
+        private void addCompetition( AbstractJoinHandler _joinHandler, Match m ) {
+            for ( ArenaTeam t : _joinHandler.getTeams() ) {
+                for ( ArenaPlayer ap : t.getPlayers() ) {
+                    ap.addCompetition( m );
                 }
             }
         }
-
     }
 
     public void add(Arena arena) {
@@ -158,22 +156,21 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
             }
             aq.addLast(arena);
         }
-        forceStart(arena.getParams(), true);
+        forceStart( null, arena.getParams(), true );
     }
 
     private void addReadyMatch(JoinResult jr,  WaitingObject o, Arena arena) {
-        addReadyMatch(createFoundMatch(jr, o, arena));
+        addReadyMatch( createFoundMatch( jr, o, arena ) );
     }
 
-    private void addReadyMatch(FoundMatch match) {
-        if (match.params.getNConcurrentCompetitions() != CompetitionSize.MAX) {
+    private void addReadyMatch( FoundMatch match ) {
+        if ( match.params.getNConcurrentCompetitions() != CompetitionSize.MAX ) {
             synchronized (delayedReadyMatches) {
                 LinkedList<FoundMatch> l = delayedReadyMatches.get(match.params.getType());
                 if (l == null) {
                     l = new LinkedList<>();
                     delayedReadyMatches.put(match.params.getType(), l);
                 }
-
                 l.add(match);
 
                 /// do we still have room for another match
@@ -254,91 +251,83 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
 
                 switch (r.joinStatus) {
                     case ADDED:
-                    case ADDED_TO_EXISTING:
-                    case ADDED_STILL_NEEDS_PLAYERS:
+                    case STILL_NEEDS_PLAYERS:
                         entered = true;
                         break;
                     case CANT_FIT:
                         continue;
                 }
-                /// not full, we aren't ready for a match yet
-                /// but, if the force time has expired, we only need enough to start
+                /// not full, but if the force time has expired, we only need enough to start
                 if (!o.isFull() && !(timeExpired(o) && o.hasEnough())) {
                     break;
                 }
                 /// find an arena for these teams
                 Arena arena = reserveNextArena(o.getParams(), qo.getJoinOptions());
-                if (arena == null){  /// No arena found
-                    break;
-                }
-                /// create the match
-                mf = createFoundMatch(jr, o, arena);
+                if (arena == null) break;
+
+                mf = createFoundMatch( jr, o, arena );
                 iter.remove();
                 break;
             }
 
-            if (mf == null && !entered){
-                /// Ok, we didn't match anything... let's create a WaitingObject for them
+            if ( mf == null && !entered ) {
+                /// we didn't match anything... let's create a WaitingObject for them
                 try {
                     o = new WaitingObject(qo);
-                    o.join(qo);
-                    if (o.createsOnJoin()){
-                        /// find an arena for these teams
-                        Arena arena = getStartImmediately(o);
-                        if (arena == null){  /// No arena found
+                    o.join( qo );
+                    if ( o.createsOnJoin() ) {
+                        Arena arena = getStartImmediately( o );
+                        if ( arena == null ) {  
                             jr.status = JoinStatus.ERROR;
                             return jr;
                         }
-                        mf = createFoundMatch(jr, o, arena);
+                        mf = createFoundMatch( jr, o, arena );
                         mf.startMatch();
                         return jr;
                     }
                     entered = true;
-                    joinHandlers.add(o);
+                    joinHandlers.add( o );
                     jr.status = JoinResult.JoinStatus.ADDED_TO_QUEUE;
-                } catch (NeverWouldJoinException e) {
+                } 
+                catch (NeverWouldJoinException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        if (entered && o != null){
+        if ( entered && o != null ) {
             jr.status = JoinResult.JoinStatus.ADDED_TO_QUEUE;
             /// Add count to games
-            Integer i = inQueueForGame.get(o.getParams().getType());
-            i = (i == null ? qo.size() : i + qo.size());
+            Integer i = inQueueForGame.get( o.getParams().getType() );
+            i = ( i == null ? qo.size() : i + qo.size() );
 
             inQueueForGame.put(o.getParams().getType(), i);
             jr.playersInQueue = i;
             jr.pos = i;
 
-
             /// Add count to arena
-            if (o.getArena() != null){
-                i = inQueueForArena.get(o.getArena());
-                inQueueForArena.put(o.getArena(), i != null ? i + qo.size() : qo.size());
+            if ( o.getArena() != null ) {
+                i = inQueueForArena.get( o.getArena() );
+                inQueueForArena.put( o.getArena(), i != null ? i + qo.size() : qo.size() );
             }
             updateTimer(o);
 
-            for (ArenaTeam t: qo.getTeams()){
-                for (ArenaPlayer ap: t.getPlayers()) {
-                    inQueue.put(ap.getUniqueId(), o);
-                    callEvent(new ArenaPlayerEnterQueueEvent(ap,t,qo,jr));
+            for ( ArenaTeam t : qo.getTeams() ) {
+                for ( ArenaPlayer ap : t.getPlayers() ) {
+                    inQueue.put( ap.getUniqueId(), o );
+                    callEvent( new ArenaPlayerEnterQueueEvent( ap, t, qo, jr ) );
                 }
-                methodController.updateEvents(MatchState.ONENTER, t.getPlayers());
+                methodController.updateEvents( MatchState.ONENTER, t.getPlayers() );
             }
         }
-        if (mf != null) {
-            addReadyMatch(mf);}
+        if ( mf != null ) addReadyMatch(mf);
+        
         return jr;
     }
 
-
     public Match createMatch(Arena arena, EventOpenOptions eoo) throws NeverWouldJoinException {
         FoundMatch mf;
-        mf = new FoundMatch();
-        mf.arena = arena;
-        mf.params = eoo.getParams();
+        mf = new FoundMatch( arena, null, eoo.getParams(), null );
         Match arenaMatch = mf.startMatch();
         AbstractJoinHandler jh = TeamJoinFactory.createTeamJoinHandler(eoo.getParams(), arenaMatch);
         arenaMatch.hookTeamJoinHandler(jh);
@@ -346,7 +335,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     private Arena getStartImmediately(WaitingObject o) {
-        /// do we still have room for another match
         if (getNumberOpenMatches(o.getParams().getType()) >= o.getParams().getNConcurrentCompetitions()) {
             return null;
         }
@@ -360,8 +348,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
      * @return The ParamTeamPair object if the player was found.  Otherwise returns null
      */
     public boolean leave(ArenaPlayer player) {
-        WaitingObject tjh = removeFromQueue(player, true);
-        return tjh != null;
+        return removeFromQueue(player, true) != null;
     }
 
     void removeFromQueue(AbstractJoinHandler joinHandler) {
@@ -392,29 +379,15 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         return wo;
     }
 
-    private FoundMatch createFoundMatch(JoinResult jr,  WaitingObject o, Arena arena) {
-        FoundMatch mf;
-        mf = new FoundMatch();
-        mf.arena = arena;
-        mf.wo = o;
-        mf.params = o.getParams();
-        mf.joinHandler = o.joinHandler;
-        if (jr != null){
+    private FoundMatch createFoundMatch( JoinResult jr,  WaitingObject o, Arena arena ) {
+        if ( jr != null ) {
             jr.status = JoinResult.JoinStatus.STARTED_NEW_GAME;
             jr.params = o.getParams();
         }
-        return mf;
+        return new FoundMatch( arena, o, o.getParams(), o.joinHandler );
     }
 
-    public boolean forceStart(boolean respectMinimumPlayers) {
-        return forceStart(null,respectMinimumPlayers);
-    }
-
-    public boolean forceStart(MatchParams params, boolean needsMinPlayers) {
-        return forceStart(null, params, needsMinPlayers);
-    }
-
-    boolean forceStart(WaitingObject wo, MatchParams params, boolean needsMinPlayers) {
+    public boolean forceStart(WaitingObject wo, MatchParams params, boolean needsMinPlayers) {
         List<FoundMatch> finds = null;
         synchronized (joinHandlers) {
             Iterator<WaitingObject> iter = joinHandlers.iterator();
@@ -569,10 +542,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
         return null;
     }
-//
-//    public Arena reserveArena(Arena arena) {
-//        return removeArena(arena);
-//    }
 
     @Override
     public String toString(){
@@ -699,7 +668,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         }
         forceTimers.clear();
     }
-
 
     protected void callEvent(BAEvent event){
         methodController.callEvent(event);
@@ -874,6 +842,6 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
         if (Defaults.DEBUG ) Log.info("AMQ::matchFinished=" + this + ":" );
         Match am = event.getMatch();
         decNumberOpenMatches(am.getArena().getArenaType());
-        forceStart(true);
+        forceStart(null, null, true);
     }
 }

@@ -31,7 +31,7 @@ public class ModuleLoader {
         for ( File mod : moduleDirectory.listFiles( 
                        (dir, name) -> {
                                         int period = name.lastIndexOf('.');
-                                        final String extension = name.substring(period + 1);
+                                        String extension = name.substring(period + 1);
                                         return period != -1 && extension.equals("class") || extension.equals("jar");
                                       } ) ) {
             ArenaModule am = null;

@@ -79,7 +79,7 @@ public class EventExecutor extends BAExecutor{
 			return MessageUtil.sendMessage(sender, "&cThere are no open events right now");
 		}
 
-		final String name = event.getName();
+		String name = event.getName();
 		if (!event.isOpen()){
 		    MessageUtil.sendMessage(sender,"&eYou need to open a "+name+" before starting one");
 			return MessageUtil.sendMessage(sender,"&eType &6/"+event.getCommand()+" open <params>&e : to open one");
@@ -156,12 +156,12 @@ public class EventExecutor extends BAExecutor{
 			return false;
 		}
 
-		if (!event.canJoin()){
+		if ( !event.isOpen() ){
 		    MessageUtil.sendSystemMessage(p, "you_cant_join_event_while", event.getCommand(), event.getState());
 			return false;
 		}
 
-		if (!canJoin(p)) return false;
+		if ( !canJoin( p, true ) ) return false;
 
 		if (event.waitingToJoin(p)){
 		    MessageUtil.sendSystemMessage(p, "you_will_join_when_matched");
@@ -177,20 +177,21 @@ public class EventExecutor extends BAExecutor{
 			return false;
 		}
 
-		ArenaTeam t = teamController.getSelfFormedTeam(p);
+		ArenaTeam t = TeamController.getTeam(p);
 		if (t==null)
 			t = TeamController.createTeam(eventParams, p); 
 
-		if (!canJoin(t,true)){
+		if ( !canJoin( t ) ) {
 		    MessageUtil.sendSystemMessage(p, "teammate_cant_join");
 			return MessageUtil.sendMessage(p,"&6/team leave: &cto leave the team");
 		}
 
 		JoinOptions jp;
 		try {
-			jp = JoinOptions.parseOptions(sq, p, Arrays.copyOfRange(args, 1, args.length));
-		} catch (InvalidOptionException e) {
-			return MessageUtil.sendMessage(p, e.getMessage());
+			jp = JoinOptions.parseOptions( sq, p, Arrays.copyOfRange( args, 1, args.length ) );
+		} 
+		catch (InvalidOptionException e) {
+			return MessageUtil.sendMessage( p, e.getMessage() );
 		} 
 		
 		if (sq.getMaxTeamSize() < t.size()){
@@ -198,11 +199,8 @@ public class EventExecutor extends BAExecutor{
 			return false;
 		}
 
-		if (!event.canJoin(t)){
-			return false;}
-
-		if (!checkAndRemoveFee(sq, t)){
-			return false;}
+		if (!checkAndRemoveFee(sq, t)) return false;
+		
 		TeamJoinObject tqo = new TeamJoinObject(t,sq,jp);
 
 		event.joining(tqo);
@@ -210,7 +208,7 @@ public class EventExecutor extends BAExecutor{
 		if (sq.getSecondsTillStart() != null){
 			Long time = event.getTimeTillStart();
 			if (time != null)
-			    MessageUtil.sendSystemMessage(p, "event_will_start_in", TimeUtil.convertMillisToString(time));
+			    MessageUtil.sendSystemMessage( p, "event_will_start_in", TimeUtil.convertMillisToString( time ) );
 		}
 		return true;
 	}

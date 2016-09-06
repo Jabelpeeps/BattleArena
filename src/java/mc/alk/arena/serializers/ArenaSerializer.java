@@ -47,7 +47,6 @@ import mc.alk.arena.objects.spawns.ItemSpawn;
 import mc.alk.arena.objects.spawns.SpawnGroup;
 import mc.alk.arena.objects.spawns.SpawnInstance;
 import mc.alk.arena.objects.spawns.SpawnLocation;
-import mc.alk.arena.objects.spawns.SpawnTime;
 import mc.alk.arena.objects.spawns.TimedSpawn;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.util.InventoryUtil;
@@ -473,10 +472,15 @@ public class ArenaSerializer extends BaseConfig {
     private static TimedSpawn parseSpawnable(ConfigurationSection cs) throws IllegalArgumentException {
         
         if (!cs.contains("spawn") || !cs.contains("time") || !cs.contains("loc")){
-            Log.err("configuration section cs = " + cs +"  is missing either spawn,time,or loc");
+            Log.err("configuration section cs = " + cs +"  is missing either spawn, time, or loc");
             return null;
         }
-        SpawnTime st = parseSpawnTime(cs.getString("time"));
+        String strs[] = cs.getString( "time" ).split(" ");
+        int is[] = new int[strs.length];
+        for ( int i = 0; i < strs.length; i++ ) {
+            is[i] = Integer.parseInt( strs[i] );
+        }
+        
         Location loc = SerializerUtil.getLocation(cs.getString("loc"));
         List<String> strings = SpawnSerializer.convertToStringList(cs.getString("spawn"));
         
@@ -492,7 +496,7 @@ public class ArenaSerializer extends BaseConfig {
             try {
                 mat = Material.valueOf(cs.getString("despawnMaterial", "AIR"));
             } catch (Exception e) {
-                Log.err("Error setting despawnMaterial. " +e.getMessage());
+                Log.err("Error setting despawnMaterial. " + e.getMessage());
                 mat = Material.AIR;
             }
             if (mat != null)
@@ -515,16 +519,7 @@ public class ArenaSerializer extends BaseConfig {
             spawns.get(0).setLocation(loc);
             si = spawns.get(0);
         }
-        return new TimedSpawn(st.i1,st.i2, st.i3,si);
-    }
-
-    public static SpawnTime parseSpawnTime(String str){
-        String strs[] = str.split(" ");
-        Integer is[] = new Integer[strs.length];
-        for (int i=0;i<strs.length;i++){
-            is[i] = Integer.valueOf(strs[i]);
-        }
-        return new SpawnTime(is[0],is[1],is[2]);
+        return new TimedSpawn( is[0], is[1], is[2], si );
     }
 
     private static HashMap<String, Object> saveSpawnable(TimedSpawn ts) {

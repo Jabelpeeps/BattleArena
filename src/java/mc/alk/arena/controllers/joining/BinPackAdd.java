@@ -62,7 +62,7 @@ public class BinPackAdd extends AbstractJoinHandler {
             ArenaTeam oldTeam = addToPreviouslyLeftTeam(team.getPlayers().iterator().next());
             if (oldTeam != null){
                 team.setIndex(oldTeam.getIndex());
-                return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,oldTeam.getMinPlayers() - oldTeam.size());
+                return new TeamJoinResult( TeamJoinStatus.ADDED, oldTeam.getMinPlayers() - oldTeam.size() );
             }
         }
         /// So we couldnt add them to an existing team
@@ -73,7 +73,7 @@ public class BinPackAdd extends AbstractJoinHandler {
             for (ArenaTeam t : teams) {
                 if (t.size() == 0 && players.size() == t.getMaxPlayers()){
                     addToTeam(t,players);
-                    return new TeamJoinResult(TeamJoinStatus.ADDED_TO_EXISTING,t.getMinPlayers()-t.size());
+                    return new TeamJoinResult( TeamJoinStatus.ADDED, t.getMinPlayers() - t.size() );
                 }
             }
             ArenaTeam ct = TeamFactory.createCompositeTeam(teams.size(), matchParams);
@@ -82,22 +82,23 @@ public class BinPackAdd extends AbstractJoinHandler {
             if (ct.size() <= ct.getMaxPlayers()){
                 addTeam(ct);
                 if (ct.size() >= ct.getMinPlayers()) {
-                    return new TeamJoinResult(TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size());
+                    return new TeamJoinResult( TeamJoinStatus.ADDED, ct.getMinPlayers() - ct.size() );
                 }
-                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size());
+                return new TeamJoinResult( TeamJoinStatus.STILL_NEEDS_PLAYERS, ct.getMinPlayers() - ct.size() );
             }
         }
 
-        for (ArenaTeam t: teams){
-            final int size = t.size()+team.size();
-            if (size <= t.getMaxPlayers()){
-                t.addPlayers(team.getPlayers());
-                if ( size >= t.getMinPlayers()){ /// the new team would be a valid range, add them
-                    team.setIndex(t.getIndex());
-                    addToTeam(t, team.getPlayers());
-                    return new TeamJoinResult(TeamJoinStatus.ADDED, 0);
+        for ( ArenaTeam t : teams ) {
+            final int size = t.size() + team.size();
+            if ( size <= t.getMaxPlayers() ) {
+                t.addPlayers( team.getPlayers() );
+                
+                if ( size >= t.getMinPlayers() ) { 
+                    team.setIndex( t.getIndex() );
+                    addToTeam( t, team.getPlayers() );
+                    return new TeamJoinResult( TeamJoinStatus.ADDED, 0 );
                 }
-                return new TeamJoinResult(TeamJoinStatus.ADDED_STILL_NEEDS_PLAYERS, t.getMinPlayers() - t.size());
+                return new TeamJoinResult( TeamJoinStatus.STILL_NEEDS_PLAYERS, t.getMinPlayers() - t.size() );
             }
         }
         return CANTFIT;

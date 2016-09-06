@@ -238,7 +238,7 @@ public class APIRegistrationController {
         }
         if ( ms != null ) {
             ms.setConfig( messageFile );
-            ms.loadAll();
+            ms.initMessageOptions();
             MessageSerializer.addMessageSerializer( name, ms );
         }
         /// Everything nearly successful, register our competition

@@ -3,52 +3,40 @@ package mc.alk.arena.objects.spawns;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
+import lombok.Getter;
+import lombok.Setter;
 
-public class BlockSpawn extends SpawnInstance{
-    Material mat;
-    Material despawnMat = Material.AIR;
 
-	public BlockSpawn(Block block, boolean setMaterial){
-		super(block.getLocation());
-        if (setMaterial){
-            this.mat = block.getType();}
+public class BlockSpawn extends SpawnInstance {
+    @Getter @Setter Material material;
+    @Getter @Setter Material despawnMaterial = Material.AIR;
+
+	public BlockSpawn( Block block, boolean setMaterial ) {
+		super( block.getLocation() );
+        if ( setMaterial )
+            material = block.getType();
     }
-
-    public void setMaterial(Material mat) {
-        this.mat = mat;
-    }
-
-    public void setDespawnMaterial(Material mat) {
-        this.despawnMat = mat;
-    }
-
+	
     @Override
     public void spawn() {
-        Block b = getLocation().getBlock();
-        if (mat != null && b.getType() != mat)
-            b.setType(mat);
+        Block b = location.getBlock();
+        if ( material != null && b.getType() != material )
+            b.setType( material );
     }
 
     @Override
 	public void despawn() {
-        Block b = getLocation().getBlock();
-        if (despawnMat!=null)
-            b.setType(despawnMat);
+        Block b = location.getBlock();
+        if ( despawnMaterial != null )
+            b.setType( despawnMaterial );
 	}
 
 	@Override
 	public String toString(){
-		return "[BS "+mat.name()+"]";
+		return "[BS "+material.name()+"]";
 	}
 
     public Block getBlock() {
-        return getLocation().getBlock();
-    }
-    public Material getMaterial() {
-        return mat;
-    }
-
-    public Material getDespawnMaterial() {
-        return despawnMat;
+        return location.getBlock();
     }
 }

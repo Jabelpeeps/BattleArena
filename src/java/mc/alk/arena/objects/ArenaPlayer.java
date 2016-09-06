@@ -79,30 +79,22 @@ public class ArenaPlayer {
     public double getHealth() { return player.getHealth(); }
     public int getFoodLevel() { return player.getFoodLevel(); }
     public String getDisplayName() { return player.getDisplayName(); }
-    public void sendMessage(String colorChat) { player.sendMessage(colorChat); }
+    public void sendMessage( String colorChat ) { player.sendMessage( colorChat ); }
     public Location getLocation() { return player.getLocation(); }
     public EntityDamageEvent getLastDamageCause() { return player.getLastDamageCause(); }
-    public void setFireTicks(int i) { player.setFireTicks(i); }
+    public void setFireTicks( int i ) { player.setFireTicks(i); }
     public boolean isDead() { return player.isDead(); }
     public PlayerInventory getInventory() { return player.getInventory(); }
-    public boolean hasPermission(String perm) { return player.hasPermission(perm); }
-
-
-    public int getLevel() {
-        return (HeroesController.enabled()) ? HeroesController.getLevel(player) : player.getLevel();
-    }
-
-    public Competition getCompetition() {
-        return competitions.isEmpty() ? null : competitions.peek();
-    }
+    public boolean hasPermission( String perm ) { return player.hasPermission(perm); }
+    public Player regetPlayer() { return ServerUtil.findPlayer( uniqueId ); }
+    public int getLevel() { return HeroesController.enabled() ? HeroesController.getLevel( player ) : player.getLevel(); }
+    public Competition getCompetition() { return competitions.isEmpty() ? null : competitions.peek(); }
+    public boolean removeCompetition( Competition competition ) { return competitions.remove( competition ); }
+    public void clearOldLocation() { oldLocation = null; }
 
     public void addCompetition(Competition competition) {
         if (!competitions.contains(competition))
             competitions.push(competition);
-    }
-
-    public boolean removeCompetition(Competition competition) {
-        return competitions.remove(competition);
     }
 
     /**
@@ -111,31 +103,28 @@ public class ArenaPlayer {
      * @return Team, or null if they are not inside a competition
      */
     public ArenaTeam getTeam() {
-        if (team != null)
-            return team;
+        if ( team != null ) return team;
+        
         return competitions.isEmpty() ? null : competitions.peek().getTeam(this);
     }
 
     /**
      * Sets the players oldLocation to the current spot ONLY if not already set
      */
-    public void markOldLocation(){
-        if (oldLocation == null){
-            oldLocation = new FixedLocation(getLocation());}
+    public void markOldLocation() {
+        if ( oldLocation == null ) oldLocation = new FixedLocation( getLocation() );
     }
 
-    public void clearOldLocation() { oldLocation = null; }
-
-    public void despawnMobs(){
-        if (mobs != null){
-            for (SpawnInstance es: mobs){
-                es.despawn();}
+    public void despawnMobs() {
+        if ( mobs != null ) {
+            for ( SpawnInstance es : mobs ) 
+                es.despawn();
         }
     }
 
-    public void spawnMobs(){
-        if (mobs == null) {
-            return;}
+    public void spawnMobs() {
+        if (mobs == null) return;
+        
         for (SpawnInstance es: mobs){
             es.despawn();
             es.setLocation(this.getLocation());
@@ -144,16 +133,6 @@ public class ArenaPlayer {
                 ((EntitySpawn) es).setOwner(this);
             }
         }
-    }
-
-    public Player regetPlayer() {
-        player = ServerUtil.findPlayer( uniqueId );
-        return player;        
-    }
-
-    @Override
-    public String toString() {
-        return "[" + this.getName() + "]";
     }
 
     public void setTarget(LivingEntity entity) {
@@ -169,9 +148,12 @@ public class ArenaPlayer {
     }
 
     @Override
+    public String toString() {
+        return "[" + this.getName() + "]";
+    }
+    @Override
     public boolean equals(Object obj) {
-        return obj instanceof ArenaPlayer &&
-                ((ArenaPlayer) obj).id == this.id;
+        return obj instanceof ArenaPlayer && ((ArenaPlayer) obj).id == this.id;
     }
     @Override
     public int hashCode() {

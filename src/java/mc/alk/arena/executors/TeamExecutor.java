@@ -24,14 +24,7 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
 
 public class TeamExecutor extends CustomCommandExecutor {
-	private TeamController teamc;
-    private BAExecutor bae;
-
-	public TeamExecutor(BAExecutor _bae) {
-		super();
-		teamc = BattleArena.getTeamController();
-		bae = _bae;
-	}
+    private BAExecutor bae = BattleArena.getBAExecutor();
 
 	@MCCommand( cmds = {"list"}, admin = true, usage = "list" )
 	public boolean teamList(CommandSender sender) {
@@ -39,25 +32,24 @@ public class TeamExecutor extends CustomCommandExecutor {
         Collection<ArenaTeam> teams = TeamController.getSelfFormedTeams();
         
         for ( ArenaTeam t : teams ) 
-			sb.append(t.getTeamInfo(null)).append("\n");
+			sb.append( t.getTeamInfo(null) ).append( "\n" );
         
-		sb.append("&e# of players = &6").append(teams.size());
+		sb.append( "&e# of players = &6" ).append( teams.size() );
 		return MessageUtil.sendMessage(sender,sb.toString());
 	}
 
 	@MCCommand( cmds = {"join", "accept"}, usage = "join", perm = "arena.team.join" )
 	public boolean teamJoin(ArenaPlayer player) {
 
-		ArenaTeam t = teamc.getSelfFormedTeam(player);
-		if (t != null && t.size() >1){
+		ArenaTeam t = TeamController.getTeam(player);
+		if (t != null && t.size() >1)
 			return MessageUtil.sendMessage(player, "&cYou are already part of a team with &6" + t.getOtherNames(player));
-		}
 
-		if (!teamc.inFormingTeam(player)){
+		if ( TeamController.getFormingTeam(player) == null ) {
 		    MessageUtil.sendMessage(player,ChatColor.RED + "You are not part of a forming team");
 			return MessageUtil.sendMessage(player,ChatColor.YELLOW + "Usage: &6/team create <player2> [player3]...");
 		}
-		FormingTeam ft = teamc.getFormingTeam(player);
+		FormingTeam ft = TeamController.getFormingTeam(player);
 
 		ft.sendJoinedPlayersMessage(ChatColor.YELLOW + player.getName() + " has joined the team");
 		ft.joinTeam(player);
@@ -66,34 +58,36 @@ public class TeamExecutor extends CustomCommandExecutor {
 
 		if (ft.hasAllPlayers()){
 			ft.sendMessage("&2Your team is now complete.  you can now add an event or arena");
-			teamc.removeFormingTeam(ft);
-			teamc.addSelfFormedTeam(ft);
+			TeamController.removeFormingTeam(ft);
+			TeamController.addSelfFormedTeam(ft);
 		}
 		return true;
 	}
 
-	@MCCommand( cmds = {"create"}, usage = "create <player 1> <player 2>...<player x>", perm = "arena.team.create" )
-	public boolean teamCreate(ArenaPlayer player, String[] args) {
-		if (args.length<2){
+	@MCCommand( cmds = {"create"}, 
+	            usage = "create <player 1> <player 2>...<player x>", 
+	            perm = "arena.team.create" )
+	public boolean teamCreate( ArenaPlayer player, String[] args ) {
+		if ( args.length < 2 ) {
 		    MessageUtil.sendMessage(player,ChatColor.YELLOW + "create <player 1> <player 2>...<player x>");
 		    MessageUtil.sendMessage(player,ChatColor.YELLOW + "You need to have at least 1 person in the team");
 			return true;
 		}
-		if (!bae.canJoin(player)){
+		if ( !bae.canJoin( player, true ) ) {
 			return true;
 		}
 		Set<String> players = new HashSet<>();
 		Set<Player> foundplayers = new HashSet<>();
 		Set<String> unfoundplayers = new HashSet<>();
 		
-        players.addAll(Arrays.asList(args).subList(1, args.length));
+        players.addAll( Arrays.asList( args ).subList( 1, args.length ) );
         
-		if (players.contains(player.getName()))
-			return MessageUtil.sendMessage(player,ChatColor.YELLOW + "You can not invite yourself to a team");
+		if ( players.contains( player.getName() ) )
+			return MessageUtil.sendMessage( player, ChatColor.YELLOW + "You can not invite yourself to a team" );
 
-		ServerUtil.findOnlinePlayers(players, foundplayers,unfoundplayers);
-		if (foundplayers.size() < players.size()){
-		    MessageUtil.sendMessage(player,ChatColor.YELLOW + "The following teammates were not found or were not online");
+		ServerUtil.findOnlinePlayers( players, foundplayers, unfoundplayers );
+		if ( foundplayers.size() < players.size() ) {
+		    MessageUtil.sendMessage( player, ChatColor.YELLOW + "The following teammates were not found or were not online" );
 			StringBuilder sb = new StringBuilder();
 			boolean first = true;
 			for (String n : unfoundplayers){
@@ -101,44 +95,45 @@ public class TeamExecutor extends CustomCommandExecutor {
 				sb.append(n);
 				first = false;
 			}
-			MessageUtil.sendMessage(player,ChatColor.YELLOW + sb.toString());
+			MessageUtil.sendMessage( player, ChatColor.YELLOW + sb.toString() );
 			return true;
 		}
-		Set<ArenaPlayer> foundArenaPlayers = PlayerController.toArenaPlayerSet(foundplayers);
-		for (ArenaPlayer p: foundArenaPlayers){
-			if (Defaults.DEBUG){Log.info("player=" + player.getName());}
-			ArenaTeam t = teamc.getSelfFormedTeam(p);
-			if (t!= null || !bae.canJoin(p,false)){
-			    MessageUtil.sendMessage(player,"&6"+ p.getName() + "&e is already part of a team or is in an Event");
-				return MessageUtil.sendMessage(player,"&eCreate team &4cancelled!");
+		Set<ArenaPlayer> foundArenaPlayers = PlayerController.toArenaPlayerSet( foundplayers );
+		for ( ArenaPlayer p : foundArenaPlayers ) {
+			if ( Defaults.DEBUG ) Log.info( "player=" + player.getName() );
+			
+			ArenaTeam t = TeamController.getTeam( p );
+			if ( t != null || !bae.canJoin( p, false ) ) {
+			    MessageUtil.sendMessage( player,"&6"+ p.getName() + "&e is already part of a team or is in an Event" );
+				return MessageUtil.sendMessage( player,"&eCreate team &4cancelled!" );
 			}
-			if (teamc.inFormingTeam(p)){
-			    MessageUtil.sendMessage(player,"&6"+ p.getName() + "&e is already part of a forming team");
-				return MessageUtil.sendMessage(player,"&eCreate team &4cancelled!");
+			if ( TeamController.getFormingTeam( p ) != null ) {
+			    MessageUtil.sendMessage( player, "&6" + p.getName() + "&e is already part of a forming team" );
+				return MessageUtil.sendMessage( player,"&eCreate team &4cancelled!" );
 			}
 		}
-		foundArenaPlayers.add(player);
-		if (Defaults.DEBUG) Log.info(player.getName() + "  players=" + foundArenaPlayers.size());
+		foundArenaPlayers.add( player );
+		if ( Defaults.DEBUG ) Log.info( player.getName() + "  players=" + foundArenaPlayers.size() );
 
-		if (!arenaController.hasArenaSize(foundArenaPlayers.size())){
-		    MessageUtil.sendMessage(player,"&6[Warning]&eAn arena for that many players has not been created yet!");
+		if ( !arenaController.hasArenaSize( foundArenaPlayers.size() ) ) {
+		    MessageUtil.sendMessage( player, "&6[Warning]&eAn arena for that many players has not been created yet!" );
 		}
 		/// Finally ready to create a team
-		FormingTeam ft = new FormingTeam(player, foundArenaPlayers);
-		teamc.addFormingTeam(ft);
-		MessageUtil.sendMessage(player,ChatColor.YELLOW + "You are now forming a team. The others must accept by using &6/team accept");
+		FormingTeam ft = new FormingTeam( player, foundArenaPlayers );
+		TeamController.addFormingTeam( ft );
+		MessageUtil.sendMessage( player,
+		        ChatColor.YELLOW + "You are now forming a team. The others must accept by using &6/team accept" );
 
 		/// Send a message to the other teammates
-		for (ArenaPlayer p: ft.getPlayers()){
-			if (player.equals(p))
-				continue;
-			MessageUtil.sendMessage(p, "&eYou have been invited to a team with &6" + ft.getOtherNames(player));
-			MessageUtil.sendMessage(p, "&6/team accept&e : to accept: &6/team decline&e to refuse ");
+		for ( ArenaPlayer p : ft.getPlayers() ) {
+			if ( player.equals(p) ) continue;
+			MessageUtil.sendMessage( p, "&eYou have been invited to a team with &6" + ft.getOtherNames( player ) );
+			MessageUtil.sendMessage( p, "&6/team accept&e : to accept: &6/team decline&e to refuse " );
 		}
 		return true;
 	}
 
-	@MCCommand( cmds={"info"}, usage="info" )
+	@MCCommand( cmds = {"info"}, usage="info" )
 	public boolean teamInfo(ArenaPlayer player) {
         ArenaTeam team = TeamController.getTeam(player);
         if (team == null) {
@@ -147,7 +142,7 @@ public class TeamExecutor extends CustomCommandExecutor {
         return MessageUtil.sendMessage(player, team.getTeamInfo(null));
     }
 
-	@MCCommand( cmds={"info"}, min = 2, admin = true, usage = "info <player>", order = 1 )
+	@MCCommand( cmds = {"info"}, min = 2, admin = true, usage = "info <player>", order = 1 )
 	public boolean teamInfoOther(CommandSender sender,ArenaPlayer player) {
         ArenaTeam team = TeamController.getTeam(player);
         if (team == null) {
@@ -159,22 +154,22 @@ public class TeamExecutor extends CustomCommandExecutor {
 	@MCCommand( cmds = {"disband","leave"}, usage = "disband" )
 	public boolean teamDisband(ArenaPlayer player) {
 		/// Try to disband a forming team first
-		FormingTeam ft = teamc.getFormingTeam(player);
+		FormingTeam ft = TeamController.getFormingTeam(player);
 		if (ft != null){
-			teamc.removeFormingTeam(ft);
+			TeamController.removeFormingTeam(ft);
 			ft.sendToOtherMembers(player,"&eYour team has been disbanded by " + player.getName());
 			MessageUtil.sendMessage(player, "&2You have disbanded your team with " + ft.getName());
 			return true;
 		}
 
-		ArenaTeam t = teamc.getSelfFormedTeam(player);
+		ArenaTeam t = TeamController.getTeam(player);
 		if (t== null){
 			return MessageUtil.sendMessage(player,"&eYou aren't part of a team");}
 
 		if (HeroesController.enabled()){
 			HeroesController.removedFromTeam(t, player.getPlayer());}
 
-		teamc.removeSelfFormedTeam(t);
+		TeamController.removeSelfFormedTeam(t);
 		t.sendToOtherMembers(player,"&eYour team has been disbanded by " + player.getName());
 		MessageUtil.sendMessage(player, "&2You have disbanded your team with " + t.getName());
 
@@ -183,28 +178,31 @@ public class TeamExecutor extends CustomCommandExecutor {
 
 	@MCCommand( cmds = {"delete"}, usage = "delete" )
 	public boolean teamDelete(CommandSender sender, ArenaPlayer player) {
-		ArenaTeam t = teamc.getSelfFormedTeam(player);
-		if (t== null){
-			return MessageUtil.sendMessage(sender,ChatColor.YELLOW + player.getName() + " is not part of a team");}
-		AbstractComp ae = EventController.insideEvent(player);
-		if (ae != null){
+	    
+		ArenaTeam t = TeamController.getTeam(player);
+		if ( t == null )
+			return MessageUtil.sendMessage( sender, ChatColor.YELLOW + player.getName() + " is not part of a team" );
+		
+		AbstractComp ae = EventController.insideEvent(player);	
+		if (ae != null)
 			ae.leave(player);
-		} else {
-			teamc.removeSelfFormedTeam(t);
-		}
+		else
+			TeamController.removeSelfFormedTeam(t);
+		
 		t.sendMessage(ChatColor.YELLOW + "The team has been deleted ");
 		return true;
 	}
 
 	@MCCommand( cmds = {"decline"}, usage = "decline" )
-	public boolean teamDecline(ArenaPlayer p) {
-		FormingTeam t = teamc.getFormingTeam(p);
-		if (t== null){
-		    MessageUtil.sendMessage(p,ChatColor.YELLOW + "You are not part of a forming team");
+	public boolean teamDecline( ArenaPlayer p ) {
+	    
+		FormingTeam t = TeamController.getFormingTeam(p);
+		if ( t == null ) {
+		    MessageUtil.sendMessage( p, ChatColor.YELLOW + "You are not part of a forming team" );
 			return true;
 		}
-		t.sendMessage(ChatColor.YELLOW + "The team has been disbanded as " + p.getDisplayName() +" has declined");
-		teamc.removeFormingTeam(t);
+		t.sendMessage( ChatColor.YELLOW + "The team has been disbanded as " + p.getDisplayName() + " has declined" );
+		TeamController.removeFormingTeam(t);
 		return true;
 	}
 }

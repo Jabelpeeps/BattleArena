@@ -28,7 +28,7 @@ class BukkitEventHandler {
      * @param bukkitEvent : which event we will listen for
      * @param aem : a method which when not null and invoked will return a Player
      */
-    public BukkitEventHandler( final Class<? extends Event> bukkitEvent, ArenaEventMethod aem ) {
+    public BukkitEventHandler( Class<? extends Event> bukkitEvent, ArenaEventMethod aem ) {
         if ( aem.getPlayerMethod() != null ) {
             
             if ( aem.hasSpecificArenaPlayerMethod() ) 

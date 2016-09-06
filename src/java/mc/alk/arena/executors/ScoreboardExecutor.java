@@ -45,11 +45,11 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * key = matchID
      */
-    Map<Integer, ArenaObjective> objectives = new HashMap<>(); // key = matchID
+    Map<Integer, ArenaObjective> objectives = new HashMap<>();
     /**
      * key = matchID, value is the amount of points needed to win the arena.
      */
-    Map<Integer, Integer> amount2win = new HashMap<>(); // key = matchID
+    Map<Integer, Integer> amount2win = new HashMap<>();
     /**
      * Stack of inverse Commands.
      */
@@ -173,7 +173,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * Cmd to toggle between verbose and quiet modes. <br/>
      */
-    @MCCommand( cmds={"toggle"}, op = true )
+    @MCCommand( cmds = {"toggle"}, op = true )
     public boolean toggle(CommandSender sender) {
         if (MESSAGES) {
             MESSAGES = false;
@@ -185,7 +185,7 @@ public class ScoreboardExecutor extends CustomCommandExecutor {
     /**
      * In verbose mode, messages from this executor will be displayed. <br/>
      */
-    @MCCommand( cmds={"verbose", "v"}, op = true )
+    @MCCommand( cmds = {"verbose", "v"}, op = true )
     public boolean verbose(CommandSender sender) {
         MESSAGES = true;
         printMessage(sender, "The ArenaScoreboard command is now in verbose mode.");

@@ -12,13 +12,14 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
 
+import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.TeamUtil;
 
-public class EntitySpawn extends SpawnInstance{
+public class EntitySpawn extends SpawnInstance {
     final private EntityType et;
-    final List<Entity> uids = new ArrayList<>();
-    int number = 1;
+    final List<Entity> entities = new ArrayList<>();
+    @Getter int number = 1;
     ArenaPlayer owner;
 
     public EntitySpawn(EntityType _et) {
@@ -41,31 +42,31 @@ public class EntitySpawn extends SpawnInstance{
     @Override
     public void spawn() {
 
-        for ( Entity id : uids ) {
+        for ( Entity id : entities ) {
             if (!id.isDead())
                 return; 
         }
-        uids.clear();
+        entities.clear();
         
         for ( int i = 0; i < number; i++ ) {
 
-            Entity entity = Bukkit.getWorld( loc.getWorld().getUID() ).spawnEntity( loc, et );
+            Entity entity = Bukkit.getWorld( location.getWorld().getUID() ).spawnEntity( location, et );
             
             if ( entity instanceof Wolf && owner != null && owner.getTeam() != null ) {
                 ((Wolf) entity).setCollarColor( TeamUtil.getDyeColor(owner.getTeam().getIndex() ) );
             }
-            uids.add(entity);
+            entities.add(entity);
         }
     }
 
     @Override
     public void despawn() {
-        for ( Entity id : uids ) {
+        for ( Entity id : entities ) {
             if ( !id.isDead() ) {
                 id.remove();
             }
         }
-        uids.clear();
+        entities.clear();
     }
 
     public void setOwner(ArenaPlayer player) {
@@ -74,7 +75,7 @@ public class EntitySpawn extends SpawnInstance{
     }
 
     public void setOwner(AnimalTamer tamer){
-        for ( Entity le : uids ) {
+        for ( Entity le : entities ) {
             if ( !le.isDead() ) {
                 if ( le instanceof Tameable ) {
                     ((Tameable)le).setTamed(true);
@@ -90,26 +91,14 @@ public class EntitySpawn extends SpawnInstance{
         }
     }
 
-    public String getEntityString() {
-        return et.toString();
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
+    public String getEntityString() { return et.toString(); }
     @Override
-    public String toString(){
-        return "[ES " + et + ":" + number + "]";
-    }
+    public String toString() { return "[ES " + et + ":" + number + "]"; }
 
-    public void setTarget(LivingEntity entity) {
-        for (Entity id: uids){
-            if (!id.isDead()){
-                if (id instanceof Creature){
-                    ((Creature)id).setTarget(entity);
-                }
-            }
+    public void setTarget( LivingEntity entity ) {
+        for ( Entity id : entities ) {
+            if ( !id.isDead() && id instanceof Creature )
+                    ((Creature)id).setTarget( entity );
         }
     }
 }

@@ -8,15 +8,15 @@ import mc.alk.arena.util.MessageUtil;
 
 
 
-public class DuelExecutor extends BAExecutor{
+public class DuelExecutor extends BAExecutor {
 	@Override
 	@MCCommand( cmds = {}, min = 1, helpOrder = 10 )
 	public boolean duel(ArenaPlayer player, MatchParams mp, String args[]) {
-		String newargs[] = new String[args.length+1];
-		for (int i=0;i<args.length;i++){
-			if (i==0){
-				newargs[i] = "duel";}
-			newargs[i+1] = args[i];
+		String newargs[] = new String[args.length + 1];
+		for ( int i = 0; i < args.length; i++ ) {
+			if ( i == 0 ) 
+				newargs[i] = "duel";
+			newargs[i + 1] = args[i];
 		}
 
 		return super.duel(player, mp, newargs);

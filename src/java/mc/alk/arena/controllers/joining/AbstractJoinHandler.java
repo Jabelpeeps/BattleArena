@@ -34,10 +34,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     WaitingScoreboard scoreboard;
     @Getter int nPlayers;
 
-    public static enum TeamJoinStatus {
-        ADDED, CANT_FIT, ADDED_TO_EXISTING, ADDED_STILL_NEEDS_PLAYERS
-    }
-
+    public static enum TeamJoinStatus { ADDED, CANT_FIT, STILL_NEEDS_PLAYERS }
     @AllArgsConstructor
     public static class TeamJoinResult {
         @Getter final public TeamJoinStatus joinStatus;
@@ -49,10 +46,13 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
         minTeams = params.getMinTeams();
         maxTeams = params.getMaxTeams();
         competition = _competition;
+        
         if ( Defaults.USE_SCOREBOARD )
-            initWaitingScoreboard(_teams);
+            initWaitingScoreboard( _teams );
     }
-
+    public abstract TeamJoinResult joiningTeam( TeamJoinObject tqo );
+    public abstract boolean switchTeams( ArenaPlayer player, Integer toTeamIndex, boolean checkSizes );
+    
     private void initWaitingScoreboard( List<ArenaTeam> startingTeams ) {
         List<ArenaTeam> tems = new ArrayList<>();
 
@@ -87,19 +87,13 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
             scoreboard = new CutoffScoreboard( matchParams, tems );
     }
 
-    public abstract boolean switchTeams(ArenaPlayer player, Integer toTeamIndex, boolean checkSizes);
-
     protected ArenaTeam addToPreviouslyLeftTeam(ArenaPlayer player) {
         for ( ArenaTeam t : teams ) {
             if ( t.hasLeft( player ) ) {
                 t.addPlayer( player );
-                nPlayers++;
-                
-                if ( competition != null )
-                    competition.addedToTeam( t, player );
-                
-                if ( scoreboard != null )
-                    scoreboard.addedToTeam( t, player );
+                nPlayers++;                
+                if ( competition != null ) competition.addedToTeam( t, player );           
+                if ( scoreboard != null ) scoreboard.addedToTeam( t, player );
                 return t;
             }
         }
@@ -108,197 +102,164 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     
     public Collection<ArenaPlayer> getPlayers() {
         List<ArenaPlayer> players = new ArrayList<>();
-        for (ArenaTeam at: teams) {
-            players.addAll(at.getPlayers());
+        for ( ArenaTeam at : teams ) {
+            players.addAll( at.getPlayers( ));
         }
         return players;
     }
 
-    public void joiningPlayer(ArenaPlayer player) {
-        ArenaTeam ct = TeamFactory.createCompositeTeam(teams.size(), matchParams);
-        addTeam(ct);
-        ct.addPlayer(player);
-        addToTeam(ct, player);
+    public void joiningPlayer( ArenaPlayer player ) {
+        ArenaTeam ct = TeamFactory.createCompositeTeam( teams.size(), matchParams );
+        addTeam( ct );
+        addToTeam( ct, player );
     }
 
     public void useWaitingScoreboard(){
-        if (scoreboard==null) return;
+        if ( scoreboard == null ) return;
         
-        for (ArenaTeam at: teams){
-            for (ArenaPlayer ap: at.getPlayers()){
-                scoreboard.getScoreboard().setScoreboard(ap.getPlayer());
+        for ( ArenaTeam at : teams ) {
+            for ( ArenaPlayer ap : at.getPlayers() ) {
+                scoreboard.getScoreboard().setScoreboard( ap.getPlayer() );
             }
         }
     }
 
-    public void setWaitingScoreboardTime(int seconds) {
+    public void setWaitingScoreboardTime( int seconds ) {
         if ( scoreboard == null ) return;
-        scoreboard.setRemainingSeconds(seconds);
+        scoreboard.setRemainingSeconds( seconds );
     }
 
     @Override
-    public void addToTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
-        team.addPlayers(players);
-        for (ArenaPlayer ap : players){
-            ap.setTeam(team);
+    public
+    void addToTeam( ArenaTeam team, Collection<ArenaPlayer> players ) {
+        team.addPlayers( players );
+        for ( ArenaPlayer ap : players ){
+            ap.setTeam( team );
         }
-        nPlayers+=players.size();
-        if (competition!=null)
-            competition.addedToTeam(team,players);
-        if (scoreboard!=null)
-            scoreboard.addedToTeam(team,players);
+        nPlayers += players.size();
+        if ( competition != null ) competition.addedToTeam( team, players );
+        if ( scoreboard != null ) scoreboard.addedToTeam( team, players );
     }
 
     @Override
-    public boolean addToTeam(ArenaTeam team, ArenaPlayer player) {
-        team.addPlayer(player);
-        player.setTeam(team);
+    public boolean addToTeam( ArenaTeam team, ArenaPlayer player ) {
+        team.addPlayer( player );
+        player.setTeam( team );
         nPlayers++;
-        if (competition!=null)
-            competition.addedToTeam(team,player);
-        if (scoreboard!=null)
-            scoreboard.addedToTeam(team,player);
+        if ( competition != null ) competition.addedToTeam( team, player );
+        if ( scoreboard != null ) scoreboard.addedToTeam( team, player );
         return true;
     }
 
     @Override
-    public boolean removeFromTeam(ArenaTeam team, ArenaPlayer player) {
-        team.removePlayer(player);
-        player.setTeam(null);
+    public boolean removeFromTeam( ArenaTeam team, ArenaPlayer player ) {
+        team.removePlayer( player );
+        player.setTeam( null );
         nPlayers--;
-        if (competition!=null)
-            competition.removedFromTeam(team, player);
-        if (scoreboard!=null)
-            scoreboard.removedFromTeam(team,player);
+        if ( competition != null ) competition.removedFromTeam( team, player );
+        if ( scoreboard != null ) scoreboard.removedFromTeam( team, player );
         return true;
     }
 
     @Override
-    public void removeFromTeam(ArenaTeam team, Collection<ArenaPlayer> players) {
-        for (ArenaPlayer ap: players){
-            removeFromTeam(team, ap);
+    public void removeFromTeam( ArenaTeam team, Collection<ArenaPlayer> players ) {
+        for ( ArenaPlayer ap : players ) {
+            removeFromTeam( team, ap );
         }
     }
 
     @Override
-    public boolean removeTeam(ArenaTeam team) {
-        return true;
+    public boolean removeTeam( ArenaTeam team ) {
+        return competition.removedTeam( team );
     }
 
     @Override
-    public boolean addTeam(ArenaTeam team){
+    public boolean addTeam( ArenaTeam team ) {
         nPlayers += team.size();
         team.setIndex( teams.size() );
         teams.add( team );
         
-        if ( competition != null )
-            competition.addedTeam( team );
-        
-        if ( scoreboard != null )
-            scoreboard.addedTeam( team );
+        if ( competition != null ) competition.addedTeam( team );        
+        if ( scoreboard != null ) scoreboard.addedTeam( team );        
         return true;
     }
-
-    public abstract TeamJoinResult joiningTeam(TeamJoinObject tqo);
-
     @Override
-    public boolean canLeave(ArenaPlayer p) {
+    public boolean canLeave( ArenaPlayer p ) {
         return true;
     }
-
     @Override
-    public boolean leave(ArenaPlayer p) {
-        for (ArenaTeam t: teams){
-            if (t.hasMember(p)) {
-                nPlayers--;
-                t.removePlayer(p);
-                if (competition!=null) {
-                    competition.removedFromTeam(t,p);
-                }
-                if (scoreboard != null ) {
-                    scoreboard.removedFromTeam(t,p);
-                }
-                return true;
-            }
+    public boolean leave( ArenaPlayer p ) {
+        for ( ArenaTeam t : teams ) {
+            if ( t.hasMember( p ) ) 
+                return removeFromTeam( t, p );
         }
         return false;
     }
 
     public Set<ArenaPlayer> getExcludedPlayers() {
         Set<ArenaPlayer> tplayers = new HashSet<>();
-        for (ArenaTeam t : teams) {
-            if (t.size() < t.getMinPlayers()) {
-                tplayers.addAll(t.getPlayers());
+        for ( ArenaTeam t : teams ) {
+            if ( t.size() < t.getMinPlayers() ) {
+                tplayers.addAll( t.getPlayers() );
             }
-            /// greater should never happen
-
         }
         return tplayers;
     }
 
-    public List<ArenaTeam> removeImproperTeams(){
+    public List<ArenaTeam> removeImproperTeams() {
         List<ArenaTeam> improper = new ArrayList<>();
-        for (ArenaTeam t : teams) {
-            if (t.size() < t.getMinPlayers()|| t.size() > t.getMaxPlayers()) {
-                improper.add(t);
+        for ( ArenaTeam t : teams ) {
+            if (    t.size() < t.getMinPlayers() 
+                    || t.size() > t.getMaxPlayers() ) {
+                improper.add( t );
                 nPlayers -= t.size();
             }
         }
-        teams.removeAll(improper);
+        teams.removeAll( improper );
         return improper;
     }
 
-    public boolean hasEnough(int allowedTeamSizeDifference){
-        final int teamssize = teams.size();
-        if (teamssize < minTeams)
-            return false;
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
+    public boolean hasEnough( int allowedTeamSizeDifference ) {
+        if ( teams.size() < minTeams ) return false;
+        
+        int min = 0;
+        int max = Defaults.MAX_TEAMS;
         int valid = 0;
-        for (ArenaTeam t: teams){
+        for ( ArenaTeam t : teams ) {
             final int tsize = t.size();
-            if (tsize ==0)
+            if ( tsize == 0 ) continue;
+            if ( tsize < min ) min = tsize;
+            if ( tsize > max ) max = tsize;
+            if ( max - min > allowedTeamSizeDifference ) return false;
+            if ( tsize < t.getMinPlayers() || tsize > t.getMaxPlayers() ) 
                 continue;
-            if (tsize < min) min = tsize;
-            if (tsize > max) max = tsize;
-
-            if (max - min > allowedTeamSizeDifference)
-                return false;
-
-            if (tsize < t.getMinPlayers() || tsize > t.getMaxPlayers())
-                continue;
+            
             valid++;
         }
         return valid >= minTeams && valid <= maxTeams;
     }
 
     public boolean isFull() {
-        if (maxTeams == CompetitionSize.MAX )
-            return false;
-        /// Check to see if we have filled up our number of teams
-        if ( maxTeams > teams.size()){
-            return false;}
-        /// Check to see if there is any space left on the team
-        for (ArenaTeam t: teams){
-            if (t.size() < t.getMaxPlayers()){
-                return false;}
+        if ( maxTeams == CompetitionSize.MAX ) return false;
+        if ( maxTeams > teams.size() ) return false;
+
+        for ( ArenaTeam t : teams ) {
+            if ( t.size() < t.getMaxPlayers() ) return false;
         }
-        /// we can't add a team.. and all teams are full
         return true;
     }
 
     public boolean isEmpty() {
-        if (teams.isEmpty())
-            return true;
-        for (ArenaTeam t: teams){
-            if (t.size() != 0){
-                return false;}
+        if ( teams.isEmpty() ) return true;
+        
+        for ( ArenaTeam t : teams ) {
+            if ( t.size() != 0 ) return false;
         }
         return true;
     }
 
     @Override
     public String toString() {
-        return "[TJH " + this.hashCode() + "]";
+        return "[TJH " + hashCode() + "]";
     }
 }

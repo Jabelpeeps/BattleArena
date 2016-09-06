@@ -156,26 +156,21 @@ public class BattleArenaController implements ArenaListener, Listener {
         if (arena == null)
             arena = am.getArena();
         OldLobbyState ols = oldLobbyState.get(arena.getArenaType());
-        if (ols != null){ /// we only put back the lobby state if its the last autoed match finishing
+        if (ols != null) { /// we only put back the lobby state if its the last autoed match finishing
             if (ols.remove(am) && ols.isEmpty()){
                 RoomController.getLobby(am.getArena().getArenaType()).setContainerState(ols.pcs);
             }
         }
     }
 
-    public void startMatch(Match arenaMatch) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), arenaMatch);
-    }
-
     @ArenaEventHandler
     public void matchFinished(MatchFinishedEvent event){
         if (Defaults.DEBUG ) Log.info("BattleArenaController::matchFinished=" + this + ":" );
         Match am = event.getMatch();
-        removeMatch(am); /// handles removing running match from the BArenaController
+        removeMatch(am); 
 
-        final Arena arena = allArenas.get(am.getArena().getName().toUpperCase());
-        if (arena == null) { /// we have deleted this arena while a match was going on
-            return;}
+        Arena arena = allArenas.get(am.getArena().getName().toUpperCase());
+        if (arena == null) 
 
         /// put back old states if it was autoed
         restoreStates(am, arena);
@@ -189,20 +184,20 @@ public class BattleArenaController implements ArenaListener, Listener {
             }
         }
         /// isEnabled to check to see if we are shutting down
-        if (BattleArena.getSelf().isEnabled()){
-            Bukkit.getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), new Runnable(){
+        if ( BattleArena.getSelf().isEnabled() ) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask( BattleArena.getSelf(), new Runnable(){
                 @Override
                 public void run() {
                     amq.add(arena); /// add it back into the queue
                 }
-            }, am.getParams().getArenaCooldown()*20L);
+            }, am.getParams().getArenaCooldown() * 20L );
         }
     }
 
-    public void updateArena(Arena arena) {
-        allArenas.put(arena.getName().toUpperCase(), arena);
-        if (amq.removeArena(arena) != null){ /// if its not being used
-            amq.add(arena);}
+    public void updateArena( Arena arena ) {
+        allArenas.put( arena.getName().toUpperCase(), arena );
+        if ( amq.removeArena( arena ) != null)
+            amq.add( arena );
     }
 
     public void addArena(Arena arena) {
@@ -217,7 +212,6 @@ public class BattleArenaController implements ArenaListener, Listener {
      */
     public JoinResult wantsToJoin(TeamJoinObject tqo) throws IllegalStateException {
 
-        /// Can they add an existing Game
         JoinResult jr = joinExistingMatch(tqo);
         if (jr.status == JoinResult.JoinStatus.ADDED_TO_EXISTING_MATCH) {
             return jr;
@@ -231,7 +225,7 @@ public class BattleArenaController implements ArenaListener, Listener {
         /// We don't want them to add a queue if they can't fit
         if (tqo.getJoinOptions().getArena() != null &&
                 tqo.getJoinOptions().getArena().getParams().hasOptionAt(MatchState.DEFAULTS,TransitionOption.ALWAYSOPEN)){
-            if (this.getArenas(tqo.getMatchParams()).size()==1 &&
+            if ( getArenas(tqo.getMatchParams()).size() == 1 &&
                     amq.getNumberOpenMatches(tqo.getMatchParams().getType()) >= 1)
                 throw new IllegalStateException("&cThe arena " +
                         tqo.getJoinOptions().getArena().getDisplayName() + "&c is currently in use");
@@ -243,15 +237,18 @@ public class BattleArenaController implements ArenaListener, Listener {
             jr.params = mp;
 
         /// who is responsible for doing what
-        if (Defaults.DEBUG)
-            Log.info(" Join status = " + jr.status + "    " + tqo.getTeam() + "   " + tqo.getTeam().getId() + " --"
-                    + ", haslobby=" + mp.needsLobby() + "  ,wr=" + (mp.hasOptionAt(MatchState.ONJOIN, TransitionOption.TELEPORTWAITROOM)) + "  " +
-                    "   --- hasArena=" + tqo.getJoinOptions().hasArena());
-        if (tqo.getJoinOptions().hasArena() && !(jr.status == JoinStatus.STARTED_NEW_GAME)) {
+        if ( Defaults.DEBUG )
+            Log.info( " Join status = " + jr.status + "    " + tqo.getTeam() + "   " + tqo.getTeam().getId() + " --" + 
+                    ", haslobby=" + mp.needsLobby() + "  ,wr=" + 
+                    mp.hasOptionAt( MatchState.ONJOIN, TransitionOption.TELEPORTWAITROOM ) + "  " +
+                    "   --- hasArena=" + tqo.getJoinOptions().hasArena() );
+  
+        if ( tqo.getJoinOptions().hasArena() && jr.status != JoinStatus.STARTED_NEW_GAME ) {
             Arena a = tqo.getJoinOptions().getArena();
-            if (!(a.getParams().hasOptionAt(MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN) ||
-                    a.getParams().hasOptionAt(MatchState.ONJOIN, TransitionOption.ALWAYSJOIN)) &&
-                    mp.hasOptionAt(MatchState.ONJOIN, TransitionOption.TELEPORTIN) && BattleArena.getBAController().getMatch(a) != null) {
+            if (    !( a.getParams().hasOptionAt( MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN ) 
+                    || a.getParams().hasOptionAt( MatchState.ONJOIN, TransitionOption.ALWAYSJOIN ) ) 
+                && mp.hasOptionAt( MatchState.ONJOIN, TransitionOption.TELEPORTIN ) 
+                && BattleArena.getBAController().getMatch(a) != null ) {
                 throw new IllegalStateException("&cThe arena " + a.getDisplayName() + "&c is currently in use");
             }
         }
@@ -310,7 +307,6 @@ public class BattleArenaController implements ArenaListener, Listener {
         if ( matches == null ) return jr;
         
         for ( Match match : matches ) {
-            /// We dont want people joining in a non waitroom state
             if ( !match.canStillJoin() ) continue;
             
             if ( !match.getParams().matches( tqo.getJoinOptions() ) 
@@ -322,8 +318,7 @@ public class BattleArenaController implements ArenaListener, Listener {
             
             switch ( tjh.joiningTeam( tqo ).joinStatus ) {
                 case ADDED:
-                case ADDED_TO_EXISTING:
-                case ADDED_STILL_NEEDS_PLAYERS:
+                case STILL_NEEDS_PLAYERS:
                     jr.status = JoinResult.JoinStatus.ADDED_TO_EXISTING_MATCH;
                     break;
                 case CANT_FIT:
@@ -338,6 +333,7 @@ public class BattleArenaController implements ArenaListener, Listener {
     public void addMatchup(MatchTeamQObject m) { amq.join( m ); }
     public Arena reserveArena(Arena arena) { return amq.removeArena( arena ); }
     public static Arena getArena(String arenaName) { return allArenas.get( arenaName.toUpperCase() ); }
+    public Arena nextArenaByMatchParams( MatchParams mp ) { return amq.getNextArena(mp); }
 
     public Arena removeArena(Arena arena) {
         amq.removeArena(arena);
@@ -368,10 +364,6 @@ public class BattleArenaController implements ArenaListener, Listener {
     public Arena getNextArena(MatchParams mp) {
         if (fixedArenas.containsKey(mp.getType()))
             return fixedArenas.get(mp.getType());
-        return amq.getNextArena(mp);
-    }
-
-    public Arena nextArenaByMatchParams(MatchParams mp){
         return amq.getNextArena(mp);
     }
 
@@ -522,8 +514,7 @@ public class BattleArenaController implements ArenaListener, Listener {
 
     public boolean cancelMatch(ArenaPlayer p) {
         Match am = getMatch(p);
-        if (am==null)
-            return false;
+        if ( am == null ) return false;
         cancelMatch(am);
         return true;
     }
@@ -585,9 +576,7 @@ public class BattleArenaController implements ArenaListener, Listener {
     }
 
     @Override
-    public String toString(){
-        return "[BAC]";
-    }
+    public String toString() { return "[BAC]"; }
 
     public String toStringQueuesAndMatches(){
         StringBuilder sb = new StringBuilder();
@@ -653,22 +642,15 @@ public class BattleArenaController implements ArenaListener, Listener {
         amq.resume();
     }
 
-    public Collection<ArenaTeam> purgeQueue() {
-        return amq.purgeQueue();
-    }
-
-    public boolean hasRunningMatches() {
-        return !running_matches.isEmpty();
-    }
-
-    public WaitingObject getQueueObject(ArenaPlayer player) {
-        return amq.getQueueObject(player);
-    }
-
-    public List<String> getInvalidQueueReasons(WaitingObject qo) {
-        return amq.invalidReason(qo);
-    }
-
+    public Collection<ArenaTeam> purgeQueue() { return amq.purgeQueue(); }
+    public boolean hasRunningMatches() { return !running_matches.isEmpty(); }
+    public WaitingObject getQueueObject( ArenaPlayer player ) { return amq.getQueueObject( player ); }
+    public List<String> getInvalidQueueReasons( WaitingObject qo ) { return amq.invalidReason( qo ); }
+    public Collection<ArenaPlayer> getPlayersInAllQueues() { return amq.getPlayersInAllQueues(); }
+    public Collection<ArenaPlayer> getPlayersInQueue( MatchParams params ) { return amq.getPlayersInQueue(params); }
+    public String queuesToString() { return amq.queuesToString(); }
+    public ArenaMatchQueue getArenaMatchQueue() { return amq; }
+    
     public boolean forceStart(MatchParams mp, boolean respectMinimumPlayers) {
         boolean started = false;
         synchronized (unfilled_matches) {
@@ -682,18 +664,7 @@ public class BattleArenaController implements ArenaListener, Listener {
                 }
             }
         }
-        return amq.forceStart(mp, respectMinimumPlayers) || started;
-    }
-
-    public Collection<ArenaPlayer> getPlayersInAllQueues(){
-        return amq.getPlayersInAllQueues();
-    }
-    public Collection<ArenaPlayer> getPlayersInQueue(MatchParams params){
-        return amq.getPlayersInQueue(params);
-    }
-
-    public String queuesToString() {
-        return amq.queuesToString();
+        return amq.forceStart( null, mp, respectMinimumPlayers ) || started;
     }
 
     public boolean isQueueEmpty() {
@@ -701,11 +672,7 @@ public class BattleArenaController implements ArenaListener, Listener {
         return col == null || col.isEmpty();
     }
 
-    public ArenaMatchQueue getArenaMatchQueue() {
-        return amq;
-    }
-
-    public List<Match> getRunningMatches(MatchParams params){
+    public List<Match> getRunningMatches(MatchParams params) {
         List<Match> list = new ArrayList<>();
         synchronized(running_matches){
             for (Match m: running_matches){

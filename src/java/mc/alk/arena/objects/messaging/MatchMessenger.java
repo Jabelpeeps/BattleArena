@@ -63,13 +63,13 @@ public class MatchMessenger extends MessageSerializer {
         Message serverMessage = getNodeMessage( typedot + nTeamPath + "." + serverpath );
         
         if ( Defaults.DEBUG ) 
-            Log.info( "sendMessageToTeams():-  path=" + path + "  serverpath=" + serverpath + "nTeamPath='" + nTeamPath + 
+            Log.info( "sendMessageToTeams():-  path=" + path + "  serverpath=" + serverpath + "  nTeamPath='" + nTeamPath + 
                         "'  message='" + message.getMessage() + "'  serverMessage='" + serverMessage.getMessage() + "'" );  
 
         Set<MessageOption> ops = message.getOptions();
         
-        if (serverChannel != Channels.NullChannel){
-            ops.addAll(serverMessage.getOptions());
+        if ( serverChannel != Channels.NullChannel ) {
+            ops.addAll( serverMessage.getOptions() );
         }
         MessageFormatter msgf = new MessageFormatter( this, match.getParams(), teams.size(), message, ops );
 

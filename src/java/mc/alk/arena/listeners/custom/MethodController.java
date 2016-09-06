@@ -264,19 +264,19 @@ public class MethodController {
         return gel;
     }
 
-    public static List<ArenaEventMethod> getMethods( ArenaListener ael, Event event ) {
-        return getMethods( ael, event.getClass() );
-    }
-
-    private static List<ArenaEventMethod> getMethods(ArenaListener ael, Class<? extends Event> eventClass) {
-        HashMap<Class<? extends Event>, List<ArenaEventMethod>> typeMap = bukkitEventMethods.get(ael.getClass());
-        if (Defaults.DEBUG_EVENTS) 
-            System.out.println("!! getEvent "+ael.getClass()+ " " +eventClass+"  methods="+
-                (typeMap==null?"null" :typeMap.size() +":"+ (typeMap.get(eventClass) != null ? typeMap.get(eventClass).size() : 0) ) );
-        if (typeMap == null)
-            return null;
-        return typeMap.get(eventClass);
-    }
+//    public static List<ArenaEventMethod> getMethods( ArenaListener ael, Event event ) {
+//        return getMethods( ael, event.getClass() );
+//    }
+//
+//    private static List<ArenaEventMethod> getMethods(ArenaListener ael, Class<? extends Event> eventClass) {
+//        HashMap<Class<? extends Event>, List<ArenaEventMethod>> typeMap = bukkitEventMethods.get(ael.getClass());
+//        if (Defaults.DEBUG_EVENTS) 
+//            System.out.println("!! getEvent "+ael.getClass()+ " " +eventClass+"  methods="+
+//                (typeMap==null?"null" :typeMap.size() +":"+ (typeMap.get(eventClass) != null ? typeMap.get(eventClass).size() : 0) ) );
+//        if (typeMap == null)
+//            return null;
+//        return typeMap.get(eventClass);
+//    }
 
     private static Map<Class<? extends Event>, List<ArenaEventMethod>> getBukkitMethods(ArenaListener ael) {
         if (Defaults.DEBUG_EVENTS) 

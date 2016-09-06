@@ -280,9 +280,9 @@ public abstract class BaseExecutor implements CommandExecutor {
                 else {
                     success = true;
                 }
-                break; /// success on one
+                break; 
                 
-            } catch ( IllegalArgumentException e ) { /// One of the arguments wasn't correct, store the message
+            } catch ( IllegalArgumentException e ) { 
                 errs.add( new CommandException( e, mwrapper ) );
             } catch ( IllegalAccessException | InvocationTargetException e ) {
                 logInvocationError( e, mwrapper, newArgs );
@@ -321,14 +321,7 @@ public abstract class BaseExecutor implements CommandExecutor {
                                     String label, String[] args, int startIndex) throws IllegalArgumentException{
         
         MCCommand cmd = mwrapper.getCommand();
-        
-//        if ( Defaults.DEBUG_COMMANDS ) {
-//            Log.info( " method=" + mwrapper.method.getName() + " verifyArgs " + cmd + " sender=" + sender +
-//                    ", label=" + label + " args=" + Arrays.toString( args ) );
-//            
-//            for ( Class<?> t : mwrapper.method.getParameterTypes() )
-//                Log.info( " -- type=" + t );
-//        }
+
         int paramLength = mwrapper.method.getParameterTypes().length;
 
         if (args.length < cmd.min())
@@ -350,10 +343,10 @@ public abstract class BaseExecutor implements CommandExecutor {
         int strIndex = startIndex;
         int objIndex = 1;
 
-        Arguments newArgs = new Arguments(); /// Our return value
-        Object[] objs = new Object[paramLength]; /// Our new array of castable arguments
+        Arguments newArgs = new Arguments(); 
+        Object[] objs = new Object[paramLength];
 
-        newArgs.args = objs; /// Set our return object with the new castable arguments
+        newArgs.args = objs;
         objs[0] = verifySender( sender, types[0] );
         AtomicInteger numUsedStrings = new AtomicInteger(0);
         for ( int i = 1; i < types.length; i++ ) {
@@ -401,9 +394,6 @@ public abstract class BaseExecutor implements CommandExecutor {
 
     protected Object verifyArg( CommandSender sender, Class<?> clazz, Command command, 
                                 String[] args, int curIndex, AtomicInteger numUsedStrings ) {
-        
-//        if ( Defaults.DEBUG_COMMANDS ) sender.sendMessage( "BaseExecutor.verifyArgs() entered" );
-        
         numUsedStrings.set(0);
         
         if ( Command.class == clazz ) return command;
