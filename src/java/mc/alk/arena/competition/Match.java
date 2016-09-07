@@ -25,7 +25,6 @@ import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaAlterController.ChangeType;
-import mc.alk.arena.controllers.ArenaController;
 import mc.alk.arena.controllers.ListenerAdder;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.PlayerStoreController;
@@ -97,7 +96,7 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 
-public abstract class Match extends Competition implements Runnable, ArenaController {
+public abstract class Match extends Competition implements Runnable {
 
     public enum PlayerState { OUTOFMATCH, INMATCH }
 

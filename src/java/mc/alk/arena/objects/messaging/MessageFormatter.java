@@ -191,46 +191,47 @@ public class MessageFormatter{
 		ArenaTeam oteam;
 		ArenaStat st1 = t.getStat();
 		int i = teamIndex;
-		for (MessageOption mop : ops){
+		for ( MessageOption mop : ops ) {
 			if (mop == null)
 				continue;
 			String repl = null;
-			switch(mop){
-			case OTHERTEAM:
-				oteam = getOtherTeam(t,teams);
-				if (oteam != null)
-					repl = oteam.getDisplayName();
-				break;
-			case WINSAGAINST:
-				try{
-					oteam = getOtherTeam(t,teams);
-					if (oteam != null){
-						ArenaStat st2 = oteam.getStat();
-						repl = st1.getWinsVersus(st2)+"";
-					} else {
-						repl = "0";
-					}
-				} catch(Exception e){
-					Log.printStackTrace(e);
-				}
-
-				break;
-			case LOSSESAGAINST:
-				try{
-					st1 = t.getStat();
-					oteam = getOtherTeam(t,teams);
-					if (oteam != null){
-						ArenaStat st2 = oteam.getStat();
-						repl = st1.getLossesVersus(st2) +"";
-					} else {
-						repl = "0";
-					}
-				} catch(Exception e){
-					Log.printStackTrace(e);
-				}
-				break;
-			default:
-				continue;
+			switch( mop ) {
+    			case OTHERTEAM:
+    				oteam = getOtherTeam(t,teams);
+    				if (oteam != null)
+    					repl = oteam.getDisplayName();
+    				break;
+    				
+    			case WINSAGAINST:
+    				try{
+    					oteam = getOtherTeam(t,teams);
+    					if (oteam != null){
+    						ArenaStat st2 = oteam.getStat();
+    						repl = st1.getWinsVersus(st2)+"";
+    					} else {
+    						repl = "0";
+    					}
+    				} catch(Exception e){
+    					Log.printStackTrace(e);
+    				}
+    				break;
+    				
+    			case LOSSESAGAINST:
+    				try{
+    					oteam = getOtherTeam(t,teams);
+    					if (oteam != null){
+    						ArenaStat st2 = oteam.getStat();
+    						repl = st1.getLossesVersus(st2) +"";
+    					} else {
+    						repl = "0";
+    					}
+    				} catch(Exception e){
+    					Log.printStackTrace(e);
+    				}
+    				break;
+    				
+    			default:
+    				continue;
 			}
 
 			searchList[i] = mop.getReplaceString();
@@ -249,7 +250,6 @@ public class MessageFormatter{
 				else first = false;
 				sb.append(team.getDisplayName());
 			}
-
 			replaceList[curIndex] = sb.toString();
 			searchList[curIndex] = MessageOption.TEAMS.getReplaceString();
 			curIndex++;
@@ -262,41 +262,46 @@ public class MessageFormatter{
 		for (MessageOption mop : ops){
 			if (mop == null)
 				continue;
-			switch(mop){
-			case WINNER:
-				if (!isWinner)
-					continue;
-				replaceList[i] = tn.name;
-				break;
-			case WINNERSHORT:
-				if (!isWinner)
-					continue;
-				replaceList[i] = tn.shortName;
-				break;
-			case WINNERLONG:
-				if (!isWinner)
-					continue;
-				replaceList[i] = tn.longName;
-				break;
-			case LOSER:
-				if (isWinner)
-					continue;
-				replaceList[i] = tn.name;
-				break;
-			case LOSERSHORT:
-				if (isWinner)
-					continue;
-				replaceList[i] = tn.shortName;
-				break;
-			case LOSERLONG:
-				if (isWinner)
-					continue;
-				replaceList[i] = tn.longName;
-				break;
-			case LIFELEFT:
-				if (!isWinner)
-					continue;
-				{
+			switch(mop) {
+    			case WINNER:
+    				if (!isWinner)
+    					continue;
+    				replaceList[i] = tn.name;
+    				break;
+    				
+    			case WINNERSHORT:
+    				if (!isWinner)
+    					continue;
+    				replaceList[i] = tn.shortName;
+    				break;
+    				
+    			case WINNERLONG:
+    				if (!isWinner)
+    					continue;
+    				replaceList[i] = tn.longName;
+    				break;
+    				
+    			case LOSER:
+    				if (isWinner)
+    					continue;
+    				replaceList[i] = tn.name;
+    				break;
+    				
+    			case LOSERSHORT:
+    				if (isWinner)
+    					continue;
+    				replaceList[i] = tn.shortName;
+    				break;
+    				
+    			case LOSERLONG:
+    				if (isWinner)
+    					continue;
+    				replaceList[i] = tn.longName;
+    				break;
+    				
+    			case LIFELEFT:
+    				if (!isWinner) continue;
+    				
 					StringBuilder sb = new StringBuilder();
 					boolean first = true;
 
@@ -312,9 +317,9 @@ public class MessageFormatter{
 					}
 					replaceList[i] = sb.toString();
 					break;
-				}
-			default:
-				continue;
+				
+    			default:
+    				continue;
 			}
 			searchList[i] = mop.getReplaceString();
 			i++;

@@ -12,7 +12,6 @@ import org.bukkit.potion.PotionEffect;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.ArenaClassController;
-import mc.alk.arena.controllers.ArenaController;
 import mc.alk.arena.controllers.MoneyController;
 import mc.alk.arena.controllers.PlayerStoreController;
 import mc.alk.arena.controllers.TeleportLocationController;
@@ -74,12 +73,12 @@ public class TransitionController {
         StateOptions mo = am.getParams().getStateOptions( transition );
         if ( mo == null ) return true;
         
-        if ( performOncePerTransitionOptions && am instanceof ArenaController ) {
-            ArenaController ac = (ArenaController) am;
+        if ( performOncePerTransitionOptions && am instanceof Match ) {
+            Match match = (Match) am;
             
             /// Options that don't affect players first
-            if ( WorldGuardController.hasWorldGuard() && ac.getArena() != null && ac.getArena().hasRegion() ) {
-                WorldGuardRegion region = ac.getArena().getWorldGuardRegion();
+            if ( WorldGuardController.hasWorldGuard() && match.getArena() != null && match.getArena().hasRegion() ) {
+                WorldGuardRegion region = match.getArena().getWorldGuardRegion();
                 /// Clear the area
                 if ( mo.hasOption( TransitionOption.WGCLEARREGION ) ) 
                     WorldGuardController.clearRegion( region );

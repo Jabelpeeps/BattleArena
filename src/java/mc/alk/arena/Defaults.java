@@ -84,7 +84,7 @@ public class Defaults {
     public static boolean USE_SIGN_PERMS = false;
 
     /// DEBUG OPTIONS
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = true;
     public static final boolean DEBUG_TRACE = true;
     public static final boolean DEBUG_PERMS = false;
     public static final boolean DEBUG_EVENTS = false;
@@ -95,7 +95,7 @@ public class Defaults {
     
     public static boolean TESTSERVER = false;
     public static boolean DEBUG_STRESS = false;
-    public static boolean DEBUG_MSGS = false;
+    public static boolean DEBUG_MSGS = true;
     public static boolean DEBUG_COMMANDS = false;
     public static boolean DEBUG_TIMINGS = false;
     public static boolean DEBUG_VIRTUAL = false;

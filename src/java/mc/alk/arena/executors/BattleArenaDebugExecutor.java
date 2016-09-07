@@ -65,8 +65,9 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         else if( section.equalsIgnoreCase("tracking") ) Defaults.DEBUG_TRACKING = on;
         else if( section.equalsIgnoreCase("storage") ) Defaults.DEBUG_STORAGE = on;
         else if( section.equalsIgnoreCase("commands") ) Defaults.DEBUG_COMMANDS = on;
-        else if( section.equalsIgnoreCase("debug") ) Defaults.DEBUG_MSGS = on;
+        else if( section.equalsIgnoreCase("debug") ) Defaults.DEBUG = on;
         else if( section.equalsIgnoreCase("teams") ) Defaults.DEBUG_MATCH_TEAMS = on;
+        else if( section.equalsIgnoreCase( "messages" )) Defaults.DEBUG_MSGS = on;
         else {
             MessageUtil.sendMessage(sender, "&cDebugging couldnt find code section &6"+ section );
             return;

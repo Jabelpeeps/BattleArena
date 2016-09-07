@@ -15,16 +15,14 @@ public class TeamStat extends Stat implements Comparable<Stat>{
 	}
 
 	public TeamStat( String _name, boolean id, int teamSize ) {
-		if (id) {
-			strID = _name;
+        strID = _name;
+        
+        if (id) 
 			count = teamSize;
-		} 
 		else {
-			name = _name;
-			strID = _name;
-			
+			name = _name;		
 			int c = charCount(_name,',');
-			count = c == 0 ? 0: c+1; 
+			count = c == 0 ? 0 : c + 1; 
 		}
 	}
     
@@ -35,7 +33,7 @@ public class TeamStat extends Stat implements Comparable<Stat>{
         count = p.size();
     }
     
-    public int charCount(final String s, final Character testc) {
+    public int charCount( String s, Character testc) {
         int charCount =0;
         for ( int i = 0; i < s.length(); i++ )
             if ( testc.equals( s.charAt(i) ) )

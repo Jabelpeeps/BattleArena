@@ -1,5 +1,8 @@
 package mc.alk.arena.controllers;
 
+import org.bukkit.entity.Player;
+
+import lombok.AllArgsConstructor;
 import mc.alk.arena.events.prizes.ArenaPrizeEvent;
 import mc.alk.arena.events.prizes.Reward;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -8,19 +11,11 @@ import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.ExpUtil;
 import mc.alk.arena.util.InventoryUtil;
 
-import org.bukkit.entity.Player;
-
-
+@AllArgsConstructor
 public class RewardController {
 
 	ArenaPrizeEvent event;
 	PlayerStoreController psc;
-
-	public RewardController(ArenaPrizeEvent event,PlayerStoreController playerStoreController) {
-		this.event = event;
-		this.psc = playerStoreController;
-	}
-
 
 	public void giveRewards() {
 		for (ArenaTeam t: event.getTeams()){

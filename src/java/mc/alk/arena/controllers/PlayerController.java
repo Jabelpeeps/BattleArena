@@ -30,11 +30,6 @@ public final class PlayerController {
 			ap = new ArenaPlayer(player);
 			players.put( ap.getUniqueId(), ap );
 		} 
-//		else {
-//                    if (player != null) {
-//                        ap.setPlayer(player);
-//                    }
-//		}
 		return ap;
 	}
 	
@@ -53,9 +48,6 @@ public final class PlayerController {
             ap = new ArenaPlayer( player );
             players.put( id, ap );
         } 
-//        else if (player != null) {
-//            ap.setPlayer(player);
-//        }
         return ap;
     }
 

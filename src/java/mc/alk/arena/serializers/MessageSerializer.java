@@ -85,7 +85,7 @@ public class MessageSerializer extends BaseConfig {
 			if ( obj == null ) continue;
 			
 			String options = String.valueOf( obj );
-			if ( Defaults.DEBUG_MSGS ) Log.info( options );
+			if ( Defaults.DEBUG_MSGS ) Log.info( "[Message Loaded] key=" + key + "  option=" + options );
 			msgOptions.put( key, new MessageOptions( options ) );
 		}
 	}

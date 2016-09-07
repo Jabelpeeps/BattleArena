@@ -75,8 +75,8 @@ public abstract class ArenaTeam {
         deadPlayers.clear();
         nameChanged = true;
 	}
-    
-	protected String createName() {
+
+    public String getName() { 
 		if ( nameManuallySet || !nameChanged ) return name;
 		
 		ArrayList<String> list = new ArrayList<>(players.size());
@@ -138,7 +138,7 @@ public abstract class ArenaTeam {
     public void setAlive() { deadPlayers.clear(); }
     public void setAlive( ArenaPlayer player ) { deadPlayers.remove( player ); }
     public ArenaStat getStat() { return getStat( currentParams ); }
-    public ArenaStat getStat( MatchParams params ) { return Tracker.getInterface( params ).getTeamRecord( name ); }
+    public ArenaStat getStat( MatchParams params ) { return Tracker.getInterface( params ).getTeamRecord( getName() ); }
 	
 	public void setHealth( int health ) {
 	    for ( ArenaPlayer p : players ) 
@@ -150,7 +150,6 @@ public abstract class ArenaTeam {
 	}
 
     public int size() { return players.size(); }
-    public String getName() { return createName(); }
 
     public void setName(String _name) {
 		name = _name;
@@ -247,7 +246,7 @@ public abstract class ArenaTeam {
 				MessageUtil.sendMessage( p, message );
 	}
 
-    public String getDisplayName() { return displayName == null ? createName() : displayName; }
+    public String getDisplayName() { return displayName == null ? getName() : displayName; }
 
     public void setDisplayName(String teamName){
         displayName = teamName;
