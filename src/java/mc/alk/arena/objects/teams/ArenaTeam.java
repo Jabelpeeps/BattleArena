@@ -158,11 +158,6 @@ public abstract class ArenaTeam {
 
     public int size() { return players.size(); }
 
-    public void setName(String _name) {
-		name = _name;
-		nameManuallySet = true;
-	}
-
     public boolean isDead() {
 		if (deadPlayers.size() >= players.size())
 			return true;
@@ -256,8 +251,11 @@ public abstract class ArenaTeam {
     public String getDisplayName() { return displayName == null ? getName() : displayName; }
 
     public void setDisplayName(String teamName){
+        if ( Defaults.DEBUG ) Log.info( "[ArenaTeam] changing name from '" + name + "' to '" + teamName + "'" );
+        
         displayName = teamName;
-        nameManuallySet = true;
+        name = teamName;
+        nameManuallySet = true; 
     }
 
 	@Override
@@ -382,7 +380,7 @@ public abstract class ArenaTeam {
 		deadPlayers.clear();
 		leftPlayers.clear();
 		nameManuallySet = false;
-		nameChanged = false;
+		nameChanged = true;
 		name = "Empty";
 		kills.clear();
 		deadPlayers.clear();

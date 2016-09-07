@@ -139,7 +139,7 @@ public class TeamUtil {
                 alwaysTeamNames = tops.hasAnyOption(TransitionOption.ALWAYSTEAMNAMES);
             }
 
-            final String name;
+            String name;
             if (!isTeamParam || teamParams.getDisplayName() == null) {
                 name = getTeamName(index);
                 if ( alwaysTeamNames ||
