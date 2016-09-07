@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -77,6 +78,9 @@ public abstract class ArenaTeam {
 	}
 
     public String getName() { 
+        if ( Defaults.DEBUG_TRANSITIONS ) Log.info( "[ArenaTeam.getName] ManuallySet=" + nameManuallySet + 
+                "  nameChanged=" + nameChanged + "  name=" + name + "  currentParams=" + currentParams );
+        
 		if ( nameManuallySet || !nameChanged ) return name;
 		
 		ArrayList<String> list = new ArrayList<>(players.size());
@@ -97,6 +101,9 @@ public abstract class ArenaTeam {
 		}
 		name = joiner.toString();
 		nameChanged = false;
+		
+        if ( Defaults.DEBUG_TRANSITIONS ) Log.info( "[ArenaTeam.getName] nameChanged=" + nameChanged + "  name=" + name );
+		
 		return name;
 	}
 
