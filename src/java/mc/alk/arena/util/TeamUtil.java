@@ -86,7 +86,7 @@ public class TeamUtil {
         try {
             return Integer.valueOf(op) -1;
         } 
-        catch( NumberFormatException e){
+        catch( NumberFormatException e ) {
             return null;
         }
     }
@@ -99,12 +99,8 @@ public class TeamUtil {
 	public static String formatName(ArenaTeam t){
 		StringBuilder sb = new StringBuilder("&e " + t.getDisplayName());
 
-		for (ArenaPlayer p: t.getPlayers()){
-			Integer k = t.getNKills(p);
-			Integer d = t.getNDeaths(p);
-			if (k==null) k=0;
-			if (d==null) d=0;
-			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");
+		for ( ArenaPlayer p : t.getPlayers() ) {
+			sb.append("&e(&c").append( t.getNKills(p) ).append("&e,&7").append( t.getNDeaths(p) ).append("&e)");
 		}
 		return sb.toString();
 	}

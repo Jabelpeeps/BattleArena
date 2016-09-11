@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mc.alk.arena.BattleArena;
@@ -56,7 +59,7 @@ public class Tracker {
         Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
 
         BA.getCommand("battleTracker").setExecutor( new BattleTrackerExecutor() );
-        BA.getCommand("btpvp").setExecutor( new TrackerExecutor( getPVPInterface() ) );
+        BA.getCommand("btpvp").setExecutor( new TrackerExecutor( getPVPInterface()   ) );
         BA.getCommand("btpve").setExecutor( new TrackerExecutor( getPVEInterface() ) );
         
         Scheduler.scheduleSynchronousTask( () -> {
@@ -116,4 +119,55 @@ public class Tracker {
     public static Collection<TrackerInterface> getAllInterfaces() {
         return new ArrayList<>(interfaces.values());
     }
+    static Set<String> dontTrack = new HashSet<>();
+    static Set<String> dontAnnounce = new HashSet<>();
+
+    public static boolean notTracked(Player target) { return dontTrack.contains(target.getName()); }
+    public static boolean notTracked(String target) { return dontTrack.contains(target); }
+    
+    public static void stopTracking( String playername, boolean now ) {
+        if (now) 
+            dontTrack.add(playername);
+        else 
+            Scheduler.scheduleAsynchronousTask( () -> dontTrack.add(playername) );
+    }
+    
+    public static void resumeTracking( String playername, boolean now ) {
+        if (now) 
+            dontTrack.remove(playername);
+        else 
+            Scheduler.scheduleAsynchronousTask( () -> dontTrack.remove(playername) );
+    }
+    
+    public static void stopAnnouncing( String playername, boolean now ) {
+        if (now) 
+            dontAnnounce.add(playername);
+        else 
+            Scheduler.scheduleAsynchronousTask( () -> dontAnnounce.add(playername) );
+    }
+
+    public static void resumeAnnouncing( String playername, boolean now ) {
+        if (now)
+            dontAnnounce.remove(playername);
+        else
+            Scheduler.scheduleAsynchronousTask( () -> dontAnnounce.remove(playername) );
+    }
+
+    public static void stopAnnouncing(Collection<Player> players) {
+        for ( Player p : players )
+            dontAnnounce.add(p.getName());
+        }
+    public static void resumeAnnouncing(Collection<Player> players) {
+        for ( Player p : players )
+            dontAnnounce.remove(p.getName());
+        }
+    public static void stopTracking(Collection<Player> players) {
+        for ( Player p : players )
+            dontTrack.add(p.getName());
+        }
+    public static void resumeTracking(Collection<Player> players) {
+        for ( Player p : players )
+            dontTrack.remove(p.getName());
+        }
+
 }

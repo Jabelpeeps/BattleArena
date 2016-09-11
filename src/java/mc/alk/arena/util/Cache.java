@@ -12,6 +12,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.Defaults;
 
 
 /**
@@ -24,7 +25,6 @@ import lombok.Setter;
  */
 public class Cache <Key, Value> {
 	public static final String version = "1.2";
-	public static final boolean DEBUG = false;
 
 	/**
 	 * ease of use cache to allows subclasses to define themselves dirty
@@ -108,7 +108,7 @@ public class Cache <Key, Value> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Value get(Key key, Object... varArgs) {
-		if (DEBUG) Log.info( " - getting key = " + key + " contains=" + map.containsKey(key));
+		if (Defaults.DEBUG_TRACKING) Log.info( " - getting key = " + key + " contains=" + map.containsKey(key));
 		CacheElement o=null;
 		if (map.containsKey(key)){
 			o = map.get(key);
@@ -116,13 +116,13 @@ public class Cache <Key, Value> {
 		else {
 			MutableBoolean isdirty = new MutableBoolean(false);
 			UniqueKey<Key> t = serializer.load(key, isdirty, varArgs);
-			if (DEBUG) Log.info( "  - loaded element  = " + t + " ");
+			if (Defaults.DEBUG_TRACKING) Log.info( "  - loaded element  = " + t + " ");
 			
 			o = new CacheElement(t);
 			synchronized(map){
 				map.put(key, o);
 			}
-			if (DEBUG) Log.info( "  - adding key = " + key + " contains=" + map.containsKey(key) +"  dirty="+isdirty);
+			if (Defaults.DEBUG_TRACKING) Log.info( "  - adding key = " + key + " contains=" + map.containsKey(key) +"  dirty="+isdirty);
 			if (isdirty.booleanValue()){ /// If its dirty, add to our dirty set
 				synchronized(dirty){
 					dirty.add(key);
@@ -150,7 +150,7 @@ public class Cache <Key, Value> {
 		synchronized(dirty){
 			dirty.add(key);
 		}
-		if (DEBUG) Log.info( "  - adding key = " + key + " contains=" + map.containsKey(key) +"  dirty="+dirty);
+		if (Defaults.DEBUG_TRACKING) Log.info( "  - adding key = " + key + " contains=" + map.containsKey(key) +"  dirty="+dirty);
 		o.setUsed();
 		if (autoFlush && autoFlushTime != null){
 			flushOld(autoFlushTime);}
@@ -193,7 +193,7 @@ public class Cache <Key, Value> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Value remove(Key key){
-		if (DEBUG) Log.info( " - remove key = " + key + " contains=" + map.containsKey(key));
+		if (Defaults.DEBUG_TRACKING) Log.info( " - remove key = " + key + " contains=" + map.containsKey(key));
 		CacheElement o = map.remove(key);
 		
 		if (o == null){
@@ -220,7 +220,7 @@ public class Cache <Key, Value> {
 	public void setDirty(Key key) {
 		modified = true;
 		synchronized(dirty) {
-			if (DEBUG) Log.info( " - setting dirty key = " + key + " v=" + map.get(key));
+			if (Defaults.DEBUG_TRACKING) Log.info( " - setting dirty key = " + key + " v=" + map.get(key));
 			dirty.add(key);			
 		}
 		if (autoFlush && autoFlushTime != null){
@@ -263,7 +263,7 @@ public class Cache <Key, Value> {
 		synchronized(dirty){ synchronized(map){
 			dirty.remove(null);
 			for (Key key: dirty){
-				if (DEBUG) Log.info( " - saving key = " + key + " v=" + map.get(key));
+				if (Defaults.DEBUG_TRACKING) Log.info( " - saving key = " + key + " v=" + map.get(key));
 				CacheElement e = map.get(key);
 				if (e != null && e.v != null)
 					types.add(e.v);
@@ -308,7 +308,7 @@ public class Cache <Key, Value> {
 		synchronized(dirty){ synchronized(map){
 			for (CacheElement e: map.values()){
 				if (now - e.lastUsed > time && e.v != null){
-					if (DEBUG) Log.info( "  - flushing old cache element =" + e.v +"  lastUsed=" + (now - e.lastUsed));
+					if (Defaults.DEBUG_TRACKING) Log.info( "  - flushing old cache element =" + e.v +"  lastUsed=" + (now - e.lastUsed));
 					old.add(e.v.getKey());
 				}
 			}

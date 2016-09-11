@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Defaults;
 
 public class SQLSerializer {
 	static public final String version = "1.5";
@@ -75,86 +76,24 @@ public class SQLSerializer {
 		}
 	}
 
-	public Connection getConnection(boolean displayErrors) throws SQLException{
-		return getConnection(displayErrors, true);
-	}
+	public Connection getConnection() throws SQLException {
 
-	public Connection getConnection() throws SQLException{
-		return getConnection(true, true);
-	}
-
-	public Connection getConnection(boolean displayErrors, boolean autoCommit) throws SQLException{
-		if (ds == null){
-			throw new SQLException("Connection is null.  Did you intiliaze your SQL connection?");}
+		if ( ds == null ) {
+			throw new SQLException( "Connection is null.  Did you intiliaze your SQL connection?"); }
 		try {
 			Connection con = ds.getConnection();
-			con.setAutoCommit(autoCommit);
+			con.setAutoCommit(true);
 			return con;
 		} catch (SQLException e1) {
-			if (displayErrors)
 				e1.printStackTrace();
 			return null;
 		}
 	}
 
 	public void closeConnection(RSCon rscon) {
-		if (rscon == null || rscon.con == null)
-			return;
+		if (rscon == null || rscon.con == null) return;
+		
 		try {rscon.con.close();} catch (SQLException e) {}
-	}
-
-	public void closeConnection(Connection con) {
-		if (con ==null)
-			return;
-		try {con.close();} catch (SQLException e) {e.printStackTrace();}
-	}
-
-    private void init() {
-		try {
-			Class.forName(type.getDriver());
-			if (DEBUG) Log.info( "Got Driver " + type.getDriver());
-		} 
-		catch (ClassNotFoundException e1) {
-			Log.error( "Failed getting driver " + type.getDriver());
-			e1.printStackTrace();
-			return;
-		}
-		String datasourceString = null;
-		final int minIdle;
-		final int maxActive;
-		
-		switch(type){
-    		case SQLITE:
-    			datasourceString = "jdbc:sqlite:" + url + "/" + DB + ".sqlite";
-    			maxActive = 1;
-    			minIdle = -1;
-    			break;
-    		case MYSQL:
-    		default:
-    			minIdle = 10;
-    			maxActive = 20;
-    			datasourceString = "jdbc:mysql://" + url + ":" + port + "/" + DB + "?autoReconnect=true";
-    			break;
-		}
-
-		ds = setupDataSource( datasourceString, username, password, minIdle, maxActive );
-		
-		if ( ds == null ) return;		
-		if ( DEBUG ) Log.info( "Connection to database succeeded." );
-
-		if ( type == SQLType.MYSQL ){
-			String strStmt = create_database;
-			try (   Connection con = ds.getConnection();
-	                Statement st = con.createStatement(); ) {
-			    
-			    st.executeUpdate(strStmt);			    
-				if (DEBUG) Log.info("Creating db");
-			} 
-			catch (SQLException e) {
-				Log.error( "Failed creating db: " + strStmt );
-				e.printStackTrace();
-			} 
-		}
 	}
 
 	public static DataSource setupDataSource( String connectURI, String username, String password, 
@@ -176,7 +115,7 @@ public class SQLSerializer {
 		return new PoolingDataSource( factory.getPool() );
 	}
 
-	protected boolean createTable( String tableName, String sql_create_table,String... sql_updates ) {
+	protected boolean createTable( String tableName, String sql_create_table, String... sql_updates ) {
 	    
 		boolean exists = false;
 		if ( type == SQLType.SQLITE ) {
@@ -241,15 +180,13 @@ public class SQLSerializer {
 		    case MYSQL:
     			stmt = "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? " +
     				"AND TABLE_NAME = ? AND COLUMN_NAME = ?";
-    			b = getBoolean(true, 2, stmt, DB,table,column);
+    			b = getBoolean( 2, stmt, DB,table,column);
     			return b == null ? false : b;
     		
     		case SQLITE:
     			stmt = "SELECT COUNT("+column+") FROM '"+table+"'";
     			try {
-    				b = getBoolean(false,2, stmt);
-    				/// if we got any non error response... we have the table
-    				return b == null ? false : true;
+    				return getBoolean( 2, stmt ) == null ? false : true;
     			} catch (Exception e){
     				return false;
     			}
@@ -269,7 +206,7 @@ public class SQLSerializer {
 	}
 
 	protected RSCon executeQuery(String strRawStmt, Object... varArgs){
-		return executeQuery(true,TIMEOUT,strRawStmt,varArgs);
+		return executeQuery( TIMEOUT, strRawStmt, varArgs );
 	}
 
 	/**
@@ -278,10 +215,10 @@ public class SQLSerializer {
 	 * @param varArgs
 	 * @return
 	 */
-	protected RSCon executeQuery(boolean displayErrors, Integer timeoutSeconds, String strRawStmt, Object... varArgs){
+	private RSCon executeQuery( Integer timeoutSeconds, String strRawStmt, Object... varArgs){
 
 		try ( Connection con = getConnection() ) {
-	        return executeQuery( con, displayErrors, timeoutSeconds, strRawStmt, varArgs );
+	        return executeQuery( con, timeoutSeconds, strRawStmt, varArgs );
 		} 
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -295,11 +232,10 @@ public class SQLSerializer {
 	 * @param varArgs
 	 * @return
 	 */
-	protected RSCon executeQuery(Connection con, boolean displayErrors, Integer timeoutSeconds,
-			                                                String strRawStmt, Object... varArgs){
+	RSCon executeQuery(Connection con, Integer timeoutSeconds, String strRawStmt, Object... varArgs){
 		RSCon rscon = null;
 
-		try ( PreparedStatement ps = getStatement( displayErrors, strRawStmt, con, varArgs ) ) {
+		try ( PreparedStatement ps = getStatement( strRawStmt, con, varArgs ) ) {
 		    
 			if (DEBUG) System.out.println("Executing =" + ps +" timeout="+timeoutSeconds+" raw="+strRawStmt);
 			ps.setQueryTimeout(timeoutSeconds);
@@ -309,9 +245,9 @@ public class SQLSerializer {
 			rscon.rs = rs;
 			
 		} catch (Exception e) {
-			if (displayErrors){
+			if ( Defaults.DEBUG_TRACKING ) {
 				System.err.println("Couldnt execute query " + strRawStmt);
-				for (int i=0;i< varArgs.length;i++){
+				for ( int i = 0; i < varArgs.length; i++ ) {
 					System.err.println("   arg["+ i+"] = " + varArgs[i]);}
 				e.printStackTrace();
 			}
@@ -321,7 +257,7 @@ public class SQLSerializer {
 
 	protected void executeUpdate(final boolean async, final String strRawStmt, final Object... varArgs){
 		if (async){
-			new Thread(new Runnable(){
+			new Thread( new Runnable() {
 				@Override
                 public void run() {
 					try{
@@ -388,11 +324,8 @@ public class SQLSerializer {
 	    } 
 	}
 
-	protected PreparedStatement getStatement(String strRawStmt, Connection con, Object... varArgs){
-		return getStatement(true, strRawStmt,con,varArgs);
-	}
+	private PreparedStatement getStatement(String strRawStmt, Connection con, Object... varArgs){
 
-	protected PreparedStatement getStatement(boolean displayErrors, String strRawStmt, Connection con, Object... varArgs){
 		PreparedStatement ps = null;
 		try{
 			ps = con.prepareStatement(strRawStmt);
@@ -401,7 +334,7 @@ public class SQLSerializer {
 				ps.setObject(i+1, varArgs[i]);
 			}
 		} catch (Exception e){
-			if (displayErrors){
+			if ( Defaults.DEBUG_TRACKING ) {
 				System.err.println("Couldnt prepare statment "  + ps +"   rawStmt='" + strRawStmt +"' args="+varArgs);
 				for (int i=0;i< varArgs.length;i++){
 					System.err.println("   arg["+ i+"] = " + varArgs[i]);}
@@ -481,12 +414,11 @@ public class SQLSerializer {
 	}
 
 	public Boolean getBoolean(String query, Object... varArgs){
-		return getBoolean(true, TIMEOUT, query,varArgs);
+		return getBoolean( TIMEOUT, query,varArgs);
 	}
 
-	protected Boolean getBoolean(boolean displayErrors, Integer timeoutSeconds,
-			String query, Object... varArgs){
-		RSCon rscon = executeQuery(displayErrors,timeoutSeconds, query,varArgs);
+	protected Boolean getBoolean( Integer timeoutSeconds, String query, Object... varArgs){
+		RSCon rscon = executeQuery( timeoutSeconds, query,varArgs);
 		if (rscon == null || rscon.con == null)
 			return null;
 		try {
@@ -498,7 +430,7 @@ public class SQLSerializer {
 				return i > 0;
 			}
 		} catch (SQLException e) {
-			if (displayErrors)
+			if ( Defaults.DEBUG_TRACKING )
 				e.printStackTrace();
 		}finally{
 			try{rscon.con.close();}catch(Exception e){}
@@ -530,11 +462,10 @@ public class SQLSerializer {
 		try {
 			ResultSet rs = rscon.rs;
 			while (rs.next()){
-				java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-				int nCol = rsmd.getColumnCount();
+				int nCol = rs.getMetaData().getColumnCount();
 				List<Object> objs = new ArrayList<>(nCol);
-				for (int i=0;i<nCol;i++){
-					objs.add(rs.getObject(i+1));
+				for ( int i = 0; i < nCol; i++ ) {
+					objs.add( rs.getObject( i + 1 ) );
 				}
 				return objs;
 			}
@@ -566,49 +497,71 @@ public class SQLSerializer {
 		return values;
 	}
 
-	protected String getString(Map<String,Object> map, String key){
-		return map.get(key).toString();
-	}
-
-	protected Integer getInt(Map<String,Object> map, String key){
-		return Integer.valueOf(map.get(key).toString());
-	}
-
     public void configureSQL( ConfigurationSection cs ) {
         
     	String _type = cs.getString("type");
-    	String _url = cs.getString("url");
     	
-    	if ( _type != null && _type.equalsIgnoreCase("sqlite") ) {
-    		_url = BattleArena.getSelf().getDataFolder().toString();
+    	if ( _type == null ) return;
+    	
+    	setDB( cs.getString( "db", "minecraft" ) );
+    	
+    	if ( _type.equalsIgnoreCase("sqlite") ) {
+    		url = BattleArena.getSelf().getDataFolder().toString();
+            type = SQLType.SQLITE;    		
     	}
-    	configureSQL( _type, _url, cs.getString("db"),
-    			                   cs.getString("port"), 
-    			                   cs.getString("username"), 
-    			                   cs.getString("password"));
+    	else if ( _type.equalsIgnoreCase( "mysql" ) ) {
+    	    type = SQLType.MYSQL;
+    	    url = cs.getString( "url", "localhost" );
+    	    port = cs.getString( "port", "3306" );
+    	    
+    	}
+    	username = cs.getString( "username", "root" );
+    	password = cs.getString( "password", "" );
+    	
+        try {
+            Class.forName(type.getDriver());
+            if (DEBUG) Log.info( "Got Driver " + type.getDriver());
+        } 
+        catch (ClassNotFoundException e1) {
+            Log.error( "Failed getting driver " + type.getDriver());
+            e1.printStackTrace();
+            return;
+        }
+        String datasourceString = null;
+        int minIdle;
+        int maxActive;
+        
+        switch(type){
+            case SQLITE:
+                datasourceString = "jdbc:sqlite:" + url + "/" + DB + ".sqlite";
+                maxActive = 1;
+                minIdle = -1;
+                break;
+            case MYSQL:
+            default:
+                minIdle = 10;
+                maxActive = 20;
+                datasourceString = "jdbc:mysql://" + url + ":" + port + "/" + DB + "?autoReconnect=true";
+                break;
+        }
+
+        ds = setupDataSource( datasourceString, username, password, minIdle, maxActive );
+        
+        if ( ds == null ) return;       
+        if ( DEBUG ) Log.info( "Connection to database succeeded." );
+
+        if ( type == SQLType.MYSQL ) {
+            try (   Connection con = ds.getConnection();
+                    Statement st = con.createStatement(); ) {
+                
+                st.executeUpdate( create_database );              
+                if (DEBUG) Log.info("Creating db");
+            } 
+            catch (SQLException e) {
+                Log.error( "Failed creating db: " + create_database );
+                e.printStackTrace();
+            } 
+        }
     }
 
-    public void configureSQL( String _type, String urlOrPath,
-    		                            String db, String _port, String user, String _password) {
-    	if ( db != null ) {
-    		setDB( db );
-    	}
-    	if ( _type == null || _type.equalsIgnoreCase( "mysql" ) ) {
-    	    
-    		type = SQLType.MYSQL;
-    		
-    		if ( urlOrPath == null ) urlOrPath = "localhost";
-    		if ( _port == null )  _port = "3306";
-    		
-    		url = urlOrPath;
-    		port = _port;
-    	} 
-    	else { 
-    		type = SQLType.SQLITE;
-    		url = urlOrPath;
-    	}
-    	username = user;
-    	password = _password;
-    	init();
-    }
 }

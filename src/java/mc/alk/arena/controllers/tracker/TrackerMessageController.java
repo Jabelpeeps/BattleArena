@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
-import mc.alk.arena.objects.tracker.Stat.SpecialType;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
@@ -24,6 +23,8 @@ import mc.alk.arena.util.MessageUtil;
  *
  */
 public class TrackerMessageController {
+
+    public enum SpecialType { STREAK, RAMPAGE }
 
     @Getter private static YamlConfiguration config = new YamlConfiguration();
     @Getter static File file;
@@ -137,7 +138,7 @@ public class TrackerMessageController {
 		return formatMessage(PVP_PREFIX, msg,killer,target, wpnName, null, wpnLore);
 	}
 
-	public static String getSpecialMessage(SpecialType type, int nKills, String killer, String target, ItemStack weapon){
+	public static String getSpecialMessage(TrackerMessageController.SpecialType type, int nKills, String killer, String target, ItemStack weapon){
 		String node = null;
 		switch (type){
 		case STREAK: node = "special.streak." + nKills; break;

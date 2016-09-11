@@ -45,7 +45,6 @@ import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.victoryconditions.OneTeamLeft;
 import mc.alk.arena.objects.victoryconditions.VictoryType;
-import mc.alk.arena.plugins.BTInterface;
 import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
@@ -372,7 +371,7 @@ public class ConfigSerializer extends BaseConfig {
         
         if (dbName != null) {
             mp.setTableName(dbName);
-            BTInterface.addBTI(mp);          
+//            BTInterface.addBTI(mp);          
         }
         
         if (cs.contains("overrideBattleTracker"))

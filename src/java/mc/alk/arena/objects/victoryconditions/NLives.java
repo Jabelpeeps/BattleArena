@@ -28,10 +28,9 @@ public class NLives extends VictoryCondition implements DefinesNumLivesPerPlayer
 	public void playerDeathEvent(ArenaPlayerDeathEvent event) {
 		ArenaTeam team = event.getTeam();
 		Integer deaths = team.getNDeaths(event.getPlayer());
-		if (deaths == null)
-			deaths = 1;
-		if (deaths >= nLives){
-			team.killMember(event.getPlayer());}
+		if ( deaths == 0 ) deaths = 1;
+		if ( deaths >= nLives )
+			team.killMember(event.getPlayer());
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class TeamStat extends Stat implements Comparable<Stat>{
     public TeamStat( Set<String> p ) {
         members = new ArrayList<>(p);
         createName();
-        strID = TeamStat.getKey(this.members);
+        strID = TeamStat.getKey( members );
         count = p.size();
     }
     

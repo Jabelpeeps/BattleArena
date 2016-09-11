@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.bukkit.entity.Player;
+
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -61,6 +63,12 @@ public class MatchResult {
     public void removeLosers(Collection<ArenaTeam> teams) { losers.removeAll(teams); }
     public void removeDrawers(Collection<ArenaTeam> teams) { drawers.removeAll(teams); }
     public void removeVictors(Collection<ArenaTeam> teams) { victors.removeAll(teams); }
+    public boolean isUnknown() { return result == WLT.UNKNOWN; }
+    public boolean isDraw() { return result == WLT.TIE; }
+    public boolean isWon(){ return hasVictor(); }
+    public boolean isLost() { return result == WLT.LOSS; }
+    public boolean isFinished(){ return result == WLT.WIN || result == WLT.TIE; }
+    public boolean hasVictor() { return result == WLT.WIN; }
     
     @Override
     public String toString(){
@@ -79,10 +87,14 @@ public class MatchResult {
 
         return sb.toString();
     }
-    public boolean isUnknown() { return result == WLT.UNKNOWN; }
-    public boolean isDraw() { return result == WLT.TIE; }
-    public boolean isWon(){ return hasVictor(); }
-    public boolean isLost() { return result == WLT.LOSS; }
-    public boolean isFinished(){ return result == WLT.WIN || result == WLT.TIE; }
-    public boolean hasVictor() { return result == WLT.WIN; }
+    public Set<Player> getWinningPlayers() {
+        Set<Player> returnSet = new HashSet<>();
+        victors.parallelStream().forEach( v -> returnSet.addAll( v.getBukkitPlayers() ) );
+        return returnSet;
+    }
+    public Set<Player> getLoosingPlayers() {
+        Set<Player> returnSet = new HashSet<>();
+        losers.parallelStream().forEach( v -> returnSet.addAll( v.getBukkitPlayers() ) );
+        return returnSet;
+    }
 }

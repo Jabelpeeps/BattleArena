@@ -18,8 +18,8 @@ import mc.alk.arena.objects.tracker.Stat;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.objects.tracker.TeamStat;
 import mc.alk.arena.objects.tracker.VersusRecords;
-import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
+import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLSerializer.RSCon;
 import mc.alk.arena.util.Log;
@@ -350,7 +350,7 @@ public class SQLInstance {
 			HashSet<String> players = new HashSet<>();
 			RSCon rscon2 = null;
 			try{
-				rscon2 = serial.executeQuery(rscon.con, true, SQLSerializer.TIMEOUT, get_members, id);
+				rscon2 = serial.executeQuery(rscon.con, SQLSerializer.TIMEOUT, get_members, id);
 				ResultSet rs2 = rscon2.rs;
 				while (rs2.next()){
 					players.add(rs2.getString(NAME));

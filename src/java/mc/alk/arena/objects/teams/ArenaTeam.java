@@ -59,7 +59,7 @@ public abstract class ArenaTeam {
 	public ArenaTeam() {}
 	
 	protected ArenaTeam( ArenaPlayer p ) {
-		players.add(p);
+		players.add( p );
 	}
 	protected ArenaTeam( Collection<ArenaPlayer> teammates ) {
 		players.addAll( teammates );
@@ -110,29 +110,29 @@ public abstract class ArenaTeam {
     public Set<Player> getBukkitPlayers() {
 		Set<Player> ps = new HashSet<>();
 
-		for (ArenaPlayer ap: players){
+		for ( ArenaPlayer ap : players ) {
 			Player p = ap.getPlayer();
-			if (p != null)
-				ps.add(p);
+			if ( p != null )
+				ps.add( p );
 		}
 		return ps;
 	}
 
 	public Set<ArenaPlayer> getLivingPlayers() {
 		Set<ArenaPlayer> living = new HashSet<>();
-		for (ArenaPlayer p : players){
-			if (hasAliveMember(p)){
-				living.add(p);}
+		for ( ArenaPlayer p : players ) {
+			if ( hasAliveMember(p) )
+				living.add( p );
 		}
 		return living;
 	}
 
-    public boolean wouldBeDeadWithout(ArenaPlayer p) {
+    public boolean wouldBeDeadWithout( ArenaPlayer p ) {
 		Set<ArenaPlayer> living = getLivingPlayers();
-		living.remove(p);
+		living.remove( p );
 		int offline = 0;
-		for (ArenaPlayer ap: living){
-			if (!ap.isOnline())
+		for ( ArenaPlayer ap : living ) {
+			if ( !ap.isOnline() )
 				offline++;
 		}
 		return living.isEmpty() || living.size() <= offline;
@@ -144,37 +144,38 @@ public abstract class ArenaTeam {
     public boolean hasAliveMember(ArenaPlayer p) { return hasMember(p) && !deadPlayers.contains(p); }
     public void setAlive() { deadPlayers.clear(); }
     public void setAlive( ArenaPlayer player ) { deadPlayers.remove( player ); }
+    public int size() { return players.size(); }
     public ArenaStat getStat() { return getStat( currentParams ); }
     public ArenaStat getStat( MatchParams params ) { return Tracker.getInterface( params ).getTeamRecord( getName() ); }
+    public int getNDeaths( ArenaPlayer p ) { return deaths.containsKey( p ) ? deaths.get( p ) : 0; }
+    public int getNKills( ArenaPlayer p ) { return kills.containsKey( p ) ? kills.get( p ) : 0; }
+    public String getDisplayName() { return displayName == null ? getName() : displayName; }
+    public String getIDString() { return iDString == null ? String.valueOf(id) : iDString; }
 	
 	public void setHealth( int health ) {
 	    for ( ArenaPlayer p : players ) 
-	        p.getPlayer().setHealth(health); 
+	        p.getPlayer().setHealth( health ); 
     }
 	public void setHunger( int hunger ) {
 	    for ( ArenaPlayer p : players ) 
-	        p.getPlayer().setFoodLevel(hunger);
+	        p.getPlayer().setFoodLevel( hunger );
 	}
 
-    public int size() { return players.size(); }
-
     public boolean isDead() {
-		if (deadPlayers.size() >= players.size())
-			return true;
+		if ( deadPlayers.size() >= players.size() ) return true;
 		Set<ArenaPlayer> living = getLivingPlayers();
-		if (living.isEmpty())
-			return true;
+		if ( living.isEmpty() ) return true;
 		int offline = 0;
-		for (ArenaPlayer ap: living){
-			if (!ap.isOnline()){
-				offline++;}
+		for ( ArenaPlayer ap : living ) {
+			if ( !ap.isOnline() )
+				offline++;
 		}
 		return living.size() <= offline;
 	}
 
 	public boolean isReady() {
 		for ( ArenaPlayer ap : getLivingPlayers() ) {
-			if (!ap.isReady())
+			if ( !ap.isReady() )
 				return false;
 		}
 		return true;
@@ -182,18 +183,16 @@ public abstract class ArenaTeam {
 
     public int addDeath(ArenaPlayer teamMemberWhoDied) {
 		Integer d = deaths.get(teamMemberWhoDied);
-		if (d == null){
-			d = 0;}
+		if ( d == null ) d = 0;
 		deaths.put(teamMemberWhoDied, ++d);
 		return d;
 	}
 
     public int addKill(ArenaPlayer teamMemberWhoKilled){
 		Integer d = kills.get(teamMemberWhoKilled);
-		if (d == null){
-			d = 0;}
-		kills.put(teamMemberWhoKilled, ++d);
-		if (objective != null){
+		if ( d == null ) d = 0;
+		kills.put( teamMemberWhoKilled, ++d );
+		if ( objective != null ) {
 			objective.setPoints(teamMemberWhoKilled, d);
 			objective.setPoints(this, d);
 		}
@@ -202,34 +201,30 @@ public abstract class ArenaTeam {
 
     public int getNKills() {
 		int nkills = 0;
-		for (Integer i: kills.values()) nkills+=i;
+		for ( Integer i : kills.values() ) nkills += i;
 		return nkills;
 	}
 
     public int getNDeaths() {
 		int nkills = 0;
-		for (Integer i: deaths.values()) nkills+=i;
+		for ( Integer i : deaths.values() ) nkills += i;
 		return nkills;
 	}
-
-    public Integer getNDeaths(ArenaPlayer p) { return deaths.get(p); }
-    public Integer getNKills(ArenaPlayer p) { return kills.get(p); }
 
 	/**
 	 *
 	 * @param p ArenaPlayer
 	 * @return whether all players are dead
 	 */
-    public boolean killMember(ArenaPlayer p) {
-		if (!hasMember(p))
-			return false;
-		deadPlayers.add(p);
+    public boolean killMember( ArenaPlayer p ) {
+		if ( !hasMember( p ) ) return false;
+		deadPlayers.add( p );
 		return deadPlayers.size() == players.size();
 	}
 
     public boolean allPlayersOffline() {
-		for (ArenaPlayer p: players){
-			if (p.isOnline())
+		for ( ArenaPlayer p : players ) {
+			if ( p.isOnline() )
 				return false;
 		}
 		return true;
@@ -248,8 +243,6 @@ public abstract class ArenaTeam {
 				MessageUtil.sendMessage( p, message );
 	}
 
-    public String getDisplayName() { return displayName == null ? getName() : displayName; }
-
     public void setDisplayName(String teamName){
         if ( Defaults.DEBUG ) Log.info( "[ArenaTeam] changing name from '" + name + "' to '" + teamName + "'" );
         
@@ -259,108 +252,104 @@ public abstract class ArenaTeam {
     }
 
 	@Override
-    public boolean equals(Object other) {
+    public boolean equals( Object other ) {
 		if (this == other) return true;
-		if (!(other instanceof ArenaTeam)) return false;
+		if ( !(other instanceof ArenaTeam) ) return false;
 		return hashCode() == other.hashCode();
 	}
 
 	@Override
-    public int hashCode() { return id;}
+    public int hashCode() { return id; }
 	@Override
-    public String toString(){ return "[" + getDisplayName() + "]"; }
+    public String toString() { return "[" + getDisplayName() + "]"; }
 	
-    public boolean hasTeam(ArenaTeam team){
-		if (team instanceof CompositeTeam){
-			for (ArenaTeam t: ((CompositeTeam)team).getOldTeams()){
-				if ( hasTeam(t) )
+    public boolean hasTeam( ArenaTeam team ) {
+		if ( team instanceof CompositeTeam ) {
+			for ( ArenaTeam t : ((CompositeTeam)team).getOldTeams() ) {
+				if ( hasTeam( t ) )
 					return true;
 			}
 			return false;
 		}
-        return this.equals(team);
+        return this.equals( team );
 	}
 
-    public String getTeamInfo(Set<UUID> insideMatch){
-		StringBuilder sb = new StringBuilder("&eTeam: ");
-		if (displayName != null) sb.append(displayName);
-		sb.append(" ").append(isDead() ? "&4dead" : "&aalive").append("&e, ");
+    public String getTeamInfo( Set<UUID> insideMatch ) {
+		StringBuilder sb = new StringBuilder( "&eTeam: " );
+		if ( displayName != null ) sb.append( displayName );
+		
+		sb.append( " " ).append( isDead() ? "&4dead" : "&aalive" ).append( "&e, " );
 
-		for (ArenaPlayer p: players){
-			sb.append("&6").append(p.getName());
-			boolean isAlive = hasAliveMember(p);
-			boolean online = p.isOnline();
-			String inmatch = insideMatch == null? "": ((insideMatch.contains(p.getUniqueId())) ? "&e(in)" : "&4(out)");
-			int k = kills.containsKey(p) ? kills.get(p) : 0;
-			int d = deaths.containsKey(p) ? deaths.get(p) : 0;
-			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");
-			sb.append("&e:").append(isAlive ? "&ah=" + p.getHealth() : "&40").
-                    append((!online) ? "&4(O)" : "").append(inmatch).append("&e ");
+		for ( ArenaPlayer p : players ) {
+			sb.append( "&6" ).append( p.getName() ).append( "&e(&c" )
+			  .append( getNKills( p ) ).append( "&e,&7" )
+			  .append( getNDeaths( p ) ).append( "&e)" ).append( "&e:" )
+			  .append( hasAliveMember( p ) ? "&ah=" + p.getHealth() : "&40" )
+			  .append( !p.isOnline() ? "&4(O)" : "" )
+			  .append( insideMatch == null ? "" 
+			                               : insideMatch.contains( p.getUniqueId() ) ? "&e(in)" 
+			                                                                         : "&4(out)" )
+			  .append( "&e " );
 		}
 		return sb.toString();
 	}
 
     public String getTeamSummary() {
-		StringBuilder sb = new StringBuilder("&6"+getDisplayName());
-		for (ArenaPlayer p: players){
-			int k = kills.containsKey(p) ? kills.get(p) : 0;
-			int d = deaths.containsKey(p) ? deaths.get(p) : 0;
-			sb.append("&e(&c").append(k).append("&e,&7").append(d).append("&e)");
+		StringBuilder sb = new StringBuilder( "&6"+getDisplayName() );
+		for ( ArenaPlayer p : players ) {
+			sb.append( "&e(&c" )
+			  .append( getNKills( p ) ).append( "&e,&7" )
+			  .append( getNDeaths( p ) ).append( "&e)" );
 		}
 		return sb.toString();
 	}
 
-    public String getOtherNames(ArenaPlayer player) {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (ArenaPlayer p: players){
-			if (p.equals(player))
-				continue;
-			if (!first) sb.append(", ");
-			sb.append(p.getName());
-			first = false;
+    public String getOtherNames( ArenaPlayer player ) {
+		StringJoiner joiner = new StringJoiner( ", " );
+		for ( ArenaPlayer p : players ) {
+			if ( p.equals( player ) ) continue;
+			joiner.add( p.getName() );
 		}
-		return sb.toString();
+		return joiner.toString();
 	}
 
     public int getPriority() {
 		int priority = Integer.MAX_VALUE;
 		for ( ArenaPlayer ap : players ) {
-			if ( Permissions.getPriority( ap ) < priority)
+			if ( Permissions.getPriority( ap ) < priority )
 				priority = Permissions.getPriority( ap );
 		}
 		return priority;
 	}
 
-	public void addPlayer(ArenaPlayer player) {
-		players.add(player);
-		leftPlayers.remove(player);
+	public void addPlayer( ArenaPlayer player ) {
+		players.add( player );
+		leftPlayers.remove( player );
 		nameChanged = true;
 	}
 
-	public boolean removePlayer(ArenaPlayer player) {
-		deadPlayers.remove(player);
-		leftPlayers.remove(player);
-		kills.remove(player);
-		deaths.remove(player);
+	public boolean removePlayer( ArenaPlayer player ) {
+		deadPlayers.remove( player );
+		leftPlayers.remove( player );
+		kills.remove( player );
+		deaths.remove( player );
 		nameChanged = true;
-        return players.remove(player);
+        return players.remove( player );
     }
 
 	/**
 	 * Call when a player has left this team
 	 */
-    public void playerLeft(ArenaPlayer p) {
-		if (!hasMember(p))
-			return;
-		deadPlayers.remove(p);
-		players.remove(p);
-		leftPlayers.add(p);
+    public void playerLeft( ArenaPlayer p ) {
+		if ( !hasMember( p ) ) return;
+		deadPlayers.remove( p );
+		players.remove( p );
+		leftPlayers.add( p );
 	}
 
-	public void addPlayers(Collection<ArenaPlayer> _players) {
-		players.addAll(_players);
-        leftPlayers.removeAll(_players);
+	public void addPlayers( Collection<ArenaPlayer> _players ) {
+		players.addAll( _players );
+        leftPlayers.removeAll( _players );
 		nameChanged = true;
 	}
 
@@ -368,7 +357,7 @@ public abstract class ArenaTeam {
 		players.removeAll(_players);
 		deadPlayers.removeAll(_players);
 		leftPlayers.removeAll(_players);
-		for (ArenaPlayer ap: _players){
+		for ( ArenaPlayer ap : _players ) {
 			kills.remove(ap);
 			deaths.remove(ap);
 		}
@@ -386,25 +375,19 @@ public abstract class ArenaTeam {
 		deadPlayers.clear();
 	}
 
-    public void setArenaObjective(ArenaObjective _objective){
+    public void setArenaObjective( ArenaObjective _objective ) {
 		objective = _objective;
 		int tk = 0;
-		for (ArenaPlayer player: this.getPlayers()){
-			Integer _kills = getNKills(player);
-			if (_kills == null) _kills = 0;
-			_objective.setPoints(player, _kills);
+		for ( ArenaPlayer player : getPlayers() ) {
+			int _kills = getNKills( player );
+			_objective.setPoints( player, _kills );
 			tk += _kills;
 		}
-		_objective.setPoints(this, tk);
+		_objective.setPoints( this, tk );
 	}
 
-	public String getIDString(){
-		return iDString == null ? String.valueOf(id) : iDString;
-	}
-
-	public String getScoreboardDisplayName(){
-		if (scoreboardDisplayName != null)
-			return scoreboardDisplayName;
+	public String getScoreboardDisplayName() {
+		if ( scoreboardDisplayName != null ) return scoreboardDisplayName;
 		String _name = getDisplayName();
 		return _name.length() > Defaults.MAX_SCOREBOARD_NAME_SIZE ? _name.substring(0,Defaults.MAX_SCOREBOARD_NAME_SIZE) 
 		                                                          : _name;

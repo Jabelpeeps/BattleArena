@@ -16,7 +16,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
@@ -30,23 +29,16 @@ import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLInstance;
 import mc.alk.arena.serializers.tracker.SQLSerializer;
 import mc.alk.arena.tracker.EloCalculator;
+import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
 
-public class TrackerInterface implements CacheSerializer<String,Stat>{
+public class TrackerInterface implements CacheSerializer<String, Stat>{
 	Cache<String, Stat> cache = new Cache<>(this);
 	boolean trackIndividual = false;
 	@Getter EloCalculator ratingCalculator;
 	@Getter SQLInstance SQL = null;
 	@Getter String interfaceName;
-
-	@Override
-	public String toString(){
-		return new StringBuilder( "[TI=" ).append( SQL != null ? SQL.getTableName() 
-		                                                       : "null" )
-		                                  .append( "]" )
-		                                  .toString();
-	}
 
 	public TrackerInterface( String tableName, boolean saveIndividualRecords ) {
 	      
@@ -57,26 +49,27 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
         cache.setSaveEvery( Defaults.SAVE_EVERY_X_SECONDS *1000 );
         
 		ratingCalculator = new EloCalculator();
-		ratingCalculator.setDefaultRating((float) TrackerConfigController.getDouble( "elo.default",1250 ) );
-		ratingCalculator.setEloSpread((float) TrackerConfigController.getDouble( "elo.spread",400 ) );
+		ratingCalculator.setDefaultRating((float) TrackerConfigController.getDouble( "elo.default", 1250 ) );
+		ratingCalculator.setEloSpread((float) TrackerConfigController.getDouble( "elo.spread", 400 ) );
 		trackIndividual = saveIndividualRecords;
 	}
 
 	@Override
     public Stat load(String id, MutableBoolean dirty, Object... varArgs) {
 		Stat stat = SQL.getRecord(id);
-		if (Cache.DEBUG) System.out.println(" sql returning " + stat);
-		if (stat != null){
-			stat.setCache(cache);
+		if ( Defaults.DEBUG_TRACKING ) System.out.println( " sql returning " + stat );
+		if ( stat != null ) {
+			stat.setCache( cache );
 			dirty.setValue(false);
-		} else if (varArgs.length != 0){
+		} 
+		else if ( varArgs.length != 0 ) {
 			dirty.setValue(true);
 			stat = (Stat) varArgs[0];
-			if (Cache.DEBUG) System.out.println(" returning premade " + stat);
+			if ( Defaults.DEBUG_TRACKING ) System.out.println( " returning premade " + stat );
 			stat.setCache(cache);
 			stat.setRating(ratingCalculator.getDefaultRating());
 		}
-		if (stat != null)
+		if ( stat != null )
 			stat.setParent(this);
 		return stat;
 	}
@@ -86,13 +79,11 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		SQL.saveAll(stats.toArray(new Stat[stats.size()]));
 	}
 
-	public void save(Stat... stats) {
-		SQL.saveAll(stats);
-	}
+	public void save( Stat... stats ) { SQL.saveAll( stats ); }
 
 	private Stat getRecord(Stat pStat){
-		Stat stat = cache.get(pStat.getStrID(), pStat);
-		if (stat == null){
+		Stat stat = cache.get( pStat.getStrID(), pStat );
+		if ( stat == null ) {
 			stat = pStat;
 			stat.setCache(cache);
 			stat.setRating(ratingCalculator.getDefaultRating());
@@ -102,27 +93,18 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		return stat;
 	}
 
-    public void addStatRecord(Stat team1, Stat team2, WLT wlt){
+    public void addStatRecord( Stat team1, Stat team2, WLT wlt ){
 		addStatRecord(team1,team2,wlt,true);
 	}
 
-	private void addStatRecord(final Stat team1, final Stat team2, final WLT wlt, final boolean changeWinLossRecords) {
+	private void addStatRecord( Stat team1, Stat team2, WLT wlt, boolean changeWinLossRecords) {
 	    
-		if (cache.contains(team1) && cache.contains(team2)){
-			_addStatRecord(new StatChange(team1,team2,wlt,changeWinLossRecords));
+		if ( cache.contains( team1 ) && cache.contains( team2 ) ) {
+			_addStatRecord( new StatChange( team1, team2, wlt, changeWinLossRecords ) );
 		} 
 		else {
 			Scheduler.scheduleAsynchronousTask( 
-			        () -> _addStatRecord( new StatChange( team1,team2,wlt,changeWinLossRecords) ) );
-		}
-	}
-
-	@AllArgsConstructor
-	class RecordHandler implements Runnable {
-		final StatChange sc;
-		@Override
-        public void run() {
-			_addStatRecord(sc);
+			        () -> _addStatRecord( new StatChange( team1, team2, wlt, changeWinLossRecords ) ) );
 		}
 	}
 
@@ -156,16 +138,16 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		}
 		/// Change the elo
 		switch(wlt){
-		case WIN:
-			ratingCalculator.changeRatings(ts1,ts2,false);
-			break;
-		case LOSS:
-			ratingCalculator.changeRatings(ts2,ts1,false);
-			break;
-		case TIE:
-			ratingCalculator.changeRatings(ts1,ts2,true);
-			break;
-		default:
+    		case WIN:
+    			ratingCalculator.changeRatings(ts1,ts2,false);
+    			break;
+    		case LOSS:
+    			ratingCalculator.changeRatings(ts2,ts1,false);
+    			break;
+    		case TIE:
+    			ratingCalculator.changeRatings(ts1,ts2,true);
+    			break;
+    		default:
 		}
 	}
 
@@ -210,8 +192,7 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 	}
 
     public TeamStat getTeamRecord(String teamName) {
-		TeamStat ts = new TeamStat(teamName, false);
-		return (TeamStat) cache.get(ts.getKey());
+		return (TeamStat) cache.get(teamName);
 	}
 
     public TeamStat getTeamRecord(Set<String> players) {
@@ -230,20 +211,20 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		return (PlayerStat) cache.get(player.getName());
 	}
 
-    public void stopTracking(String player) {TrackerController.stopTracking(player);}
-    public void resumeTracking(String player) {TrackerController.resumeTracking(player);}
-    public void stopMessages(String player) {TrackerController.stopAnnouncing(player);}
-    public void resumeMessages(String player) {TrackerController.resumeAnnouncing(player);}
+    public void stopTracking(String player) { Tracker.stopTracking( player, false ); }
+    public void resumeTracking(String player) { Tracker.resumeTracking( player, false ); }
+    public void stopMessages(String player) { Tracker.stopAnnouncing( player, false ); }
+    public void resumeMessages(String player) { Tracker.resumeAnnouncing( player, false ); }
 
-    public void stopTracking(OfflinePlayer player) {TrackerController.stopTracking(player.getName());}
-    public void resumeTracking(OfflinePlayer player) {TrackerController.resumeTracking(player.getName());}
-    public void stopMessages(OfflinePlayer player) {TrackerController.stopAnnouncing(player.getName());}
-    public void resumeMessages(OfflinePlayer player) {TrackerController.resumeAnnouncing(player.getName());}
+    public void stopTracking(OfflinePlayer player) { Tracker.stopTracking( player.getName(), false ); }
+    public void resumeTracking(OfflinePlayer player) {Tracker.resumeTracking( player.getName(), false ); }
+    public void stopMessages(OfflinePlayer player) { Tracker.stopAnnouncing( player.getName(), false ); }
+    public void resumeMessages(OfflinePlayer player) { Tracker.resumeAnnouncing( player.getName(), false ); }
 
-    public void resumeMessages(Collection<Player> players) {TrackerController.resumeAnnouncing(players);}
-    public void resumeTracking(Collection<Player> players) {TrackerController.resumeTracking(players);}
-    public void stopMessages(Collection<Player> players) {TrackerController.stopAnnouncing(players);}
-    public void stopTracking(Collection<Player> players) {TrackerController.stopTracking(players);}
+    public void resumeMessages(Collection<Player> players) { Tracker.resumeAnnouncing( players); }
+    public void resumeTracking(Collection<Player> players) { Tracker.resumeTracking( players); }
+    public void stopMessages(Collection<Player> players) { Tracker.stopAnnouncing( players); }
+    public void stopTracking(Collection<Player> players) { Tracker.stopTracking( players); }
 
     public void addRecordGroup(Collection<Player> team1, Collection<Collection<Player>> teams, WLT wlt) {
 		TeamStat ts = new TeamStat(toStringCollection(team1));
@@ -270,50 +251,38 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		}
 		return col;
 	}
-    public Stat getRecord(String player) {
-		return cache.get(player);
-	}
-
-    public Stat getRecord(OfflinePlayer player) {
-		return cache.get(player.getName());
-	}
-
-    public Stat loadRecord(OfflinePlayer op) {
-		PlayerStat stat = new PlayerStat(op);
-		return loadStat(stat);
-	}
-
-    public Stat loadPlayerRecord(String name) {
-		PlayerStat stat = new PlayerStat(name);
-		return loadStat(stat);
-	}
+    public Stat getRecord( String player ) { return cache.get( player ); }
+    public Stat getRecord( OfflinePlayer player ) { return cache.get( player.getName() ); }
+    public Stat loadRecord( OfflinePlayer op ) { return loadStat( new PlayerStat( op ) ); }
+    public Stat loadPlayerRecord( String name ) { return loadStat( new PlayerStat( name ) ); }
+    public int getRecordCount() { return SQL.getRecordCount(); }
+    public boolean isModified() { return cache.isModified(); }
 
     public Stat loadRecord(Set<Player> players) {
 		HashSet<String> names = new HashSet<>();
-		for (OfflinePlayer p : players){
-			names.add(p.getName());}
-		Stat stat = new TeamStat(names);
-		return loadStat(stat);
+		for ( OfflinePlayer p : players ) {
+			names.add( p.getName() );
+		}
+		return loadStat( new TeamStat( names ) );
 	}
-	private Stat loadStat(Stat stat){
+	private Stat loadStat( Stat stat ) {
 		Stat s = cache.get(stat, stat);
-		if (s==null){
+		if ( s == null ) {
 			cache.put(stat);
 			return stat;
 		}
 		return s;
 	}
 
-    public Stat getRecord(Collection<Player> players) {
+    public Stat getRecord( Collection<Player> players ) {
 		HashSet<String> names = new HashSet<>();
-		for (OfflinePlayer p : players){
-			names.add(p.getName());}
-
-		return cache.get(new TeamStat(names));
+		for ( OfflinePlayer p : players ) {
+			names.add( p.getName() );
+		}
+		return cache.get( new TeamStat( names ) );
 	}
 
-    public void saveAll() {cache.save();}
-
+    public void saveAll() { cache.save(); }
 
 	public List<Stat> getTopXRanking(int x) { return getTopX(StatType.RANKING,x,null);}
 	public List<Stat> getTopXMaxRanking(int x) {return getTopX(StatType.MAXRANKING,x,null);}
@@ -347,13 +316,9 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 	/**
 	 * write out all dirty records.  and empty the cache
 	 */
-    public void flush() {
-		cache.flush();
-	}
+    public void flush() { cache.flush(); }
 
-    public void onlyTrackOverallStats(boolean b) {
-		trackIndividual = !b;
-	}
+    public void onlyTrackOverallStats( boolean b ) { trackIndividual = !b; }
 
     public boolean setRating(OfflinePlayer player, int rating){
 		Stat stat = cache.get(new PlayerStat(player));
@@ -427,18 +392,18 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 				if (!m.find())
 					continue;
 				switch (st){
-				case WINS: case KILLS: msg = m.replaceAll(stat.getWins()+""); break;
-				case LOSSES: case DEATHS: msg = m.replaceAll(stat.getLosses()+""); break;
-				case TIES: msg = m.replaceAll(stat.getTies()+""); break;
-				case RANKING:
-				case RATING: msg = m.replaceAll(stat.getRating()+""); break;
-				case MAXRANKING:
-				case MAXRATING: msg = m.replaceAll(stat.getMaxRating()+""); break;
-				case STREAK: msg = m.replaceAll(stat.getStreak()+""); break;
-				case MAXSTREAK: msg = m.replaceAll(stat.getMaxStreak()+""); break;
-				case WLRATIO: msg = m.replaceAll(stat.getKDRatio()+""); break;
-				default:
-					break;
+    				case WINS: case KILLS: msg = m.replaceAll(stat.getWins()+""); break;
+    				case LOSSES: case DEATHS: msg = m.replaceAll(stat.getLosses()+""); break;
+    				case TIES: msg = m.replaceAll(stat.getTies()+""); break;
+    				case RANKING:
+    				case RATING: msg = m.replaceAll(stat.getRating()+""); break;
+    				case MAXRANKING:
+    				case MAXRATING: msg = m.replaceAll(stat.getMaxRating()+""); break;
+    				case STREAK: msg = m.replaceAll(stat.getStreak()+""); break;
+    				case MAXSTREAK: msg = m.replaceAll(stat.getMaxStreak()+""); break;
+    				case WLRATIO: msg = m.replaceAll(stat.getKDRatio()+""); break;
+    				default:
+    					break;
 				}
 			}
 			msg = msg.replaceAll("\\{rank\\}", i+1 +"");
@@ -447,34 +412,28 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
 		}
 
 	}
-	public int getRecordCount() { return SQL.getRecordCount(); }
 
 	public Integer getRank(OfflinePlayer sender) {
 		cache.save();
 		Stat s = getPlayerRecord(sender);
-		if (s == null)
-			return null;
-		return SQL.getRanking((int) s.getRating(),s.getCount());
+		if ( s == null ) return null;
+		return SQL.getRanking( (int) s.getRating(),s.getCount() );
 	}
 
 	public Integer getRank(String team) {
 		cache.save();
 		Stat s = getRecord(team);
-		if (s == null)
-			return null;
-		return SQL.getRanking((int) s.getRating(),s.getCount());
+		if ( s == null ) return null;
+		return SQL.getRanking( (int) s.getRating(),s.getCount() );
 	}
 
 	public boolean hidePlayer(String player, boolean hide) {
 		Stat s = getPlayerRecord(player);
-		if (s==null)
-			return false;
+		if ( s == null ) return false;
 		s.hide(hide);
 		cache.flush();
 		return true;
 	}
-
-	public boolean isModified() { return cache.isModified(); }
 
     public String getRankMessage(OfflinePlayer player) {
         Stat stat = loadRecord(player);
@@ -487,4 +446,11 @@ public class TrackerInterface implements CacheSerializer<String,Stat>{
                         "]&e" + ". Highest &6[" + stat.getMaxRating() + "]&e Longest Streak &b" + stat.getMaxStreak();
     }
 
+    @Override
+    public String toString(){
+        return new StringBuilder( "[TI=" ).append( SQL != null ? SQL.getTableName() 
+                                                               : "null" )
+                                          .append( "]" )
+                                          .toString();
+    }
 }

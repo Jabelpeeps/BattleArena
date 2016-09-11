@@ -24,13 +24,12 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.AllArgsConstructor;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.tracker.TrackerConfigController;
-import mc.alk.arena.controllers.tracker.TrackerController;
 import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.controllers.tracker.TrackerMessageController;
 import mc.alk.arena.objects.tracker.Stat;
-import mc.alk.arena.objects.tracker.Stat.SpecialType;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.tracker.Tracker;
 
@@ -47,9 +46,9 @@ public class BTEntityListener implements Listener {
 	TrackerInterface worldTi;
 	int count = 0;
 
+	@AllArgsConstructor
 	class RampageStreak {
 		Long time; int nkills;
-		public RampageStreak(Long t, int nk){this.time = t; this.nkills = nk;}
 	}
 
 	public BTEntityListener() {
@@ -68,7 +67,7 @@ public class BTEntityListener implements Listener {
 		
 		/// we have a player killing a mob, if we are not tracking pve
 		/// we don't need to enter, no messages are usually sent for this
-		if (!TrackerConfigController.getBoolean("trackPvE",false)) return;
+		if ( !TrackerConfigController.getBoolean( "trackPvE", false ) ) return;
 		
 		ede(event);
 	}
@@ -92,12 +91,14 @@ public class BTEntityListener implements Listener {
 			target = targetEntity.getType().getEntityClass().getSimpleName();
 		}
 		/// Should we be tracking this person
-		if (targetPlayer && (TrackerController.dontTrack(target))){
+		if (targetPlayer && Tracker.notTracked(target) ){
 			if (event instanceof PlayerDeathEvent)
 				((PlayerDeathEvent) event).setDeathMessage(""); /// Set to none, will cancel all non pvp messages
 			return;
 		}
-		if (!targetPlayer && !TrackerConfigController.getBoolean("trackPvP") && !TrackerConfigController.getBoolean("sendPVPDeathMessages")){
+		if (  !targetPlayer 
+		        && !TrackerConfigController.getBoolean( "trackPvP", false ) 
+		        && !TrackerConfigController.getBoolean( "sendPVPDeathMessages", false ) ) {
 			return;
 		}
 
@@ -153,7 +154,7 @@ public class BTEntityListener implements Listener {
 		}
         if (killer == null) killer = UNKNOWN;
         
-		if (killerPlayer && TrackerController.dontTrack(killer)) return;
+		if (killerPlayer && Tracker.notTracked(killer)) return;
 		
 		if (    ignoreEntities.contains(killer) 
 		        || ignoreEntities.contains(targetEntity.toString()) 
@@ -267,7 +268,7 @@ public class BTEntityListener implements Listener {
 			if (lastKill != null && now - lastKill.time < Defaults.RAMPAGE_TIME){
 				lastKill.nkills++;
 				lastKill.time = now;
-				return TrackerMessageController.getSpecialMessage(SpecialType.RAMPAGE, lastKill.nkills, killer,target, killingWeapon);
+				return TrackerMessageController.getSpecialMessage(TrackerMessageController.SpecialType.RAMPAGE, lastKill.nkills, killer,target, killingWeapon);
 			}
             lastKillTime.put(killer, new RampageStreak(now, 1));
             
@@ -279,7 +280,7 @@ public class BTEntityListener implements Listener {
 		
 		/// they are on a streak
 		if ( hasStreak || ( streak != 0 && Defaults.STREAK_EVERY != 0 && streak % Defaults.STREAK_EVERY == 0 ) ){
-			return TrackerMessageController.getSpecialMessage(SpecialType.STREAK, streak, killer,target, killingWeapon);
+			return TrackerMessageController.getSpecialMessage(TrackerMessageController.SpecialType.STREAK, streak, killer,target, killingWeapon);
 		}
         return TrackerMessageController.getPvPMessage(isMeleeDeath,killer, target, killingWeapon);
 	}

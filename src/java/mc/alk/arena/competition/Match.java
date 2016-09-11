@@ -86,7 +86,6 @@ import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumLivesPerPlaye
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesNumTeams;
 import mc.alk.arena.objects.victoryconditions.interfaces.DefinesTimeLimit;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
-import mc.alk.arena.plugins.BTInterface;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.WorldGuardController;
 import mc.alk.arena.tracker.Tracker;
@@ -568,9 +567,9 @@ public abstract class Match extends Competition implements Runnable {
         @Override
         public void run() {
             List<ArenaTeam> aTeams = new ArrayList<>();
-            final Set<ArenaTeam> victors = result.getVictors();
-            final Set<ArenaTeam> losers = result.getLosers();
-            final Set<ArenaTeam> drawers = result.getDrawers();
+            Set<ArenaTeam> victors = result.getVictors();
+            Set<ArenaTeam> losers = result.getLosers();
+            Set<ArenaTeam> drawers = result.getDrawers();
             aTeams.addAll( victors );
             aTeams.addAll( losers );
             aTeams.addAll( drawers );
@@ -581,8 +580,9 @@ public abstract class Match extends Competition implements Runnable {
                                        "  drawers=" + drawers + " " + matchResult + 
                                        " secondsToLoot=" + params.getSecondsToLoot() );
             if ( params.isRated() ) {
-                TrackerInterface sc = Tracker.getInterface( params );
-                BTInterface.addRecord( sc, victors, losers, drawers, result.getResult(), params.isTeamRating() );
+                Tracker.getInterface( params ).addTeamRecord( result.getWinningPlayers(), 
+                                                              result.getLoosingPlayers(), 
+                                                              result.getResult() );
             }
 
             if ( result.hasVictor() ) 
@@ -605,9 +605,10 @@ public abstract class Match extends Competition implements Runnable {
 
         @Override
         public void run() {
-            final Set<ArenaTeam> victors = matchResult.getVictors();
-            final Set<ArenaTeam> losers = matchResult.getLosers();
-            final Set<ArenaTeam> drawers = matchResult.getDrawers();
+            MatchResult result = am.getMatchResult();
+            Set<ArenaTeam> victors = matchResult.getVictors();
+            Set<ArenaTeam> losers = matchResult.getLosers();
+            Set<ArenaTeam> drawers = matchResult.getDrawers();
             
             if ( Defaults.DEBUG_TRACE ) 
                 Log.trace( am.getId(), "Match::MatchVictory():" + am + 
@@ -617,15 +618,15 @@ public abstract class Match extends Competition implements Runnable {
                                        " secondsToLoot=" + params.getSecondsToLoot() );
 
             if ( params.isRated() ) {
-                TrackerInterface sc = Tracker.getInterface( params );
-                BTInterface.addRecord( sc, victors,losers,drawers,am.getMatchResult().getResult(), params.isTeamRating());
+                Tracker.getInterface( params ).addTeamRecord( result.getWinningPlayers(), 
+                                                              result.getLoosingPlayers(), 
+                                                              result.getResult() );
             }
-            if ( matchResult.hasVictor() ) { 
+            if ( matchResult.hasVictor() ) 
                 matchMessager.sendOnVictoryMsg(victors, losers);
-            } 
-            else { 
+            else 
                 matchMessager.sendOnDrawMessage(drawers,losers);
-            }
+
             updateBukkitEvents( MatchState.ONVICTORY );
             TransitionController.transition( am, MatchState.ONVICTORY, teams, true );
             currentTimer = Scheduler.scheduleSynchronousTask(

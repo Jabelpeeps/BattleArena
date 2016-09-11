@@ -101,7 +101,7 @@ public class Defaults {
     public static boolean DEBUG_VIRTUAL = false;
     public static boolean DEBUG_TRANSITIONS = true;
     public static boolean DEBUG_STORAGE = false;
-    public static boolean DEBUG_TRACKING = false;
+    public static boolean DEBUG_TRACKING = true;
     public static boolean DEBUG_MATCH_TEAMS = false;
 
     public static int TIME_BETWEEN_CLASS_CHANGE = 3;

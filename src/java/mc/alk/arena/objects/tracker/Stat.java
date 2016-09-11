@@ -29,18 +29,16 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 	@Getter protected int streak = 0, maxStreak = 0;
 	@Getter protected int count = 1; /// How many members are in the team
 	@Getter boolean hidden = false;
-
 	@Getter List<String> members ;
-
 	@Getter VersusRecords recordSet = null;
 	@Setter private TrackerInterface parent;
 
 	@Override
 	public String getKey() {
-		if (strID.length() > 32 )
+		if ( strID.length() > 32 )
 			Util.printStackTrace();
 
-		return getStrID();
+		return strID;
 	}
 
 	public void setName(String _name) {
@@ -56,7 +54,7 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 	public void setStreak(int i) { streak = i; setDirty(); }
 	public void setLosses(int i) { losses = i; setDirty(); }
 	public void setTies(int i) {   ties = i;   setDirty(); }
-	public void setCount(int i){   count = i;  setDirty(); }
+	public void setCount(int i) {  count = i;  setDirty(); }
     public void endStreak() {      streak = 0; setDirty(); }
 	
 	public float getKDRatio() { return ((float) wins) / losses; }
@@ -91,10 +89,9 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 
 	@Override
 	public boolean equals( Object obj ) {
-		if(this == obj) return true;
-		if((obj == null) || (obj.getClass() != this.getClass())) return false;
-		Stat test = (Stat)obj;
-		return compareTo(test) == 0;
+		if ( this == obj ) return true;
+		if ( obj == null || obj.getClass() != this.getClass() ) return false;
+		return compareTo( (Stat)obj ) == 0;
 	}
 	public int compareTo(Stat o) {
 		return strID.compareTo(o.strID);
@@ -112,8 +109,8 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 				                                             : "null") + " key=" + getKey() );
 		wins++;
 		streak++;
-		if (streak > maxStreak)
-			maxStreak=streak;
+		if ( streak > maxStreak )
+			maxStreak = streak;
 		
 		getRecord().addWin( ts.getStrID() );
 		new WinStatChangeEvent( parent, this, ts ).callSyncEvent();
@@ -133,8 +130,8 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 		setDirty();
 	}
 
-	public static String getKey(Player players) { return players.getName(); }
-	public static String getKey(String player){ return player; }
+	public static String getKey( Player player ) { return player.getName(); }
+	public static String getKey( String player ) { return player; }
 
 	protected static String getKey(List<String> playernames){
 		Collections.sort(playernames);
@@ -151,19 +148,13 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 		return sb.toString();
 	}
 
-	public VersusRecord getRecordVersus(Stat stat) {
-		
-		return getRecord().getRecordVersus(stat.getStrID());
+	public VersusRecord getRecordVersus( Stat stat ) {
+		return getRecord().getRecordVersus( stat.getStrID() );
 	}
-
     @Override
-    public int getWinsVersus(ArenaStat stat) {
-        return getRecordVersus( (Stat) stat ).wins;
-    }
+    public int getWinsVersus( ArenaStat stat ) { return getRecordVersus( (Stat) stat ).wins; }
 	@Override
-    public int getLossesVersus(ArenaStat stat) {
-	    return getRecordVersus( (Stat) stat ).losses;
-	}
+    public int getLossesVersus( ArenaStat stat ) { return getRecordVersus( (Stat) stat ).losses; }
     
 	protected void createName(){
 		if (name != null && !name.isEmpty()) return;
@@ -198,7 +189,7 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 	}
 
 	public void setSaveIndividual(boolean saveIndividualRecord) {
-		if (recordSet != null)
+		if ( recordSet != null )
 			recordSet.setSaveIndividual(saveIndividualRecord);
 	}
 
@@ -206,8 +197,8 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 
 	public void setFlags(int flags) { hidden = (flags == 0 ? false : true); }
 
-	public void hide(boolean hide) {
-		if ( hidden != hide) {
+	public void hide( boolean hide ) {
+		if ( hidden != hide ) {
 			setDirty();
 			hidden = hide;
 		}
@@ -229,10 +220,7 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 		return 0;
 	}
 	
-	public enum SpecialType {
-	    STREAK, RAMPAGE
-	}
-    @Override
+	@Override
     public int getRanking() {
         return 0;
     }
