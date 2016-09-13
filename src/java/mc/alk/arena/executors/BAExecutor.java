@@ -1039,7 +1039,7 @@ public class BAExecutor extends CustomCommandExecutor {
         }
         Double wager = (Double) d.getDuelOptionValue(DuelOption.MONEY);
         if (wager != null) {
-            if (MoneyController.balance(player.getName()) < wager) {
+            if ( MoneyController.hasEnough( player.getPlayer(), wager ) ) {
                 MessageUtil.sendMessage(player, "&4[Duel] &cYou don't have enough money to accept the wager!");
                 
                 duelController.cancelFormingDuel(d, "&4[Duel]&6" + player.getDisplayName() + " didn't have enough money for the wager");
@@ -1110,7 +1110,7 @@ public class BAExecutor extends CustomCommandExecutor {
         Double wager = (Double) duelOptions.getOptionValue(DuelOption.MONEY);
         if (wager != null) {
             if (wager >= 0) {
-                if (MoneyController.balance(player.getName()) < wager) {
+                if ( MoneyController.hasEnough( player.getPlayer(), wager ) ) {
                     return MessageUtil.sendMessage(player, "&4[Duel] You can't afford that wager!");
                 }
             } 
@@ -1128,12 +1128,8 @@ public class BAExecutor extends CustomCommandExecutor {
             if (!duelOptions.matches(ap, mp)) {
                 return MessageUtil.sendMessage(
                         player,
-                        "&6"
-                        + ap.getDisplayName()
-                        + "&c needs to be within "
-                        + mp.getStateGraph()
-                        .getOptions(MatchState.PREREQS)
-                        .getWithinDistance()
+                        "&6" + ap.getDisplayName() + "&c needs to be within "
+                        + mp.getStateGraph().getOptions(MatchState.PREREQS).getWithinDistance()
                         + "&c blocks of an arena");
             }
 
@@ -1160,16 +1156,13 @@ public class BAExecutor extends CustomCommandExecutor {
                     && System.currentTimeMillis() - grace < Defaults.DUEL_CHALLENGE_INTERVAL * 1000) {
                 return MessageUtil.sendMessage(
                         player,
-                        "&4[Duel] &6"
-                        + ap.getDisplayName()
-                        + "&c can't be challenged for &6"
-                        + TimeUtil
+                        "&4[Duel] &6" + ap.getDisplayName() + "&c can't be challenged for &6" + TimeUtil
                         .convertMillisToString(Defaults.DUEL_CHALLENGE_INTERVAL
                                 * 1000
                                 - (System.currentTimeMillis() - grace)));
             }
             if (wager != null) {
-                if (MoneyController.balance(ap.getName()) < wager) {
+                if ( MoneyController.hasEnough( ap.getPlayer(), wager ) ) {
                     return MessageUtil.sendMessage(player, "&4[Duel] &6" + ap.getDisplayName() + "&c can't afford that wager!");
                 }
             }
@@ -1185,16 +1178,14 @@ public class BAExecutor extends CustomCommandExecutor {
             if (!duelOptions.matches(ap, mp)) {
                 return MessageUtil.sendMessage(
                         player,
-                        "&6" + ap.getDisplayName() + "&c needs to be within "
-                        + mp.getStateGraph().getOptions(MatchState.PREREQS)
-                        .getWithinDistance());
+                        "&6" + ap.getDisplayName() + "&c needs to be within " 
+                        + mp.getStateGraph().getOptions(MatchState.PREREQS).getWithinDistance());
             }
 
             if (wager != null) {
-                if (MoneyController.balance(ap.getName()) < wager) {
+                if ( MoneyController.hasEnough( ap.getPlayer(), wager ) ) {
                     return MessageUtil.sendMessage(player,
-                            "&4[Duel] Your teammate &6" + ap.getDisplayName()
-                            + "&c can't afford that wager!");
+                            "&4[Duel] Your teammate &6" + ap.getDisplayName() + "&c can't afford that wager!");
                 }
             }
         }
@@ -1432,7 +1423,7 @@ public class BAExecutor extends CustomCommandExecutor {
 
                 boolean hasEnough = true;
                 for (ArenaPlayer player : t.getPlayers()) {
-                    boolean has = MoneyController.hasEnough(player.getName(), fee);
+                    boolean has = MoneyController.hasEnough( player.getPlayer(), fee );
                     hasEnough &= has;
                     if (!has) {
                         MessageUtil.sendMessage(player, "&eYou need &6" + fee + "&e to compete");
@@ -1499,7 +1490,7 @@ public class BAExecutor extends CustomCommandExecutor {
             if (fee != null) {
                 for (ArenaPlayer player : t.getPlayers()) {
                     getOrCreateJoinReqs(player).setMoney(fee);
-                    MoneyController.subtract(player.getName(), fee);
+                    MoneyController.subtract( player.getPlayer(), fee);
                     MessageUtil.sendMessage(player, "&6" + fee + " has been subtracted from your account");
                 }
             }
@@ -1533,7 +1524,7 @@ public class BAExecutor extends CustomCommandExecutor {
                 return true;
             }
             for (ArenaPlayer player : t.getPlayers()) {
-                MoneyController.add(player.getName(), fee);
+                MoneyController.add( player.getPlayer(), fee );
                 MessageUtil.sendMessage(player,
                         "&eYou have been refunded the entrance fee of &6" + fee);
             }

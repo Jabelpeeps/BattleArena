@@ -56,7 +56,7 @@ public enum HeroesListener implements Listener {
 		if (!InArenaListener.inArena(event.getPlayer())){
 			return;}
 		if (event.getSkill().getName().equals("Revive")){
-			Player p = event.getArgs().length > 0 ? ServerUtil.findOnlinePlayer(event.getArgs()[0]) : null;
+			Player p = event.getArgs().length > 0 ? ServerUtil.findPlayer(event.getArgs()[0]) : null;
 			if (p != null && !InArenaListener.inArena(p)){
 				MessageUtil.sendMessage(event.getPlayer(), "&cYou can't revive a player who is not in the arena!");
 				event.setCancelled(true);

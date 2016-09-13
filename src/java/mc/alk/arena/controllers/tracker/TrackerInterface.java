@@ -29,7 +29,6 @@ import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.serializers.tracker.SQLInstance;
 import mc.alk.arena.serializers.tracker.SQLSerializer;
 import mc.alk.arena.tracker.EloCalculator;
-import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
 
@@ -211,21 +210,6 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		return (PlayerStat) cache.get(player.getName());
 	}
 
-    public void stopTracking(String player) { Tracker.stopTracking( player, false ); }
-    public void resumeTracking(String player) { Tracker.resumeTracking( player, false ); }
-    public void stopMessages(String player) { Tracker.stopAnnouncing( player, false ); }
-    public void resumeMessages(String player) { Tracker.resumeAnnouncing( player, false ); }
-
-    public void stopTracking(OfflinePlayer player) { Tracker.stopTracking( player.getName(), false ); }
-    public void resumeTracking(OfflinePlayer player) {Tracker.resumeTracking( player.getName(), false ); }
-    public void stopMessages(OfflinePlayer player) { Tracker.stopAnnouncing( player.getName(), false ); }
-    public void resumeMessages(OfflinePlayer player) { Tracker.resumeAnnouncing( player.getName(), false ); }
-
-    public void resumeMessages(Collection<Player> players) { Tracker.resumeAnnouncing( players); }
-    public void resumeTracking(Collection<Player> players) { Tracker.resumeTracking( players); }
-    public void stopMessages(Collection<Player> players) { Tracker.stopAnnouncing( players); }
-    public void stopTracking(Collection<Player> players) { Tracker.stopTracking( players); }
-
     public void addRecordGroup(Collection<Player> team1, Collection<Collection<Player>> teams, WLT wlt) {
 		TeamStat ts = new TeamStat(toStringCollection(team1));
 		Stat ts1 = cache.get(ts,ts);
@@ -284,26 +268,13 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 
     public void saveAll() { cache.save(); }
 
-	public List<Stat> getTopXRanking(int x) { return getTopX(StatType.RANKING,x,null);}
-	public List<Stat> getTopXMaxRanking(int x) {return getTopX(StatType.MAXRANKING,x,null);}
-    public List<Stat> getTopXRating(int x) { return getTopX(StatType.RATING,x,null);}
-	public List<Stat> getTopXMaxRating(int x) {return getTopX(StatType.MAXRATING,x,null);}
-    public List<Stat> getTopXLosses(int x) { return getTopX(StatType.LOSSES,x,null);}
-    public List<Stat> getTopXWins(int x) {return getTopX(StatType.WINS,x,null);}
-    public List<Stat> getTopXKDRatio(int x) { return getTopX(StatType.KDRATIO,x,null);}
-    public List<Stat> getTopX(StatType statType, int x) { return getTopX(statType,x,1); }
-	public List<Stat> getTopXRanking(int x, Integer teamsize) {return getTopX(StatType.RANKING,x,teamsize);}
-	public List<Stat> getTopXMaxRanking(int x, Integer teamsize) {return getTopX(StatType.MAXRANKING,x,teamsize);}
-    public List<Stat> getTopXRating(int x, Integer teamsize) {return getTopX(StatType.RATING,x,teamsize);}
-	public List<Stat> getTopXMaxRating(int x, Integer teamsize) {return getTopX(StatType.MAXRATING,x,teamsize);}
-	public List<Stat> getTopXStreak(int x, Integer teamsize) {return getTopX(StatType.STREAK,x,teamsize);}
-	public List<Stat> getTopXMaxStreak(int x, Integer teamsize) {return getTopX(StatType.MAXSTREAK,x,teamsize);}
-    public List<Stat> getTopXWins(int x, Integer teamsize) {return getTopX(StatType.WINS,x,teamsize);}
-    public List<Stat> getTopXLosses(int x, Integer teamsize) {return getTopX(StatType.LOSSES,x,teamsize);}
-    public List<Stat> getTopXKDRatio(int x, Integer teamsize) {return getTopX(StatType.KDRATIO,x,teamsize);}
+ 	public List<Stat> getTopXRating(int x) { return getTopX( StatType.RATING, x, null ); }
+    public List<Stat> getTopXWins(int x) { return getTopX( StatType.WINS, x, null ); }
+    public List<Stat> getTopX(StatType statType, int x) { return getTopX( statType, x, 1 ); }
+    private List<Stat> getTopXRanking(int x, Integer teamsize) { return getTopX( StatType.RANKING, x, teamsize ); }
 
 
-    public List<Stat> getTopX(StatType statType, int x, Integer teamsize) {
+    private List<Stat> getTopX(StatType statType, int x, Integer teamsize) {
 		cache.save();
 		return SQL.getTopX(statType, x, teamsize);
 	}
@@ -330,7 +301,7 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 	}
 
 	public List<WLTRecord> getVersusRecords(String name, String name2) {
-		return getVersusRecords(name,name2,10);
+		return getVersusRecords( name, name2, 10 );
 	}
 
     public List<WLTRecord> getVersusRecords(String name, String name2, int x) {
@@ -342,25 +313,21 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		return SQL.getWinsSince(stat.getName(),time);
 	}
 
-    public void printTopX(CommandSender sender, StatType statType, int x){
-		printTopX(sender,statType,x,null, Defaults.MSG_TOP_HEADER, Defaults.MSG_TOP_BODY);
+    public void printTopX( CommandSender sender, StatType statType, int x ) {
+		printTopX( sender, statType, x, 0, Defaults.MSG_TOP_HEADER, Defaults.MSG_TOP_BODY );
 	}
 
-    public void printTopX(CommandSender sender, StatType statType, int x, String headerMsg, String bodyMsg){
-		printTopX(sender,statType,x,null, headerMsg, bodyMsg);
+    public void printTopX( CommandSender sender, StatType statType, int x, String headerMsg, String bodyMsg ) {
+		printTopX( sender, statType, x, 0, headerMsg, bodyMsg );
 	}
 
-    public void printTopX(CommandSender sender, StatType statType, int x, int teamSize){
-		printTopX(sender,statType,x,teamSize, Defaults.MSG_TOP_HEADER, Defaults.MSG_TOP_BODY);
+    public void printTopX( CommandSender sender, StatType statType, int x, int teamSize ) {
+		printTopX( sender, statType, x, teamSize, Defaults.MSG_TOP_HEADER, Defaults.MSG_TOP_BODY );
 	}
 
-    public void printTopX(CommandSender sender, StatType statType, int x, int teamSize, String headerMsg, String bodyMsg){
-		printTopX(sender,statType,x,new Integer(teamSize), headerMsg, bodyMsg);
-	}
-
-	private void printTopX(CommandSender sender, StatType statType, int x, Integer teamSize, String headerMsg, String bodyMsg){
-		if (x <= 0 ){
-			x = Integer.MAX_VALUE;}
+	public void printTopX( CommandSender sender, StatType statType, int x, int teamSize, String headerMsg, String bodyMsg ) {
+		if (x <= 0 )
+			x = Integer.MAX_VALUE;
 		cache.save();
 		List<Stat> teamstats = getTopXRanking(x, teamSize);
 		if (teamstats == null){

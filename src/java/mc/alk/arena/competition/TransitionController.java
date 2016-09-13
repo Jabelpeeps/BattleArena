@@ -197,16 +197,16 @@ public class TransitionController {
             if (mo.hasOption(TransitionOption.DEENCHANT)) psc.deEnchant(p);
             if (mo.hasOption(TransitionOption.UNDISGUISE)) DisguiseController.undisguise(p);
             if (mo.getDisguiseAllAs() != null) DisguiseController.disguisePlayer(p, mo.getDisguiseAllAs());
-            if (mo.getMoney() != null) MoneyController.add(player.getName(), mo.getMoney());
+            if (mo.getMoney() != null) MoneyController.add( player.getPlayer(), mo.getMoney() );
             
             if (mo.hasOption(TransitionOption.POOLMONEY) && am instanceof Match) {
                 prizeMoney = ((Match)am).getPrizePoolMoney() * mo.getDouble(TransitionOption.POOLMONEY) / 
                         ( team != null ? team.size() : 1 );
                 
                 if (prizeMoney >= 0)
-                    MoneyController.add(player.getName(), prizeMoney);
+                    MoneyController.add( player.getPlayer(), prizeMoney );
                 else
-                    MoneyController.subtract(player.getName(), prizeMoney);
+                    MoneyController.subtract( player.getPlayer(), prizeMoney );
             }
             if (mo.getExperience() != null) ExpUtil.giveExperience(p, mo.getExperience());
 //            if (mo.hasOption(TransitionOption.REMOVEPERMS)) removePerms(player, mo.getRemovePerms());

@@ -260,8 +260,8 @@ public class PlayerSave {
     }
 
     public void restoreMoney() {
-        if (money == null) return;
-        MoneyController.add(player.getName(), money);
+        if ( money == null ) return;
+        MoneyController.add( player.getPlayer(), money );
         money = null;
     }
 }

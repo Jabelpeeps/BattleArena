@@ -1,5 +1,15 @@
 package mc.alk.arena.controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
@@ -20,21 +30,11 @@ import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.MessageUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class DuelController implements ArenaListener {
 
-    List<Duel> formingDuels = new CopyOnWriteArrayList<Duel>();
-    HashMap<UUID, Long> rejectTimers = new HashMap<UUID, Long>();
-    HashMap<Matchup, Duel> ongoingDuels = new HashMap<Matchup, Duel>();
+    List<Duel> formingDuels = new CopyOnWriteArrayList<>();
+    HashMap<UUID, Long> rejectTimers = new HashMap<>();
+    HashMap<Matchup, Duel> ongoingDuels = new HashMap<>();
     Map<Match, Matchup> matchups = Collections.synchronizedMap(new HashMap<Match, Matchup>());
 
     public void addOutstandingDuel(Duel duel) {
@@ -53,7 +53,7 @@ public class DuelController implements ArenaListener {
 
                 ArenaTeam t = d.getChallengerTeam();
                 ArenaTeam t2 = d.makeChallengedTeam();
-                List<ArenaTeam> teams = new ArrayList<ArenaTeam>();
+                List<ArenaTeam> teams = new ArrayList<>();
                 teams.add(t);
                 teams.add(t2);
                 JoinOptions jo = new JoinOptions();
@@ -94,7 +94,7 @@ public class DuelController implements ArenaListener {
         for (ArenaTeam t : teams) {
             for (ArenaPlayer ap : t.getPlayers()) {
                 MessageUtil.sendMessage(ap, "&4[Duel] &6" + money + " " + Defaults.MONEY_STR + "&e has been refunded");
-                MoneyController.add(ap.getName(), money);
+                MoneyController.add( ap.getPlayer(), money );
             }
         }
     }
@@ -128,7 +128,7 @@ public class DuelController implements ArenaListener {
                 for (ArenaTeam winTeam : winningTeams) {
                     for (ArenaPlayer ap : winTeam.getPlayers()) {
                         MessageUtil.sendMessage(ap, "&4[Duel] &eYou have won &6" + split + " " + Defaults.MONEY_STR + "&e for your victory!");
-                        MoneyController.add(ap.getName(), split);
+                        MoneyController.add( ap.getPlayer(), split );
                     }
                 }
             } else {
@@ -148,10 +148,10 @@ public class DuelController implements ArenaListener {
         if (wager == null) {
             return true;
         }
-        HashSet<ArenaPlayer> players = new HashSet<ArenaPlayer>(d.getChallengedPlayers());
+        HashSet<ArenaPlayer> players = new HashSet<>(d.getChallengedPlayers());
         players.addAll(d.getChallengerTeam().getPlayers());
         for (ArenaPlayer ap : players) {
-            if (MoneyController.balance(ap.getName()) < wager) {
+            if ( MoneyController.hasEnough( ap.getPlayer(), wager ) ) {
                 MessageUtil.sendMessage(ap, "&4[Duel] &cYou don't have enough money to accept the wager!");
                 cancelFormingDuel(d, "&4[Duel]&6" + ap.getDisplayName() + " didn't have enough money for the wager");
                 return false;
@@ -159,7 +159,7 @@ public class DuelController implements ArenaListener {
         }
         for (ArenaPlayer ap : players) {
             MessageUtil.sendMessage(ap, "&4[Duel] &6" + wager + " " + Defaults.MONEY_STR + "&e has been subtracted from your account");
-            MoneyController.subtract(ap.getName(), wager);
+            MoneyController.subtract( ap.getPlayer(), wager );
         }
         d.setTotalMoney((wager) * players.size());
         return true;

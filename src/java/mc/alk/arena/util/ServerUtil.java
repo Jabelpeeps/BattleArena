@@ -1,6 +1,7 @@
 package mc.alk.arena.util;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -16,117 +17,83 @@ import mc.alk.virtualplayers.VirtualPlayers;
 
 public class ServerUtil {
 
-    /**
-     * The safe method to specify we want a player who is currently online
-     * @param name Name of the player to find
-     * @return Player or null
-     */
-    public static Player findOnlinePlayer(String name) {
-        return findPlayer(name);
-    }
-
-    public static Player findPlayer(UUID id) {
+    public static Player findPlayer( UUID id ) {
         
         if ( id != null ) {
-            Player player = Bukkit.getPlayer(id);
+            Player player = Bukkit.getPlayer( id );
             if ( player != null )
                 return player;
-            if ( Defaults.DEBUG_VIRTUAL ) {
+            
+            if ( Defaults.DEBUG_VIRTUAL )
                 return VirtualPlayers.getPlayer(id);
-            }
         }
         return null;
     }
 
-    @Deprecated
-	public static Player findPlayerExact(String name) {
-		if (name == null)
-			return null;
-		Player player = Bukkit.getPlayerExact(name);
-		if (player != null)
-			return player;
-		if (Defaults.DEBUG_VIRTUAL){return VirtualPlayers.getPlayer(name);}
-		return null;
-	}
-
-    @Deprecated
 	public static Player findPlayer(String name) {
-		if (name == null)
-			return null;
+		if (name == null) return null;
+		
 		Player foundPlayer = Bukkit.getPlayer(name);
-        if (foundPlayer != null) {
-            return foundPlayer;}
-        if (Defaults.DEBUG_VIRTUAL){foundPlayer = VirtualPlayers.getPlayer(name);}
-        if (foundPlayer != null) {
-            return foundPlayer;}
-        Collection<? extends Player> online = Bukkit.getOnlinePlayers();
-		// if (Defaults.DEBUG_VIRTUAL){online = VirtualPlayers.getOnlinePlayers();}
-
-		for (Player player : online) {
-			String playerName = player.getName();
-
-			if (playerName.equalsIgnoreCase(name)) {
-				foundPlayer = player;
-				break;
-			}
-			if (playerName.toLowerCase().indexOf(name.toLowerCase(),0) != -1) {
-				if (foundPlayer != null) {
-					return null;}
-
-				foundPlayer = player;
-			}
-		}
-
-		return foundPlayer;
+        if (foundPlayer != null) 
+            return foundPlayer;
+        
+        if (Defaults.DEBUG_VIRTUAL){
+            foundPlayer = VirtualPlayers.getPlayer(name);
+            
+            if (foundPlayer != null) return foundPlayer;
+        }
+        return null;
 	}
 
     @Deprecated
 	public static OfflinePlayer findOfflinePlayer(String name) {
 		OfflinePlayer p = findPlayer(name);
-		if (p != null){
+		if ( p != null ) {
 			return p;
 		}
         /// Iterate over the worlds to see if a player.dat file exists
-        for (World w : Bukkit.getWorlds()){
-        	File f = new File(w.getName()+"/players/"+name+".dat");
-        	if (f.exists()){
+        for ( World w : Bukkit.getWorlds() ) {
+        	File f = new File( w.getName() + "/players/" + name + ".dat" );
+        	if ( f.exists() ) {
         		return Bukkit.getOfflinePlayer(name);
         	}
         }
         return null;
 	}
 
-	public static Player[] getOnlinePlayers() {
+	private static Collection<? extends Player> getOnlinePlayers() {
 		if (Defaults.DEBUG_VIRTUAL){
-			return VirtualPlayers.getOnlinePlayers();
+			return Arrays.asList( VirtualPlayers.getOnlinePlayers() );
 		}
-        return Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+        return Bukkit.getOnlinePlayers(); //.toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 	}
 
 	public static void findOnlinePlayers(Set<String> names, Set<Player> foundplayers, Set<String> unfoundplayers) {
-		Player[] online = getOnlinePlayers();
-		for (String name : names){
+		Collection<? extends Player> online = getOnlinePlayers();
+		
+		for ( String name : names ) {
 			Player lastPlayer = null;
-			for (Player player : online) {
+			
+			for ( Player player : online ) {
 				String playerName = player.getName();
-				if (playerName.equalsIgnoreCase(name)) {
+				
+				if ( playerName.equalsIgnoreCase(name) ) {
 					lastPlayer = player;
 					break;
 				}
 
-				if (playerName.toLowerCase().indexOf(name.toLowerCase(),0) != -1) { /// many names match the one given
-					if (lastPlayer != null) {
+				if ( playerName.toLowerCase().indexOf( name.toLowerCase(),0 ) != -1 ) { /// many names match the one given
+					if ( lastPlayer != null ) {
 						lastPlayer = null;
 						break;
 					}
 					lastPlayer = player;
 				}
 			}
-			if (lastPlayer != null){
-				foundplayers.add(lastPlayer);
-			} else{
-				unfoundplayers.add(name);
-			}
+			if ( lastPlayer != null )
+				foundplayers.add( lastPlayer );
+			else
+				unfoundplayers.add( name );
 		}
 	}
 }

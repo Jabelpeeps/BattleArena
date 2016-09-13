@@ -40,7 +40,7 @@ public class SQLInstance {
 	static final public String TEAMID = "ID";
 	static final public String ID1 = "ID1";
 	static final public String ID2 = "ID2";
-    static final public String WINS= "Wins";
+    static final public String WINS = "Wins";
     static final public String LOSSES = "Losses";
 //    static final public String KILLS= "Kills";
 //    static final public String DEATHS = "Deaths";

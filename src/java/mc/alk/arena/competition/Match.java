@@ -32,7 +32,6 @@ import mc.alk.arena.controllers.RewardController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
@@ -641,19 +640,19 @@ public abstract class Match extends Competition implements Runnable {
             TransitionController.transition( am, MatchState.LOSERS, result.getLosers(), false );
             ArenaPrizeEvent event = new ArenaLosersPrizeEvent( am, result.getLosers() );
             callEvent( event );
-            new RewardController( event, psc ).giveRewards();
+            new RewardController( event ).giveRewards();
         }
         if ( result.getDrawers() != null && !result.getDrawers().isEmpty() ) {
             TransitionController.transition( am, MatchState.DRAWERS, result.getDrawers(), false );
             ArenaPrizeEvent event = new ArenaDrawersPrizeEvent( am, result.getDrawers() );
             callEvent( event );
-            new RewardController( event, psc ).giveRewards();
+            new RewardController( event ).giveRewards();
         }
         if ( result.getVictors() != null && !result.getVictors().isEmpty() ) {
             TransitionController.transition( am, MatchState.WINNERS, result.getVictors(), false );
             ArenaPrizeEvent event = new ArenaWinnersPrizeEvent( am, result.getVictors() );
             callEvent( event );
-            new RewardController( event, psc ).giveRewards();
+            new RewardController( event ).giveRewards();
         }
     }
 
@@ -1028,10 +1027,9 @@ public abstract class Match extends Competition implements Runnable {
             if (e!=null)
                 scoreboard.setEntryNameSuffix(e, "(" + nLivesPerPlayer + ")");
         }
-        if (!params.getUseTrackerPvP()){
-            TrackerInterface sc = Tracker.getInterface( params );
-            sc.stopTracking(player.getName());
-            sc.stopMessages(player.getName());
+        if ( !params.getUseTrackerPvP() ) {
+            Tracker.stopTracking( player.getName(), false );
+            Tracker.stopAnnouncing( player.getName(), false );
         }
         if (woolTeams && team !=null && team.getIndex()!=-1){
             TeamUtil.setTeamHead(team.getIndex(), player); // give wool heads
@@ -1092,10 +1090,9 @@ public abstract class Match extends Competition implements Runnable {
             psc.removeMember(player, arena.getWorldGuardRegion());
         player.removeCompetition(this);
         player.reset(); /// reset the players
-        if (!params.getUseTrackerPvP()){
-            TrackerInterface sc = Tracker.getInterface( params );
-            sc.resumeTracking(player.getName());
-            sc.resumeMessages(player.getName());
+        if ( !params.getUseTrackerPvP() ) {
+            Tracker.resumeTracking( player.getName(), false );
+            Tracker.resumeAnnouncing( player.getName(), false );
         }
         if (t != null){
             if ( woolTeams )

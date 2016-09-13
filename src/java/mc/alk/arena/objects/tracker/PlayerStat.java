@@ -7,7 +7,7 @@ import org.bukkit.OfflinePlayer;
 public class PlayerStat extends TeamStat {
 
 	public PlayerStat(OfflinePlayer player) {
-		this(player.getName());
+		this( player.getName() );
 	}
 
 	public PlayerStat(String player) {
