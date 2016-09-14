@@ -91,7 +91,7 @@ public class SQLInstance {
 	String save_members;
 
 	@Getter String tableName;
-	SQLSerializer serial;
+	final SQLSerializer serial;
 
 	public SQLInstance( String SQLtableName, SQLSerializer serialiser ) { 
 	    tableName = SQLtableName;
@@ -211,8 +211,8 @@ public class SQLInstance {
 			        "drop table " + overall_table + "; drop table " + versus_table + "; drop table " + individual_table;
 		}
 		
-        if (shouldUpdateTo1point0()){
-            updateTo1Point0();}
+        if ( shouldUpdateTo1point0() ) updateTo1Point0();
+        
 //        if (shouldUpdateTo1point1()){
 //            updateTo1Point1();}
 		try {

@@ -35,6 +35,7 @@ import mc.alk.arena.executors.TeamExecutor;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.listeners.BAPluginListener;
 import mc.alk.arena.listeners.BASignListener;
+import mc.alk.arena.listeners.BTEntityListener;
 import mc.alk.arena.listeners.SignUpdateListener;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.MatchParams;
@@ -155,6 +156,7 @@ public class BattleArena extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(bAController, this);
         Bukkit.getPluginManager().registerEvents(bAController.getArenaMatchQueue(), this);
         Bukkit.getPluginManager().registerEvents(bAEventController, this);
+        Bukkit.getPluginManager().registerEvents(new BTEntityListener(), this);
         
         /// Register our different Victory Types
         VictoryType.register(LastManStanding.class, this);

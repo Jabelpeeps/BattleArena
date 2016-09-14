@@ -19,7 +19,6 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.executors.BattleTrackerExecutor;
 import mc.alk.arena.executors.TrackerExecutor;
-import mc.alk.arena.listeners.BTEntityListener;
 import mc.alk.arena.listeners.BTSignListener;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.tracker.StatSign;
@@ -49,11 +48,9 @@ public class Tracker {
 
         TrackerConfigController.loadAll();
         TrackerMessageController.load();
-        
-        Bukkit.getPluginManager().registerEvents(new BTEntityListener(), BA);
 
         BA.getCommand("battleTracker").setExecutor( new BattleTrackerExecutor() );
-        BA.getCommand("btpvp").setExecutor( new TrackerExecutor( getPVPInterface()   ) );
+        BA.getCommand("btpvp").setExecutor( new TrackerExecutor( getPVPInterface() ) );
         BA.getCommand("btpve").setExecutor( new TrackerExecutor( getPVEInterface() ) );
         
         Scheduler.scheduleSynchronousTask( () -> {
