@@ -19,7 +19,6 @@ import mc.alk.arena.objects.tracker.StatSign.SignType;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.tracker.SignController;
 import mc.alk.arena.tracker.Tracker;
-import mc.alk.arena.tracker.TrackerMessageController;
 import mc.alk.arena.util.AutoClearingTimer;
 import mc.alk.arena.util.MessageUtil;
 
@@ -27,6 +26,7 @@ public class BTSignListener implements Listener{
 	SignController signController;
 	AutoClearingTimer<String> timer = new AutoClearingTimer<>();
 	public static final int SECONDS = 5;
+	
 	public BTSignListener(SignController _signController){
 		signController = _signController;
 		timer.setSaveEvery(61050); /// will auto clear records every minute, and 1sec
@@ -34,21 +34,22 @@ public class BTSignListener implements Listener{
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.isCancelled() || event.getClickedBlock() == null)
-            return;
-		final Block block = event.getClickedBlock();
-		final Material type = block.getType();
-		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN))) {
-			return ;}
+		if (event.isCancelled() || event.getClickedBlock() == null) return;
+		
+		Block block = event.getClickedBlock();
+		Material type = block.getType();
+		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)))
+			return ;
+		
 		StatSign ss = signController.getStatSign(event.getClickedBlock().getLocation());
-		if (ss == null)
-			return;
-		if (timer.withinTime(event.getPlayer().getName(),SECONDS*1000L)){
+		if (ss == null) return;
+		
+		if ( timer.withinTime( event.getPlayer().getName(),SECONDS * 1000L ) ) {
 			event.getPlayer().sendMessage(ChatColor.RED+"wait");
 			return;
 		}
         timer.put(event.getPlayer().getName());
-        final Location l = block.getLocation();
+        Location l = block.getLocation();
         Scheduler.scheduleSynchronousTask( 
                                 () -> l.getWorld().getBlockAt(l).getState().update(true), SECONDS * 20 );
         
@@ -57,34 +58,36 @@ public class BTSignListener implements Listener{
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event){
-		final Block block = event.getBlock();
-		final Material type = block.getType();
-		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN))) {
-			return;}
-		Sign s = (Sign)block.getState();
-		final String l = s.getLine(0);
-		if (l == null || l.isEmpty() || l.charAt(0) != '[')
+		Block block = event.getBlock();
+		Material type = block.getType();
+		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)))
 			return;
+		
+		Sign s = (Sign)block.getState();
+		String l = s.getLine(0);
+		if (l == null || l.isEmpty() || l.charAt(0) != '[') return;
+		
 		signController.removeSignAt(s.getLocation());
 	}
 
 	@EventHandler
 	public void onSignChange(SignChangeEvent event){
-		final Block block = event.getBlock();
-		final Material type = block.getType();
-		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN))) {
-			return;}
+		Block block = event.getBlock();
+		Material type = block.getType();
+		if (!(type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)))
+			return;
+		
 		StatSign ss;
 		try {
 			ss = getStatSign(block.getLocation(), event.getLines());
 		} catch (InvalidSignException e) {
-			TrackerMessageController.sendMessage(event.getPlayer(), e.getMessage());
+		    MessageUtil.sendMessage(event.getPlayer(), e.getMessage());
 			return;
 		}
-		if (ss == null){
-			return;}
+		if (ss == null) return;
+		
 		if (!event.getPlayer().hasPermission( Permissions.TRACKER_ADMIN ) && !event.getPlayer().isOp()){
-			TrackerMessageController.sendMessage(event.getPlayer(), "&cYou don't have perms to create top signs");
+		    MessageUtil.sendMessage(event.getPlayer(), "&cYou don't have perms to create top signs");
 			cancelSignPlace(event, block);
 			return;
 		}
@@ -114,16 +117,15 @@ public class BTSignListener implements Listener{
 		/// find the Sign Type, like top, personal
 		String strType = lines[1].replace('[', ' ').replace(']', ' ').trim();
 		SignType signType = SignType.fromName(strType);
-		if (signType == null)
-			return null;
+		if (signType == null) return null;
 
 		/// find the database
 		String db = lines[0].replace('[', ' ').replace(']', ' ').trim();
-		if (!Tracker.hasInterface(db)){
-			throw new InvalidSignException("Tracker Database " + db +" not found");}
+		if (!Tracker.hasInterface(db))
+			throw new InvalidSignException("Tracker Database " + db +" not found");
 		StatType st = StatType.fromName(strType);
-		if (st == null){
-			return null;}
+		if (st == null) return null;
+		
 		StatSign ss = new StatSign(db, l, SignType.TOP); /// TODO change when we have more than 1 type
 		ss.setStatType(st);
 		return ss;
@@ -142,5 +144,4 @@ public class BTSignListener implements Listener{
 	        super(message);
 	    }
 	}
-
 }

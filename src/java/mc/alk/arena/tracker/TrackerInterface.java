@@ -28,6 +28,7 @@ import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
+import mc.alk.arena.util.MessageUtil;
 
 public class TrackerInterface implements CacheSerializer<String, Stat>{
 	Cache<String, Stat> cache = new Cache<>(this);
@@ -72,7 +73,7 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 
 	@Override
     public void save(List<Stat> stats) {
-		SQL.saveAll(stats.toArray(new Stat[stats.size()]));
+		SQL.saveAll( stats.toArray( new Stat[stats.size()] ) );
 	}
 
 	public void save( Stat... stats ) { SQL.saveAll( stats ); }
@@ -119,17 +120,17 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		if (changeWinLossRecords){
 			ts1.setSaveIndividual(trackIndividual);
 			ts2.setSaveIndividual(trackIndividual);
-			switch(wlt){
-			case WIN:
-				ts1.win(ts2); ts2.loss(ts1);
-				break;
-			case LOSS:
-				ts1.loss(ts2); ts2.win(ts1);
-				break;
-			case TIE:
-				ts1.tie(ts2); ts2.tie(ts1);
-				break;
-			default:
+			switch(wlt) {
+    			case WIN:
+    				ts1.win(ts2); ts2.loss(ts1);
+    				break;
+    			case LOSS:
+    				ts1.loss(ts2); ts2.win(ts1);
+    				break;
+    			case TIE:
+    				ts1.tie(ts2); ts2.tie(ts1);
+    				break;
+    			default:
 			}
 		}
 		/// Change the elo
@@ -156,11 +157,11 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
     public void changePlayerElo(String p1, String p2, WLT wlt) {
 		Stat ts1 = new PlayerStat(p1);
 		Stat ts2 = new PlayerStat(p2);
-		addStatRecord(ts1, ts2, wlt,false);
+		addStatRecord(ts1, ts2, wlt, false);
 	}
 
     public void addPlayerRecord(OfflinePlayer p1, OfflinePlayer p2, WLT wlt) {
-		addPlayerRecord(p1.getName(), p2.getName(),wlt);
+		addPlayerRecord( p1.getName(), p2.getName(), wlt );
 	}
 
     public void addTeamRecord(String t1, String t2, WLT wlt) {
@@ -263,13 +264,16 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		return cache.get( new TeamStat( names ) );
 	}
 
+    /**
+     * write out all dirty records.  and empty the cache
+     */
+    public void flush() { cache.flush(); }
+    public void onlyTrackOverallStats( boolean b ) { trackIndividual = !b; }
     public void saveAll() { cache.save(); }
-
  	public List<Stat> getTopXRating(int x) { return getTopX( StatType.RATING, x, null ); }
     public List<Stat> getTopXWins(int x) { return getTopX( StatType.WINS, x, null ); }
     public List<Stat> getTopX(StatType statType, int x) { return getTopX( statType, x, 1 ); }
     private List<Stat> getTopXRanking(int x, Integer teamsize) { return getTopX( StatType.RANKING, x, teamsize ); }
-
 
     private List<Stat> getTopX(StatType statType, int x, Integer teamsize) {
 		cache.save();
@@ -280,13 +284,6 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		cache.clear();
 		SQL.deleteTables();
 	}
-
-	/**
-	 * write out all dirty records.  and empty the cache
-	 */
-    public void flush() { cache.flush(); }
-
-    public void onlyTrackOverallStats( boolean b ) { trackIndividual = !b; }
 
     public boolean setRating(OfflinePlayer player, int rating){
 		Stat stat = cache.get(new PlayerStat(player));
@@ -328,8 +325,7 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		cache.save();
 		List<Stat> teamstats = getTopXRanking(x, teamSize);
 		if (teamstats == null){
-			TrackerMessageController.sendMessage(
-			        sender,ChatColor.YELLOW + "The top " + statType.getName() + " can not be found");
+		    MessageUtil.sendMessage( sender, ChatColor.YELLOW + "The top " + statType.getName() + " can not be found" );
 			return;
 		}
 		/// Header Message
@@ -339,7 +335,7 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		msg = msg.replaceAll("\\{stat\\}", statType.getName());
 		msg = msg.replaceAll("\\{x\\}", x +"");
 
-		TrackerMessageController.sendMessage(sender,msg);
+		MessageUtil.sendMessage(sender,msg);
 
 		/// Send the Body Messages
 		Map<StatType,Pattern> patterns = new HashMap<>(StatType.values().length);
@@ -347,8 +343,8 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 			patterns.put(st,Pattern.compile("\\{"+st.name().toLowerCase()+"\\}"));
 		}
 
-		final int max = Math.min(x,teamstats.size());
-		for (int i=0;i<max;i++){
+		int max = Math.min(x,teamstats.size());
+		for ( int i = 0; i < max; i++ ) {
 			msg = bodyMsg;
 			Stat stat = teamstats.get(i);
 			for (StatType st : patterns.keySet()){
@@ -372,9 +368,8 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 			}
 			msg = msg.replaceAll("\\{rank\\}", i+1 +"");
 			msg = msg.replaceAll("\\{name\\}", stat.getName());
-			TrackerMessageController.sendMessage(sender,msg);
+			MessageUtil.sendMessage( sender, msg );
 		}
-
 	}
 
 	public Integer getRank(OfflinePlayer sender) {

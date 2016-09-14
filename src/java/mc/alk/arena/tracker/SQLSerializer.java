@@ -65,16 +65,28 @@ public class SQLSerializer {
 
 	protected class RSCon {
 		public ResultSet rs;
+		public PreparedStatement ps;
 		public Connection con;
-	}
-
-	protected void close(RSCon rscon) {
-		try {
-			rscon.rs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		
+		public void close() {
+		    try {
+                rs.close();
+                ps.close();
+                con.close();
+            } 
+		    catch ( SQLException e ) {
+                e.printStackTrace();
+            }
 		}
 	}
+
+//	protected void close(RSCon rscon) {
+//		try {
+//			rscon.rs.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public Connection getConnection() throws SQLException {
 
@@ -84,17 +96,17 @@ public class SQLSerializer {
 			Connection con = ds.getConnection();
 			con.setAutoCommit(true);
 			return con;
-		} catch (SQLException e1) {
-				e1.printStackTrace();
+		} catch ( SQLException e1 ) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
-	public void closeConnection(RSCon rscon) {
-		if (rscon == null || rscon.con == null) return;
-		
-		try {rscon.con.close();} catch (SQLException e) {}
-	}
+//	public void closeConnection(RSCon rscon) {
+//		if ( rscon == null || rscon.con == null ) return;
+//		
+//		try { rscon.con.close(); } catch (SQLException e) {}
+//	}
 
 	public static DataSource setupDataSource( String connectURI, String username, String password, 
 	                                                                    int minIdle, int maxActive ) {

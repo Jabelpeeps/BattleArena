@@ -87,9 +87,7 @@ public class SQLInstance {
 	String get_versus_records, getx_versus_records, get_wins_since;
 	String truncate_all_tables, get_rank;
 
-	public static final String get_members = "select " + NAME + 
-	                                        " from " + MEMBER_TABLE +
-	                                        " where " + TEAMID + " = ?";
+	public static final String get_members = "select " + NAME + " from " + MEMBER_TABLE + " where " + TEAMID + " = ?";
 	String save_members;
 
 	@Getter String tableName;
@@ -297,7 +295,8 @@ public class SQLInstance {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-		    serial.closeConnection(rscon);
+            rscon.close();
+//		    serial.closeConnection(rscon);
 		}
 		return stats;
 	}
@@ -313,7 +312,8 @@ public class SQLInstance {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-		    serial.closeConnection(rscon);
+		    rscon.close();
+//		    serial.closeConnection(rscon);
 		}
 		return null;
 	}
@@ -321,7 +321,7 @@ public class SQLInstance {
 	private Stat createStat(RSCon rscon) throws SQLException{
 		ResultSet rs = rscon.rs;
 		String id = rs.getString(TEAMID);
-		String name= rs.getString(NAME);
+		String name = rs.getString(NAME);
 		int kills = rs.getInt(WINS);
 		int deaths = rs.getInt(LOSSES);
 		int streak = rs.getInt(STREAK);
@@ -345,20 +345,19 @@ public class SQLInstance {
 		try {nid = Integer.valueOf(id);} catch (NumberFormatException nfe){}
 		if (nid != null && ts instanceof TeamStat){
 			HashSet<String> players = new HashSet<>();
-			RSCon rscon2 = null;
-			try{
-				rscon2 = serial.executeQuery( SQLSerializer.TIMEOUT, get_members, id );
+			RSCon rscon2 = serial.executeQuery( SQLSerializer.TIMEOUT, get_members, id );
+			try {
 				ResultSet rs2 = rscon2.rs;
 				while (rs2.next()){
 					players.add(rs2.getString(NAME));
 				}
 
 				((TeamStat)ts).setMembers(players);
-			} finally{
-			    serial.closeConnection(rscon2);
+			} finally {
+			    rscon2.close();
+//			    serial.closeConnection(rscon2);
 			}
-		} else {
-		}
+		} 
 		ts.setWins(kills);
 		ts.setLosses(deaths);
 		ts.setStreak(streak);
@@ -525,7 +524,8 @@ public class SQLInstance {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally{
-			    serial.closeConnection(rscon);
+	            rscon.close();
+//			    serial.closeConnection(rscon);
 			}
 		}
 		return list;
@@ -549,8 +549,9 @@ public class SQLInstance {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
-			} finally{
-			    serial.closeConnection(rscon);
+			} finally {
+	            rscon.close();
+//			    serial.closeConnection(rscon);
 			}
 		}
 		return list;

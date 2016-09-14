@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.entity.Player;
-
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
@@ -130,9 +128,6 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 		setDirty();
 	}
 
-	public static String getKey( Player player ) { return player.getName(); }
-	public static String getKey( String player ) { return player; }
-
 	protected static String getKey(List<String> playernames){
 		Collections.sort(playernames);
 		StringBuilder sb = new StringBuilder();
@@ -206,16 +201,15 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 
 	public float getStat(StatType statType) {
 		switch(statType){
-		case WINS: case KILLS: return getWins();
-		case LOSSES: case DEATHS: return getLosses();
-		case RANKING: case RATING: return getRating();
-		case KDRATIO : case WLRATIO : return getKDRatio();
-		case MAXRANKING : case MAXRATING : return getMaxRating();
-		case MAXSTREAK: return getMaxStreak();
-		case STREAK: return getStreak();
-		case TIES: return getTies();
-		default:
-			break;
+    		case WINS: case KILLS: return getWins();
+    		case LOSSES: case DEATHS: return getLosses();
+    		case RANKING: case RATING: return getRating();
+    		case KDRATIO: case WLRATIO: return getKDRatio();
+    		case MAXRANKING: case MAXRATING: return getMaxRating();
+    		case MAXSTREAK: return getMaxStreak();
+    		case STREAK: return getStreak();
+    		case TIES: return getTies();
+    		default: break;
 		}
 		return 0;
 	}

@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -28,7 +26,6 @@ public class TrackerMessageController {
 
     @Getter private static YamlConfiguration config = new YamlConfiguration();
     @Getter static File file;
-	static TrackerMessageController mc;
 	static List<String> meleeMsgs = null;
 	static List<String> rangeMsgs = null;
 	static final Random r = new Random();
@@ -69,30 +66,6 @@ public class TrackerMessageController {
 			e.printStackTrace();
 		}
 		return MessageUtil.colorChat(buf.toString());
-	}
-
-	public static boolean sendMessage(Player p, String message){
-		if (message ==null) return true;
-		String[] msgs = message.split("\n");
-		for (String msg: msgs){
-			if (p == null){
-				Log.info( MessageUtil.colorChat(msg));
-			} else {
-				p.sendMessage( MessageUtil.colorChat(msg));
-			}
-		}
-		return true;
-	}
-
-	public static boolean sendMessage(CommandSender p, String message){
-		if (message ==null) return true;
-		if (p instanceof Player){
-			if (((Player) p).isOnline())
-				p.sendMessage( MessageUtil.colorChat(message));
-		} else {
-			p.sendMessage( MessageUtil.colorChat(message));
-		}
-		return true;
 	}
 
 	public static String getPvEMessage(boolean melee, String killer, String target, String weapon){
@@ -141,8 +114,8 @@ public class TrackerMessageController {
 	public static String getSpecialMessage(TrackerMessageController.SpecialType type, int nKills, String killer, String target, ItemStack weapon){
 		String node = null;
 		switch (type){
-		case STREAK: node = "special.streak." + nKills; break;
-		case RAMPAGE: node = "special.rampage." + nKills; break;
+    		case STREAK: node = "special.streak." + nKills; break;
+    		case RAMPAGE: node = "special.rampage." + nKills; break;
 		}
 		String message = config.getString(node);
 		if (message == null || message.isEmpty()){
@@ -155,39 +128,38 @@ public class TrackerMessageController {
 		return formatMessage(PVP_PREFIX, message,killer,target, null, nKills+"");
 	}
 
-    private static String formatMessage(String prefix, String msg, String killer, String target, String item, String times) {
+    private static String formatMessage( String prefix, String msg, String killer, String target, String item, String times ) {
         return formatMessage(prefix, msg, killer, target, item, times, new ArrayList<String>());
     }
 
-    private static String formatMessage(String prefix, String msg, String killer, String target,
-                                        String item, String times, List<String> lore) {
+    private static String formatMessage( String prefix, String msg, String killer, String target,
+                                         String item, String times, List<String> lore ) {
         try {
-            if (killer != null) {
+            if (killer != null)
                 msg = StringUtils.replace(msg, "%k", killer);
-            } else {
+            else
                 msg = StringUtils.replace(msg, "%k", "Unknown killer");
-            }
-            if (target != null) {
+
+            if (target != null)
                 msg = StringUtils.replace(msg, "%d", target);
-            } else {
+            else
                 msg = StringUtils.replace(msg, "%d", "unknown target");
-            }
-            if (item != null) {
+                
+            if (item != null)
                 msg = StringUtils.replace(msg, "%i", item.replace('_', ' '));
-            } else {
+            else
                 msg = StringUtils.replace(msg, "%i", "unknown item");
-            }
-            if (times != null) {
+
+            if (times != null)
                 msg = StringUtils.replace(msg, "%n", times);
-            } else {
+            else
                 msg = StringUtils.replace(msg, "%n", "?");
-            }
-            if (lore != null && !lore.isEmpty()) {
-                String slore = StringUtils.join(lore, ", ");
-                msg = StringUtils.replace(msg, "%l", slore);
-            } else {
+
+            if (lore != null && !lore.isEmpty())
+                msg = StringUtils.replace(msg, "%l", StringUtils.join(lore, ", ") );
+            else
                 msg = StringUtils.replace(msg, "%l", "???");
-            }
+
         } catch (Exception e) {
             Log.err( "Error getting message " + msg );
             e.printStackTrace();

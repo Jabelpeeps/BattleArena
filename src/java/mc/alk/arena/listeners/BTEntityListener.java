@@ -32,6 +32,7 @@ import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.tracker.TrackerConfigController;
 import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.tracker.TrackerMessageController;
+import mc.alk.arena.util.MessageUtil;
 
 
 public class BTEntityListener implements Listener {
@@ -221,9 +222,9 @@ public class BTEntityListener implements Listener {
 
 	private void sendMessage(Player killerEntity, Player targetEntity, String msg) {
 		if (killerEntity != null){
-			TrackerMessageController.sendMessage(killerEntity, msg);}
+		    MessageUtil.sendMessage(killerEntity, msg);}
 		if (targetEntity != null){
-			TrackerMessageController.sendMessage(targetEntity, msg);}
+		    MessageUtil.sendMessage(targetEntity, msg);}
 	}
 
 	private void sendMessage(PlayerDeathEvent event, String msg){
