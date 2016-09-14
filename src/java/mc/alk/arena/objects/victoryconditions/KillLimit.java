@@ -7,7 +7,6 @@ import java.util.TreeMap;
 import org.bukkit.configuration.ConfigurationSection;
 
 import mc.alk.arena.competition.Match;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
@@ -19,6 +18,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.objects.victoryconditions.interfaces.ScoreTracker;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerInterface;
 
 public class KillLimit extends VictoryCondition implements ScoreTracker{
     final ArenaObjective kills;

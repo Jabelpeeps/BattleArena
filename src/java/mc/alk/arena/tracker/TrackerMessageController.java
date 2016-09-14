@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.tracker;
+package mc.alk.arena.tracker;
 
 import java.io.File;
 import java.util.ArrayList;

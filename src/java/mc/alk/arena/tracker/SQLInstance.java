@@ -1,4 +1,4 @@
-package mc.alk.arena.serializers.tracker;
+package mc.alk.arena.tracker;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ import mc.alk.arena.objects.tracker.VersusRecords;
 import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
 import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
-import mc.alk.arena.serializers.tracker.SQLSerializer.RSCon;
+import mc.alk.arena.tracker.SQLSerializer.RSCon;
 import mc.alk.arena.util.Log;
 
 
@@ -98,9 +98,10 @@ public class SQLInstance {
 	public SQLInstance( String SQLtableName, SQLSerializer serialiser ) { 
 	    tableName = SQLtableName;
 	    serial = serialiser;
+	    init();
 	}
 
-	public boolean init() {
+	public void init() {
 	    
 		versus_table = TABLE_PREFIX + tableName + VERSUS_TABLE_SUFFIX;
 		overall_table = TABLE_PREFIX + tableName + OVERALL_TABLE_SUFFIX;
@@ -122,18 +123,18 @@ public class SQLInstance {
 				FLAGS + " INTEGER UNSIGNED DEFAULT 0," +
 				"PRIMARY KEY (" + TEAMID +")) ";
 
-		create_versus_table = "CREATE TABLE IF NOT EXISTS " + versus_table +" ("+
-				ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-				ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
+		create_versus_table = "CREATE TABLE IF NOT EXISTS " + versus_table + " (" +
+				ID1 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
+				ID2 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
 				WINS + " INTEGER UNSIGNED ," +
 				LOSSES + " INTEGER UNSIGNED," +
 				TIES + " INTEGER UNSIGNED," +
-				"PRIMARY KEY ("+ID1 +", "+ID2+"))";
+				"PRIMARY KEY (" + ID1 + ", " + ID2 + "))";
 
-		create_member_table = "CREATE TABLE IF NOT EXISTS " + MEMBER_TABLE +" ("+
-				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-				NAME + " VARCHAR(" + MAX_NAME_LENGTH +") NOT NULL ," +
-				"PRIMARY KEY (" + TEAMID +","+NAME+"))";
+		create_member_table = "CREATE TABLE IF NOT EXISTS " + MEMBER_TABLE + " (" +
+				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
+				NAME + " VARCHAR(" + MAX_NAME_LENGTH + ") NOT NULL ," +
+				"PRIMARY KEY (" + TEAMID + "," + NAME + "))";
 
 		get_topx_wins = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
 		get_topx_losses = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
@@ -153,65 +154,63 @@ public class SQLInstance {
 		get_topx_maxelo_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
 		get_topx_kd_tc = "select *,(" + WINS + "/" + LOSSES+") as KD from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
 
-		get_overall_totals = "select * from " + overall_table + " where " + TEAMID +" = ?";
+		get_overall_totals = "select * from " + overall_table + " where " + TEAMID + " = ?";
 
-		get_versus_record = "select "+WINS+","+LOSSES+","+TIES+" from "+versus_table+" WHERE "+ID1+"=? AND "+ID2+"=?";
+		get_versus_record = "select " + WINS + "," + LOSSES + "," + TIES + " from " + versus_table + 
+		                                                            " WHERE " + ID1 + "=? AND " + ID2 + "=?";
+		getx_versus_records = "select * from " + individual_table +
+		    " WHERE (" + ID1 + "=? AND " + ID2 + "=?) OR (" + ID1 + "=? AND " + ID2 + "=?) ORDER BY " + DATE + " DESC LIMIT ?";
 
-		getx_versus_records = "select * from "+individual_table+" WHERE ("+ID1+"=? AND "+ID2+"=?) OR ("+ID1+"=? AND "+ID2+"=?) ORDER BY "+DATE+" DESC LIMIT ?";
+		get_rank = "select  count(*) from " + overall_table + " where " + ELO + " > ? and " + COUNT + "=?";
 
-
-		get_rank = "select  count(*) from "+overall_table+" where "+ELO+" > ? and "+COUNT+"=?";
-
-		get_wins_since = "select * from "+individual_table+" WHERE ("+ID1+"=? AND WLTIE=1) OR ("+ID2+"=? AND WLTIE=0) AND "+DATE+" >= ? ORDER BY "+DATE+" DESC ";
+		get_wins_since = "select * from " + individual_table + 
+	        " WHERE (" + ID1 + "=? AND WLTIE=1) OR (" + ID2 + "=? AND WLTIE=0) AND " + DATE + " >= ? ORDER BY " + DATE + " DESC ";
 
 		switch( serial.getType() ) {
 		case MYSQL:
-			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table +" ("+
-					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-					ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-					DATE + " DATETIME," +
-					WLTIE + " INTEGER UNSIGNED," +
+			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table + " (" +
+					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ," +
+					ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ," +
+					DATE + " DATETIME," + WLTIE + " INTEGER UNSIGNED," +
 					"PRIMARY KEY (" + ID1 +", " + ID2 + "," + DATE + "), "+
 					"INDEX USING HASH (" + ID1 +"),INDEX USING BTREE (" + DATE +")) ";
 
-			create_member_table_idx = "CREATE INDEX "+MEMBER_TABLE+"_idx ON " +MEMBER_TABLE+" ("+TEAMID+") USING HASH";
-			create_versus_table_idx = "CREATE INDEX "+versus_table+"_idx ON " +versus_table+" ("+ID1+") USING HASH";
+			create_member_table_idx = "CREATE INDEX " + MEMBER_TABLE + "_idx ON " + MEMBER_TABLE + " (" + TEAMID + ") USING HASH";
+			create_versus_table_idx = "CREATE INDEX " + versus_table + "_idx ON " + versus_table + " (" + ID1 + ") USING HASH";
 
-			insert_overall_totals = "INSERT INTO "+overall_table+" VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
-					"ON DUPLICATE KEY UPDATE " +
-					WINS + " = VALUES(" + WINS +"), " + LOSSES +"=VALUES(" + LOSSES + "), " + TIES +"=VALUES(" + TIES + "), " +
-					STREAK +"= VALUES(" + STREAK+")," +MAXSTREAK +"= VALUES(" + MAXSTREAK+")," +
-					ELO +"= VALUES(" + ELO + ")," +  MAXELO +"= VALUES(" + MAXELO+"),"+
-					FLAGS+"=VALUES("+FLAGS+")";
+			insert_overall_totals = "INSERT INTO " + overall_table + " VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
+					"ON DUPLICATE KEY UPDATE " + WINS + " = VALUES(" + WINS + "), " + LOSSES + "=VALUES(" + LOSSES + "), " +
+			        TIES + "=VALUES(" + TIES + "), " + STREAK + "= VALUES(" + STREAK + ")," + 
+					MAXSTREAK + "= VALUES(" + MAXSTREAK + ")," + ELO + "= VALUES(" + ELO + ")," +  
+			        MAXELO + "= VALUES(" + MAXELO + ")," + FLAGS + "=VALUES(" + FLAGS + ")";
 
-			insert_versus_record = "insert into "+versus_table+" VALUES(?,?,?,?,?) " +
-					"ON DUPLICATE KEY UPDATE " +
-					WINS + " = VALUES(" + WINS +"), " + LOSSES +"=VALUES(" + LOSSES + "), " + TIES +"=VALUES(" + TIES + ")";
+			insert_versus_record = "insert into " + versus_table + " VALUES(?,?,?,?,?) " + "ON DUPLICATE KEY UPDATE " +
+					WINS + " = VALUES(" + WINS + "), " + LOSSES + "=VALUES(" + LOSSES + "), " + TIES + "=VALUES(" + TIES + ")";
 
-			save_ind_record = "insert ignore into "+individual_table+" VALUES(?,?,?,?)";
+			save_ind_record = "insert ignore into " + individual_table + " VALUES(?,?,?,?)";
 			save_members = "insert ignore into " + MEMBER_TABLE + " VALUES(?,?) ";
-			truncate_all_tables = "truncate table " +overall_table+"; truncate table " + versus_table+"; truncate table "+individual_table;
+			truncate_all_tables = 
+			        "truncate table " + overall_table + "; truncate table " + versus_table + "; truncate table " + individual_table;
 
 			break;
 		case SQLITE:
-			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table +" ("+
-					ID1 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-					ID2 + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-					DATE + " DATETIME," +
-					WLTIE + " INTEGER UNSIGNED," +
-					"PRIMARY KEY (" + ID1 +", " + ID2 + "," + DATE + ")) ";
+			create_individual_table = "CREATE TABLE IF NOT EXISTS " + individual_table + " (" +
+					ID1 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
+					ID2 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
+					DATE + " DATETIME," + WLTIE + " INTEGER UNSIGNED," +
+					"PRIMARY KEY (" + ID1 + ", " + ID2 + "," + DATE + ")) ";
 
-			create_member_table_idx = "CREATE UNIQUE INDEX IF NOT EXISTS "+MEMBER_TABLE+"_idx ON " +MEMBER_TABLE+" ("+TEAMID+")";
-			create_versus_table_idx = "CREATE UNIQUE INDEX IF NOT EXISTS "+versus_table+"_idx ON " +versus_table+" ("+ID1+")";
+			create_member_table_idx = 
+			        "CREATE UNIQUE INDEX IF NOT EXISTS " + MEMBER_TABLE + "_idx ON " + MEMBER_TABLE + " (" + TEAMID + ")";
+			create_versus_table_idx = 
+			        "CREATE UNIQUE INDEX IF NOT EXISTS " + versus_table + "_idx ON " + versus_table + " (" + ID1 + ")";
 
-			insert_versus_record = "insert or replace into "+versus_table+" VALUES(?,?,?,?,?)";
-
-			save_ind_record = "insert or ignore into "+individual_table+" VALUES(?,?,?,?)";
-
-			insert_overall_totals = "INSERT OR REPLACE INTO "+overall_table+" VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
-
+			insert_versus_record = "insert or replace into " + versus_table + " VALUES(?,?,?,?,?)";
+			save_ind_record = "insert or ignore into " + individual_table + " VALUES(?,?,?,?)";
+			insert_overall_totals = "INSERT OR REPLACE INTO " + overall_table + " VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
 			save_members = "insert or ignore into " + MEMBER_TABLE + " VALUES(?,?) ";
-			truncate_all_tables = "drop table " +overall_table+"; drop table " + versus_table+"; drop table "+individual_table;
+			truncate_all_tables = 
+			        "drop table " + overall_table + "; drop table " + versus_table + "; drop table " + individual_table;
 		}
 		
         if (shouldUpdateTo1point0()){
@@ -226,9 +225,7 @@ public class SQLInstance {
 		} 
 		catch (Exception e){
 			e.printStackTrace();
-			return false;
 		}
-		return true;
 	}
 
 	public List<Stat> getTopX(StatType statType, int x, Integer teamcount) {
@@ -350,7 +347,7 @@ public class SQLInstance {
 			HashSet<String> players = new HashSet<>();
 			RSCon rscon2 = null;
 			try{
-				rscon2 = serial.executeQuery(rscon.con, SQLSerializer.TIMEOUT, get_members, id);
+				rscon2 = serial.executeQuery( SQLSerializer.TIMEOUT, get_members, id );
 				ResultSet rs2 = rscon2.rs;
 				while (rs2.next()){
 					players.add(rs2.getString(NAME));

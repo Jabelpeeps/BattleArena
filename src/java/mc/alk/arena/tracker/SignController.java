@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.tracker;
+package mc.alk.arena.tracker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,6 @@ import mc.alk.arena.objects.tracker.Stat;
 import mc.alk.arena.objects.tracker.StatSign;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.serializers.BaseConfig;
-import mc.alk.arena.tracker.Tracker;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.SerializerUtil;
 

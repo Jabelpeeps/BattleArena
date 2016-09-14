@@ -1,4 +1,4 @@
-package mc.alk.arena.controllers.tracker;
+package mc.alk.arena.tracker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,9 +26,6 @@ import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.objects.tracker.TeamStat;
 import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
-import mc.alk.arena.serializers.tracker.SQLInstance;
-import mc.alk.arena.serializers.tracker.SQLSerializer;
-import mc.alk.arena.tracker.EloCalculator;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
 

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
@@ -12,6 +11,7 @@ import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TimeUtil;

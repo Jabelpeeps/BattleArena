@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.util.MessageUtil;
 
 

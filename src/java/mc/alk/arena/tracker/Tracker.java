@@ -17,18 +17,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
-import mc.alk.arena.controllers.tracker.SignController;
-import mc.alk.arena.controllers.tracker.TrackerConfigController;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
-import mc.alk.arena.controllers.tracker.TrackerMessageController;
 import mc.alk.arena.executors.BattleTrackerExecutor;
 import mc.alk.arena.executors.TrackerExecutor;
 import mc.alk.arena.listeners.BTEntityListener;
 import mc.alk.arena.listeners.BTSignListener;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.tracker.StatSign;
-import mc.alk.arena.serializers.tracker.YamlConfigUpdater;
-import mc.alk.arena.serializers.tracker.YamlMessageUpdater;
 import mc.alk.arena.util.FileUtil;
 
 public class Tracker {

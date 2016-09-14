@@ -1,4 +1,4 @@
-package mc.alk.arena.serializers.tracker;
+package mc.alk.arena.tracker;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,10 +28,10 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 
 public class SQLSerializer {
-	static public final String version = "1.5";
+    public static final String version = "1.5";
 
-	static protected final boolean DEBUG = false;
-	static final boolean DEBUG_UPDATE = false;
+    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG_UPDATE = false;
 
 	protected static final int TIMEOUT = 4; 
 
@@ -78,8 +78,8 @@ public class SQLSerializer {
 
 	public Connection getConnection() throws SQLException {
 
-		if ( ds == null ) {
-			throw new SQLException( "Connection is null.  Did you intiliaze your SQL connection?"); }
+		if ( ds == null ) 
+			throw new SQLException( "Connection is null.  Did you intiliaze your SQL connection?"); 
 		try {
 			Connection con = ds.getConnection();
 			con.setAutoCommit(true);
@@ -110,7 +110,7 @@ public class SQLSerializer {
 		        new DriverManagerConnectionFactory( connectURI,username, password ), 
 		        new GenericObjectPool( null, poolConf ),
 		        new GenericKeyedObjectPoolFactory( null ), 
-				"select 1", false, true);
+				"select 1", false, true );
 	
 		return new PoolingDataSource( factory.getPool() );
 	}
@@ -119,7 +119,7 @@ public class SQLSerializer {
 	    
 		boolean exists = false;
 		if ( type == SQLType.SQLITE ) {
-			exists = getBoolean("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';" );
+			exists = getBoolean( "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';" );
 		} 
 		else {
 			List<Object> objs = getObjects( "SHOW TABLES LIKE '" + tableName + "';" );
@@ -171,41 +171,34 @@ public class SQLSerializer {
 	 * @param column
 	 * @return Boolean: whether the column exists
 	 */
-	protected Boolean hasColumn(String table, String column){
-		String stmt = null;
+	protected Boolean hasColumn( String table, String column ) {
 		Boolean b = null;
 		
 		switch (type){
-		
 		    case MYSQL:
-    			stmt = "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? " +
-    				"AND TABLE_NAME = ? AND COLUMN_NAME = ?";
-    			b = getBoolean( 2, stmt, DB,table,column);
+    			b = getBoolean( 2, 
+    			        "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? "
+    			        + "AND TABLE_NAME = ? AND COLUMN_NAME = ?", DB, table, column );
     			return b == null ? false : b;
     		
     		case SQLITE:
-    			stmt = "SELECT COUNT("+column+") FROM '"+table+"'";
-    			try {
-    				return getBoolean( 2, stmt ) == null ? false : true;
-    			} catch (Exception e){
-    				return false;
-    			}
+				return getBoolean( 2, "SELECT COUNT(" + column + ") FROM '" + table + "'" ) == null ? false : true;
 		}
 		return false;
 	}
 
-	protected Boolean hasTable(String tableName){
-		Boolean exists;
-		if (type == SQLType.SQLITE){
-			exists = getBoolean("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='"+tableName+"'");
-		} else {
-			List<Object> objs = getObjects("SHOW TABLES LIKE '"+tableName+"';");
-			exists = objs!=null && objs.size() == 1;
+	protected boolean hasTable( String tableName ) {
+		boolean exists;
+		if ( type == SQLType.SQLITE )
+			exists = getBoolean( "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'" );
+		else {
+			List<Object> objs = getObjects( "SHOW TABLES LIKE '" + tableName + "';" );
+			exists = ( objs != null && objs.size() == 1 );
 		}
 		return exists;
 	}
 
-	protected RSCon executeQuery(String strRawStmt, Object... varArgs){
+	protected RSCon executeQuery( String strRawStmt, Object... varArgs ) {
 		return executeQuery( TIMEOUT, strRawStmt, varArgs );
 	}
 
@@ -215,72 +208,60 @@ public class SQLSerializer {
 	 * @param varArgs
 	 * @return
 	 */
-	private RSCon executeQuery( Integer timeoutSeconds, String strRawStmt, Object... varArgs){
-
-		try ( Connection con = getConnection() ) {
-	        return executeQuery( con, timeoutSeconds, strRawStmt, varArgs );
-		} 
-		catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	/**
-	 * Execute the given query
-	 * @param strRawStmt
-	 * @param varArgs
-	 * @return
-	 */
-	RSCon executeQuery(Connection con, Integer timeoutSeconds, String strRawStmt, Object... varArgs){
+	protected RSCon executeQuery( Integer timeoutSeconds, String strRawStmt, Object... varArgs ) {
 		RSCon rscon = null;
 
-		try ( PreparedStatement ps = getStatement( strRawStmt, con, varArgs ) ) {
+        
+		try (   Connection con = getConnection();
+		        PreparedStatement ps = getStatement( strRawStmt, con, varArgs ) ) {
 		    
-			if (DEBUG) System.out.println("Executing =" + ps +" timeout="+timeoutSeconds+" raw="+strRawStmt);
+			if (DEBUG) System.out.println( "Executing =" + ps + " timeout=" + timeoutSeconds + " raw=" + strRawStmt );
 			ps.setQueryTimeout(timeoutSeconds);
 			ResultSet rs = ps.executeQuery();
 			rscon = new RSCon();
 			rscon.con = con;
-			rscon.rs = rs;
-			
-		} catch (Exception e) {
+			rscon.rs = rs;	
+		} 
+		catch ( SQLException e ) {
 			if ( Defaults.DEBUG_TRACKING ) {
-				System.err.println("Couldnt execute query " + strRawStmt);
+				System.err.println( "Couldnt execute query " + strRawStmt );
+				
 				for ( int i = 0; i < varArgs.length; i++ ) {
-					System.err.println("   arg["+ i+"] = " + varArgs[i]);}
+					System.err.println("   arg[" + i + "] = " + varArgs[i] ); 
+				}
 				e.printStackTrace();
 			}
 		}
 		return rscon;
 	}
 
-	protected void executeUpdate(final boolean async, final String strRawStmt, final Object... varArgs){
-		if (async){
-			new Thread( new Runnable() {
-				@Override
-                public void run() {
-					try{
-						executeUpdate(strRawStmt, varArgs);
-					} catch (Exception e){
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		} else {
-			try{
-				executeUpdate(strRawStmt, varArgs);
-			} catch (Exception e){
-				e.printStackTrace();
-			}
-		}
-	}
+//	private void executeUpdate( final boolean async, final String strRawStmt, final Object... varArgs ) {
+//		if ( async ) {
+//			new Thread( new Runnable() {
+//				@Override
+//                public void run() {
+//					try{
+//						executeUpdate(strRawStmt, varArgs);
+//					} catch (Exception e){
+//						e.printStackTrace();
+//					}
+//				}
+//			}).start();
+//		} else {
+//			try{
+//				executeUpdate(strRawStmt, varArgs);
+//			} catch (Exception e){
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
-	protected int executeUpdate(String strRawStmt, Object... varArgs){
+	protected int executeUpdate( String strRawStmt, Object... varArgs ) {
 		int result= -1;
 
 		try ( Connection con = getConnection();
 		      PreparedStatement ps = getStatement(strRawStmt,con,varArgs); ) {
+		    
 			if (DEBUG) System.out.println("Executing   =" + ps.toString() +"  raw="+strRawStmt);
 			
 			result = ps.executeUpdate();
@@ -324,7 +305,7 @@ public class SQLSerializer {
 	    } 
 	}
 
-	private PreparedStatement getStatement(String strRawStmt, Connection con, Object... varArgs){
+	private PreparedStatement getStatement( String strRawStmt, Connection con, Object... varArgs ) {
 
 		PreparedStatement ps = null;
 		try{

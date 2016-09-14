@@ -26,12 +26,12 @@ import org.bukkit.inventory.ItemStack;
 
 import lombok.AllArgsConstructor;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.controllers.tracker.TrackerConfigController;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
-import mc.alk.arena.controllers.tracker.TrackerMessageController;
 import mc.alk.arena.objects.tracker.Stat;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerConfigController;
+import mc.alk.arena.tracker.TrackerInterface;
+import mc.alk.arena.tracker.TrackerMessageController;
 
 
 public class BTEntityListener implements Listener {

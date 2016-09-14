@@ -25,7 +25,6 @@ import mc.alk.arena.controllers.BattleArenaController;
 import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.joining.TeamJoinFactory;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.events.events.TournamentRoundEvent;
 import mc.alk.arena.events.matches.MatchCancelledEvent;
 import mc.alk.arena.events.matches.MatchCompletedEvent;
@@ -48,6 +47,7 @@ import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 

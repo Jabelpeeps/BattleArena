@@ -14,12 +14,12 @@ import org.bukkit.inventory.ItemStack;
 
 import mc.alk.arena.Permissions;
 import mc.alk.arena.controllers.Scheduler;
-import mc.alk.arena.controllers.tracker.SignController;
-import mc.alk.arena.controllers.tracker.TrackerMessageController;
 import mc.alk.arena.objects.tracker.StatSign;
 import mc.alk.arena.objects.tracker.StatSign.SignType;
 import mc.alk.arena.objects.tracker.StatType;
+import mc.alk.arena.tracker.SignController;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.tracker.TrackerMessageController;
 import mc.alk.arena.util.AutoClearingTimer;
 import mc.alk.arena.util.MessageUtil;
 

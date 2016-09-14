@@ -2,8 +2,8 @@ package mc.alk.arena.events.tracker;
 
 
 import lombok.Getter;
-import mc.alk.arena.controllers.tracker.TrackerInterface;
 import mc.alk.arena.objects.tracker.Stat;
+import mc.alk.arena.tracker.TrackerInterface;
 
 public class MaxRatingChangeEvent extends TrackerEvent{
 	@Getter final Stat stat;

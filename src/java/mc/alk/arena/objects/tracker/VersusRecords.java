@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.objects.tracker.VersusRecords.VersusRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
-import mc.alk.arena.serializers.tracker.SQLInstance;
+import mc.alk.arena.tracker.SQLInstance;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheObject;
 import mc.alk.arena.util.Cache.CacheSerializer;

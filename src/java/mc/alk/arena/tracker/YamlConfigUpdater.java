@@ -1,4 +1,4 @@
-package mc.alk.arena.serializers.tracker;
+package mc.alk.arena.tracker;
 
 import java.io.File;
 import java.io.IOException;
