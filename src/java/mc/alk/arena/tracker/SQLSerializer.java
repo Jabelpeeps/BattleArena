@@ -165,7 +165,11 @@ public class SQLSerializer {
 	}
 
 	protected boolean hasTable( String tableName ) {
-		boolean exists;
+	    
+	    if ( Defaults.DEBUG_TRACKING )
+	        Log.info( "SQLSerializer.hasTable() called with tableName= " + tableName ); 
+	    
+		Boolean exists;
 		if ( type == SQLType.SQLITE )
 			exists = getBoolean( "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'" );
 		else {

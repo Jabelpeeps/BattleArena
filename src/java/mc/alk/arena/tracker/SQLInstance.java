@@ -194,11 +194,8 @@ public class SQLInstance {
 			truncate_all_tables = 
 			        "drop table " + overall_table + "; drop table " + versus_table + "; drop table " + individual_table;
 		}
-		
-        if ( shouldUpdateTo1point0() ) updateTo1Point0();
-        
-//        if (shouldUpdateTo1point1()){
-//            updateTo1Point1();}
+
+
 		try {
 			serial.createTable( versus_table, create_versus_table, create_versus_table_idx );
 			serial.createTable( overall_table, create_overall_table );
@@ -208,6 +205,11 @@ public class SQLInstance {
 		catch (Exception e){
 			e.printStackTrace();
 		}
+		
+        if ( shouldUpdateTo1point0() ) updateTo1Point0();
+        
+//      if (shouldUpdateTo1point1()){
+//          updateTo1Point1();}
 	}
 
 	@SuppressWarnings( "resource" )
