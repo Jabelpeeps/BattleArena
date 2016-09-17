@@ -1,5 +1,8 @@
 package mc.alk.arena.listeners.competition;
 
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+import lombok.AllArgsConstructor;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.arenas.ArenaListener;
@@ -8,16 +11,11 @@ import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.util.MessageUtil;
 
-import org.bukkit.event.player.PlayerTeleportEvent;
-
+@AllArgsConstructor
 public class PlayerTeleportListener implements ArenaListener{
-    final PlayerHolder holder;
+    PlayerHolder holder;
 
-	public PlayerTeleportListener(PlayerHolder holder){
-		this.holder = holder;
-	}
-
-	@ArenaEventHandler(priority=ArenaEventPriority.HIGH)
+	@ArenaEventHandler( priority = ArenaEventPriority.HIGH )
 	public void onPlayerTeleport(PlayerTeleportEvent event){
 		if (event.isCancelled() || event.getPlayer().hasPermission(Permissions.TELEPORT_BYPASS_PERM))
 			return;

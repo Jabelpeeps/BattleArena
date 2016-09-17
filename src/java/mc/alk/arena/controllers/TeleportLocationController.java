@@ -11,6 +11,7 @@ import mc.alk.arena.controllers.containers.AbstractAreaContainer;
 import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.listeners.PlayerHolder;
+import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -146,7 +147,7 @@ public class TeleportLocationController {
         MatchParams mp = am.getParams();
         boolean randomRespawn = tops.hasOption(TransitionOption.RANDOMRESPAWN);
         SpawnLocation l;
-        PlayerHolder.LocationType type;
+        LocationType type;
         PlayerHolder ph;
         
         if (Defaults.DEBUG_TRACE) {
@@ -162,7 +163,7 @@ public class TeleportLocationController {
                 teamIndex = Defaults.MAIN_SPAWN;
             }
             ph = (am instanceof Match) ? ((Match) am).getArena().getWaitroom() : am;
-            type = PlayerHolder.LocationType.WAITROOM;
+            type = LocationType.WAITROOM;
             l = ph.getSpawn(teamIndex, randomRespawn);
         } 
         else if ( tops.hasAnyOption( TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTMAINLOBBY ) ) {
@@ -170,12 +171,12 @@ public class TeleportLocationController {
                 teamIndex = Defaults.MAIN_SPAWN;
             }
             ph = RoomController.getLobby(mp.getType());
-            type = PlayerHolder.LocationType.LOBBY;
+            type = LocationType.LOBBY;
             l = RoomController.getLobbySpawn(teamIndex, mp.getType(), randomRespawn);
         } 
         else if (tops.hasOption(TransitionOption.TELEPORTSPECTATE)) {
             ph = (am instanceof Match) ? ((Match) am).getArena().getSpectatorRoom() : am;
-            type = PlayerHolder.LocationType.SPECTATE;
+            type = LocationType.SPECTATE;
             l = ph.getSpawn(teamIndex, randomRespawn);
         } 
         else { // They should teleportIn, aka to the Arena
@@ -188,10 +189,10 @@ public class TeleportLocationController {
             } else {
                 throw new IllegalStateException("[BA Error] Instance is " + am.getClass().getSimpleName());
             }
-            boolean random = (player.getCurLocation().getType() == PlayerHolder.LocationType.HOME
+            boolean random = (player.getCurLocation().getType() == LocationType.HOME
                     && tops.hasOption(TransitionOption.RANDOMSPAWN));
             ph = am;
-            type = PlayerHolder.LocationType.ARENA;
+            type = LocationType.ARENA;
             l = arena.getSpawn(teamIndex, random);
         }
         return new ArenaLocation(ph, l.getLocation(), type);

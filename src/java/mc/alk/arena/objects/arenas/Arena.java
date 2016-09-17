@@ -21,6 +21,7 @@ import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.SpawnController;
 import mc.alk.arena.controllers.containers.AreaContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.CompetitionTransition;
@@ -53,7 +54,7 @@ public class Arena extends AreaContainer {
     @Getter @Setter protected WorldGuardRegion worldGuardRegion;
 
     public Arena() {
-        super( "arena", LocationType.ARENA );
+        super( "arena", PlayerHolder.LocationType.ARENA );
     }
     
     /**
@@ -594,8 +595,8 @@ public class Arena extends AreaContainer {
     }
 
     @Override
-    public LocationType getLocationType() {
-        return LocationType.ARENA;
+    public PlayerHolder.LocationType getLocationType() {
+        return PlayerHolder.LocationType.ARENA;
     }
 
     public List<List<SpawnLocation>> getVisitorLocs() {

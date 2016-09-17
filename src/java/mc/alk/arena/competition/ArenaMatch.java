@@ -375,18 +375,9 @@ public class ArenaMatch extends Match {
 			signClick( event,this );
         } 
         else if ( respawnTimer.containsKey( event.getPlayer().getUniqueId() ) )
-            respawnClick(event,this,respawnTimer);
+            respawnClick( event, respawnTimer );
         else 
             readyClick(event);
-    }
-
-    public static void respawnClick(PlayerInteractEvent event, PlayerHolder am, Map<UUID,Integer> respawnTimer) {
-        ArenaPlayer ap = PlayerController.toArenaPlayer(event.getPlayer());
-
-        Bukkit.getScheduler().cancelTask( respawnTimer.remove( ap.getUniqueId() ) );
-        SpawnLocation loc = am.getSpawn( am.getTeam( ap ).getIndex(),
-                                         am.getParams().hasOptionAt( MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN ));
-        TeleportController.teleport(ap, loc.getLocation());
     }
 
     public static void signClick(PlayerInteractEvent event, PlayerHolder am) {

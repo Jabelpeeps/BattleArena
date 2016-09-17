@@ -50,7 +50,6 @@ import mc.alk.arena.events.players.ArenaPlayerJoinEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent.QuitReason;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaLocation;
@@ -399,7 +398,7 @@ public class BAExecutor extends CustomCommandExecutor {
         PlayerHolder ph = loc.getPlayerHolder();
         Competition c = p.getCompetition();
         
-        if (c == null && (ph == null || loc.getType() == LocationType.HOME)) {
+        if (c == null && (ph == null || loc.getType() == PlayerHolder.LocationType.HOME)) {
             if (arenaController.isInQue(p)) {
                 JoinOptions jo = p.getMetaData().getJoinOptions();
                 if (jo != null) {
@@ -1271,7 +1270,7 @@ public class BAExecutor extends CustomCommandExecutor {
         if (ac == null) {
             return MessageUtil.sendMessage(sender, "&cThere is no class called &6" + arenaClass);
         }
-        if (sender.getCurLocation().getType() == LocationType.HOME) {
+        if (sender.getCurLocation().getType() == PlayerHolder.LocationType.HOME) {
             return MessageUtil.sendMessage(sender, "&cYou aren't in a game&6");
         }
         ArenaClassController.changeClass(sender.getPlayer(), sender.getCompetition(), ac);

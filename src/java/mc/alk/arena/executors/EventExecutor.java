@@ -168,7 +168,7 @@ public class EventExecutor extends BAExecutor{
 			return false;
 		}
 
-		EventParams sq = event.getParams();
+		MatchParams sq = event.getParams();
 		StateGraph tops = sq.getStateGraph();
 		/// Perform is ready check
 		if(!tops.playerReady(p,null)){
@@ -205,7 +205,7 @@ public class EventExecutor extends BAExecutor{
 
 		event.joining(tqo);
 
-		if (sq.getSecondsTillStart() != null){
+		if (((EventParams) sq).getSecondsTillStart() != null){
 			Long time = event.getTimeTillStart();
 			if (time != null)
 			    MessageUtil.sendSystemMessage( p, "event_will_start_in", TimeUtil.convertMillisToString( time ) );

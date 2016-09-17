@@ -9,12 +9,10 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
-import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.controllers.PlayerStoreController;
-import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.players.ArenaPlayerEnterMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveMatchEvent;
@@ -22,30 +20,22 @@ import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.listeners.custom.MethodController;
-import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
-import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
-import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.objects.options.TransitionOption;
-import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.PlayerUtil;
 
-public class GameManager implements PlayerHolder {
+public class GameManager extends PlayerHolder {
 	static final HashMap<ArenaType, GameManager> map = new HashMap<>();
 
-	@Getter final MatchParams params;
 	final Set<ArenaPlayer> handled = new HashSet<>(); 
-	MethodController methodController;
-
 	public static GameManager getGameManager(MatchParams mp) {
 	    
 		if (map.containsKey(mp.getType()))
@@ -54,10 +44,6 @@ public class GameManager implements PlayerHolder {
 		GameManager gm = new GameManager(mp);
 		map.put(mp.getType(), gm);
 		return gm;
-	}
-
-	protected void updateBukkitEvents(MatchState matchState,ArenaPlayer player){
-		methodController.updateEvents(matchState, player);
 	}
 
 	private GameManager(MatchParams _params){
@@ -69,18 +55,7 @@ public class GameManager implements PlayerHolder {
 		Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
 	}
 
-	@Override
-	public void addArenaListener(ArenaListener arenaListener) {
-        methodController.addListener(arenaListener);
-    }
-
-    @Override
-    public boolean removeArenaListener(ArenaListener arenaListener) {
-        return methodController.removeListener(arenaListener);
-    }
-
-
-    @ArenaEventHandler(priority=ArenaEventPriority.HIGHEST)
+	@ArenaEventHandler( priority = ArenaEventPriority.HIGHEST )
 	public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
 		if (handled.contains(event.getPlayer()) && !event.isHandledQuit()){
 			ArenaPlayer player = event.getPlayer();
@@ -109,12 +84,6 @@ public class GameManager implements PlayerHolder {
 	public CompetitionState getState() { return MatchState.NONE; }
 	@Override
 	public boolean isHandled(ArenaPlayer player) { return handled.contains(player); }
-	@Override
-	public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) { return false; }
-	@Override
-	public void callEvent(BAEvent event) { methodController.callEvent(event); }
-	@Override
-	public SpawnLocation getSpawn(int index, boolean random) { return null; }
 	@Override
 	public LocationType getLocationType() { return null; }
 	@Override
@@ -163,25 +132,14 @@ public class GameManager implements PlayerHolder {
 	}
 
 	@Override
-	public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-
-	@Override
 	public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
         if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&fonPostEnter  t=" + player.getTeam());
 	}
 
 	@Override
-	public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-
-	@Override
 	public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
         if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&8onPostLeave  t=" + player.getTeam());
 	}
-
-    @Override
-    public boolean hasOption(TransitionOption option) {
-        return params.hasOptionAt(getState(), option);
-    }
 
     public boolean hasPlayer(ArenaPlayer player) {
 		return handled.contains(player);
@@ -194,5 +152,4 @@ public class GameManager implements PlayerHolder {
 			}
 		}
 	}
-    public void setTeleportTime(ArenaPlayer player, ArenaLocation location) { }
 }

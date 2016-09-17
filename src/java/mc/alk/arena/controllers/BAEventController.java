@@ -116,8 +116,8 @@ public class BAEventController implements Listener {
 		events.add(event);
 	}
 
-	public AbstractComp getOpenEvent(EventParams eventParams) {
-		String key = getKey(eventParams);
+	public AbstractComp getOpenEvent(MatchParams matchParams) {
+		String key = getKey(matchParams);
 		Map<EventState,List<AbstractComp>> events = allEvents.get(key);
 		if (events == null)
 			return null;

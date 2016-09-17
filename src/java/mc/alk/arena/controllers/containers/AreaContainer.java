@@ -22,9 +22,9 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.Util;
 
 
-public class AreaContainer extends AbstractAreaContainer{
+public class AreaContainer extends AbstractAreaContainer {
     Map<UUID, Integer> respawnTimer = null;
-    final LocationType type;
+    LocationType type;
 
     public AreaContainer(String _name, LocationType _type){
         super(_name);
@@ -40,7 +40,7 @@ public class AreaContainer extends AbstractAreaContainer{
     public Collection<UUID> getInsidePlayers() { return players; }
     public boolean hasSpawns() { return !spawns.isEmpty(); }
     @Override
-    public LocationType getLocationType() { return LocationType.LOBBY; }
+    public LocationType getLocationType() { return type; }
     @Override
     public ArenaTeam getTeam(ArenaPlayer player) { return player.getTeam(); }
 
@@ -56,7 +56,7 @@ public class AreaContainer extends AbstractAreaContainer{
             if (respawnTimer == null)
                 respawnTimer = new HashMap<>();
             if (respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ){
-                ArenaMatch.respawnClick(event,this, respawnTimer);
+                respawnClick( event, respawnTimer );
             } 
         }
     }
@@ -93,17 +93,9 @@ public class AreaContainer extends AbstractAreaContainer{
     @Override
     public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { addPlayer( player ); }
     @Override
-    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
     public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { addPlayer( player ); }
     @Override
     public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { removePlayer( player ); }
-    @Override
-    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
     /**
      * Return a string of appended spawn locations

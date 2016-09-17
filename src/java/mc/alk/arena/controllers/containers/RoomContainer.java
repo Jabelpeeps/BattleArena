@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.events.ArenaEventPriority;
@@ -16,10 +17,10 @@ import mc.alk.arena.util.InventoryUtil;
 
 public class RoomContainer extends AreaContainer{
 
-    public RoomContainer( String _name, LocationType _type ) {
+    public RoomContainer( String _name, PlayerHolder.LocationType _type ) {
         super(_name, _type );
     }
-    public RoomContainer( String _name, MatchParams _params, LocationType _type ) {
+    public RoomContainer( String _name, MatchParams _params, PlayerHolder.LocationType _type ) {
         super( _name, _params, _type );
     }
 

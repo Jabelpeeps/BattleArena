@@ -207,7 +207,7 @@ public class PlayerRestoreController {
 
                     Scheduler.scheduleSynchronousTask( () -> {
                             Player pl = player.regetPlayer();
-                            if (pl != null){
+                            if ( pl != null ) {
                                 if (pl.getLocation().getWorld().getUID()!=loc.getWorld().getUID() ||
                                         pl.getLocation().distanceSquared(loc) > 100){
                                     TeleportController.teleport(p, loc);
@@ -217,15 +217,14 @@ public class PlayerRestoreController {
                     },2L);
                 }
             }
-        } else { /// this is bad, how did they get a null tp loc
-            Log.err(player.getName() + " respawn loc =null");
-        }
+        } 
+        else Log.err(player.getName() + " respawn loc =null");
     }
 
     private boolean stillHandling() {
-        return clearInventory || kill ||clearWool!=-1||teleportLocation!=null || tp2 != null || lastLoc!=null||
-                exp != null || health!=null || hunger!=null || magic !=null || gamemode!=null || item!=null ||
-                matchItems!=null||removeItems!=null||message!=null || backLocation!=null || effects!=null;
+        return clearInventory || kill || clearWool != -1 || teleportLocation != null || tp2 != null || lastLoc != null ||
+                exp != null || health != null || hunger != null || magic != null || gamemode != null || item != null ||
+                matchItems != null || removeItems != null || message != null || backLocation != null || effects != null;
     }
 
     private void handleKill(Player p) {
@@ -244,9 +243,6 @@ public class PlayerRestoreController {
             exp += _exp;
     }
 
-    public void deEnchant() { deEnchant = true; }
-    public void removeMatchItems() { matchItems = null; }
-
     public void addRemoveItem(ItemStack is) {
         if (removeItems == null){
             removeItems = new ArrayList<>();}
@@ -258,7 +254,9 @@ public class PlayerRestoreController {
             removeItems = new ArrayList<>();}
         removeItems.addAll(itemsToRemove);
     }
- 
+
+    public void deEnchant() { deEnchant = true; }
+    public void removeMatchItems() { matchItems = null; }
     public void enchant( Collection<PotionEffect> _effects) { effects = _effects; }
     public UUID getUUID() { return player.getUniqueId(); }
 }

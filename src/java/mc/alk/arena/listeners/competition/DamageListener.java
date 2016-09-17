@@ -22,21 +22,21 @@ public class DamageListener implements ArenaListener{
 	StateGraph transitionOptions;
 	PlayerHolder holder;
 
-    public DamageListener(PlayerHolder holder){
-		this.transitionOptions = holder.getParams().getStateGraph();
-		this.holder = holder;
+    public DamageListener(PlayerHolder aHolder){
+		transitionOptions = aHolder.getParams().getStateGraph();
+		holder = aHolder;
 	}
 
-	@ArenaEventHandler( suppressCastWarnings=true, priority=ArenaEventPriority.LOW)
+	@ArenaEventHandler( suppressCastWarnings = true, priority = ArenaEventPriority.LOW )
 	public void onEntityDamageEvent(EntityDamageEvent event) {
         ArenaPlayer damager = null;
-        final ArenaPlayer target = 
+        ArenaPlayer target = 
                 (event.getEntity() instanceof Player) ? PlayerController.toArenaPlayer((Player) event.getEntity()) 
                                                       : null;
 
         /// Handle setting targets for mob spawns first
         if (event instanceof EntityDamageByEntityEvent && event.getEntity() instanceof LivingEntity){
-            final Entity damagerEntity = ((EntityDamageByEntityEvent)event).getDamager();
+            Entity damagerEntity = ((EntityDamageByEntityEvent)event).getDamager();
             damager = DmgDeathUtil.getPlayerCause(damagerEntity);
             if (damager != null ) {
                 if (target == null || damager.getTeam()==null || target.getTeam()==null ||
@@ -55,17 +55,13 @@ public class DamageListener implements ArenaListener{
                 target.setTarget((LivingEntity) damagerEntity);
             }
         }
-		if (target == null) {
-            return;
-        }
-		final StateOptions to = transitionOptions.getOptions(holder.getState());
-		if (to == null) {
-            return;
-        }
-		final PVPState pvp = to.getPVP();
-		if (pvp == null) {
-            return;
-        }
+		if (target == null) return;
+
+		StateOptions to = transitionOptions.getOptions(holder.getState());
+		if (to == null) return;
+
+		PVPState pvp = to.getPVP();
+		if (pvp == null) return;
 
 		if (pvp == PVPState.INVINCIBLE){
 			/// all damage is cancelled
@@ -75,9 +71,7 @@ public class DamageListener implements ArenaListener{
 			return;
 		}
 
-		if (!(event instanceof EntityDamageByEntityEvent)){
-			return;}
-
+		if (!(event instanceof EntityDamageByEntityEvent)) return;
 
         switch(pvp){
 		case ON:

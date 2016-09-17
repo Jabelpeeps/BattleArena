@@ -12,7 +12,6 @@ import lombok.Getter;
 import mc.alk.arena.events.BAEvent;
 import mc.alk.arena.events.CompetitionEvent;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.arenas.ArenaListener;
@@ -25,15 +24,12 @@ import mc.alk.arena.objects.teams.TeamHandler;
  * @author alkarin
  *
  */
-public abstract class Competition implements JoinResponseHandler, PlayerHolder, TeamHandler {
+public abstract class Competition extends PlayerHolder implements JoinResponseHandler, TeamHandler {
 
 	@Getter protected List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
 	protected final Set<UUID> leftPlayers = Collections.synchronizedSet(new HashSet<UUID>());
 	static int count =0;
 	@Getter final protected int id = count++;
-	/** Our Method Controller that will handle anyone listening to this competition*/
-	protected final MethodController methodController = new MethodController("id =" + id );
-	
 	/**
 	 * Get the time of when the competition did the given state
 	 * @return time or null if not found
@@ -73,8 +69,9 @@ public abstract class Competition implements JoinResponseHandler, PlayerHolder, 
 	 */
 	@Override
     public void callEvent(BAEvent event) {
-		if (event instanceof CompetitionEvent && ((CompetitionEvent)event).getCompetition() == null ) {
-			((CompetitionEvent)event).setCompetition(this);}
+		if (event instanceof CompetitionEvent && ((CompetitionEvent)event).getCompetition() == null ) 
+			((CompetitionEvent)event).setCompetition(this);
+		
 		methodController.callEvent(event);
 	}
 

@@ -157,7 +157,7 @@ public class TransitionController {
         /// Teleport In. only tpin, respawn tps happen elsewhere
         if ((teleportIn && transition != MatchState.ONSPAWN) || teleportRoom){
             
-            if ((insideArena || am.checkReady(player, team, mo, true)) && !dead)
+            if ( ( insideArena || am.checkReady(player, team, mo ) ) && !dead )
                 TeleportLocationController.teleport(am, team, player,mo, teamIndex);
             else
                 playerReady = false;

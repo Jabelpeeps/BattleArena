@@ -1,6 +1,5 @@
 package mc.alk.arena.listeners.competition;
 
-import mc.alk.arena.competition.Competition;
 import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -19,9 +18,7 @@ public class ArenaPlayerKillListener implements ArenaListener {
 
     @ArenaEventHandler
     public void onKill(ArenaPlayerKillEvent event) {
-        ArenaPlayer ap = event.getPlayer();
-        Competition comp = event.getPlayer().getCompetition();
-        
-        TransitionController.transition(comp, MatchState.ONKILL, ap, ap.getTeam(), true);
+        ArenaPlayer ap = event.getPlayer();        
+        TransitionController.transition( ap.getCompetition(), MatchState.ONKILL, ap, ap.getTeam(), true );
     }
 }

@@ -33,6 +33,7 @@ import mc.alk.arena.controllers.PlayerController;
 import mc.alk.arena.controllers.RoomController;
 import mc.alk.arena.controllers.TeleportController;
 import mc.alk.arena.controllers.containers.RoomContainer;
+import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaClass;
@@ -359,19 +360,19 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 337 )
     public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, SpawnIndex index) {
-        return teleportToSpawn(sender,arena, LocationType.ARENA, index);
+        return teleportToSpawn(sender,arena, PlayerHolder.LocationType.ARENA, index);
     }
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 338 )
     public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, String type, SpawnIndex index) {
         try {
-            return teleportToSpawn(sender, arena, LocationType.valueOf(type.toUpperCase()), index);
+            return teleportToSpawn(sender, arena, PlayerHolder.LocationType.valueOf(type.toUpperCase()), index);
         } catch (IllegalArgumentException e){
             return MessageUtil.sendMessage(sender,"&c" + e.getMessage());
         }
     }
 
-    private boolean teleportToSpawn(ArenaPlayer sender, Arena arena, LocationType type, SpawnIndex index) {
+    private boolean teleportToSpawn(ArenaPlayer sender, Arena arena, PlayerHolder.LocationType type, SpawnIndex index) {
         final SpawnLocation loc;
         switch(type){
             case ANY:

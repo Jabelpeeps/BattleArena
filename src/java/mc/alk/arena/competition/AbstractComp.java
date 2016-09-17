@@ -44,7 +44,6 @@ import mc.alk.arena.objects.joining.TeamJoinObject;
 import mc.alk.arena.objects.messaging.EventMessenger;
 import mc.alk.arena.objects.messaging.MessageHandler;
 import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.JoinResult;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Countdown;
@@ -55,7 +54,6 @@ import mc.alk.arena.util.MessageUtil;
 
 public abstract class AbstractComp extends Competition implements CountdownCallback, ArenaListener {
     @Getter final String name; 
-    @Getter protected EventParams params; 
     @Getter @Setter EventMessenger messenger; 
     Countdown timer; 
     @Setter protected AbstractJoinHandler teamJoinHandler; 
@@ -75,7 +73,9 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         teamJoinHandler = TeamJoinFactory.createTeamJoinHandler(_params, this);
         messenger = new EventMessenger(this);
     }
-
+    
+    public abstract String getResultString();
+    
     public void openEvent() {
         teams.clear();
         EventOpenEvent event = new EventOpenEvent(this);
@@ -88,11 +88,12 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         messenger.sendEventOpenMsg();
     }
 
-    public void autoEvent(){
+    public void autoEvent() {
         openEvent();
-        messenger.sendCountdownTillEvent(params.getSecondsTillStart());
-        timer = new Countdown(BattleArena.getSelf(),(long)params.getSecondsTillStart(),
-                (long)params.getAnnouncementInterval(), this);
+        EventParams eParams = (EventParams) params;
+        messenger.sendCountdownTillEvent(eParams.getSecondsTillStart());
+        timer = new Countdown(BattleArena.getSelf(),(long)eParams.getSecondsTillStart(),
+                (long)eParams.getAnnouncementInterval(), this);
     }
 
     public void addAllOnline() {
@@ -104,24 +105,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
             TeamJoinObject tqo = new TeamJoinObject(t,params,null);
             joining(tqo);
         }
-    }
-
-    /**
-     * Add an arena listener for this competition
-     * @param arenaListener ArenaListener
-     */
-    @Override
-    public void addArenaListener(ArenaListener arenaListener){
-        methodController.addListener(arenaListener);
-    }
-
-    /**
-     * Remove an arena listener for this competition
-     * @param arenaListener ArenaListener
-     */
-    @Override
-    public boolean removeArenaListener(ArenaListener arenaListener){
-        return methodController.removeListener(arenaListener);
     }
 
     public void startEvent() {
@@ -164,9 +147,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
     
     public void cancelEvent() {
-//        eventCancelled();
-//    }
-//    protected void eventCancelled(){
         stopTimer();
         List<ArenaTeam> newTeams = new ArrayList<>(teams);
         callEvent(new EventCancelEvent(this));
@@ -189,27 +169,14 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         HandlerList.unregisterAll(this);
     }
 
-//    public boolean canJoin(){
-//        return isOpen();
-//    }
-//
-//    public boolean canJoin(ArenaTeam t){
-//        return isOpen();
-//    }
-
-//    @Override
-//    public abstract boolean canLeave(ArenaPlayer p);
-
     @Override
     protected void transitionTo(CompetitionState _state){
-        this.state = (EventState) _state;
-        times.put(this.state, System.currentTimeMillis());
+        state = (EventState) _state;
+        times.put( state, System.currentTimeMillis() );
     }
 
     @Override
-    public Long getTime(CompetitionState _state){
-        return times.get(_state);
-    }
+    public Long getTime( CompetitionState _state ) { return times.get( _state ); }
 
     /**
      * Called when a player leaves minecraft.. we cant stop them so deal with it
@@ -271,7 +238,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         }
         AbstractJoinHandler.TeamJoinResult tjr = teamJoinHandler.joiningTeam( tqo );
         switch( tjr.joinStatus ) {
-//            case ADDED_TO_EXISTING: /* drop down into added */
             case ADDED:
                 for ( ArenaPlayer player : tqo.getTeam().getPlayers() ) {
                     player.addCompetition( this );
@@ -309,8 +275,6 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return size;
     }
 
-    public abstract String getResultString();
-
     protected Set<ArenaPlayer> getExcludedPlayers() {
         return teamJoinHandler == null ? null :  teamJoinHandler.getExcludedPlayers();
     }
@@ -330,9 +294,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return sb.toString();
     }
 
-    public String getInfo() {
-        return StateOptions.getInfo(params, params.getName());
-    }
+    public String getInfo() { return StateOptions.getInfo( params, params.getName() ); }
 
     /**
      * Broadcast to all players in the Event
@@ -381,26 +343,16 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         return players;
     }
 
-    public void setSilent(boolean silent) {
-        messenger.setSilent(silent);
-    }
-
     @Override
-    public String toString(){
-        return "[" + getName()+":"+id+"]";
-    }
+    public String toString() { return "[" + getName() + ":" + id + "]"; }
 
     public boolean waitingToJoin(ArenaPlayer p) {
         return teamJoinHandler != null && teamJoinHandler.getExcludedPlayers().contains(p);
     }
 
-    public boolean hasEnoughTeams() {
-        return getNTeams() >= params.getMinTeams();
-    }
-
-    public boolean hasEnough() {
-        return teamJoinHandler != null && teamJoinHandler.hasEnough(Integer.MAX_VALUE);
-    }
+    public boolean hasEnoughTeams() { return getNTeams() >= params.getMinTeams(); }
+    public void setSilent( boolean silent ) { messenger.setSilent( silent ); }
+    public boolean hasEnough() { return teamJoinHandler != null && teamJoinHandler.hasEnough(Integer.MAX_VALUE); }
 
     @Override
     public void addedToTeam(ArenaTeam team, Collection<ArenaPlayer> players) { }
@@ -411,34 +363,15 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     @Override
     public void removedFromTeam(ArenaTeam team, ArenaPlayer player) { }
     @Override
-    public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        player.removeCompetition(this);
+    public void onPostQuit( ArenaPlayer player, ArenaPlayerTeleportEvent apte ) {
+        player.removeCompetition( this );
     }
-    @Override
-    public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPostEnter(ArenaPlayer player,ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
-    @Override
-    public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
 
-    @EventHandler( priority=EventPriority.MONITOR )
-    public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
-        if (hasPlayer(event.getPlayer())) {
-            event.addMessage(MessageHandler.getSystemMessage("you_left_event", this.getName()));
-            leave(event.getPlayer());
+    @EventHandler( priority = EventPriority.MONITOR )
+    public void onArenaPlayerLeaveEvent( ArenaPlayerLeaveEvent event ) {
+        if ( hasPlayer( event.getPlayer() ) ) {
+            event.addMessage( MessageHandler.getSystemMessage( "you_left_event", getName() ) );
+            leave( event.getPlayer() );
         }
-    }
-
-    @Override
-    public boolean hasOption(TransitionOption option) {
-        return getParams().hasOptionAt(state, option);
     }
 }

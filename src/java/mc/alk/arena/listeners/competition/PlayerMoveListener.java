@@ -1,5 +1,9 @@
 package mc.alk.arena.listeners.competition;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.event.player.PlayerMoveEvent;
+
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
@@ -8,30 +12,27 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.regions.ArenaRegion;
 import mc.alk.arena.plugins.WorldGuardController;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.event.player.PlayerMoveEvent;
-
 public class PlayerMoveListener implements ArenaListener{
-	PlayerHolder holder;
+    PlayerHolder holder;
     ArenaRegion region;
-    final World w;
-	public PlayerMoveListener(PlayerHolder holder, ArenaRegion region){
-		this.holder = holder;
-        this.region = region;
-        this.w = Bukkit.getWorld(region.getWorldName());
+    World world;
+    
+	public PlayerMoveListener(PlayerHolder aHolder, ArenaRegion aRegion){
+		holder = aHolder;
+        region = aRegion;
+        world = Bukkit.getWorld(aRegion.getWorldName());
     }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
+    @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
     public void onPlayerMove(PlayerMoveEvent event){
-        if (!event.isCancelled() && w.getUID() == event.getTo().getWorld().getUID() &&
+        if (!event.isCancelled() && world.getUID() == event.getTo().getWorld().getUID() &&
                 holder.hasOption(TransitionOption.WGNOLEAVE) &&
                 WorldGuardController.hasWorldGuard()){
             /// Did we actually even move
             if (event.getFrom().getBlockX() != event.getTo().getBlockX()
                     || event.getFrom().getBlockY() != event.getTo().getBlockY()
                     || event.getFrom().getBlockZ() != event.getTo().getBlockZ()){
-                if (WorldGuardController.isLeavingArea(event.getFrom(), event.getTo(),w,region.getRegionName())){
+                if (WorldGuardController.isLeavingArea(event.getFrom(), event.getTo(),world,region.getRegionName())){
                     event.setCancelled(true);}
             }
         }

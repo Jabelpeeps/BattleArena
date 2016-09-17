@@ -171,7 +171,7 @@ public class ArenaEditorExecutor extends CustomCommandExecutor {
         } 
     }
 
-    public static boolean setArenaOption(CommandSender sender,Arena arena, ArenaOptionPair aop){
+    public static boolean setArenaOption(CommandSender sender, Arena arena, ArenaOptionPair aop ) {
         try {
             /// all of the messages are handled inside of setArenaOption
             ArenaAlterController.setArenaOption(sender, arena, aop.ao, aop.value);

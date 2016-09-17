@@ -43,7 +43,7 @@ public class TeleportController implements Listener {
 
     public static boolean teleport( ArenaPlayer arenaPlayer, Location location, boolean giveBypassPerms) {
         Player player = arenaPlayer.getPlayer();
-        if (Defaults.DEBUG_TRACE) {
+        if (Defaults.DEBUG_SPAWNS) {
             Log.info("BattleArena beginning teleport player=" + player.getDisplayName());
         }
         try {
@@ -95,7 +95,7 @@ public class TeleportController implements Listener {
                 if (l != null)
                     EssentialsUtil.setBackLocation(player, l);
             }
-            if (Defaults.DEBUG_TRACE)
+            if (Defaults.DEBUG_SPAWNS)
                 Log.info("BattleArena ending teleport player=" + player.getDisplayName());
         } 
         catch (Exception e) {

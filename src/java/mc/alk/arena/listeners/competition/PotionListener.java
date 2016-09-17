@@ -13,9 +13,9 @@ import mc.alk.arena.objects.options.TransitionOption;
 
 @AllArgsConstructor
 public class PotionListener implements ArenaListener{
-	PlayerHolder holder;
+    PlayerHolder holder;
 
-	@ArenaEventHandler( needsPlayer=false )
+	@ArenaEventHandler( needsPlayer = false )
 	public void onPotionSplash(PotionSplashEvent event) {
 		if (!event.isCancelled())
 			return;

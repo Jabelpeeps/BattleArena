@@ -43,7 +43,6 @@ import mc.alk.arena.objects.joining.MatchTeamQObject;
 import mc.alk.arena.objects.options.EventOpenOptions;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.StateOptions;
-import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.tracker.Tracker;
@@ -156,21 +155,17 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         startRound();
     }
 
-    @ArenaEventHandler(end = MatchState.ONOPEN)
+    @ArenaEventHandler( end = MatchState.ONOPEN )
     public void onMatchCreatedEvent(MatchCreatedEvent event) {
         Matchup matchup = (((MatchTeamQObject) event.getOriginalObject().getOriginalQueuedObject()).getMatchup());
         matchups.put(event.getMatch(), matchup);
     }
 
     @ArenaEventHandler
-    public void matchCompleted(MatchCompletedEvent event){
-        matchEnded(event.getMatch());
-    }
+    public void matchCompleted(MatchCompletedEvent event) { matchEnded( event.getMatch() ); }
 
     @ArenaEventHandler
-    public void matchCancelled(MatchCancelledEvent event){
-        matchEnded(event.getMatch());
-    }
+    public void matchCancelled(MatchCancelledEvent event) { matchEnded( event.getMatch() ); }
 
     @Override
     public void endEvent(){
@@ -438,12 +433,9 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     @Override
-    public void broadcast(String msg) { 
-        for (ArenaTeam t : competingTeams) t.sendMessage(msg);
-    }
-    public void broadcastAlive(String msg){
-        for (ArenaTeam t : aliveTeams) t.sendMessage(msg);
-    }
+    public void broadcast(String msg) { for (ArenaTeam t : competingTeams) t.sendMessage(msg); }
+    public void broadcastAlive(String msg) { for (ArenaTeam t : aliveTeams) t.sendMessage(msg); }
+ 
     @Override
     public void addedToTeam(ArenaTeam team, ArenaPlayer ap) {
         super.addedToTeam(team, ap);
@@ -474,9 +466,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         }
     }
 
-    private int calcNRounds(int size){
-        return (int) Math.floor(Math.log(size)/Math.log(params.getMinTeams()));
-    }
+    private int calcNRounds( int size ){ return (int) Math.floor( Math.log( size ) / Math.log( params.getMinTeams() ) ); }
 
     @Override
     public boolean canLeave(ArenaPlayer p) {
@@ -485,9 +475,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
 
     @Override
-    public String getStatus() {
-        return getStatus(curRound);
-    }
+    public String getStatus() { return getStatus(curRound); }
 
     public String getStatus(int round) {
         StringBuilder sb = new StringBuilder();
@@ -507,10 +495,6 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     public EventState getState() { return null; }
     @Override
     public boolean isHandled(ArenaPlayer player) { return false; }
-    @Override
-    public boolean checkReady(ArenaPlayer player, ArenaTeam team, StateOptions mo, boolean b) { return false; }
-    @Override
-    public SpawnLocation getSpawn(int index, boolean random) { return null; }
     @Override
     public LocationType getLocationType() { return LocationType.ARENA; }
 

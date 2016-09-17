@@ -12,7 +12,7 @@ import mc.alk.arena.util.SerializerUtil;
 @AllArgsConstructor
 public class ArenaLocation {
     
-    @Getter final PlayerHolder playerHolder;
+    @Getter PlayerHolder playerHolder;
 	@Getter @Setter Location location;
 	@Getter final LocationType type;
 
