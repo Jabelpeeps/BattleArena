@@ -98,7 +98,7 @@ public class SQLSerializer {
 
 	protected boolean createTable( String tableName, String sql_create_table, String... sql_updates ) {
 	    
-		boolean exists = false;
+		Boolean exists = false;
 		if ( type == SQLType.SQLITE ) {
 			exists = getBoolean( "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';" );
 		} 
@@ -108,7 +108,7 @@ public class SQLSerializer {
 		}
 		if (DEBUG) Log.info( "table " + tableName + " exists =" + exists );
 
-		if ( exists ) return true; 
+		if ( exists != null && exists ) return true; 
 
 		int result = 0;
 		
@@ -176,7 +176,7 @@ public class SQLSerializer {
 			List<Object> objs = getObjects( "SHOW TABLES LIKE '" + tableName + "';" );
 			exists = ( objs != null && objs.size() == 1 );
 		}
-		return exists;
+		return exists == null ? false : exists;
 	}
 
 	protected RSCon executeQuery( String strRawStmt, Object... varArgs ) {
