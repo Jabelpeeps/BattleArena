@@ -595,8 +595,8 @@ public class Arena extends AreaContainer {
     }
 
     @Override
-    public PlayerHolder.LocationType getLocationType() {
-        return PlayerHolder.LocationType.ARENA;
+    public LocationType getLocationType() {
+        return LocationType.ARENA;
     }
 
     public List<List<SpawnLocation>> getVisitorLocs() {

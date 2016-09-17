@@ -27,7 +27,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 public abstract class PlayerHolder implements Listener, ArenaListener {
 
     protected MethodController methodController;
-    @Getter @Setter protected MatchParams params;
+    @Getter @Setter public MatchParams params;
 
     public enum LocationType { NONE, HOME, ARENA, WAITROOM, LOBBY, COURTYARD, SPECTATE, VISITOR, ANY }
 

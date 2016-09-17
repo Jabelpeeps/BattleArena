@@ -30,14 +30,13 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	protected final Set<UUID> leftPlayers = Collections.synchronizedSet(new HashSet<UUID>());
 	static int count =0;
 	@Getter final protected int id = count++;
+	
 	/**
 	 * Get the time of when the competition did the given state
 	 * @return time or null if not found
 	 */
 	public abstract Long getTime(CompetitionState state);
-
 	public abstract String getName();
-
 	/**
 	 * Transition from one state to another
 	 * onStart -> onVictory
@@ -80,8 +79,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	 * @param transitionListeners collection of ArenaListener
 	 */
 	public void addArenaListeners(Collection<ArenaListener> transitionListeners){
-		for (ArenaListener tl: transitionListeners){
-			addArenaListener(tl);}
+		for ( ArenaListener tl : transitionListeners ) addArenaListener( tl );
 	}
 
 	/**
@@ -91,8 +89,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	 */
 	@Override
     public ArenaTeam getTeam(ArenaPlayer player) {
-		for (ArenaTeam t: teams) {
-			if (t.hasMember(player)) return t;}
+		for ( ArenaTeam t: teams ) if ( t.hasMember( player ) ) return t;
 		return null;
 	}
 
@@ -102,8 +99,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
      * @return ArenaPlayer, or null if no team has this player leaving
      */
     public ArenaTeam getLeftTeam(ArenaPlayer player) {
-        for (ArenaTeam t: teams) {
-            if (t.hasLeft(player)) return t;}
+        for ( ArenaTeam t: teams ) if ( t.hasLeft( player ) ) return t;
         return null;
     }
 
@@ -122,8 +118,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	 * @return true or false
 	 */
 	public boolean hasPlayer(ArenaPlayer player) {
-		for (ArenaTeam t: teams) {
-			if (t.hasMember(player)) return true;}
+		for ( ArenaTeam t: teams ) if ( t.hasMember( player ) ) return true;
 		return false;
 	}
 
@@ -133,8 +128,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	 * @return true or false
 	 */
 	public boolean hasAlivePlayer(ArenaPlayer player) {
-		for (ArenaTeam t: teams) {
-			if (t.hasAliveMember(player)) return true;}
+		for (ArenaTeam t: teams) if ( t.hasAliveMember( player ) ) return true;
 		return false;
 	}
 
@@ -145,7 +139,8 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 	public Set<ArenaPlayer> getPlayers() {
 		HashSet<ArenaPlayer> players = new HashSet<>();
 		for (ArenaTeam t: teams){
-			players.addAll(t.getPlayers());}
+			players.addAll(t.getPlayers());
+		}
 		return players;
 	}
 }

@@ -29,7 +29,6 @@ import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.controllers.containers.AreaContainer;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.PlayerHolder.LocationType;
 import mc.alk.arena.objects.ArenaParams;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
@@ -215,7 +214,7 @@ public class ArenaSerializer extends BaseConfig {
         }
     }
 
-    public static Arena loadArena(Plugin plugin, final BattleArenaController bac, ConfigurationSection cs) {
+    public static Arena loadArena(Plugin plugin, BattleArenaController bac, ConfigurationSection cs) {
         String name = cs.getName().toLowerCase();
 
         ArenaType atype = ArenaType.fromString(cs.getString("type"));

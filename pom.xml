@@ -378,7 +378,7 @@
 
     <build>
         <finalName>${project.name}.${project.version}-#${build.number}</finalName>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>install</defaultGoal>
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
 
         <resources>

@@ -46,26 +46,26 @@ public class AreaContainer extends AbstractAreaContainer {
 
     @ArenaEventHandler
     public void onPlayerInteract(PlayerInteractEvent event){
-        if (event.isCancelled() || event.getClickedBlock() == null)
-            return;
-        /// Check to see if it's a sign
-        if (event.getClickedBlock().getType().equals(Material.SIGN_POST)||
-                event.getClickedBlock().getType().equals(Material.WALL_SIGN)){ /// Only checking for signs
-            ArenaMatch.signClick(event,this);
-        } else if (event.getClickedBlock().getType().equals(Defaults.READY_BLOCK)) {
-            if (respawnTimer == null)
+        if ( event.isCancelled() || event.getClickedBlock() == null ) return;
+
+        if (    event.getClickedBlock().getType().equals( Material.SIGN_POST )
+                || event.getClickedBlock().getType().equals( Material.WALL_SIGN ) ) {
+            ArenaMatch.signClick( event, this );
+        } 
+        else if (event.getClickedBlock().getType().equals(Defaults.READY_BLOCK)) {
+            if ( respawnTimer == null ) 
                 respawnTimer = new HashMap<>();
-            if (respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ){
+            
+            if ( respawnTimer.containsKey( event.getPlayer().getUniqueId() ) ) 
                 respawnClick( event, respawnTimer );
-            } 
         }
     }
 
     private boolean addPlayer(ArenaPlayer player) {
         boolean added = false;
         synchronized (this) {
-            if(players.add(player.getUniqueId())){
-                added = true;}
+            if ( players.add( player.getUniqueId() ) )
+                added = true;
         }
         if (Defaults.DEBUG_TRACE) Log.trace(1111, getName()+"  "+player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
         if (added){
