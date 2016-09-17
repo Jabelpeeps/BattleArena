@@ -19,8 +19,7 @@ public class TrackerConfigController {
 	@Getter static YamlConfiguration config = new YamlConfiguration();
 	@Getter static File file = null;
 
-	public static boolean getBoolean(String node, boolean b) { return config.getBoolean( node, b ); }
-	
+	public static boolean getBoolean(String node, boolean b) { return config.getBoolean( node, b ); }	
 	public static int getInt(String node, int i) { return config.getInt( node, i ); }
 	public static double getDouble(String node, double d) { return config.getDouble( node, d ); }
 

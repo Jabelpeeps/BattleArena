@@ -14,6 +14,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 	@Getter String interfaceName;
 
 	public TrackerInterface( String tableName, boolean saveIndividualRecords ) {
+	    
+	    if ( Defaults.DEBUG_TRACKING )
+	        Log.info( "TrackerInterface instantiated for table: " + tableName  );
 	      
         SQLSerializer serial = new SQLSerializer();
         serial.configureSQL( TrackerConfigController.config.getConfigurationSection( "SQLOptions" ) );
@@ -90,8 +94,8 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		return stat;
 	}
 
-    public void addStatRecord( Stat team1, Stat team2, WLT wlt ){
-		addStatRecord(team1,team2,wlt,true);
+    public void addStatRecord( Stat team1, Stat team2, WLT wlt ) {
+		addStatRecord( team1, team2, wlt, true );
 	}
 
 	private void addStatRecord( Stat team1, Stat team2, WLT wlt, boolean changeWinLossRecords) {
@@ -105,19 +109,15 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 		}
 	}
 
-	void _addStatRecord(StatChange sc){
-		Stat team1 = sc.getTeam1();
-		Stat team2 = sc.getTeam2();
+	void _addStatRecord(StatChange sc) {
 		WLT wlt = sc.getWlt();
-		boolean changeWinLossRecords = sc.isChangeWinLossRecords();
-		/// Get our records
-		Stat ts1 = getRecord(team1);
-		Stat ts2 = getRecord(team2);
+		Stat ts1 = getRecord( sc.getTeam1() );
+		Stat ts2 = getRecord( sc.getTeam2() );
 
-		if (Defaults.DEBUG_ADD_RECORDS) System.out.println("BT Debug: addStatRecord:sql="+SQL + "  ts1 = " + ts1 +"    " + ts2);
+		if (Defaults.DEBUG_ADD_RECORDS) System.out.println("Tracker: addStatRecord:sql=" + SQL + "  ts1 = " + ts1 + "    " + ts2);
 
 		/// Change win loss record
-		if (changeWinLossRecords){
+		if ( sc.isChangeWinLossRecords() ) {
 			ts1.setSaveIndividual(trackIndividual);
 			ts2.setSaveIndividual(trackIndividual);
 			switch(wlt) {
@@ -149,15 +149,11 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 	}
 
     public void addPlayerRecord(String p1, String p2, WLT wlt) {
-		Stat ts1 = new PlayerStat(p1);
-		Stat ts2 = new PlayerStat(p2);
-		addStatRecord(ts1, ts2, wlt);
+		addStatRecord( new PlayerStat(p1), new PlayerStat(p2), wlt );
 	}
 
     public void changePlayerElo(String p1, String p2, WLT wlt) {
-		Stat ts1 = new PlayerStat(p1);
-		Stat ts2 = new PlayerStat(p2);
-		addStatRecord(ts1, ts2, wlt, false);
+		addStatRecord( new PlayerStat(p1), new PlayerStat(p2), wlt, false );
 	}
 
     public void addPlayerRecord(OfflinePlayer p1, OfflinePlayer p2, WLT wlt) {
@@ -165,15 +161,11 @@ public class TrackerInterface implements CacheSerializer<String, Stat>{
 	}
 
     public void addTeamRecord(String t1, String t2, WLT wlt) {
-		TeamStat ts1 = new TeamStat(t1,false);
-		TeamStat ts2 = new TeamStat(t2,false);
-		addStatRecord(ts1, ts2,wlt);
+		addStatRecord( new TeamStat(t1,false), new TeamStat(t2,false), wlt);
 	}
 
     public void addTeamRecord(Set<String> team1, Set<String> team2, WLT wlt) {
-		TeamStat ts1 = new TeamStat(team1);
-		TeamStat ts2 = new TeamStat(team2);
-		addStatRecord(ts1, ts2,wlt);
+		addStatRecord( new TeamStat(team1), new TeamStat(team2) ,wlt );
 	}
 
     public void addTeamRecord(Collection<Player> team1, Collection<Player> team2, WLT wlt) {

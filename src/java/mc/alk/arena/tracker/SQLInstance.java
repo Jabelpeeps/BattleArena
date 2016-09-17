@@ -64,6 +64,7 @@ public class SQLInstance {
 	static final public String MEMBERS = "Members";
 	static final public String FLAGS = "Flags";
 
+    public static final String get_members = "select " + NAME + " from " + MEMBER_TABLE + " where " + TEAMID + " = ?";
 	   
     static public String URL = "localhost";
     static public String PORT = "3306";
@@ -71,24 +72,14 @@ public class SQLInstance {
     static public String PASSWORD = "";
     static public String DATABASE = "BattleTracker";
     
-	String drop_tables, overall_table, versus_table, individual_table;
+	String drop_tables, overall_table, versus_table, individual_table, save_members;
 	String create_individual_table, create_versus_table, create_member_table, create_overall_table;
 	String create_individual_table_idx, create_versus_table_idx, create_member_table_idx, create_overall_table_idx;
-
-	String get_overall_totals, insert_overall_totals;
-	String get_topx_wins, get_topx_losses, get_topx_ties;
-	String get_topx_streak, get_topx_maxstreak;
-	String get_topx_kd, get_topx_elo, get_topx_maxelo;
-	String get_topx_wins_tc, get_topx_losses_tc, get_topx_ties_tc;
-	String get_topx_streak_tc, get_topx_maxstreak_tc;
-	String get_topx_kd_tc, get_topx_elo_tc, get_topx_maxelo_tc;
-	String save_ind_record, get_ind_record;
-	String insert_versus_record, get_versus_record;
-	String get_versus_records, getx_versus_records, get_wins_since;
-	String truncate_all_tables, get_rank;
-
-	public static final String get_members = "select " + NAME + " from " + MEMBER_TABLE + " where " + TEAMID + " = ?";
-	String save_members;
+	String get_overall_totals, insert_overall_totals, get_topx_wins, get_topx_losses, get_topx_ties;
+	String get_topx_streak, get_topx_maxstreak, get_topx_kd, get_topx_elo, get_topx_maxelo, truncate_all_tables;
+	String get_topx_wins_tc, get_topx_losses_tc, get_topx_ties_tc, get_topx_streak_tc, get_topx_maxstreak_tc;
+	String get_topx_kd_tc, get_topx_elo_tc, get_topx_maxelo_tc, save_ind_record, get_ind_record, get_rank;
+	String insert_versus_record, get_versus_record, get_versus_records, getx_versus_records, get_wins_since;
 
 	@Getter String tableName;
 	final SQLSerializer serial;
@@ -106,42 +97,35 @@ public class SQLInstance {
 		individual_table = TABLE_PREFIX + tableName + INDIVIDUAL_TABLE_SUFFIX;
 
 		create_overall_table = "CREATE TABLE IF NOT EXISTS " + overall_table + " (" +
-				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH +") NOT NULL ,"+
-				NAME + " VARCHAR(" + TEAM_NAME_LENGTH +") ,"+
-                WINS + " INTEGER UNSIGNED ," +
-                LOSSES + " INTEGER UNSIGNED," +
+				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
+				NAME + " VARCHAR(" + TEAM_NAME_LENGTH + ") ," +
+                WINS + " INTEGER UNSIGNED ," + LOSSES + " INTEGER UNSIGNED," +
 //                KILLS + " INTEGER UNSIGNED ," +
 //                DEATHS + " INTEGER UNSIGNED," +
-				TIES + " INTEGER UNSIGNED," +
-				STREAK + " INTEGER UNSIGNED," +
-				MAXSTREAK + " INTEGER UNSIGNED," +
-				ELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," +
-				MAXELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," +
-				COUNT + " INTEGER UNSIGNED DEFAULT 1," +
-				FLAGS + " INTEGER UNSIGNED DEFAULT 0," +
-				"PRIMARY KEY (" + TEAMID +")) ";
+				TIES + " INTEGER UNSIGNED," + STREAK + " INTEGER UNSIGNED," +
+				MAXSTREAK + " INTEGER UNSIGNED," + ELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," +
+				MAXELO + " INTEGER UNSIGNED DEFAULT " + 1250 + "," + COUNT + " INTEGER UNSIGNED DEFAULT 1," +
+				FLAGS + " INTEGER UNSIGNED DEFAULT 0," + "PRIMARY KEY (" + TEAMID +")) ";
 
 		create_versus_table = "CREATE TABLE IF NOT EXISTS " + versus_table + " (" +
 				ID1 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
 				ID2 + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
-				WINS + " INTEGER UNSIGNED ," +
-				LOSSES + " INTEGER UNSIGNED," +
-				TIES + " INTEGER UNSIGNED," +
-				"PRIMARY KEY (" + ID1 + ", " + ID2 + "))";
+				WINS + " INTEGER UNSIGNED ," + LOSSES + " INTEGER UNSIGNED," +
+				TIES + " INTEGER UNSIGNED," + "PRIMARY KEY (" + ID1 + ", " + ID2 + "))";
 
 		create_member_table = "CREATE TABLE IF NOT EXISTS " + MEMBER_TABLE + " (" +
 				TEAMID + " VARCHAR(" + TEAM_ID_LENGTH + ") NOT NULL ," +
 				NAME + " VARCHAR(" + MAX_NAME_LENGTH + ") NOT NULL ," +
 				"PRIMARY KEY (" + TEAMID + "," + NAME + "))";
 
-		get_topx_wins = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
-		get_topx_losses = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
-		get_topx_ties = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+TIES+" DESC LIMIT ? ";
-		get_topx_streak = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+STREAK +" DESC LIMIT ? ";
-		get_topx_maxstreak = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXSTREAK +" DESC LIMIT ? ";
-		get_topx_elo = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+ELO+" DESC LIMIT ? ";
-		get_topx_maxelo = "select * from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY "+MAXELO+" DESC LIMIT ? ";
-		get_topx_kd = "select *,(" + WINS + "/" + LOSSES+") as KD from "+overall_table +" WHERE "+FLAGS+" & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
+		get_topx_wins = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + WINS + " DESC LIMIT ? ";
+		get_topx_losses = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + LOSSES + " DESC LIMIT ? ";
+		get_topx_ties = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + TIES + " DESC LIMIT ? ";
+		get_topx_streak = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + STREAK + " DESC LIMIT ? ";
+		get_topx_maxstreak = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + MAXSTREAK + " DESC LIMIT ? ";
+		get_topx_elo = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + ELO + " DESC LIMIT ? ";
+		get_topx_maxelo = "select * from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY " + MAXELO + " DESC LIMIT ? ";
+		get_topx_kd = "select *,(" + WINS + "/" + LOSSES + ") as KD from " + overall_table + " WHERE " + FLAGS + " & 1 <> 1 ORDER BY KD DESC LIMIT ? ";
 
 		get_topx_wins_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+WINS+" DESC LIMIT ? ";
 		get_topx_losses_tc = "select * from "+overall_table +" WHERE "+COUNT+"=? AND "+FLAGS+" & 1 <> 1 ORDER BY "+LOSSES+" DESC LIMIT ? ";
@@ -216,19 +200,20 @@ public class SQLInstance {
 //        if (shouldUpdateTo1point1()){
 //            updateTo1Point1();}
 		try {
-			serial.createTable(versus_table, create_versus_table, create_versus_table_idx);
-			serial.createTable(overall_table, create_overall_table );
-			serial.createTable(individual_table,create_individual_table,create_individual_table_idx);
-			serial.createTable(MEMBER_TABLE,create_member_table,create_member_table_idx);
+			serial.createTable( versus_table, create_versus_table, create_versus_table_idx );
+			serial.createTable( overall_table, create_overall_table );
+			serial.createTable( individual_table, create_individual_table, create_individual_table_idx );
+			serial.createTable( MEMBER_TABLE, create_member_table, create_member_table_idx );
 		} 
 		catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 
-	public List<Stat> getTopX(StatType statType, int x, Integer teamcount) {
-		if (x <= 0){
-			x = Integer.MAX_VALUE;}
+	@SuppressWarnings( "resource" )
+    public List<Stat> getTopX(StatType statType, int x, Integer teamcount) {
+		if ( x <= 0 )
+			x = Integer.MAX_VALUE;
 		RSCon rscon = null;
 		
 		if (teamcount == null) {
@@ -273,7 +258,10 @@ public class SQLInstance {
     			default:
 			}
 		}
-		return rscon == null ? null : createStatList(rscon);
+		if ( rscon == null ) return null;
+		List<Stat> statList = createStatList( rscon );
+		rscon.close();
+		return statList;
 	}
 
 	public Integer getRanking(int rating, int teamSize) {
@@ -281,10 +269,10 @@ public class SQLInstance {
 		return rank != null ? rank + 1: null;
 	}
 
-	private List<Stat> createStatList(RSCon rscon){
+	private List<Stat> createStatList( RSCon rscon ) {
 		List<Stat> stats = new ArrayList<>();
-		if (rscon == null)
-			return stats;
+		if ( rscon == null ) return stats;
+		
 		try {
 			ResultSet rs = rscon.rs;
 			while (rs.next()){
@@ -294,9 +282,6 @@ public class SQLInstance {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-            rscon.close();
-//		    serial.closeConnection(rscon);
 		}
 		return stats;
 	}
@@ -313,7 +298,6 @@ public class SQLInstance {
 			e.printStackTrace();
 		} finally {
 		    rscon.close();
-//		    serial.closeConnection(rscon);
 		}
 		return null;
 	}
@@ -322,17 +306,11 @@ public class SQLInstance {
 		ResultSet rs = rscon.rs;
 		String id = rs.getString(TEAMID);
 		String name = rs.getString(NAME);
-		int kills = rs.getInt(WINS);
-		int deaths = rs.getInt(LOSSES);
-		int streak = rs.getInt(STREAK);
-		int maxStreak = rs.getInt(MAXSTREAK);
-		int ties = rs.getInt(TIES);
 		int elo = rs.getInt(ELO);
-		int maxElo = rs.getInt(MAXELO);
 		int count = rs.getInt(COUNT);
-		int flags = rs.getInt(FLAGS);
+		
 		if (SQLSerializer.DEBUG) 
-		    System.out.println("name =" + name + " id=" + id +" ranking=" + elo +" count="+count);
+		    System.out.println( "name =" + name + " id=" + id +" ranking=" + elo + " count=" + count );
 
         Stat ts;
 		if (count == 1){
@@ -355,18 +333,17 @@ public class SQLInstance {
 				((TeamStat)ts).setMembers(players);
 			} finally {
 			    rscon2.close();
-//			    serial.closeConnection(rscon2);
 			}
 		} 
-		ts.setWins(kills);
-		ts.setLosses(deaths);
-		ts.setStreak(streak);
-		ts.setTies(ties);
-		ts.setRating(elo);
-		ts.setCount(count);
-		ts.setMaxStreak(maxStreak);
-		ts.setMaxRating(maxElo);
-		ts.setFlags(flags);
+		ts.setWins( rs.getInt(WINS) );
+		ts.setLosses( rs.getInt(LOSSES) );
+		ts.setStreak( rs.getInt(STREAK) );
+		ts.setTies( rs.getInt(TIES) );
+		ts.setRating( elo );
+		ts.setCount( count );
+		ts.setMaxStreak( rs.getInt(MAXSTREAK) );
+		ts.setMaxRating( rs.getInt(MAXELO) );
+		ts.setFlags( rs.getInt(FLAGS) );
 		if (SQLSerializer.DEBUG) System.out.println("stat = " + ts);
 		return ts;
 	}
@@ -430,7 +407,7 @@ public class SQLInstance {
 			}
 		}
 		try {
-		    serial.executeBatch(save_ind_record, batch);
+		    serial.executeBatch( true, save_ind_record, batch );
 		} catch (Exception e){
 			return false;
 		}
@@ -456,7 +433,7 @@ public class SQLInstance {
 					stat.getMaxRating(), stat.getCount(), stat.getFlags()}));
 		}
 		try{
-		    serial.executeBatch(insert_overall_totals, batch);
+		    serial.executeBatch( true, insert_overall_totals, batch);
 		} catch (Exception e){
 			System.err.println("ERROR SAVING TOTALS");
 			e.printStackTrace();
@@ -475,7 +452,7 @@ public class SQLInstance {
 		for (String player: players){
 			batch.add(Arrays.asList(new Object[]{strid,player}));
 		}
-		serial.executeBatch(save_members,batch);
+		serial.executeBatch( true, save_members, batch );
 	}
 
 	public VersusRecord getVersusRecord(String id, String opponentId) {
@@ -572,18 +549,18 @@ public class SQLInstance {
 			
 			batch.add(Arrays.asList(new Object[]{or.ids.get(0),or.ids.get(1),or.wins,or.losses,or.ties}));
 		}
-		serial.executeBatch(insert_versus_record,batch);
+		serial.executeBatch( true, insert_versus_record, batch );
 	}
 
 	public void deleteTables(){
 		switch (serial.getType()){
 		case MYSQL:
-		    serial.executeUpdate("truncate table " +overall_table);
-		    serial.executeUpdate("truncate table " +versus_table);
-		    serial.executeUpdate("truncate table " +individual_table);
+		    serial.executeUpdate( true, "truncate table " + overall_table );
+		    serial.executeUpdate( true, "truncate table " + versus_table );
+		    serial.executeUpdate( true, "truncate table " + individual_table );
 			break;
 		case SQLITE:
-		    serial.executeUpdate(truncate_all_tables);
+		    serial.executeUpdate ( true, truncate_all_tables ) ;
 			/// For SQLite, need to drop the tables and recreate them
 			init();
 			break;
@@ -604,9 +581,8 @@ public class SQLInstance {
 //    }
 
 	private void updateTo1Point0() {
-		Log.warn( "[BattleTracker] updating database to 1.0" );
-		String alter = "ALTER TABLE " + overall_table + " ADD " + FLAGS + " INTEGER DEFAULT 0 ";
-		serial.executeUpdate( alter );
+		Log.warn( "[Tracker] updating database to 1.0" );
+		serial.executeUpdate( true, "ALTER TABLE " + overall_table + " ADD " + FLAGS + " INTEGER DEFAULT 0 " );
 	}
 //
 //    private void updateTo1Point1() {

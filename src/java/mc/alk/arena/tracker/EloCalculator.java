@@ -13,21 +13,19 @@ public class EloCalculator {
 	public String getName(){
 		return "Elo";
 	}
-	private float eloChange(Stat p1, Stat p2, float result){
-		final float k = getK(p1.getRating());
-		final float Di = p2.getRating() - p1.getRating();
+	private float eloChange( Stat p1, Stat p2, float result ) {
+		float Di = p2.getRating() - p1.getRating();
 
-		final float expected = (float) ( 1.0f / (1 + Math.pow(10, Di/spread)));
+		float expected = (float) ( 1.0f / ( 1 + Math.pow( 10, Di / spread ) ) );
 
-		float eloChange = k * (result-expected);
+		float eloChange = getK(  p1.getRating() ) * ( result - expected);
 		return eloChange;
 	}
 
-	public void changeRatings(Stat p1, Stat p2, boolean tie){
-		float result = tie ? 0.5f : 1.0f;
-		final float eloChange = eloChange(p1,p2,result);
-		final float p1elo = p1.getRating() + eloChange;
-		final float p2elo = p2.getRating() - eloChange;
+	public void changeRatings( Stat p1, Stat p2, boolean tie ) {
+		float eloChange = eloChange( p1, p2, tie ? 0.5f : 1.0f );
+		float p1elo = p1.getRating() + eloChange;
+		float p2elo = p2.getRating() - eloChange;
 		p1.setRating(p1elo > MIN_ELO? p1elo : MIN_ELO);
 		p2.setRating(p2elo > MIN_ELO? p2elo : MIN_ELO);
 	}
@@ -37,7 +35,7 @@ public class EloCalculator {
 		double eloWinner = 0;
 		double dampening = teamstats.size() == 1 ? 1 : teamstats.size() / 2.0D;
 		for (Stat ts : teamstats){
-			final double eloChange = eloChange(ts1,ts,result) / dampening;
+			double eloChange = eloChange(ts1,ts,result) / dampening;
 			eloWinner+= eloChange;
 			ts.setRating((int) (ts.getRating() - eloChange));
 		}

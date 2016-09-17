@@ -160,5 +160,4 @@ public class Tracker {
         for ( Player p : players )
             dontTrack.remove(p.getName());
         }
-
 }

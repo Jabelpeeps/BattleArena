@@ -3,13 +3,10 @@ package mc.alk.arena.tracker;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -23,56 +20,42 @@ import org.bukkit.craftbukkit.libs.jline.internal.Log;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 
 public class SQLSerializer {
     public static final String version = "1.5";
-
     protected static final boolean DEBUG = false;
     protected static final boolean DEBUG_UPDATE = false;
-
 	protected static final int TIMEOUT = 4; 
 
-	/**
-	 * Valid SQL Types
-	 * @author alkarin
-	 *
-	 */
 	@AllArgsConstructor @Getter
 	public enum SQLType {
 		MYSQL( "MySQL", "com.mysql.jdbc.Driver" ), 
 		SQLITE( "SQLite", "org.sqlite.JDBC" );
-	    @Getter String name, driver;
+	    String name, driver;
 	};
 	
 	private DataSource ds ;
 
-	@Getter protected String DB = "minecraft";
-	@Getter @Setter protected SQLType type = SQLType.MYSQL;
-	@Getter @Setter protected String url = "localhost";
-	@Getter @Setter protected String port = "3306";
-	@Getter @Setter protected String username = "root";
-	@Getter @Setter protected String password = "";
+	protected String DB = "minecraft";
+	@Getter protected SQLType type = SQLType.MYSQL;
+	protected String url = "localhost";
+	protected String port = "3306";
+	protected String username = "root";
+	protected String password = "";
 
 	private String create_database = "CREATE DATABASE IF NOT EXISTS `" + DB + "`";
 
-	public void setDB(String dB) {
-		DB = dB;
-		create_database = "CREATE DATABASE IF NOT EXISTS `" + DB + "`";
-	}
-
-	protected class RSCon {
+	protected class RSCon implements AutoCloseable {
 		public ResultSet rs;
 		public PreparedStatement ps;
-		public Connection con;
 		
-		public void close() {
+		@Override
+        public void close() {
 		    try {
-                rs.close();
-                ps.close();
-                con.close();
+                if ( rs != null ) rs.close();
+                if ( ps != null ) ps.close();
             } 
 		    catch ( SQLException e ) {
                 e.printStackTrace();
@@ -80,18 +63,10 @@ public class SQLSerializer {
 		}
 	}
 
-//	protected void close(RSCon rscon) {
-//		try {
-//			rscon.rs.close();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
 	public Connection getConnection() throws SQLException {
 
 		if ( ds == null ) 
-			throw new SQLException( "Connection is null.  Did you intiliaze your SQL connection?"); 
+			throw new SQLException( "Connection is null.  Did you intiliaze your SQL connection?" ); 
 		try {
 			Connection con = ds.getConnection();
 			con.setAutoCommit(true);
@@ -101,12 +76,6 @@ public class SQLSerializer {
 			return null;
 		}
 	}
-
-//	public void closeConnection(RSCon rscon) {
-//		if ( rscon == null || rscon.con == null ) return;
-//		
-//		try { rscon.con.close(); } catch (SQLException e) {}
-//	}
 
 	public static DataSource setupDataSource( String connectURI, String username, String password, 
 	                                                                    int minIdle, int maxActive ) {
@@ -119,7 +88,7 @@ public class SQLSerializer {
 			poolConf.minIdle = minIdle;
 		
 		PoolableConnectionFactory factory = new PoolableConnectionFactory( 
-		        new DriverManagerConnectionFactory( connectURI,username, password ), 
+		        new DriverManagerConnectionFactory( connectURI, username, password ), 
 		        new GenericObjectPool( null, poolConf ),
 		        new GenericKeyedObjectPoolFactory( null ), 
 				"select 1", false, true );
@@ -141,35 +110,31 @@ public class SQLSerializer {
 
 		if ( exists ) return true; 
 
-		/// Create our table and index
-		String strStmt = sql_create_table;
 		int result = 0;
 		
 		try ( Connection con = getConnection();
               Statement st = con.createStatement(); ) {
 		    
-			result = st.executeUpdate( strStmt );			
-			if (DEBUG) Log.info( "Created Table with stmt=" + strStmt);
+			result = st.executeUpdate( sql_create_table );			
+			if (DEBUG) Log.info( "Created Table with stmt=" + sql_create_table );
 			
 		    if ( sql_updates != null ) {
 	            for ( String sql_update : sql_updates ) {
 	                if (sql_update == null) continue;
 	                
-	                strStmt = sql_update;
-	                
 	                try {
-	                    result = st.executeUpdate(strStmt);
-	                    if (DEBUG) Log.info( "Update Table with stmt=" + strStmt);
+	                    result = st.executeUpdate( sql_update );
+	                    if (DEBUG) Log.info( "Update Table with stmt=" + sql_update );
 	                } 
 	                catch (SQLException e) {
-	                    Log.error( "Failed in updating Table " +strStmt + " result=" + result);
+	                    Log.error( "Failed in updating Table " + sql_update + " result=" + result);
 	                    e.printStackTrace();
 	                    return false;
 	                }
 	            }
 	        }
 		} catch (SQLException e) {
-		    Log.error( "Failed in creating Table " + strStmt + " result=" + result);
+		    Log.error( "Failed in creating Table " + sql_create_table + " result=" + result);
 			e.printStackTrace();
 			return false;
 		}
@@ -221,18 +186,18 @@ public class SQLSerializer {
 	 * @return
 	 */
 	protected RSCon executeQuery( Integer timeoutSeconds, String strRawStmt, Object... varArgs ) {
-		RSCon rscon = null;
-
-        
-		try (   Connection con = getConnection();
-		        PreparedStatement ps = getStatement( strRawStmt, con, varArgs ) ) {
+      
+		try ( Connection con = getConnection() ) {
 		    
-			if (DEBUG) System.out.println( "Executing =" + ps + " timeout=" + timeoutSeconds + " raw=" + strRawStmt );
-			ps.setQueryTimeout(timeoutSeconds);
-			ResultSet rs = ps.executeQuery();
-			rscon = new RSCon();
-			rscon.con = con;
-			rscon.rs = rs;	
+            RSCon rscon = new RSCon();
+		    rscon.ps = getStatement( strRawStmt, con, varArgs );
+		    
+			if (DEBUG) System.out.println( "Executing =" + rscon.ps + " timeout=" + timeoutSeconds + " raw=" + strRawStmt );
+
+			rscon.ps.setQueryTimeout( timeoutSeconds );
+			rscon.rs = rscon.ps.executeQuery();	
+			
+			return rscon;
 		} 
 		catch ( SQLException e ) {
 			if ( Defaults.DEBUG_TRACKING ) {
@@ -244,32 +209,18 @@ public class SQLSerializer {
 				e.printStackTrace();
 			}
 		}
-		return rscon;
+		return null;
 	}
 
-//	private void executeUpdate( final boolean async, final String strRawStmt, final Object... varArgs ) {
-//		if ( async ) {
-//			new Thread( new Runnable() {
-//				@Override
-//                public void run() {
-//					try{
-//						executeUpdate(strRawStmt, varArgs);
-//					} catch (Exception e){
-//						e.printStackTrace();
-//					}
-//				}
-//			}).start();
-//		} else {
-//			try{
-//				executeUpdate(strRawStmt, varArgs);
-//			} catch (Exception e){
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-
-	protected int executeUpdate( String strRawStmt, Object... varArgs ) {
-		int result= -1;
+	protected void executeUpdate( boolean async, String strRawStmt, Object... varArgs ) {
+		if ( async )
+			new Thread( () -> executeUpdate(strRawStmt, varArgs) ).start();
+		else 
+		    executeUpdate(strRawStmt, varArgs);
+	}
+	
+	private int executeUpdate( String strRawStmt, Object... varArgs ) {
+		int result = -1;
 
 		try ( Connection con = getConnection();
 		      PreparedStatement ps = getStatement(strRawStmt,con,varArgs); ) {
@@ -285,15 +236,14 @@ public class SQLSerializer {
 		return result;
 	}
 
-	protected void executeBatch( boolean async, String updateStatement, List<List<Object>> batch) {
-		
-	    if (async) 
+	protected void executeBatch( boolean async, String updateStatement, List<List<Object>> batch) {		
+	    if ( async ) 
 			new Thread( () -> executeBatch(updateStatement, batch) ).start();
 		else 
 			executeBatch(updateStatement, batch);
 	}
 
-	protected void executeBatch( String updateStatement, List<List<Object>> batch ) {
+	private void executeBatch( String updateStatement, List<List<Object>> batch ) {
 		
 	    try ( Connection con = getConnection(); 
 	          PreparedStatement ps  = con.prepareStatement( updateStatement ); ) {
@@ -320,13 +270,13 @@ public class SQLSerializer {
 	private PreparedStatement getStatement( String strRawStmt, Connection con, Object... varArgs ) {
 
 		PreparedStatement ps = null;
-		try{
-			ps = con.prepareStatement(strRawStmt);
-			for (int i=0;i<varArgs.length;i++){
-				if (DEBUG_UPDATE) System.out.println(i+" = " + varArgs[i]);
-				ps.setObject(i+1, varArgs[i]);
+		try {
+			ps = con.prepareStatement( strRawStmt );
+			for ( int i = 0; i < varArgs.length; i++ ) {
+				if (DEBUG_UPDATE) System.out.println( i + " = " + varArgs[i] );
+				ps.setObject( i + 1, varArgs[i] );
 			}
-		} catch (Exception e){
+		} catch ( SQLException e ) {
 			if ( Defaults.DEBUG_TRACKING ) {
 				System.err.println("Couldnt prepare statment "  + ps +"   rawStmt='" + strRawStmt +"' args="+varArgs);
 				for (int i=0;i< varArgs.length;i++){
@@ -337,124 +287,44 @@ public class SQLSerializer {
 		return ps;
 	}
 
-
-	public Double getDouble(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
+	protected Integer getInteger( String query, Object... varArgs ) {
+		
+		try ( RSCon rscon = executeQuery( TIMEOUT, query, varArgs ) ) {
 			ResultSet rs = rscon.rs;
-			while (rs.next()){
-				return rs.getDouble(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally{
-			try{rscon.con.close();}catch(Exception e){}
-		}
-		return null;
-	}
-
-	public Integer getInteger(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
-			ResultSet rs = rscon.rs;
-			while (rs.next()){
+			while ( rs.next() ) {
 				return rs.getInt(1);
 			}
-		} catch (SQLException e) {
+		} catch ( SQLException e ) {
 			e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
 		}
 		return null;
 	}
 
-	public Short getShort(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
-			ResultSet rs = rscon.rs;
-			while (rs.next()){
-				return rs.getShort(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
-		}
-		return null;
+	private Boolean getBoolean( String query, Object... varArgs ) {
+		return getBoolean( TIMEOUT, query, varArgs );
 	}
 
-	public Long getLong(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
+	private Boolean getBoolean( Integer timeoutSeconds, String query, Object... varArgs){
+		
+		try ( RSCon rscon = executeQuery( timeoutSeconds, query, varArgs ) ) {
 			ResultSet rs = rscon.rs;
-			while (rs.next()){
-				return rs.getLong(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
-		}
-		return null;
-	}
-
-	public Boolean getBoolean(String query, Object... varArgs){
-		return getBoolean( TIMEOUT, query,varArgs);
-	}
-
-	protected Boolean getBoolean( Integer timeoutSeconds, String query, Object... varArgs){
-		RSCon rscon = executeQuery( timeoutSeconds, query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
-			ResultSet rs = rscon.rs;
-			while (rs.next()){
+			while ( rs.next() ) {
 				int i = rs.getInt(1);
-				if ( i == 0 )
-					return null;
+				if ( i == 0 ) return null;
 				return i > 0;
 			}
 		} catch (SQLException e) {
 			if ( Defaults.DEBUG_TRACKING )
 				e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
 		}
 		return null;
 	}
 
-	public String getString(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
+	protected List<Object> getObjects( String query, Object... varArgs ) {
+		
+		try ( RSCon rscon = executeQuery( TIMEOUT, query, varArgs ) ) {
 			ResultSet rs = rscon.rs;
-			while (rs.next()){
-				return rs.getString(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
-		}
-		return null;
-	}
-
-	public List<Object> getObjects(String query, Object... varArgs){
-		RSCon rscon = executeQuery(query,varArgs);
-		if (rscon == null || rscon.con == null)
-			return null;
-		try {
-			ResultSet rs = rscon.rs;
-			while (rs.next()){
+			while ( rs.next() ) {
 				int nCol = rs.getMetaData().getColumnCount();
 				List<Object> objs = new ArrayList<>(nCol);
 				for ( int i = 0; i < nCol; i++ ) {
@@ -464,30 +334,8 @@ public class SQLSerializer {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally{
-			try{rscon.con.close();}catch(Exception e){}
 		}
 		return null;
-	}
-
-	protected ArrayList<Map<String,Object>> convertToResult(RSCon rscon){
-		ArrayList<Map<String,Object>> values = new ArrayList<>();
-		try {
-			ResultSet rs = rscon.rs;
-			if (rs == null)
-				return null;
-			ResultSetMetaData rmd = rs.getMetaData();
-			while (rs.next()){
-				Map<String,Object> row = new HashMap<>();
-				for (int i=1;i<rmd.getColumnCount()+1;i++){
-					row.put(rmd.getColumnName(i), rs.getObject(i));
-				}
-				values.add(row);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return values;
 	}
 
     public void configureSQL( ConfigurationSection cs ) {
@@ -496,7 +344,8 @@ public class SQLSerializer {
     	
     	if ( _type == null ) return;
     	
-    	setDB( cs.getString( "db", "minecraft" ) );
+    	DB = cs.getString( "db", "minecraft" );
+        create_database = "CREATE DATABASE IF NOT EXISTS `" + DB + "`";
     	
     	if ( _type.equalsIgnoreCase("sqlite") ) {
     		url = BattleArena.getSelf().getDataFolder().toString();
@@ -544,11 +393,11 @@ public class SQLSerializer {
         if ( DEBUG ) Log.info( "Connection to database succeeded." );
 
         if ( type == SQLType.MYSQL ) {
-            try (   Connection con = ds.getConnection();
-                    Statement st = con.createStatement(); ) {
+            try ( Connection con = getConnection();
+                  Statement st = con.createStatement(); ) {
                 
                 st.executeUpdate( create_database );              
-                if (DEBUG) Log.info("Creating db");
+                if (DEBUG) Log.info( "Creating db" );
             } 
             catch (SQLException e) {
                 Log.error( "Failed creating db: " + create_database );
@@ -556,5 +405,4 @@ public class SQLSerializer {
             } 
         }
     }
-
 }
