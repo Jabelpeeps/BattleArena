@@ -19,7 +19,6 @@ import mc.alk.arena.events.players.ArenaPlayerLeaveMatchEvent;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
 import mc.alk.arena.listeners.BAPlayerListener;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.MatchParams;
@@ -48,7 +47,6 @@ public class GameManager extends PlayerHolder {
 
 	private GameManager(MatchParams _params){
 		params = _params;
-		methodController = new MethodController("GM "+_params.getName());
 		methodController.addAllEvents(this);
 		
 		if (Defaults.TESTSERVER) {Log.info("GameManager Testing"); return;}

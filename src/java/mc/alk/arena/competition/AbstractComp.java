@@ -67,6 +67,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
      * @param _params EventParams
      */
     public AbstractComp(EventParams _params) throws NeverWouldJoinException {
+        super();
         params = _params;
         transitionTo(EventState.CLOSED);
         name = _params.getName();

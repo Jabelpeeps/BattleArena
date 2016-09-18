@@ -21,7 +21,6 @@ import mc.alk.arena.competition.TransitionController;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveLobbyEvent;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.ContainerState;
@@ -65,7 +64,6 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
 
     public AbstractAreaContainer( String _name ) {
         name = _name;
-        methodController = new MethodController( "AAC " + _name );
         methodController.addAllEvents( this );
         Bukkit.getPluginManager().registerEvents( this, BattleArena.getSelf() );    
     }

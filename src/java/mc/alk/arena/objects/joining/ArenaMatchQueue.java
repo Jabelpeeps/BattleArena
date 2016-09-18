@@ -76,7 +76,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     final List<WaitingObject> joinHandlers = new LinkedList<>();
     final Map<WaitingObject, IdTime> forceTimers = Collections.synchronizedMap(new HashMap<>());
     final protected Map<UUID, WaitingObject> inQueue = new HashMap<>();
-    final protected MethodController methodController = new MethodController("QC");
+    final protected MethodController methodController = new MethodController();
     final private Map<ArenaType, ArenaQueue> arenaqueue = new ConcurrentHashMap<>();
     final Map<ArenaType,LinkedList<FoundMatch>> delayedReadyMatches = new HashMap<>();
     final private Map<ArenaType, Integer> runningMatchTypes = Collections.synchronizedMap(new HashMap<>());

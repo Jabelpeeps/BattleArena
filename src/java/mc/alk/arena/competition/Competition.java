@@ -28,7 +28,7 @@ public abstract class Competition extends PlayerHolder implements JoinResponseHa
 
 	@Getter protected List<ArenaTeam> teams = new CopyOnWriteArrayList<>();
 	protected final Set<UUID> leftPlayers = Collections.synchronizedSet(new HashSet<UUID>());
-	static int count =0;
+	static int count = 0;
 	@Getter final protected int id = count++;
 	
 	/**

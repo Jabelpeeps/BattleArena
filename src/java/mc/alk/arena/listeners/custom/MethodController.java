@@ -70,14 +70,12 @@ public class MethodController {
     static int controllerCount = 0;
 
     @Getter final Set<ArenaListener> arenaListeners = new HashSet<>();
-    final Object owner;
     final BAEventCaller baexecutor;
     static TimingUtil timings;
     MatchState curState = MatchState.NONE;
 
-    public MethodController( Object _owner ) {
+    public MethodController() {
         if (Defaults.DEBUG_EVENTS) controllers.add( this );
-        owner = _owner;
         controllerCount++;
         if (Bukkit.getPluginManager().useTimings() || Defaults.DEBUG_TIMINGS){
             
@@ -154,24 +152,6 @@ public class MethodController {
             for ( Class<? extends BAEvent> event : matchMethods.keySet() ) 
                 updateBAEvent( listener, matchState, players, event );
     }
-
-    /**
-     *
-     * @param matchState MatchState
-     * @param player ArenaPlayer
-     * @param events Events
-     */
-//    public void updateSpecificEvents(MatchState matchState, ArenaPlayer player, Class<? extends Event>... events) {
-//        try {
-//            List<UUID> players = new ArrayList<>();
-//            players.add(player.getUniqueId());
-//
-//            for (Class<? extends Event> event: events){
-//                updateEvent(null, matchState,players, event);}
-//        } catch (Exception e) {
-//            Log.printStackTrace(e);
-//        }
-//    }
 
     private void updateEvent( ArenaListener listener, MatchState matchState,
                               Collection<UUID> players, Class<? extends Event> event) {

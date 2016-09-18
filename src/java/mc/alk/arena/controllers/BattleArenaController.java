@@ -74,7 +74,7 @@ public class BattleArenaController implements ArenaListener, Listener {
     }
 
     public BattleArenaController( SignUpdateListener _signUpdateListener ){
-        MethodController methodController = new MethodController("BAC");
+        MethodController methodController = new MethodController();
         methodController.addAllEvents(this);
         signUpdateListener = _signUpdateListener;
     }
