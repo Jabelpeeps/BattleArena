@@ -85,21 +85,21 @@ public class Arena extends AreaContainer {
      * private Arena onPrestart events, calls onPrestart for subclasses to be able to override
      */
     public void publicOnPrestart(){
-        try{onPrestart();}catch(Exception e){Log.printStackTrace(e);}
+        try { onPrestart(); } catch( Exception e ) { Log.printStackTrace(e); }
     }
     /**
      * private Arena onStart events, calls onStart for subclasses to be able to override
      */
     public void publicOnStart(){
         startSpawns();
-        try{onStart();}catch(Exception e){Log.printStackTrace(e);}
+        try { onStart(); } catch(Exception e) { Log.printStackTrace(e); }
     }
     /**
      * private Arena onStart events, calls onStart for subclasses to be able to override
      */
     public void publicOnVictory(MatchResult result){
         stopSpawns();
-        try{onVictory(result);}catch(Exception e){Log.printStackTrace(e);}
+        try { onVictory(result); } catch(Exception e) { Log.printStackTrace(e); }
     }
     /**
      * private Arena onComplete events, calls onComplete for subclasses to be able to override
@@ -261,9 +261,7 @@ public class Arena extends AreaContainer {
      * Get the type of this arena
      * @return ArenaType
      */
-    public ArenaType getArenaType() {
-        return params.getType();
-    }
+    public ArenaType getArenaType() { return params.getType(); }
 
     /**
      * Does this arena have a name, at least one spawn, and valid arena parameters
@@ -409,31 +407,27 @@ public class Arena extends AreaContainer {
      * Return the team with this index
      * @return the team or null if index isn't valid
      */
-    public ArenaTeam getTeam(int teamIndex){
-        return match == null ? null : match.getTeam(teamIndex);
-    }
+    public ArenaTeam getTeam(int teamIndex){ return match == null ? null : match.getTeam(teamIndex); }
 
     /**
      * Start any spawns happening for this arena
      */
     public void startSpawns(){
         SpawnController sc = getSpawnController();
-        if (sc != null)
-            sc.start();
+        if ( sc != null ) sc.start();
     }
 
     /**
      * Stop any spawns occuring in this arena
      */
     public void stopSpawns(){
-        if (spawnController != null){
-            spawnController.stop();}
+        if ( spawnController != null ) spawnController.stop();
     }
 
     public boolean matches(final JoinOptions jp) {
         Arena a = jp.getArena();
-        if (a != null && !a.matches(this))
-            return false;
+        if (a != null && !a.matches(this)) return false;
+        
         MatchParams matchParams = jp.getMatchParams();
         if (!matches(matchParams)) {
             return false;
@@ -452,13 +446,10 @@ public class Arena extends AreaContainer {
     }
 
     public boolean matches(Arena arena) {
-        if (arena == null)
-            return false;
-        if (this == arena)
-            return true;
-        if (arena.name == null || this.name==null)
-            return false;
-        return this.name.equals(arena.name);
+        if ( arena == null ) return false;
+        if ( this == arena ) return true;
+        if ( arena.name == null || name == null) return false;
+        return name.equals( arena.name );
     }
 
     /**
@@ -478,15 +469,19 @@ public class Arena extends AreaContainer {
 
     public List<String> getInvalidMatchReasons(Arena arena) {
         List<String> reasons = new ArrayList<>();
-        if (arena == null){
+        
+        if (arena == null)
             reasons.add("Arena is null");
-        } else if (this == arena) {
+        
+        else if (this == arena)
             return reasons;
-        } else if (arena.name == null || this.name==null){
+        
+        else if (arena.name == null || this.name==null)
             reasons.add("Arena name is null or this.name is null");
-        } else if (!this.name.equals(arena.name)){
+        
+        else if (!this.name.equals(arena.name))
             reasons.add("This arena '"+this.getName()+"' isn't '" + arena.getName()+"'");
-        }
+        
         return reasons;
     }
     
@@ -529,7 +524,6 @@ public class Arena extends AreaContainer {
             if (!jp.sameWorld(this)){
                 reasons.add("You aren't in the same world");}
         }
-
         return reasons;
     }
 
@@ -590,18 +584,10 @@ public class Arena extends AreaContainer {
         return spawnController;
     }
 
-    public RoomContainer getLobby() {
-        return RoomController.getLobby(getArenaType());
-    }
-
+    public RoomContainer getLobby() { return RoomController.getLobby( getArenaType() ); }
     @Override
-    public LocationType getLocationType() {
-        return LocationType.ARENA;
-    }
-
-    public List<List<SpawnLocation>> getVisitorLocs() {
-        return visitorRoom!=null ? visitorRoom.getSpawns() : null;
-    }
+    public LocationType getLocationType() { return LocationType.ARENA; }
+    public List<List<SpawnLocation>> getVisitorLocs() { return visitorRoom!=null ? visitorRoom.getSpawns() : null; }
 
     public boolean isJoinable(MatchParams mp) {
         if (!isOpen())
@@ -686,7 +672,7 @@ public class Arena extends AreaContainer {
      * @param transition the transition type to perform
      * @param player the player to perform the transition on
      */
-    protected void performTransition(CompetitionTransition transition, ArenaPlayer player) {
+    protected void performTransition( CompetitionTransition transition, ArenaPlayer player ) {
         TransitionController.transition((match != null ? match : this), transition, player, player.getTeam(), false);
     }
 

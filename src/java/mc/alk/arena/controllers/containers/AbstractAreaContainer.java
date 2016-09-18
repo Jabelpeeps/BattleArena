@@ -37,7 +37,7 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
     
     public static final PlayerHolder HOMECONTAINER = new AbstractAreaContainer( "home" ) {
         @Override
-        public PlayerHolder.LocationType getLocationType() { return PlayerHolder.LocationType.HOME; }
+        public LocationType getLocationType() { return LocationType.HOME; }
         @Override
         public ArenaTeam getTeam(ArenaPlayer player) { return null; }
     };
@@ -60,7 +60,7 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
     final protected List<ArenaTeam> teams = Collections.synchronizedList(new ArrayList<ArenaTeam>());
     /** our values for the team index, only used if the Team.getIndex is null*/
     final Map<ArenaTeam,Integer> teamIndexes = new ConcurrentHashMap<>();
-    final static Random r = new Random();
+    final static Random rand = new Random();
 
     public AbstractAreaContainer( String _name ) {
         name = _name;
@@ -133,11 +133,11 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
             if ( allSpawns == null ) buildAllSpawns();
             
             return allSpawns == null ? null 
-                                     : allSpawns.get( r.nextInt( allSpawns.size() ) );
+                                     : allSpawns.get( rand.nextInt( allSpawns.size() ) );
         }
         List<SpawnLocation> l = index >= spawns.size() ? spawns.get( index % spawns.size() ) 
                                                        : spawns.get( index );
-        return l.get( r.nextInt( l.size() ) );
+        return l.get( rand.nextInt( l.size() ) );
     }
 
     public SpawnLocation getSpawn( int teamIndex, int spawnIndex ) {

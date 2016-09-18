@@ -1,8 +1,6 @@
 package mc.alk.arena;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +37,6 @@ import mc.alk.arena.listeners.BTEntityListener;
 import mc.alk.arena.listeners.SignUpdateListener;
 import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.objects.victoryconditions.AllKills;
 import mc.alk.arena.objects.victoryconditions.Custom;
@@ -322,44 +318,13 @@ public class BattleArena extends JavaPlugin {
         return "[" + BattleArena.pluginname + "_v" + BattleArena.version + "]";
     }
 
-    public static ArenaFactory createArenaFactory( Class<? extends Arena> arenaClass ) {
-        if (arenaClass == null) return null;
-        
-        return () -> {
-                Class<?>[] args = {};
-                try {
-                    Constructor<?> constructor = arenaClass.getConstructor(args);
-                    Arena  arena = (Arena) constructor.newInstance((Object[]) args);                  
-                    return arena;
-                } 
-                catch (NoSuchMethodException ex) {
-                    Log.err("If you have custom constructors for your class you must also have a public default constructor");
-                    Log.err("Add the following line to your Arena Class '" + arenaClass.getSimpleName() + ".java'");
-                    Log.err("public " + arenaClass.getSimpleName() + "(){}");
-                    Log.err("Or you can create your own ArenaFactory to support custom constructors");
-                    Log.printStackTrace(ex);
-                } 
-                catch ( IllegalAccessException | InstantiationException 
-                        | IllegalArgumentException | InvocationTargetException ex ) {
-                    Log.printStackTrace(ex);
-                }
-                return null;
-            };
-    }
-    
     /**
      * Get the module directory
      * @return File: Module Directory
      */
-    public File getModuleDirectory() {
-        return new File( getDataFolder() + "/modules");
-    }
+    public File getModuleDirectory() { return new File( getDataFolder() + "/modules"); }
     
-    public static void addModule(ArenaModule mod) {
-        modules.put(mod.getName().toUpperCase(), mod);
-    }
+    public static void addModule( ArenaModule mod ) { modules.put( mod.getName().toUpperCase(), mod ); }
     
-    public static ArenaModule getModule(String name) {
-        return modules.get(name.toUpperCase());
-    }
+    public static ArenaModule getModule( String name ) { return modules.get( name.toUpperCase() ); }
 }

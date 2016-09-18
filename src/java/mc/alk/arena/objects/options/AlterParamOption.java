@@ -47,24 +47,18 @@ public enum AlterParamOption {
         try {
             return AlterParamOption.valueOf(str);
         } catch (IllegalArgumentException e){
+            
             if (str.equalsIgnoreCase("secondsTillMatch") || str.equalsIgnoreCase("secondsUntilMatch"))
                 return AlterParamOption.PRESTARTTIME;
-            if (str.equalsIgnoreCase("gameTime"))
-                return AlterParamOption.MATCHTIME;
-            if (str.equalsIgnoreCase("numTeams"))
-                return AlterParamOption.NTEAMS;
-            if (str.equalsIgnoreCase("secondsToLoot"))
-                return AlterParamOption.VICTORYTIME;
-            if (str.equalsIgnoreCase("victoryTime"))
-                return AlterParamOption.VICTORYTIME;
-            if (str.equalsIgnoreCase("items"))
-                return AlterParamOption.GIVEITEMS;
-            if (str.equalsIgnoreCase("db") || str.equalsIgnoreCase("dbTableName"))
-                return AlterParamOption.DATABASE;
-            if (str.equalsIgnoreCase("waitroomClosedWhileRunning"))
-                return AlterParamOption.CLOSEWAITROOMWHILERUNNING;
-            if (str.equalsIgnoreCase("nConcurrentCompetitions"))
-                return AlterParamOption.NCUMONCURRENTCOMPETITIONS;
+            
+            if (str.equalsIgnoreCase("gameTime")) return AlterParamOption.MATCHTIME;
+            if (str.equalsIgnoreCase("numTeams")) return AlterParamOption.NTEAMS;
+            if (str.equalsIgnoreCase("secondsToLoot")) return AlterParamOption.VICTORYTIME;
+            if (str.equalsIgnoreCase("victoryTime")) return AlterParamOption.VICTORYTIME;
+            if (str.equalsIgnoreCase("items")) return AlterParamOption.GIVEITEMS;
+            if (str.equalsIgnoreCase("db") || str.equalsIgnoreCase("dbTableName")) return AlterParamOption.DATABASE;
+            if (str.equalsIgnoreCase("waitroomClosedWhileRunning")) return AlterParamOption.CLOSEWAITROOMWHILERUNNING;
+            if (str.equalsIgnoreCase("nConcurrentCompetitions")) return AlterParamOption.NCUMONCURRENTCOMPETITIONS;
             return null;
         }
     }

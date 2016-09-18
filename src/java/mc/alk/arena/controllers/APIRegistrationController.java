@@ -24,7 +24,6 @@ import mc.alk.arena.executors.DuelExecutor;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.RegisteredCompetition;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.ConfigException;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
@@ -37,36 +36,6 @@ import mc.alk.arena.util.Log;
 public class APIRegistrationController {
 
     final static Set<String> delayedInits = Collections.synchronizedSet( new HashSet<String>() );
-
-//    private static boolean loadFile(Plugin plugin, File fullFile, String fileName, String name, String cmd) throws IOException {
-//        if (fullFile.exists()) {
-//            return true;
-//        }
-//        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fileName) ) ) {
-//            return inputStream != null && createFile(fullFile, name, cmd, inputStream);
-//        }
-//    }
-//
-//    private static boolean loadFile(Plugin plugin, File defaultFile, File defaultPluginFile, File pluginFile,
-//                                                            String fullFileName, String name, String cmd) throws IOException {
-//        
-//        if ( pluginFile != null && pluginFile.exists() )  return true; 
-//        
-//        if ( name == null || name.isEmpty() || cmd == null ) return false;
-//        
-//        try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), new File(fullFileName)) ) {
-//            return createFile(pluginFile, name, cmd, inputStream);  
-//        }
-//        catch ( NullPointerException e ) {
-//            if ( defaultFile != null && defaultPluginFile != null ) {
-//                try ( InputStream inputStream = FileUtil.getInputStream(plugin.getClass(), defaultFile, defaultPluginFile) ) {
-//                    return createFile(pluginFile, name, cmd, inputStream);  
-//                }
-//            }
-//        }
-//        return false;
-//        
-//    }
 
 //    private static boolean createFile(File pluginFile, String name, String cmd, InputStream inputStream) {
 //        String line;
@@ -124,33 +93,33 @@ public class APIRegistrationController {
         }
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory ) {
-        return registerCompetition( plugin, name, cmd, factory, null );
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena ) {
+        return registerCompetition( plugin, name, cmd, arena, null );
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena, 
                                                CustomCommandExecutor executor ) {
         File dir = plugin.getDataFolder();
         File configFile = new File( dir.getAbsoluteFile() + "/" + name + "Config.yml" );
         File msgFile = new File( dir.getAbsoluteFile() + "/" + name + "Messages.yml" );
         File defaultArenaFile = new File( dir.getAbsoluteFile() + "/arenas.yml" );
         
-        return registerCompetition( plugin, name, cmd, factory, executor, configFile, msgFile, defaultArenaFile );
+        return registerCompetition( plugin, name, cmd, arena, executor, configFile, msgFile, defaultArenaFile );
     }
 
-    static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena, 
                                                CustomCommandExecutor executor, File configFile, File messageFile, 
                                                File defaultArenaFile ) {
         
-        return registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile,
+        return registerCompetition( plugin, name, cmd, arena, executor, configFile, messageFile,
                 new File( plugin.getDataFolder() + "default_files/competitions/" + name + "Config.yml" ), defaultArenaFile );
     }
 
-    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena, 
                                                CustomCommandExecutor executor, File configFile, File messageFile, 
                                                File defaultPluginConfigFile, File defaultArenaFile ) {
         try {
-            return _registerCompetition( plugin, name, cmd, factory, executor, configFile, messageFile, 
+            return _registerCompetition( plugin, name, cmd, arena, executor, configFile, messageFile, 
                                                                defaultPluginConfigFile, defaultArenaFile );
         } catch ( Exception e ) {
             Log.err( "[BattleArena] could not register " + plugin.getName() + " " + name );
@@ -160,20 +129,12 @@ public class APIRegistrationController {
         }
     }
     
-    private static boolean _registerCompetition( JavaPlugin plugin, String name, String cmd, ArenaFactory factory, 
+    private static boolean _registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arenaClass, 
                                                  CustomCommandExecutor executor, File configFile, File messageFile, 
                                                  File defaultPluginConfigFile, File defaultArenaFile ) 
-                                                         throws ConfigException, InvalidOptionException {
-        /// Create our plugin folder if its not there
+                                                            throws ConfigException, InvalidOptionException { 
+        
         FileUtil.makeIfNotExists( plugin.getDataFolder() );
-
-        /// Define our config files
-//        String configFileName = name + "Config.yml";
-//        String defaultConfigFileName = "defaultConfig.yml";
-//        File compDir = configFile.getParentFile().getAbsoluteFile();
-
-//        File pluginFile = new File( compDir.getPath() + File.separator + configFileName);
-//        File defaultFile = new File("default_files/competitions/" + File.separator + defaultConfigFileName);
 
         /// Set a delayed init on this plugin and folder to load custom types
         if ( !delayedInits.contains( plugin.getName() ) ) {
@@ -196,32 +157,19 @@ public class APIRegistrationController {
         /// What is our game type ? spleef, ctf, etc
         ArenaType gameType = ConfigSerializer.getArenaGameType( config.getConfigurationSection( name ) );
         
-        if ( factory == null ) {
-            if ( gameType != null ) {
-                factory = ArenaType.getArenaFactory( gameType );
-            } else {
-                Class<? extends Arena> ac = ConfigSerializer.getArenaClass( config.getConfigurationSection( name ) );
-                factory = BattleArena.createArenaFactory( ac );
-            }
-            if ( factory == null ) {
-                factory = BattleArena.createArenaFactory( Arena.class );
-            }
-        }
-        /// load or register our arena type
-        /*
-        if (arenaClass == null) {
-            if (gameType != null) {
-                arenaClass = ArenaType.getArenaClass(gameType);
-            } else {
-                arenaClass = ConfigSerializer.getArenaClass(config.getConfigurationSection(name));
-            }
-            if (arenaClass == null) {
-                arenaClass = Arena.class;
-            }
-        }
-        ArenaType at = ArenaType.register(name, arenaClass, plugin);
-        */
-        ArenaType at = ArenaType.register( name, factory, plugin );
+//        if ( factory == null ) {
+//            if ( gameType != null ) {
+//                factory = ArenaType.getArenaFactory( gameType );
+//            } else {
+//                Class<? extends Arena> ac = ConfigSerializer.getArenaClass( config.getConfigurationSection( name ) );
+//                factory = ArenaType.createArenaFactory( ac );
+//            }
+//            if ( factory == null ) {
+//                factory = ArenaType.createArenaFactory( Arena.class );
+//            }
+//        }
+
+        ArenaType at = ArenaType.register( name, arenaClass, plugin );
 
         MatchParams mp = config.loadMatchParams();
 

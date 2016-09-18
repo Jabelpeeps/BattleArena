@@ -44,7 +44,7 @@ public class ArenaAlterController {
     }
 
     @AllArgsConstructor
-    public enum ChangeType{
+    public enum ChangeType {
         WAITROOM(true,true),
         SPECTATE(true,true),
         LOBBY(true,true),

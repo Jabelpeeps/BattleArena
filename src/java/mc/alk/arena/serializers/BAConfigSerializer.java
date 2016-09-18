@@ -27,7 +27,6 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaFactory;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.joining.ArenaMatchQueue;
@@ -117,7 +116,7 @@ public class BAConfigSerializer extends BaseConfig {
             
             String capComp = StringUtils.capitalize( comp );
             CustomCommandExecutor executor = comp.equalsIgnoreCase( "duel" ) ? new DuelExecutor() : null;
-            APIRegistrationController.registerCompetition( plugin, capComp, capComp, ArenaFactory.DEFAULT, executor,
+            APIRegistrationController.registerCompetition( plugin, capComp, capComp, Arena.class, executor,
                                                            new File( compDir + "/" + capComp + "Config.yml" ),
                                                            new File( compDir + "/" + capComp + "Messages.yml" ),
                                                            new File( "/default_files/competitions/" + capComp + "Config.yml" ),
@@ -169,7 +168,7 @@ public class BAConfigSerializer extends BaseConfig {
         Defaults.SECONDS_TO_LOOT = cs.getInt("secondsToLoot", Defaults.SECONDS_TO_LOOT);
         defaults.setSecondsToLoot(Defaults.SECONDS_TO_LOOT);
 
-        Defaults.MATCH_TIME = ConfigSerializer.toPositiveSize(cs.getString("matchTime", "infinite"));
+        Defaults.MATCH_TIME = ConfigSerializer.toPositiveSize(cs.getString("matchTime", "infinite"), Integer.MAX_VALUE );
         defaults.setMatchTime(Defaults.MATCH_TIME);
 
         Defaults.MATCH_UPDATE_INTERVAL = cs.getInt("matchUpdateInterval", Defaults.MATCH_UPDATE_INTERVAL);

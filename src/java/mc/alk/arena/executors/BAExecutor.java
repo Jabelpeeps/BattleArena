@@ -168,10 +168,10 @@ public class BAExecutor extends CustomCommandExecutor {
 
     @MCCommand( cmds = {"join", "j"}, usage = "add [options]", helpOrder = 1 )
     public boolean join( ArenaPlayer player, MatchParams mp, String args[] ) {
-        return join(player, mp, args, false);
+        return join( player, mp, args, false );
     }
 
-    private boolean join( ArenaPlayer player, final MatchParams omp, String args[], boolean adminJoin ) {
+    private boolean join( ArenaPlayer player, MatchParams omp, String args[], boolean adminJoin ) {
         
         JoinOptions jp;
         try {

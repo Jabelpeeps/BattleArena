@@ -209,8 +209,10 @@ public class TransitionController {
                     MoneyController.subtract( player.getPlayer(), prizeMoney );
             }
             if (mo.getExperience() != null) ExpUtil.giveExperience(p, mo.getExperience());
+            
 //            if (mo.hasOption(TransitionOption.REMOVEPERMS)) removePerms(player, mo.getRemovePerms());
 //            if (mo.hasOption(TransitionOption.ADDPERMS)) addPerms(player, mo.getAddPerms(), 0);
+            
             if (mo.hasOption(TransitionOption.GIVECLASS) && player.getCurrentClass() == null) {
                 ArenaClass ac = getArenaClass(mo,teamIndex);
                 if (ac != null && ac.isValid()) { 

@@ -43,8 +43,11 @@ public class MessageUtil {
     }
     public static boolean sendMessage(CommandSender sender, String message) {
         
-		if ( message ==null || message.isEmpty() ) {
-		    if ( Defaults.DEBUG ) Log.err( "Attempting to send empty or null string to " + sender.getName() );
+		if ( message == null || message.isEmpty() ) {
+		    if ( Defaults.DEBUG ) { 
+		        Log.err( "Attempting to send empty or null string to " + sender.getName() );
+		        Util.printStackTrace();
+		    }
 		    return true;
 		}
 		

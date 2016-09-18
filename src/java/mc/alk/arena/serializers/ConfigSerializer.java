@@ -27,13 +27,11 @@ import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaParams;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.CommandLineString;
-import mc.alk.arena.objects.CompetitionSize;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.JoinType;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.StateGraph;
-import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.exceptions.ConfigException;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
@@ -77,7 +75,7 @@ public class ConfigSerializer extends BaseConfig {
         if (config.getConfigurationSection(name) != null) 
             cs = config.getConfigurationSection(name);
 
-        ArenaType at = getArenaType( cs );
+        ArenaType at = ArenaType.fromString( cs.getName() );
         
         if ( at == null && !name.equalsIgnoreCase( "tourney" ) )
             throw new ConfigException( "Could not parse arena type. Valid types. " + ArenaType.getValidList() );
@@ -370,8 +368,7 @@ public class ConfigSerializer extends BaseConfig {
             dbName = cs.getString("dbTableName", null);
         
         if (dbName != null) {
-            mp.setTableName(dbName);
-//            BTInterface.addBTI(mp);          
+            mp.setTableName(dbName);      
         }
         
         if (cs.contains("overrideBattleTracker"))
@@ -408,12 +405,12 @@ public class ConfigSerializer extends BaseConfig {
 
 
     private static void loadTimes(ConfigurationSection cs, MatchParams mp) {
-        if (cs == null) return;
-        if (cs.contains("times")) 
+        if ( cs == null ) return;
+        if ( cs.contains("times") ) 
             cs = cs.getConfigurationSection("times"); 
 
-        if (cs == null) return;
-        if (cs.contains("timeBetweenRounds"))
+        if ( cs == null ) return;
+        if ( cs.contains("timeBetweenRounds") )
             mp.setTimeBetweenRounds(cs.getInt("timeBetweenRounds",Defaults.TIME_BETWEEN_ROUNDS));
         
         if (cs.contains("secondsToLoot"))
@@ -423,16 +420,12 @@ public class ConfigSerializer extends BaseConfig {
             mp.setSecondsTillMatch( cs.getInt("secondsTillMatch",Defaults.SECONDS_TILL_MATCH));
 
         if (cs.contains("matchTime"))
-            mp.setMatchTime(toPositiveSize(cs.getString("matchTime")));
+            mp.setMatchTime( toPositiveSize( cs.getString("matchTime"), Integer.MAX_VALUE ) );
         
         if (cs.contains("matchUpdateInterval"))
-            mp.setIntervalTime(cs.getInt("matchUpdateInterval",Defaults.MATCH_UPDATE_INTERVAL));
+            mp.setIntervalTime(cs.getInt("matchUpdateInterval", Defaults.MATCH_UPDATE_INTERVAL));
     }
     
-    /** Zero & Negative should be interpreted as infinite: Integer.MAX_VALUE */
-    public static int toPositiveSize(String value) {
-        return toPositiveSize(value, CompetitionSize.MAX);
-    }    
     public static int toPositiveSize(String value, int defValue) {
         int s = ArenaSize.toInt(value, defValue);
         return s <= 0 ? defValue : s;
@@ -441,48 +434,48 @@ public class ConfigSerializer extends BaseConfig {
         int s = ArenaSize.toInt(value, defValue);
         return s < 0 ? defValue : s;
     }
-    public static int toSize(String value, int defValue) {
-        return ArenaSize.toInt(value, defValue);
-    }
-    /**
-     * Get and create the ArenaType for this plugin given the Configuration section
-     * @param cs section containing the "type"
-     * @return The ArenaType
-     * @throws ConfigException
-     */
-    public static ArenaType getArenaType(ConfigurationSection cs) throws ConfigException {
-        return ArenaType.fromString(cs.getName()); 
-    }
-    /**
-     * Get the ArenaClass for this plugin given the Configuration section
-     * @param cs section containing the "type"
-     * @return The ArenaClass
-     * @throws ConfigException
-     */
-    public static Class<? extends Arena> getArenaClass(ConfigurationSection cs) throws ConfigException {
-        String type = null;
-        if (cs.contains("arenaType") || cs.contains("type") || cs.contains("arenaClass")) {
-            type = cs.getString("arenaClass");
-            if (type == null)
-                type = cs.contains("type") ? cs.getString("type") : cs.getString("arenaType");
-        }
-        if (type != null){
-            ArenaType at = ArenaType.fromString(type);
-            if (at != null) {
-                return ArenaType.getArenaClass(at);
-            }
-        }
-        return null;
-    }
+//    public static int toSize(String value, int defValue) {
+//        return ArenaSize.toInt(value, defValue);
+//    }
+//    /**
+//     * Get and create the ArenaType for this plugin given the Configuration section
+//     * @param cs section containing the "type"
+//     * @return The ArenaType
+//     * @throws ConfigException
+//     */
+//    public static ArenaType getArenaType(ConfigurationSection cs) throws ConfigException {
+//        return ArenaType.fromString(cs.getName()); 
+//    }
+//    /**
+//     * Get the ArenaClass for this plugin given the Configuration section
+//     * @param cs section containing the "type"
+//     * @return The ArenaClass
+//     * @throws ConfigException
+//     */
+//    public static Class<? extends Arena> getArenaClass(ConfigurationSection cs) throws ConfigException {
+//        String type = null;
+//        if (cs.contains("arenaType") || cs.contains("type") || cs.contains("arenaClass")) {
+//            type = cs.getString("arenaClass");
+//            if ( type == null )
+//                type = cs.contains("type") ? cs.getString("type") : cs.getString("arenaType");
+//        }
+//        if ( type != null ) {
+//            ArenaType at = ArenaType.fromString(type);
+//            if (at != null) {
+//                return ArenaType.getArenaClass(at);
+//            }
+//        }
+//        return null;
+//    }
 
-    public static ArenaType getArenaGameType( ConfigurationSection cs) throws ConfigException {
+    public static ArenaType getArenaGameType( ConfigurationSection cs) {
         ArenaType at = null;
-        if (cs.contains("gameType")){
+        if ( cs.contains("gameType") ) {
             String s = cs.getString("gameType");
             at = ArenaType.fromString(s);
             
-            if (at == null)
-                at = getArenaType(cs);
+            if ( at == null )
+                at = ArenaType.fromString( cs.getName() );
         }
         return at;
     }
@@ -794,14 +787,10 @@ public class ConfigSerializer extends BaseConfig {
             if ( params.getUseTrackerMessages() != null ) cs.set("useTrackerMessages", params.getUseTrackerMessages());
         }
 
-        if ( !isNonBaseConfig && params.getType() != null ) {
-            maincs.set("arenaType", params.getType().getName());
-            try {
-                maincs.set("arenaClass", ArenaType.getArenaClass(params.getType()).getSimpleName());
-            } 
-            catch(Exception e){
-                maincs.set("arenaClass", params.getType().getClass().getSimpleName());
-            }
+        ArenaType type = params.getType();
+        if ( !isNonBaseConfig && type != null ) {
+            maincs.set("arenaType", type.getName());
+            maincs.set("arenaClass", type.getClazz().getSimpleName() );
         }
 
         /// Save specific team params
