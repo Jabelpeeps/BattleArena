@@ -121,7 +121,7 @@ public class ParamAlterController {
             case DISPLAYNAME: params.setArenaDisplayName((String) value); break;
             case COMMAND: 
                 params.setCommand((String) value); 
-                sendMessage(sender, "&c[Info]&e This option will change after a restart");
+                MessageUtil.sendMessage(sender, "&c[Info]&e This option will change after a restart");
                 break;
             case DATABASE: params.setTableName((String) value); break;
             case MATCHTIME: params.setMatchTime((Integer)value); break;
@@ -228,15 +228,17 @@ public class ParamAlterController {
         return true;
     }
 
-
     public boolean deleteOption(CommandSender sender, String[] args) {
         if (args.length < 2){
-            sendMessage(sender, "&6/<game> deleteOption <option>");
-            return sendMessage(sender, "&6/<game> deleteOption <stage> <option>");
+            MessageUtil.sendMessage(sender, "&6/<game> deleteOption <option>");
+            MessageUtil.sendMessage(sender, "&6/<game> deleteOption <stage> <option>");
+            return true;
         }
         RegisteredCompetition rc = CompetitionController.getCompetition(params.getName());
-        if (rc == null){
-            return sendMessage(sender, "&cGame &6" + params.getName() +"&c not found!");}
+        if (rc == null) {
+            MessageUtil.sendMessage(sender, "&cGame &6" + params.getName() +"&c not found!");
+            return true;
+        }
         AlterParamOption go = AlterParamOption.fromString(args[1]);
 
         if (go != null){
@@ -245,19 +247,20 @@ public class ParamAlterController {
                 params.getArenaStateGraph();
                 saveParamsAndUpdate(rc, params);
                 ParamController.addMatchParams(params);
-                sendMessage(sender, "&2Game option &6"+go.toString()+"&2 removed");
+                MessageUtil.sendMessage(sender, "&2Game option &6"+go.toString()+"&2 removed");
                 switch(go){
                     case COMMAND:
-                        sendMessage(sender, "&c[Info]&e This option will change after a restart");
+                        MessageUtil.sendMessage(sender, "&c[Info]&e This option will change after a restart");
                         break;
                     default:
                     /* do nothing */
                 }
                 return true;
-            } catch (IllegalArgumentException e) {
+            } 
+            catch (IllegalArgumentException e) {
                 Log.err(e.getMessage());
-                sendMessage(sender, "&cCould not delete game option &6" + args[1]);
-                sendMessage(sender, e.getMessage());
+                MessageUtil.sendMessage(sender, "&cCould not delete game option &6" + args[1]);
+                MessageUtil.sendMessage(sender, e.getMessage());
                 return false;
             }
         }
@@ -266,28 +269,30 @@ public class ParamAlterController {
             if (args.length < 3){
                 StateGraph tops = params.getArenaStateGraph();
                 tops.deleteOptions(state);
-                return sendMessage(sender, "&2Options at &6"+state +"&2 are now empty");
+                MessageUtil.sendMessage(sender, "&2Options at &6"+state +"&2 are now empty");
+                return true;
             }
-            final String key = args[2].trim().toUpperCase();
+            String key = args[2].trim().toUpperCase();
             try {
                 deleteTransitionOption(state, key);
                 rc.saveParams(params);
-                sendMessage(sender, "&2Game option &6"+state +" "+key+" &2 removed");
+                MessageUtil.sendMessage(sender, "&2Game option &6"+state +" "+key+" &2 removed");
                 StateGraph tops = params.getArenaStateGraph();
                 StateOptions ops = tops.getOptions(state);
-                if (ops == null){
-                    sendMessage(sender, "&2Options at &6"+state +"&2 are empty");
-                } else {
-                    sendMessage(sender, "&2Options at &6"+state +"&2 are &6" + ops.toString());
-                }
+                if (ops == null)
+                    MessageUtil.sendMessage(sender, "&2Options at &6"+state +"&2 are empty");
+                else
+                    MessageUtil.sendMessage(sender, "&2Options at &6"+state +"&2 are &6" + ops.toString());
+                
                 return true;
-            } catch ( IllegalArgumentException e) {
-                sendMessage(sender, "&cCould not remove game option " + args[1]);
-                sendMessage(sender, e.getMessage());
+            } 
+            catch ( IllegalArgumentException e) {
+                MessageUtil.sendMessage(sender, "&cCould not remove game option " + args[1]);
+                MessageUtil.sendMessage(sender, e.getMessage());
                 return false;
             }
         }
-        sendMessage(sender, "&cGame option &6" + args[1] +"&c not found!");
+        MessageUtil.sendMessage(sender, "&cGame option &6" + args[1] +"&c not found!");
         return false;
     }
 
@@ -321,10 +326,4 @@ public class ParamAlterController {
         if (inclusive && iv < bound) throw new IllegalStateException(iv +"  must be greater or equal to " + bound);
         else if (iv <= bound) throw new IllegalStateException(iv +"  must be greater than " + bound);
     }
-
-    private static boolean sendMessage(CommandSender sender, String msg){
-        return MessageUtil.sendMessage(sender, msg);
-    }
-
-
 }

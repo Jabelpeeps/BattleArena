@@ -1,5 +1,6 @@
 package mc.alk.arena.objects.messaging;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -13,14 +14,14 @@ import mc.alk.arena.util.MessageUtil;
  */
 public class Channels {
 
-    public static final Channel NullChannel = (msg) -> { /* yeah do nothing */ };
+    public static final Channel NullChannel = (msg) -> { /* do nothing */ };
 
     public static final Channel ServerChannel = 
             (msg) -> {
                     if ( msg == null || msg.trim().isEmpty() ) return;
                     
                     try {
-                        MessageUtil.broadcastMessage( MessageUtil.colorChat( msg ) );
+                        Bukkit.broadcastMessage( MessageUtil.colorChat( msg ) );
                     } catch (Throwable e) {
                         if ( !Defaults.DEBUG_STRESS ) 
                             Log.printStackTrace(e);

@@ -36,15 +36,16 @@ public class EventExecutor extends BAExecutor{
 	}
 
 	@MCCommand( cmds = {"options"}, admin = true, usage = "options", order = 2 )
-	public boolean eventOptions(CommandSender sender,EventParams eventParams) {
+	public void eventOptions(CommandSender sender,EventParams eventParams) {
 		StateGraph tops = eventParams.getArenaStateGraph();
-        return MessageUtil.sendMessage(sender, tops.getOptionString());
+        MessageUtil.sendMessage(sender, tops.getOptionString());
 	}
 
 	@MCCommand( cmds = {"cancel"}, admin = true, order = 2 )
-	public boolean eventCancel(CommandSender sender, EventParams eventParams) {
+	public void eventCancel(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
-        return event == null || cancelEvent(sender, event);
+		if ( event != null ) 
+		    cancelEvent(sender, event);
     }
 
 	protected AbstractComp findUnique(CommandSender sender, EventParams eventParams) {
@@ -58,148 +59,144 @@ public class EventExecutor extends BAExecutor{
 	}
 
 	@MCCommand( cmds = {"cancel"}, admin = true, order = 4 )
-	public boolean eventCancel(CommandSender sender, ArenaPlayer player) {
+	public void eventCancel(CommandSender sender, ArenaPlayer player) {
 		AbstractComp event = controller.getEvent(player);
-		if (event == null){
-			return MessageUtil.sendMessage(sender, "&cThere was no event with " + player.getName() +" inside");}
-		return cancelEvent(sender,event);
+		if (event == null) 
+			MessageUtil.sendMessage(sender, "&cThere was no event with " + player.getName() +" inside");
+		else
+		    cancelEvent(sender,event);
 	}
 
-	public boolean cancelEvent(CommandSender sender, AbstractComp event){
-		if (!event.isRunning() && !event.isOpen()){
-			return MessageUtil.sendMessage(sender,"&eA "+event.getCommand()+" is not running");}
-		controller.cancelEvent(event);
-		return MessageUtil.sendMessage(sender,"&eYou have canceled the &6" + event.getName());
+	public void cancelEvent(CommandSender sender, AbstractComp event){
+		if (!event.isRunning() && !event.isOpen()) 
+			MessageUtil.sendMessage(sender,"&eA "+event.getCommand()+" is not running");
+		else {
+    		controller.cancelEvent(event);
+    		MessageUtil.sendMessage(sender,"&eYou have canceled the &6" + event.getName());
+		}
 	}
 
 	@MCCommand( cmds = {"start"}, admin = true, usage = "start", order = 2 )
-	public boolean eventStart(CommandSender sender, final EventParams eventParams, String[] args) {
+	public void eventStart(CommandSender sender, final EventParams eventParams, String[] args) {
 		AbstractComp event = controller.getOpenEvent(eventParams);
 		if (event == null){
-			return MessageUtil.sendMessage(sender, "&cThere are no open events right now");
+			MessageUtil.sendMessage(sender, "&cThere are no open events right now");
+			return;
 		}
-
 		String name = event.getName();
 		if (!event.isOpen()){
-		    MessageUtil.sendMessage(sender,"&eYou need to open a "+name+" before starting one");
-			return MessageUtil.sendMessage(sender,"&eType &6/"+event.getCommand()+" open <params>&e : to open one");
+		    MessageUtil.sendMessage( sender, "&eYou need to open a " + name + " before starting one");
+			MessageUtil.sendMessage( sender, "&eType &6/" + event.getCommand() + " open <params>&e : to open one");
+            return;
 		}
-		boolean forceStart = args.length > 1 && args[1].equalsIgnoreCase("force");
-		if (!forceStart && !event.hasEnoughTeams()){
-			final int nteams = event.getNTeams();
-			final int neededTeams = event.getParams().getMinTeams();
-			MessageUtil.sendMessage(sender,"&cThe "+name+" only has &6" + nteams +" &cteams and it needs &6" +neededTeams);
-			return MessageUtil.sendMessage(sender,"&cIf you really want to start the bukkitEvent anyways. &6/"+event.getCommand()+" start force");
+		if (    !( args.length > 1 && args[1].equalsIgnoreCase("force") ) 
+		        && !event.hasEnoughTeams() ) {
+			MessageUtil.sendMessage(sender,"&cThe "+name+" only has &6" + event.getNTeams() +" &cteams and it needs &6" +event.getParams().getMinTeams());
+			MessageUtil.sendMessage(sender,"&cIf you really want to start the bukkitEvent anyways. &6/"+event.getCommand()+" start force");
+            return;
 		}
 		try {
 			controller.startEvent(event);
-			return MessageUtil.sendMessage(sender,"&2You have started the &6" + name);
-		} catch (Exception e) {
+			MessageUtil.sendMessage(sender,"&2You have started the &6" + name);
+		} 
+		catch (Exception e) {
 		    MessageUtil.sendMessage(sender,"&cError Starting the &6" + name);
 			Log.printStackTrace(e);
-			return MessageUtil.sendMessage(sender,"&c" +e.getMessage());
+			MessageUtil.sendMessage(sender,"&c" +e.getMessage());
 		}
 	}
 
 	@MCCommand( cmds = {"info"}, usage = "info", order = 2 )
-	public boolean eventInfo(CommandSender sender, EventParams eventParams){
+	public void eventInfo(CommandSender sender, EventParams eventParams){
 		AbstractComp event = findUnique(sender, eventParams);
-		if (event == null){
-			return true;}
+		if (event == null) return;
 
-		if (!event.isOpen() && !event.isRunning()){
-			return MessageUtil.sendMessage(sender,"&eThere is no open "+event.getCommand()+" right now");}
-		int size = event.getNTeams();
+		if ( !event.isOpen() && !event.isRunning() ) {
+			MessageUtil.sendMessage(sender,"&eThere is no open "+event.getCommand()+" right now");
+            return;
+        }
 		String teamOrPlayers = MessageUtil.getTeamsOrPlayers(eventParams.getMaxTeamSize());
-		MessageUtil.sendMessage(sender,"&eThere are currently &6" + size +"&e "+teamOrPlayers);
-        return MessageUtil.sendMessage(sender, event.getInfo());
+		MessageUtil.sendMessage(sender,"&eThere are currently &6" + event.getNTeams() +"&e "+teamOrPlayers);
+        MessageUtil.sendMessage(sender, event.getInfo());
 	}
 
 	@MCCommand( cmds = {"check"}, usage = "check", order = 2 )
-	public boolean eventCheck(CommandSender sender, EventParams eventParams) {
+	public void eventCheck(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
-		if (event == null){
-			return true;}
+		if (event == null) return;
 
-		if (!event.isOpen()){
-			return MessageUtil.sendMessage(sender,"&eThere is no open &6"+event.getCommand()+"&e right now");}
-		int size = event.getNTeams();
+		if (!event.isOpen()) {
+			MessageUtil.sendMessage(sender,"&eThere is no open &6"+event.getCommand()+"&e right now");
+			return;
+		}
 		String teamOrPlayers = MessageUtil.getTeamsOrPlayers(eventParams.getMaxTeamSize());
-		return MessageUtil.sendMessage(sender,"&eThere are currently &6" + size +"&e "+teamOrPlayers+" that have joined");
+		MessageUtil.sendMessage(sender,"&eThere are currently &6" + event.getNTeams() +"&e "+teamOrPlayers+" that have joined");
 	}
 
 	@Override
 	@MCCommand( cmds = {"join"} )
-	public boolean join(ArenaPlayer player, MatchParams mp, String args[]) {
+	public void join(ArenaPlayer player, MatchParams mp, String args[]) {
         if ( mp instanceof EventParams ) 
-			return eventJoin(player, (EventParams)mp, args);
-		return true; 
+			eventJoin(player, (EventParams)mp, args);
 	}
 
 	@MCCommand( cmds = {"join"}, order = 2 )
-	public boolean eventJoin(ArenaPlayer player, EventParams eventParams, String[] args) {
-		eventJoin(player, eventParams, args, false);
-		return true;
+	public void eventJoin(ArenaPlayer player, EventParams eventParams, String[] args) {
+		eventJoin( player, eventParams, args, false);
 	}
 
-	private boolean eventJoin(ArenaPlayer p, EventParams eventParams, String[] args, boolean adminCommand) {
+	private void eventJoin(ArenaPlayer p, EventParams eventParams, String[] args, boolean adminCommand) {
 		if (!adminCommand && !Permissions.hasMatchPerm(p.getPlayer(), eventParams, "join")){
 			MessageUtil.sendSystemMessage(p,"no_join_perms", eventParams.getCommand());
-			return false;
+			return;
 		}
-		if (isDisabled(p.getPlayer(), eventParams)){
-			return true;}
+		if (isDisabled(p.getPlayer(), eventParams)) return;
+		
 		AbstractComp event = controller.getOpenEvent(eventParams);
-
 		if (event == null){
 		    MessageUtil.sendSystemMessage(p, "no_event_open");
-			return false;
+			return;
 		}
-
 		if ( !event.isOpen() ){
 		    MessageUtil.sendSystemMessage(p, "you_cant_join_event_while", event.getCommand(), event.getState());
-			return false;
+			return;
 		}
-
-		if ( !canJoin( p, true ) ) return false;
+		if ( !canJoin( p, true ) ) return;
 
 		if (event.waitingToJoin(p)){
 		    MessageUtil.sendSystemMessage(p, "you_will_join_when_matched");
-			return false;
+			return;
 		}
-
 		MatchParams sq = event.getParams();
 		StateGraph tops = sq.getStateGraph();
 		/// Perform is ready check
 		if(!tops.playerReady(p,null)){
 			String notReadyMsg = tops.getRequiredString(MessageHandler.getSystemMessage("need_the_following")+"\n");
 			MessageUtil.sendMessage(p,notReadyMsg);
-			return false;
+			return;
 		}
-
 		ArenaTeam t = TeamController.getTeam(p);
 		if (t==null)
 			t = TeamController.createTeam(eventParams, p); 
 
 		if ( !canJoin( t ) ) {
 		    MessageUtil.sendSystemMessage(p, "teammate_cant_join");
-			return MessageUtil.sendMessage(p,"&6/team leave: &cto leave the team");
+			MessageUtil.sendMessage(p,"&6/team leave: &cto leave the team");
+            return;
 		}
-
 		JoinOptions jp;
 		try {
 			jp = JoinOptions.parseOptions( sq, p, Arrays.copyOfRange( args, 1, args.length ) );
 		} 
 		catch (InvalidOptionException e) {
-			return MessageUtil.sendMessage( p, e.getMessage() );
+			MessageUtil.sendMessage( p, e.getMessage() );
+            return;
 		} 
-		
 		if (sq.getMaxTeamSize() < t.size()){
 		    MessageUtil.sendSystemMessage(p, "event_invalid_team_size", sq.getMaxTeamSize(), t.size());
-			return false;
+			return;
 		}
-
-		if (!checkAndRemoveFee(sq, t)) return false;
+		if (!checkAndRemoveFee(sq, t)) return;
 		
 		TeamJoinObject tqo = new TeamJoinObject(t,sq,jp);
 
@@ -210,65 +207,59 @@ public class EventExecutor extends BAExecutor{
 			if (time != null)
 			    MessageUtil.sendSystemMessage( p, "event_will_start_in", TimeUtil.convertMillisToString( time ) );
 		}
-		return true;
 	}
 
 	@MCCommand( cmds = {"teams"}, usage = "teams", admin = true, order = 2 )
-	public boolean eventTeams(CommandSender sender, EventParams eventParams) {
+	public void eventTeams(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
-        return event == null || eventTeams(sender, event);
+		if ( event != null ) {
+		    eventTeams(sender, event);
+		}
     }
 
-	private boolean eventTeams(CommandSender sender, AbstractComp event) {
+	private void eventTeams(CommandSender sender, AbstractComp event) {
 		StringBuilder sb = new StringBuilder();
 		for (ArenaTeam t: event.getTeams()){
 			sb.append("\n").append(t.getTeamInfo(null)); }
 
-		return MessageUtil.sendMessage(sender,sb.toString());
+		MessageUtil.sendMessage(sender,sb.toString());
 	}
 
 	@MCCommand( cmds = {"status"}, usage = "status", order = 4 )
-	public boolean eventStatus(CommandSender sender, EventParams eventParams) {
+	public void eventStatus(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
-		if (event == null){
-			return true;}
+		if (event == null) return;
+		
 		StringBuilder sb = new StringBuilder(event.getStatus());
 		appendTeamStatus(sender, event, sb);
-		return MessageUtil.sendMessage(sender,sb.toString());
+		MessageUtil.sendMessage(sender,sb.toString());
 	}
 
-
 	private void appendTeamStatus(CommandSender sender, AbstractComp event, StringBuilder sb) {
-		if (Permissions.isAdmin(sender) || sender.hasPermission("arena.event.status")){
-			for (ArenaTeam t: event.getTeams()){
+		if (Permissions.isAdmin(sender) || sender.hasPermission("arena.event.status"))
+			for (ArenaTeam t: event.getTeams())
 				sb.append("\n").append(t.getTeamInfo(null));
-			}
-		}
 	}
 
 	@MCCommand( cmds = {"result"}, usage = "result", order = 2 )
-	public boolean eventResult(CommandSender sender, EventParams eventParams) {
+	public void eventResult(CommandSender sender, EventParams eventParams) {
 		AbstractComp event = findUnique(sender, eventParams);
-		if (event == null){
-			return true;}
+		if (event == null) return;
 
 		StringBuilder sb = new StringBuilder(event.getResultString());
-		if (sb.length() == 0){
-			return MessageUtil.sendMessage(sender,"&eThere are no results for a previous &6" +event.getDisplayName() +"&e right now");
-		}
-		return MessageUtil.sendMessage(sender,"&eResults for the &6" + event.getDisplayName() + "&e\n" + sb.toString());
+		if (sb.length() == 0)
+			MessageUtil.sendMessage(sender,"&eThere are no results for a previous &6" +event.getDisplayName() +"&e right now");
+		else
+		    MessageUtil.sendMessage(sender,"&eResults for the &6" + event.getDisplayName() + "&e\n" + sb.toString());
 	}
 
     protected void openEvent(AbstractComp event, EventOpenOptions eoo) throws InvalidEventException {
-        if (eoo.hasOption(EventOpenOption.SILENT)){
-            event.setSilent(true);}
+        if (eoo.hasOption(EventOpenOption.SILENT)) event.setSilent(true);
         controller.addOpenEvent(event);
-        if (eoo.hasOption(EventOpenOption.AUTO)) {
-            event.autoEvent();
-        } else {
-            event.openEvent();
-        }
-        if (eoo.hasOption(EventOpenOption.FORCEJOIN)){
-            event.addAllOnline();}
+        
+        if (eoo.hasOption(EventOpenOption.AUTO)) event.autoEvent();
+        else event.openEvent();
+        
+        if (eoo.hasOption(EventOpenOption.FORCEJOIN)) event.addAllOnline();
     }
 }

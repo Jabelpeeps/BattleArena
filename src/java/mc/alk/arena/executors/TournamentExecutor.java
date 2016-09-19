@@ -15,6 +15,7 @@ import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.arenas.Arena;
+import mc.alk.arena.objects.exceptions.InvalidEventException;
 import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.objects.exceptions.NeverWouldJoinException;
 import mc.alk.arena.objects.options.EventOpenOptions;
@@ -29,14 +30,13 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
     }
 
     @Override
-    @MCCommand(cmds={"open","auto"},admin=true)
-    public boolean arenaAuto(CommandSender sender, MatchParams params, String args[]) {
-        return open(sender, (EventParams)params, args);
+    @MCCommand( cmds = {"open","auto"}, admin = true )
+    public void arenaAuto(CommandSender sender, MatchParams params, String args[]) {
+        open(sender, (EventParams)params, args);
     }
 
-    public boolean open(CommandSender sender, EventParams eventParams, String[] args) {
+    public void open(CommandSender sender, EventParams eventParams, String[] args) {
         openIt(sender,eventParams,args);
-        return true;
     }
 
     public AbstractComp openIt(CommandSender sender, EventParams eventParams, String[] args){
@@ -92,21 +92,18 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
                         sgp.getNTeams() + " teamSize=" + sgp.getTeamSize());
             }
             openEvent(event,eoo);
-        } catch (InvalidOptionException e) {
+        } catch ( InvalidOptionException | NeverWouldJoinException e ) {
             MessageUtil.sendMessage(sender, e.getMessage());
             return null;
-        } catch (NeverWouldJoinException e) {
-            MessageUtil.sendMessage(sender, e.getMessage());
-            return null;
-        } catch (Exception e){
+        } 
+        catch ( InvalidEventException e){
             Log.printStackTrace(e);
             return null;
         }
-        final int max = eventParams.getMaxPlayers();
-        final String maxPlayers = max == ArenaSize.MAX ? "&6any&2 number of players" : max+"&2 players";
-        MessageUtil.sendMessage(sender,"&2You have "+eoo.getOpenCmd()+"ed a &6" + event.getDisplayName() +
-                " &2TeamSize=&6" + sgp.getTeamSize() +"&2 #Teams=&6"+
-                sgp.getNTeams() +"&2 supporting "+maxPlayers);
+        int max = eventParams.getMaxPlayers();
+        String maxPlayers = max == ArenaSize.MAX ? "&6any&2 number of players" : max + "&2 players";
+        MessageUtil.sendMessage(sender,"&2You have " + eoo.getOpenCmd() + "ed a &6" + event.getDisplayName() +
+                " &2TeamSize=&6" + sgp.getTeamSize() + "&2 #Teams=&6" + sgp.getNTeams() + "&2 supporting " + maxPlayers );
         return event;
     }
 
@@ -115,18 +112,18 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
     }
 
     @MCCommand(cmds={"status"}, usage="status", order=1)
-    public boolean eventStatus(CommandSender sender, EventParams eventParams, Integer round) {
+    public void eventStatus(CommandSender sender, EventParams eventParams, Integer round) {
         SizeEventPair result = controller.getUniqueEvent(eventParams);
-        if (result.nEvents == 0){
-            return MessageUtil.sendMessage(sender, "&cThere are no events open/running of this type");}
-        else if (result.nEvents > 1){
-            return MessageUtil.sendMessage(sender, "&cThere are multiple events ongoing, please specify the arena of the event. \n&6/"+
-                    eventParams.getCommand()+" ongoing &c for a list");}
-        if (!(result.event instanceof TournamentEvent)){
-            return MessageUtil.sendMessage(sender, "&cThis event isn't a tournament");}
-
-        TournamentEvent te = (TournamentEvent) result.event;
-        return MessageUtil.sendMessage(sender, te.getStatus(round));
+        
+        if ( result.nEvents == 0 )
+            MessageUtil.sendMessage( sender, "&cThere are no events open/running of this type" );
+        else if ( result.nEvents > 1 )
+            MessageUtil.sendMessage( sender, 
+                    "&cThere are multiple events ongoing, please specify the arena of the event. \n&6/" +
+                                                    eventParams.getCommand() + " ongoing &c for a list");
+        else if ( !(result.event instanceof TournamentEvent) )
+            MessageUtil.sendMessage(sender, "&cThis event isn't a tournament");
+        else 
+            MessageUtil.sendMessage(sender, ((TournamentEvent) result.event).getStatus(round));
     }
-
 }

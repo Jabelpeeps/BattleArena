@@ -62,12 +62,12 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         
         if ( section.equalsIgnoreCase("transitions") ) Defaults.DEBUG_TRANSITIONS = on;
         else if ( section.equalsIgnoreCase("virtualplayer") || section.equalsIgnoreCase("vp") ) Defaults.DEBUG_VIRTUAL = on;
-        else if( section.equalsIgnoreCase("tracking") ) Defaults.DEBUG_TRACKING = on;
-        else if( section.equalsIgnoreCase("storage") ) Defaults.DEBUG_STORAGE = on;
-        else if( section.equalsIgnoreCase("commands") ) Defaults.DEBUG_COMMANDS = on;
-        else if( section.equalsIgnoreCase("debug") ) Defaults.DEBUG = on;
-        else if( section.equalsIgnoreCase("teams") ) Defaults.DEBUG_MATCH_TEAMS = on;
-        else if( section.equalsIgnoreCase( "messages" )) Defaults.DEBUG_MSGS = on;
+        else if ( section.equalsIgnoreCase("tracking") ) Defaults.DEBUG_TRACKING = on;
+        else if ( section.equalsIgnoreCase("storage") ) Defaults.DEBUG_STORAGE = on;
+        else if ( section.equalsIgnoreCase("commands") ) Defaults.DEBUG_COMMANDS = on;
+        else if ( section.equalsIgnoreCase("debug") ) Defaults.DEBUG = on;
+        else if ( section.equalsIgnoreCase("teams") ) Defaults.DEBUG_MATCH_TEAMS = on;
+        else if ( section.equalsIgnoreCase( "messages" )) Defaults.DEBUG_MSGS = on;
         else {
             MessageUtil.sendMessage(sender, "&cDebugging couldnt find code section &6"+ section );
             return;
@@ -76,171 +76,179 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
     }
 
     @MCCommand( cmds = {"giveTeam"}, op = true, usage = "giveTeam <player> <team index>" )
-    public boolean giveTeamHelmOther(CommandSender sender, ArenaPlayer p, Integer index){
+    public void giveTeamHelmOther(CommandSender sender, ArenaPlayer p, Integer index){
         TeamUtil.setTeamHead(index, p);
-        return MessageUtil.sendMessage(sender, p.getName() + " Given team " + index );
+        MessageUtil.sendMessage(sender, p.getName() + " Given team " + index );
     }
 
     @MCCommand( cmds = {"giveTeam"}, op = true, usage = "giveTeam <team index>" )
-    public boolean giveTeamHelm(ArenaPlayer p, Integer index){
+    public void giveTeamHelm(ArenaPlayer p, Integer index){
         if (index < 0){
             p.getPlayer().setDisplayName(p.getName());
-            return MessageUtil.sendMessage(p, "&2Removing Team. &6/bad giveTeam <index> &2 to give a team name");
+            MessageUtil.sendMessage(p, "&2Removing Team. &6/bad giveTeam <index> &2 to give a team name");
+            return;
         }
         TeamUtil.setTeamHead(index, p);
         String tname = TeamUtil.getTeamName(index);
         p.getPlayer().setDisplayName(tname);
-        return MessageUtil.sendMessage(p, "&2Giving team " +index);
+        MessageUtil.sendMessage(p, "&2Giving team " +index);
     }
 
     @MCCommand( cmds = {"giveHelm"}, op = true, exact = 2, usage = "giveHelm <item>" )
-    public boolean giveHelm(Player sender, String[] args) {
-        ItemStack is;
+    public void giveHelm(Player sender, String[] args) {
         try {
-            is = InventoryUtil.parseItem(args[1]);
+            ItemStack is = InventoryUtil.parseItem(args[1]);
+            sender.getInventory().setHelmet(is);
+            MessageUtil.sendMessage(sender, "&2Giving helm " +InventoryUtil.getCommonName(is));
         } catch (Exception e) {
-            return MessageUtil.sendMessage(sender, "&e couldnt parse item " + args[1]);
+            MessageUtil.sendMessage(sender, "&e couldnt parse item " + args[1]);
         }
-        sender.getInventory().setHelmet(is);
-        return MessageUtil.sendMessage(sender, "&2Giving helm " +InventoryUtil.getCommonName(is));
     }
 
 
     @MCCommand( cmds = {"showListeners"}, admin = true )
-    public boolean showListeners(CommandSender sender, String args[]) {
-        return MethodController.showAllListeners( sender, args.length > 1 ? args[1] : "" );
+    public void showListeners(CommandSender sender, String args[]) {
+        MethodController.showAllListeners( sender, args.length > 1 ? args[1] : "" );
     }
 
     @MCCommand( cmds = {"addKill"}, admin = true, min = 2, usage = "addKill <player>" )
-    public boolean arenaAddKill(CommandSender sender, ArenaPlayer pl) {
+    public void arenaAddKill(CommandSender sender, ArenaPlayer pl) {
         Match am = arenaController.getMatch(pl);
         if (am == null) {
-            return MessageUtil.sendMessage(sender,"&ePlayer " + pl.getName() +" is not in a match");}
+            MessageUtil.sendMessage(sender,"&ePlayer " + pl.getName() +" is not in a match");
+            return;
+        }
         ArenaTeam t = am.getTeam(pl);
         
         if (t != null) t.addKill(pl);
-
-        return MessageUtil.sendMessage(sender,pl.getName()+" has received a kill");
+        MessageUtil.sendMessage(sender,pl.getName()+" has received a kill");
     }
 
     @MCCommand( cmds = {"getExp"}, admin = true )
-    public boolean getExp(Player player) {
-        return MessageUtil.sendMessage(player,ChatColor.GREEN+ "Experience  " + player.getTotalExperience() +" " + ExpUtil.getTotalExperience(player));
+    public void getExp(Player player) {
+        MessageUtil.sendMessage( player, ChatColor.GREEN + "Experience  " + player.getTotalExperience() + " " + 
+                                    ExpUtil.getTotalExperience(player));
     }
 
     @MCCommand( cmds = {"showVars"}, admin = true )
-    public boolean showVars(CommandSender sender, String paramName, String[] args) {
+    public void showVars(CommandSender sender, String paramName, String[] args) {
         MatchParams mp = findMatchParam(sender, paramName);
-        if (mp == null)
-            return true;
-        MessageUtil.sendMessage(sender, mp.toString());
-        if (args.length > 3 && args[3].equals("parent")){
-            return MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp.getParent().getParent(), ToStringStyle.MULTI_LINE_STYLE)+"");
-        } else if (args.length > 2 && args[2].equals("parent")){
-            return MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp.getParent(), ToStringStyle.MULTI_LINE_STYLE)+"");
-        } else {
-            return MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp, ToStringStyle.MULTI_LINE_STYLE)+"");
-        }
+        if ( mp == null ) return;
+        
+        MessageUtil.sendMessage( sender, mp.toString() );
+        if (args.length > 3 && args[3].equals("parent"))
+            MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp.getParent().getParent(), ToStringStyle.MULTI_LINE_STYLE)+"");
+        else if (args.length > 2 && args[2].equals("parent"))
+            MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp.getParent(), ToStringStyle.MULTI_LINE_STYLE)+"");
+        else
+            MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(mp, ToStringStyle.MULTI_LINE_STYLE)+"");
     }
 
     @MCCommand( cmds = {"showTransitions"}, admin = true )
     public boolean showTransitions(CommandSender sender, String paramName) {
         MatchParams mp = findMatchParam(sender, paramName);
-        return mp == null || MessageUtil.sendMessage(sender, mp.toString());
+        if ( mp != null ) {
+            MessageUtil.sendMessage(sender, mp.toString());
+            return true;
+        }
+        return false; 
     }
 
     @MCCommand( cmds = {"showPlayerVars"}, admin = true )
-    public boolean showPlayerVars(CommandSender sender, ArenaPlayer player) {
+    public void showPlayerVars(CommandSender sender, ArenaPlayer player) {
         ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(player, ToStringStyle.MULTI_LINE_STYLE);
-        return MessageUtil.sendMessage(sender, rtsb.toString());
+        MessageUtil.sendMessage(sender, rtsb.toString());
     }
 
     @MCCommand( cmds = {"showArenaVars"}, admin = true )
-    public boolean showArenaVars(CommandSender sender, Arena arena, String[] args) {
-        if (args.length > 4 && args[4].equals("parent")){
-            return MessageUtil.sendMessage(sender, 
+    public void showArenaVars(CommandSender sender, Arena arena, String[] args) {
+        if (args.length > 4 && args[4].equals("parent"))
+            MessageUtil.sendMessage(sender, 
                     new ReflectionToStringBuilder(arena.getParams().getParent().getParent(), ToStringStyle.MULTI_LINE_STYLE).toString());
-        } 
-        else if (args.length > 3 && args[3].equals("parent")){
-            return MessageUtil.sendMessage(sender, 
+        
+        else if (args.length > 3 && args[3].equals("parent"))
+            MessageUtil.sendMessage(sender, 
                     new ReflectionToStringBuilder( arena.getParams().getParent(), ToStringStyle.MULTI_LINE_STYLE ).toString() );
-        } 
-        else if (args.length > 3 && args[3].equals("transitions")){
-            return MessageUtil.sendMessage(sender, 
+        
+        else if (args.length > 3 && args[3].equals("transitions"))
+            MessageUtil.sendMessage(sender, 
                     new ReflectionToStringBuilder(arena.getParams().getArenaStateGraph(), ToStringStyle.MULTI_LINE_STYLE).toString());
-        } 
-        else if (args.length > 2 && args[2].equals("waitroom")){
-            return MessageUtil.sendMessage(sender, 
+        
+        else if (args.length > 2 && args[2].equals("waitroom"))
+            MessageUtil.sendMessage(sender, 
                     new ReflectionToStringBuilder(arena.getWaitroom(), ToStringStyle.MULTI_LINE_STYLE).toString());
-        }  
-        else if (args.length > 2 && args[2].equals("params")){
-            return MessageUtil.sendMessage(sender, 
-                    new ReflectionToStringBuilder(arena.getParams(), ToStringStyle.MULTI_LINE_STYLE).toString());
-        } 
-        else {
-            return MessageUtil.sendMessage(sender, 
+        
+        else if (args.length > 2 && args[2].equals("params"))
+            MessageUtil.sendMessage(sender, 
+                    new ReflectionToStringBuilder(arena.getParams(), ToStringStyle.MULTI_LINE_STYLE).toString());         
+        else 
+            MessageUtil.sendMessage(sender, 
                     new ReflectionToStringBuilder(arena, ToStringStyle.MULTI_LINE_STYLE).toString());
-        }
     }
 
     @MCCommand( cmds={"showMatchVars"}, admin = true )
-    public boolean showMatchVars(CommandSender sender, Arena arena, String[] vars) {
+    public void showMatchVars(CommandSender sender, Arena arena, String[] vars) {
         Match match = BattleArena.getBAController().getMatch(arena);
-        if (match == null)
-            return MessageUtil.sendMessage(sender, "&cMatch not currently running in arena " + arena.getName());
-        
-        if (vars.length > 2 && vars[2].equals("transitions"))
-            return MessageUtil.sendMessage(sender, match.getParams().getArenaStateGraph().getOptionString());
-
+        if (match == null) {
+            MessageUtil.sendMessage(sender, "&cMatch not currently running in arena " + arena.getName());
+            return;
+        }
+        if (vars.length > 2 && vars[2].equals("transitions")) {
+            MessageUtil.sendMessage(sender, match.getParams().getArenaStateGraph().getOptionString());
+            return;
+        }
         if (vars.length > 2){
             String param = vars[2];
             boolean sb = vars.length > 3 && Boolean.valueOf(vars[3]);
-            for(Field field : Match.class.getDeclaredFields()){
+            for( Field field : Match.class.getDeclaredFields() ) {
                 if (field.getName().equalsIgnoreCase(param)){
                     field.setAccessible(true);
                     try {
-                        if (sb) {
-                            return MessageUtil.sendMessage(sender, "&2Parameter " + param +" = <"+field.get(match) +">" );
-                        }
-                        ReflectionToStringBuilder rtsb = new ReflectionToStringBuilder(field.get(match), ToStringStyle.MULTI_LINE_STYLE);
-                        return MessageUtil.sendMessage(sender, rtsb.toString());
+                        if (sb) 
+                            MessageUtil.sendMessage(sender, "&2Parameter " + param +" = <"+field.get(match) +">" );
+                        else 
+                            MessageUtil.sendMessage(sender, 
+                                    new ReflectionToStringBuilder( field.get(match), ToStringStyle.MULTI_LINE_STYLE).toString());
                         
                     } catch (Exception e) {
-                        return MessageUtil.sendMessage(sender, "&cError getting param "+param+" : msg=" + e.getMessage());
+                        MessageUtil.sendMessage(sender, "&cError getting param "+param+" : msg=" + e.getMessage());
                     }
+                    return;
                 }
             }
-            return MessageUtil.sendMessage(sender, "&cThe param &6"+param+ "&c does not exist in &6" + match.getClass().getSimpleName());
+            MessageUtil.sendMessage(sender, "&cThe param &6"+param+ "&c does not exist in &6" + match.getClass().getSimpleName());
+            return;
         }
-        return MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(match, ToStringStyle.MULTI_LINE_STYLE).toString());
+        MessageUtil.sendMessage(sender, new ReflectionToStringBuilder(match, ToStringStyle.MULTI_LINE_STYLE).toString());
+        return;
     }
 
     @MCCommand( cmds = {"showLobbyVars"}, admin = true )
-    public boolean showLobbyVars(CommandSender sender, String arenatype) {
+    public void showLobbyVars(CommandSender sender, String arenatype) {
         ArenaType type = ArenaType.fromString(arenatype);
         if (type == null){
-            return MessageUtil.sendMessage(sender, "&cArenaType not found &6" + arenatype);}
-
+            MessageUtil.sendMessage(sender, "&cArenaType not found &6" + arenatype);
+            return;
+        }
         RoomContainer lobby = RoomController.getLobby(type);
-        if (lobby == null)
-            return MessageUtil.sendMessage(sender, "&cThere is no lobby for &6" + type.getName());
-        
+        if (lobby == null) {
+            MessageUtil.sendMessage(sender, "&cThere is no lobby for &6" + type.getName());
+            return;
+        }
+        MessageUtil.sendMessage( sender, new ReflectionToStringBuilder(lobby, ToStringStyle.MULTI_LINE_STYLE).toString());
         MessageUtil.sendMessage(sender, 
-                new ReflectionToStringBuilder(lobby, ToStringStyle.MULTI_LINE_STYLE).toString());
-        return MessageUtil.sendMessage(sender, 
                 new ReflectionToStringBuilder(lobby.getParams().getArenaStateGraph(), ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
     private MatchParams findMatchParam(CommandSender sender, String paramName) {
-        MatchParams mp = ParamController.getMatchParams(paramName);
-        
-        if (mp == null) MessageUtil.sendMessage(sender, "&cCouldn't find matchparams mp=" + paramName);
-        
+        MatchParams mp = ParamController.getMatchParams(paramName);       
+        if (mp == null) 
+            MessageUtil.sendMessage(sender, "&cCouldn't find matchparams mp=" + paramName);       
         return mp;
     }
 
     @MCCommand( cmds = {"invalidReasons"}, admin = true )
-    public boolean arenaInvalidReasons(CommandSender sender, Arena arena) {
+    public void arenaInvalidReasons(CommandSender sender, Arena arena) {
         Collection<String> reasons = arena.getInvalidReasons();
         MessageUtil.sendMessage(sender, "&eInvalid reasons for &6" + arena.getName());
         
@@ -248,15 +256,16 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             for (String reason: reasons)
                 MessageUtil.sendMessage(sender, reason);
         
-        else MessageUtil.sendMessage(sender, "&2There are no invalid reasons for &6" + arena.getName());     
-        return true;
+        else MessageUtil.sendMessage(sender, "&2There are no invalid reasons for &6" + arena.getName());    
     }
 
     @MCCommand( cmds = {"invalidQReasons"}, admin = true )
-    public boolean matchQInvalidReasons(CommandSender sender, ArenaPlayer player, Arena arena) {
+    public void matchQInvalidReasons(CommandSender sender, ArenaPlayer player, Arena arena) {
         WaitingObject qo = BattleArena.getBAController().getQueueObject(player);
-        if (qo == null){
-            return MessageUtil.sendMessage(sender, "&cThat player is not in a queue");}
+        if (qo == null) {
+            MessageUtil.sendMessage(sender, "&cThat player is not in a queue");
+            return;
+        }
         Collection<String> reasons = arena.getInvalidMatchReasons(qo.getParams(), qo.getJoinOptions());
         MessageUtil.sendMessage(sender, "&eInvalid reasons for &6" + arena.getName());
         
@@ -264,114 +273,103 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             for (String reason: reasons)
                 MessageUtil.sendMessage(sender, reason);
         
-        else MessageUtil.sendMessage(sender, "&2There are no invalid reasons for &6" + arena.getName());
-        
-        return true;
+        else MessageUtil.sendMessage(sender, "&2There are no invalid reasons for &6" + arena.getName());   
     }
 
     @MCCommand( cmds = {"showClass"}, admin = true )
-    public boolean showClass(CommandSender sender, String stringClass) {
-        final Class<?> clazz;
+    public void showClass(CommandSender sender, String stringClass) {
         try {
-            clazz = Class.forName(stringClass);
+            Class<?> clazz = Class.forName(stringClass);
+            MessageUtil.sendMessage( sender, 
+                    new ReflectionToStringBuilder(clazz, ToStringStyle.MULTI_LINE_STYLE).toString() );
         } 
         catch (ClassNotFoundException e) {
-            return MessageUtil.sendMessage(sender, "&cClass " + stringClass +" not found");
+            MessageUtil.sendMessage(sender, "&cClass " + stringClass +" not found");
         }
-        return MessageUtil.sendMessage(sender, 
-                new ReflectionToStringBuilder(clazz, ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
     @MCCommand( cmds = {"showAMQ"}, admin = true )
-    public boolean showAMQ(CommandSender sender) {
-        return MessageUtil.sendMessage(sender, 
+    public void showAMQ(CommandSender sender) {
+        MessageUtil.sendMessage(sender, 
                 new ReflectionToStringBuilder( BattleArena.getBAController().getArenaMatchQueue(), 
                                                                 ToStringStyle.MULTI_LINE_STYLE ).toString());
     }
 
     @MCCommand( cmds = {"showBAC"}, admin = true )
-    public boolean showBAC(CommandSender sender) {
-        return MessageUtil.sendMessage(sender, 
+    public void showBAC(CommandSender sender) {
+        MessageUtil.sendMessage(sender, 
                 new ReflectionToStringBuilder(BattleArena.getBAController(), ToStringStyle.MULTI_LINE_STYLE).toString());
     }
 
     @MCCommand( cmds = {"verify"}, admin = true )
-    public boolean arenaVerify(CommandSender sender) {
+    public void arenaVerify(CommandSender sender) {
         String[] lines = arenaController.toStringQueuesAndMatches().split("\n");
         for (String line : lines)
             MessageUtil.sendMessage(sender,line);
-        
-        return true;
     }
 
     @MCCommand( cmds = {"showAllArenas"}, admin = true )
-    public boolean arenaShowAllArenas(CommandSender sender) {
+    public void arenaShowAllArenas(CommandSender sender) {
         String[] lines = arenaController.toStringArenas().split("\n");
         for (String line : lines)
             MessageUtil.sendMessage(sender,line);
-        
-        return true;
     }
 
     @MCCommand( cmds = {"showq"}, admin = true )
-    public boolean showQueue(CommandSender sender) {
+    public void showQueue(CommandSender sender) {
         MessageUtil.sendMessage(sender,arenaController.queuesToString());
-        return true;
     }
 
     @MCCommand( cmds = {"showaq"}, admin = true )
-    public boolean showArenaQueue(CommandSender sender) {
-        MessageUtil.sendMessage(sender,arenaController.getArenaMatchQueue().toStringArenas());
-        return true;
+    public void showArenaQueue(CommandSender sender) {
+        MessageUtil.sendMessage( sender, arenaController.getArenaMatchQueue().toStringArenas() );
     }
 
     @MCCommand( cmds = {"online"}, admin = true )
-    public boolean arenaVerify(CommandSender sender, OfflinePlayer p) {
-        return MessageUtil.sendMessage(sender, "Player " + p.getName() +"  is " + p.isOnline());
+    public void arenaVerify(CommandSender sender, OfflinePlayer p) {
+        MessageUtil.sendMessage(sender, "Player " + p.getName() +"  is " + p.isOnline());
     }
 
     @MCCommand( cmds = {"purgeQueue"}, admin = true )
-    public boolean arenaPurgeQueue(CommandSender sender) {
+    public void arenaPurgeQueue(CommandSender sender) {
         try {
             Collection<ArenaTeam> teams = arenaController.purgeQueue();
             for (ArenaTeam t: teams){
                 t.sendMessage("&eYou have been &cremoved&e from the queue by an administrator");
             }
+            MessageUtil.sendMessage(sender,"&2Queue purged");
         } catch (Exception e){
             Log.printStackTrace(e);
             MessageUtil.sendMessage(sender,"&4error purging queue");
-            return true;
         }
-        MessageUtil.sendMessage(sender,"&2Queue purged");
-        return true;
     }
 
     @MCCommand( cmds = {"hasPerm"}, admin = true )
-    public boolean hasPerm(CommandSender sender, String perm, Player p) {
-        return MessageUtil.sendMessage(sender, "Player " + p.getDisplayName() +"  hasPerm " + perm +" " +p.hasPermission(perm));
+    public void hasPerm(CommandSender sender, String perm, Player p) {
+        MessageUtil.sendMessage(sender, "Player " + p.getDisplayName() +"  hasPerm " + perm +" " +p.hasPermission(perm));
     }
 
     @MCCommand( cmds = {"setexp"}, op = true )
-    public boolean setExp(CommandSender sender, ArenaPlayer p, Integer exp) {
+    public void setExp(CommandSender sender, ArenaPlayer p, Integer exp) {
         ExpUtil.setTotalExperience(p.getPlayer(), exp);
-        return MessageUtil.sendMessage(sender,"&2Player's exp set to " + exp );
+        MessageUtil.sendMessage(sender,"&2Player's exp set to " + exp );
     }
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 337 )
-    public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, SpawnIndex index) {
-        return teleportToSpawn(sender,arena, LocationType.ARENA, index);
+    public void teleportToSpawn(ArenaPlayer sender, Arena arena, SpawnIndex index) {
+        teleportToSpawn(sender,arena, LocationType.ARENA, index);
     }
 
     @MCCommand( cmds = {"tp"}, admin = true, order = 338 )
-    public boolean teleportToSpawn(ArenaPlayer sender, Arena arena, String type, SpawnIndex index) {
+    public void teleportToSpawn(ArenaPlayer sender, Arena arena, String type, SpawnIndex index) {
         try {
-            return teleportToSpawn(sender, arena, LocationType.valueOf(type.toUpperCase()), index);
+            teleportToSpawn(sender, arena, LocationType.valueOf(type.toUpperCase()), index);
         } catch (IllegalArgumentException e){
-            return MessageUtil.sendMessage(sender,"&c" + e.getMessage());
+            MessageUtil.sendMessage(sender,"&c" + e.getMessage());
         }
     }
 
-    private boolean teleportToSpawn(ArenaPlayer sender, Arena arena, LocationType type, SpawnIndex index) {
+    private void teleportToSpawn(ArenaPlayer sender, Arena arena, LocationType type, SpawnIndex index) {
         final SpawnLocation loc;
         switch(type){
             case ANY:
@@ -399,55 +397,55 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 loc = null;
                 break;
         }
-        if (loc ==null)
-            return MessageUtil.sendMessage( sender,"&2Spawn " + (index.teamIndex + 1) + " " + (index.spawnIndex +1 ) + 
+        if ( loc ==null )
+            MessageUtil.sendMessage( sender,"&2Spawn " + (index.teamIndex + 1) + " " + (index.spawnIndex +1 ) + 
                                         " doesn't exist for " + (arena != null ? arena.getName() : "" ) + " " + type );
-        
-        TeleportController.teleport( sender, loc.getLocation() );
-        return MessageUtil.sendMessage( sender, "&2Teleported to &6" + type + " " + (index.teamIndex + 1) + " " + 
+        else {
+            TeleportController.teleport( sender, loc.getLocation() );
+            MessageUtil.sendMessage( sender, "&2Teleported to &6" + type + " " + (index.teamIndex + 1) + " " + 
                         (index.spawnIndex + 1) + " &2loc=&6" + SerializerUtil.getBlockLocString(loc.getLocation()));
+        }
     }
 
     @MCCommand( cmds = {"giveArenaClass"}, admin = true )
-    public boolean giveArenaClass(CommandSender sender, String className, Player player) {
+    public void giveArenaClass(CommandSender sender, String className, Player player) {
         ArenaClass clazz = ArenaClassController.getClass(className);
-        if (clazz == null)
-            return MessageUtil.sendMessage(sender, "&cArena class " + className +" doesn't exist");
-        
-        ArenaClassController.giveClass(PlayerController.toArenaPlayer(player), clazz);
-        return MessageUtil.sendMessage(sender, 
-                "&2Arena class " + clazz.getDisplayName() +"&2 given to &6" + player.getName());
+        if ( clazz == null )
+            MessageUtil.sendMessage(sender, "&cArena class " + className +" doesn't exist");
+        else {
+            ArenaClassController.giveClass(PlayerController.toArenaPlayer(player), clazz);
+            MessageUtil.sendMessage(sender,  "&2Arena class " + clazz.getDisplayName() +"&2 given to &6" + player.getName());
+        }
     }
 
     @MCCommand( cmds = {"allowAdminCommands"}, admin = true )
-    public boolean allowAdminCommands(CommandSender sender, Boolean enable) {
+    public void allowAdminCommands(CommandSender sender, Boolean enable) {
         Defaults.ALLOW_ADMIN_CMDS_IN_Q_OR_MATCH = enable;
-        return MessageUtil.sendMessage(sender,"&2Admins can "+ (enable ? "&6use" : "&cnot use")+"&2 commands in match");
+        MessageUtil.sendMessage(sender,"&2Admins can "+ (enable ? "&6use" : "&cnot use")+"&2 commands in match");
     }
 
     @MCCommand( cmds = {"notify"}, admin = true )
-    public boolean addNotifyListener(CommandSender sender, Player player, String type, Boolean enable) {
-        if (enable){
+    public void addNotifyListener(CommandSender sender, Player player, String type, Boolean enable) {
+        if ( enable ) {
             NotifierUtil.addListener(player, type);
             if (!sender.getName().equals(player.getName()))
-                return MessageUtil.sendMessage( player, 
-                        "&2 " + player.getDisplayName() + " &6now listening &2to " + type + " debugging messages" );
-            
-            return MessageUtil.sendMessage( sender,
+                MessageUtil.sendMessage( player, 
+                        "&2 " + player.getDisplayName() + " &6now listening &2to " + type + " debugging messages" );            
+            else MessageUtil.sendMessage( sender,
                     "&2 " + player.getName() + " &6now listening &2to " + type + " debugging messages" );
+            return;
         }   
         NotifierUtil.removeListener(player, type);
         
         if ( !sender.getName().equals( player.getName() ) )
-            return MessageUtil.sendMessage(player,
-                    "&2 " + player.getDisplayName() + " &cstopped listening&2 to " + type + " debugging messages" );
-        
-        return MessageUtil.sendMessage(sender,
+            MessageUtil.sendMessage(player,
+                    "&2 " + player.getDisplayName() + " &cstopped listening&2 to " + type + " debugging messages" );       
+        else MessageUtil.sendMessage(sender,
                 "&2 " + player.getDisplayName() + " &cstopped listening&2 to " + type + " debugging messages" );
     }
 
     @MCCommand( cmds = {"showContainers"}, admin = true )
-    public boolean showContainers(CommandSender sender, String args[]) {
+    public void showContainers(CommandSender sender, String args[]) {
         MatchParams params = null;
         if (args.length > 1) {
             params = ParamController.getMatchParamCopy(args[1]);
@@ -467,28 +465,28 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             if (a.getWaitroom() != null)
                 MessageUtil.sendMessage(sender,"   &2   - &6" + a.getWaitroom().getName() +" : &6"+a.getWaitroom().getContainerState().getState());
         }
-        return true;
     }
 
     @MCCommand( cmds = {"setTimings"}, admin = true )
-    public boolean setTimings(CommandSender sender, boolean set) {
+    public void setTimings(CommandSender sender, boolean set) {
         Defaults.DEBUG_TIMINGS = true;
         MessageUtil.sendMessage(sender, "&2Timings now " + set);
-        return true;
     }
 
     @MCCommand( cmds = {"timings"}, admin = true )
-    public boolean showTimings(CommandSender sender, String[] args) {
+    public void showTimings(CommandSender sender, String[] args) {
 
         boolean useMs = !(args.length >1 && args[1].equalsIgnoreCase("ns"));
         List<TimingUtil> timers = TimingUtil.getTimers();
         
         if (timers == null){
-            return MessageUtil.sendMessage(sender, "Timings are not enabled");
+            MessageUtil.sendMessage(sender, "Timings are not enabled");
+            return;
         }
         if ((args.length >1 && args[1].equalsIgnoreCase("reset"))){
             TimingUtil.resetTimers();
-            return MessageUtil.sendMessage(sender, "Timings are reset");
+             MessageUtil.sendMessage(sender, "Timings are reset");
+             return;
         }
         String timeStr = (useMs ? "time(ms)" : "time(ns)");
         MessageUtil.sendMessage(sender, BattleArena.getNameAndVersion() + " " + timeStr );
@@ -514,47 +512,47 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
 
             }
         }
-        MessageUtil.sendMessage(sender, "    Total time "+gtotal + " "+timeStr);
-        return true;
+        MessageUtil.sendMessage( sender, "    Total time " + gtotal + " " + timeStr );
     }
 
     @MCCommand( cmds = {"pasteConfig"}, admin = true )
-    public boolean pasteConfig(CommandSender sender, String paramName, String[] args) {
+    public void pasteConfig(CommandSender sender, String paramName, String[] args) {
         MatchParams mp = findMatchParam(sender, paramName);
-        if (mp == null)
-            return true;
+        if (mp == null) return;
+        
         RegisteredCompetition rc = CompetitionController.getCompetition(mp.getName());
         if (rc == null) {
-            return MessageUtil.sendMessage(sender, "&cNo config file found for " + paramName);
+            MessageUtil.sendMessage(sender, "&cNo config file found for " + paramName);
+            return;
         }
         File f;
-        if (args.length > 2 && args[2].equalsIgnoreCase("arenas")){
+        if (args.length > 2 && args[2].equalsIgnoreCase("arenas"))
             f = rc.getArenaSerializer().getFile();
-        } else {
+        else
             f = rc.getConfigSerializer().getFile();
-        }
-        if (!f.exists()){
-            return MessageUtil.sendMessage(sender, "&cNo config file found for " + paramName);}
         
-        return MessageUtil.sendMessage(sender, "&2Paste command not yet implemented.");
+        if (!f.exists())
+            MessageUtil.sendMessage(sender, "&cNo config file found for " + paramName);
+        else 
+            MessageUtil.sendMessage(sender, "&2Paste command not yet implemented.");
     }
 
-    @SuppressWarnings( "deprecation" )
     @MCCommand( cmds = {"showScoreboard"}, admin = true )
-    public boolean showScoreboard(CommandSender sender, Player player) {
+    public void showScoreboard(CommandSender sender, Player player) {
         Scoreboard sc = player.getScoreboard();
-        if (sc == null)
-            return MessageUtil.sendMessage(sender, "&4Scoreboard for " + player.getDisplayName() +" is null");
+        if (sc == null) {
+            MessageUtil.sendMessage(sender, "&4Scoreboard for " + player.getDisplayName() +" is null");
+            return;
+        }
         MessageUtil.sendMessage(sender, "&4Scoreboard &f" + sc.hashCode());
         MessageUtil.sendMessage(sender, "&e -- Teams -- ");
         
-        
-        Collection<OfflinePlayer> ops = sc.getPlayers();
+        Collection<String> ops = sc.getEntries();
         Collection<String> names;
-        for (Team t : sc.getTeams()) {
+        for ( Team t : sc.getTeams() ) {
             names = new ArrayList<>();
-            for (OfflinePlayer p: t.getPlayers()) {
-                names.add(p.getName());
+            for ( String p : t.getEntries() ) {
+                names.add( p );
             }
             MessageUtil.sendMessage(sender, t.getName() + " - " + t.getDisplayName() + " &f" + t.hashCode() + " = &6" +
                     StringUtils.join(names, ", "));
@@ -563,11 +561,11 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
             MessageUtil.sendMessage(sender, "&2 -- Objective &e"+o.getName() +" - "+o.getDisplayName());
             TreeMap<Integer, List<String>> m = new TreeMap<>(Collections.reverseOrder());
 
-            for (OfflinePlayer op: ops) {
+            for (String op: ops) {
                 Score score = o.getScore(op);
-                if (score == null)
-                    continue;
-                Team t = sc.getPlayerTeam(op);
+                if (score == null) continue;
+                
+                Team t = sc.getTeam(op);
                 List<String> l = m.get(score.getScore());
                 if (l == null) {
                     l = new ArrayList<>();
@@ -576,9 +574,9 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                 String displayName;
                 if (t != null) {
                     displayName = (t.getPrefix()!=null?t.getPrefix():"") +
-                            op.getName() + (t.getSuffix()!=null?t.getSuffix():"");
+                            op + (t.getSuffix()!=null?t.getSuffix():"");
                 } else {
-                    displayName = op.getName();
+                    displayName = op;
                 }
                 l.add(displayName);
             }
@@ -587,8 +585,6 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
                     MessageUtil.sendMessage(sender, s + " : " + e.getKey());
                 }
             }
-
         }
-        return true;
     }
 }

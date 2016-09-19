@@ -12,22 +12,23 @@ import mc.alk.arena.util.MessageUtil;
 public class VoteExecutor extends CustomCommandExecutor{
 
 	@MCCommand
-	public boolean voteForArena( ArenaPlayer ap, Arena arena ) {
+	public void voteForArena( ArenaPlayer ap, Arena arena ) {
 	    
 		LobbyContainer pc = RoomController.getLobby(arena.getArenaType());
 		
 		if (pc == null)
-			return MessageUtil.sendMessage( ap, "&cThere is no lobby for " + arena.getArenaType() );
+			MessageUtil.sendMessage( ap, "&cThere is no lobby for " + arena.getArenaType() );
 		
-		if (!pc.isHandled(ap))
-			return MessageUtil.sendMessage( ap, "&cYou aren't inside the lobby for " + arena.getArenaType() );
+		else if (!pc.isHandled(ap))
+			MessageUtil.sendMessage( ap, "&cYou aren't inside the lobby for " + arena.getArenaType() );
 		
-		MatchParams mp = ParamController.getMatchParamCopy( arena.getArenaType() );
-		
-		if (!Permissions.hasMatchPerm( ap.getPlayer(), mp, "add") )
-			return MessageUtil.sendMessage( ap, "&cYou don't have permission to vote in a &6" + mp.getCommand() );
-		
-		pc.castVote( ap, mp, arena );
-		return true;
+		else {
+    		MatchParams mp = ParamController.getMatchParamCopy( arena.getArenaType() );
+    		
+    		if (!Permissions.hasMatchPerm( ap.getPlayer(), mp, "add") )
+    			MessageUtil.sendMessage( ap, "&cYou don't have permission to vote in a &6" + mp.getCommand() );
+    		else
+    		    pc.castVote( ap, mp, arena );
+		}
 	}
 }

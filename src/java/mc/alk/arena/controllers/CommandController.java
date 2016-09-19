@@ -18,7 +18,7 @@ public class CommandController {
     private static CommandMap commandMap = getCommandMap(); 
     
     private static CommandMap getCommandMap() {
-
+        
         Class<?> serverClass = Bukkit.getServer().getClass();
         try {
             if ( serverClass.isAssignableFrom( Bukkit.getServer().getClass() ) ) {
@@ -69,13 +69,13 @@ public class CommandController {
                 ( command ) -> { if (   command.startsWith("/bad")
                                         || command.startsWith("/battleArenaDebug".toLowerCase())) {
                                     return true;
-                                }
-                                for ( String c : enabledCommands ) {
-                                    if ( command.startsWith( c.toLowerCase() ) ) {
-                                        return true;
-                                    }
-                                }
-                                return false;
+                                 }
+                                 for ( String c : enabledCommands ) {
+                                     if ( command.startsWith( c.toLowerCase() ) ) {
+                                         return true;
+                                     }
+                                 }
+                                 return false;
                 };        
         // enabledCommands should override disabledCommands:
         if ( isCmdDisabled.apply( cmd ) && !isCmdEnabled.apply( cmd ) ) {

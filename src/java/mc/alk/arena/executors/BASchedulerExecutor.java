@@ -19,74 +19,81 @@ public class BASchedulerExecutor extends CustomCommandExecutor{
 	}
 
 	@MCCommand( cmds = {"add"}, admin = true )
-	public boolean schedule(CommandSender sender, String eventType, String[] args) {
+	public void schedule(CommandSender sender, String eventType, String[] args) {
 		MatchParams ep = ParamController.getMatchParamCopy(eventType);
-		if (ep == null){
-			return MessageUtil.sendMessage(sender, "&cEvent type " + eventType+ " not found!");
-		}
-		if (es.scheduleEvent(ep, Arrays.copyOfRange(args, 2, args.length))){
+		
+		if ( ep == null ) 
+			MessageUtil.sendMessage(sender, "&cEvent type " + eventType+ " not found!");
+		else if ( es.scheduleEvent( ep, Arrays.copyOfRange( args, 2, args.length ) ) )
 		    MessageUtil.sendMessage(sender, "&2Event scheduled!. &6/bas list&2 to see a list of scheduled events");
-		} else {
+		else 
 		    MessageUtil.sendMessage(sender, "&cEvent not scheduled!. There was some error scheduling this events");
-		}
-		return true;
 	}
 
 	@MCCommand( cmds = {"delete","del"}, admin = true )
-	public boolean delete(CommandSender sender, Integer index) {
+	public void delete(CommandSender sender, Integer index) {
 		List<EventPair> events = es.getEvents();
-		if (events == null || events.isEmpty()){
-			return MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");}
-
-		if (events.size() < index || index <= 0){
-			return MessageUtil.sendMessage(sender, "&cIndex is out of range.  Valid Range: &61-"+events.size());}
-		es.deleteEvent(index-1);
-		return MessageUtil.sendMessage(sender, "&2Event &6"+index+"&2 deleted");
+		
+		if ( events == null || events.isEmpty() ) 
+			MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");
+		else if (events.size() < index || index <= 0) 
+			MessageUtil.sendMessage(sender, "&cIndex is out of range.  Valid Range: &61-"+events.size());
+		else {
+		    es.deleteEvent(index-1);		
+		    MessageUtil.sendMessage(sender, "&2Event &6"+index+"&2 deleted");
+		}
 	}
 
 	@MCCommand( cmds = {"list"}, admin = true )
-	public boolean list(CommandSender sender) {
+	public void list(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
-		if (events == null || events.isEmpty()){
-			return MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");}
-		for (int i=0;i<events.size();i++){
+		
+		if ( events == null || events.isEmpty() ) {
+			MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");
+            return;
+        }
+		for ( int i = 0; i < events.size(); i++ ) {
 			EventPair ep = events.get(i);
 			String[] args = ep.getArgs();
 			String strargs = args == null ? "[]" : StringUtils.join(ep.getArgs(), " ");
-			MessageUtil.sendMessage(sender, "&2"+(i+1)+"&e:&6"+ep.getEventParams().getName() +"&e args: &6" + strargs);
+			MessageUtil.sendMessage(sender, "&2" + ( i + 1 ) + "&e:&6" + ep.getEventParams().getName() + "&e args: &6" + strargs);
 		}
-		return MessageUtil.sendMessage(sender, "&6/bas delete <number>:&e to delete an event");
+		MessageUtil.sendMessage(sender, "&6/bas delete <number>:&e to delete an event");
 	}
 
 	@MCCommand( cmds = {"start"}, admin = true )
-	public boolean start(CommandSender sender) {
+	public void start(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
-		if (events == null || events.isEmpty()){
-			return MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");}
-
-		if (es.isRunning()){
-			return MessageUtil.sendMessage(sender, "&cScheduled events are already running!");
+		
+		if ( events == null || events.isEmpty() ) 
+			MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");
+		else if (es.isRunning())
+			MessageUtil.sendMessage(sender, "&cScheduled events are already running!");
+		else {
+            es.start();
+    		MessageUtil.sendMessage(sender, "&2Scheduled events are now &astarted");
 		}
-        es.start();
-		return MessageUtil.sendMessage(sender, "&2Scheduled events are now &astarted");
 	}
 
 	@MCCommand( cmds = {"stop"}, admin = true )
-	public boolean stop(CommandSender sender) {
-		if (!es.isRunning()){
-			return MessageUtil.sendMessage(sender, "&cScheduled events are already stopped!");
+	public void stop(CommandSender sender) {
+		if ( !es.isRunning() ) 
+			MessageUtil.sendMessage(sender, "&cScheduled events are already stopped!");
+		else {
+            es.stop();
+    		MessageUtil.sendMessage(sender, "&2Scheduled events are now &4stopped!");
 		}
-        es.stop();
-		return MessageUtil.sendMessage(sender, "&2Scheduled events are now &4stopped!");
 	}
 
 	@MCCommand( cmds = {"startNext"}, admin = true )
-	public boolean startNext(CommandSender sender) {
+	public void startNext(CommandSender sender) {
 		List<EventPair> events = es.getEvents();
-		if (events == null || events.isEmpty()){
-			return MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");}
-
-		es.startNext();
-		return MessageUtil.sendMessage(sender, "&2Next Scheduled event is now starting");
+		
+		if ( events == null || events.isEmpty() )
+			MessageUtil.sendMessage(sender, "&cNo &4BattleArena&c events have been scheduled");
+		else {
+    		es.startNext();
+    		MessageUtil.sendMessage(sender, "&2Next Scheduled event is now starting");
+		}
 	}
 }

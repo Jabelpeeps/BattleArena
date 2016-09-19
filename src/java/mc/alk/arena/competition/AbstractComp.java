@@ -116,8 +116,8 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         /// TODO rebalance teams
         Set<ArenaPlayer> excludedPlayers = getExcludedPlayers();
         for (ArenaPlayer p : excludedPlayers){
-            p.sendMessage(Log.colorChat(params.getPrefix()+
-                    "&6 &5There werent enough players to create a &6" + params.getMinTeamSize() +"&5 person team"));
+            p.sendMessage( MessageUtil.colorChat( params.getPrefix() +
+                    "&6 &5There werent enough players to create a &6" + params.getMinTeamSize() + "&5 person team"));
         }
         transitionTo(EventState.RUNNING);
 
@@ -125,14 +125,13 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     protected void setEventResult(MatchResult result, boolean announce) {
-        if (announce){
-            if (result.hasVictor()){
-                messenger.sendEventVictory(result.getVictors(), result.getLosers());
-            } else {
-                messenger.sendEventDraw(result.getDrawers(), result.getLosers());
-            }
+        if ( announce ) {
+            if ( result.hasVictor() )
+                messenger.sendEventVictory( result.getVictors(), result.getLosers() );
+            else
+                messenger.sendEventDraw( result.getDrawers(), result.getLosers() );
         }
-        callEvent(new EventResultEvent(this,result));
+        callEvent( new EventResultEvent( this, result ) );
     }
 
     public void stopTimer(){

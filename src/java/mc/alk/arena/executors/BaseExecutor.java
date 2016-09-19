@@ -248,9 +248,10 @@ public abstract class BaseExecutor implements CommandExecutor {
             methodmap = methods.get(DEFAULT_CMD);
         }
 
-        if ( methodmap == null || methodmap.isEmpty() )
-            return MessageUtil.sendMessage(sender, 
-                    "&cThat command does not exist!&6 /" + command.getLabel() + " help &c for help" );     
+        if ( methodmap == null || methodmap.isEmpty() ) {
+            MessageUtil.sendMessage( sender, "&cThat command does not exist!&6 /" + command.getLabel() + " help &c for help" );   
+            return true;
+        }
         
         List<CommandException> errs = new ArrayList<>();
         boolean success = false;
@@ -277,9 +278,7 @@ public abstract class BaseExecutor implements CommandExecutor {
                             MessageUtil.sendMessage( sender, _usage );
                     }
                 } 
-                else {
-                    success = true;
-                }
+                else success = true;
                 break; 
                 
             } catch ( IllegalArgumentException e ) { 

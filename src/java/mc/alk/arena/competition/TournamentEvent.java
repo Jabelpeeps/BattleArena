@@ -114,7 +114,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         int roundteams = (int) Math.pow(minTeams, nrounds);
         
         server.broadcastMessage( 
-                Log.colorChat( params.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
+                MessageUtil.colorChat( params.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
 
         TreeMap<Double,ArenaTeam> sortTeams = new TreeMap<>(Collections.reverseOrder());
         TrackerInterface sc = Tracker.getInterface( params );
@@ -144,7 +144,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         
         if (preliminary_round) nrounds++;
         
-        server.broadcastMessage( Log.colorChat( params.getPrefix() + "&6 " + teams.size() + 
+        server.broadcastMessage(  MessageUtil.colorChat( params.getPrefix() + "&6 " + teams.size() + 
                                             " &e" + MessageUtil.getTeamsOrPlayers( teams.size() ) +
                                             " will compete in a &6" + nrounds + "&e round tournament" ) );
         if ( preliminary_round ) 
@@ -445,7 +445,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     }
     @Override
     public boolean addedTeam(ArenaTeam team){
-        if (super.addedTeam(team)){
+        if ( super.addedTeam(team) ) {
             announceTourneySize();
             return true;
         }
@@ -454,15 +454,16 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
 
     private void announceTourneySize() {
         int size = 0;
-        for (ArenaTeam t: teams){
-            if (t.size() > 0)
+        for ( ArenaTeam t : teams ) {
+            if ( t.size() > 0 )
                 size++;
         }
         int calcNrounds = calcNRounds(size);
-        int idealteam = (int) Math.pow(params.getMinTeams(), calcNrounds);
-        if (calcNrounds > 1 && size % idealteam == 0){
-            MessageUtil.broadcastMessage(Log.colorChat(params.getPrefix()+"&6" + size +" "+MessageUtil.getTeamsOrPlayers(teams.size())+
-                    "&e have joined, Current tournament will have &6" + calcNrounds+"&e rounds"));
+        int idealteam = (int) Math.pow( params.getMinTeams(), calcNrounds );
+        if ( calcNrounds > 1 && size % idealteam == 0 ) {
+            Bukkit.broadcastMessage( MessageUtil.colorChat( params.getPrefix() + "&6" + size + " " + 
+                    MessageUtil.getTeamsOrPlayers( teams.size() ) + "&e have joined, Current tournament will have &6" + 
+                    calcNrounds + "&e rounds" ) );
         }
     }
 

@@ -265,16 +265,23 @@ public class ArenaAlterController {
         return "ba-"+arena.getName().toLowerCase();
     }
 
-    private static boolean changeSpawn(Player sender, Arena arena, BattleArenaController ac,
-                                       SpawnIndex index) {
+    private static boolean changeSpawn( Player sender, Arena arena, BattleArenaController ac, SpawnIndex index ) {
         Location loc = sender.getLocation();
-        arena.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
+        try {
+            arena.setSpawnLoc( index.teamIndex,index.spawnIndex, new FixedLocation(loc) );
+        }
+        catch ( IllegalStateException e ) { 
+            e.printStackTrace();
+            return false; 
+        }
+        
         ac.updateArena(arena);
-        return MessageUtil.sendMessage(sender,"&2 "+(getSpawnName(index.teamIndex)+" &2team spawn #&6"+(index.spawnIndex+1)+
-                "&2 set to location=&6" + Util.getLocString(loc)));
+        MessageUtil.sendMessage( sender, "&2 " + getSpawnName( index.teamIndex ) + " &2team spawn #&6" + 
+                ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString(loc) );
+        return true;
     }
 
-    private static String getSpawnName(int index){
+    private static String getSpawnName(int index) {
         return index == Integer.MAX_VALUE ? "main" : TeamUtil.getTeamName(index);
     }
 
@@ -284,49 +291,51 @@ public class ArenaAlterController {
         PlayerContainerSerializer pcs = new PlayerContainerSerializer();
         pcs.setConfig(BattleArena.getSelf().getDataFolder().getPath()+"/watchers/containers.yml");
         pcs.save();
-        return MessageUtil.sendMessage(sender,"&2Lobby for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
-                "&2 set to location=&6" + Util.getLocString(loc)));
+        MessageUtil.sendMessage( sender, "&2Lobby for the " + getSpawnName( index.teamIndex ) + " &2team. Spawn #&6" +
+                ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString( loc ) );
+        return true;
     }
 
-    private static boolean changeWaitroomSpawn(Player sender, Arena arena,
-                                               BattleArenaController ac,SpawnIndex index) {
+    private static boolean changeWaitroomSpawn( Player sender, Arena arena, BattleArenaController ac, SpawnIndex index ) {
         Location loc = sender.getLocation();
-        RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.WAITROOM);
-        rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
+        RoomContainer rc = RoomController.getOrCreateRoom( arena, PlayerHolder.LocationType.WAITROOM );
+        rc.setSpawnLoc( index.teamIndex,index.spawnIndex, new FixedLocation(loc) );
         ac.updateArena(arena);
-        return MessageUtil.sendMessage(sender,"&2waitroom for the "+(getSpawnName(index.teamIndex)+" &2team. Spawn #&6"+(index.spawnIndex+1)+
-                "&2 set to location=&6" + Util.getLocString(loc)));
+        MessageUtil.sendMessage( sender, "&2waitroom for the " + getSpawnName( index.teamIndex ) + " &2team. Spawn #&6" +
+                ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString( loc ) );
+        return true;
     }
 
-    private static boolean changeSpectateSpawn(Player sender, Arena arena,
-                                               BattleArenaController ac, SpawnIndex index) {
+    private static boolean changeSpectateSpawn( Player sender, Arena arena, BattleArenaController ac, SpawnIndex index ) {
         Location loc = sender.getLocation();
         RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.SPECTATE);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return MessageUtil.sendMessage(sender,"&2spectator room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
-                "&2 set to location=&6" + Util.getLocString(loc));
+        MessageUtil.sendMessage( sender, "&2spectator room #&6" + ( index.teamIndex + 1 ) + "&2. Spawn #&6" + 
+                ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString( loc ) );
+        return true;
     }
 
-    private static boolean changeVisitorSpawn(Player sender, Arena arena,
-                                              BattleArenaController ac, SpawnIndex index) {
+    private static boolean changeVisitorSpawn( Player sender, Arena arena, BattleArenaController ac, SpawnIndex index ) {
         Location loc = sender.getLocation();
         RoomContainer rc = RoomController.getOrCreateRoom(arena, PlayerHolder.LocationType.VISITOR);
         rc.setSpawnLoc(index.teamIndex,index.spawnIndex, new FixedLocation(loc));
         ac.updateArena(arena);
-        return MessageUtil.sendMessage(sender,"&2Visitor room #&6"+(index.teamIndex+1)+"&2. Spawn #&6"+(index.spawnIndex+1)+
-                "&2 set to location=&6" + Util.getLocString(loc));
+        MessageUtil.sendMessage( sender, "&2Visitor room #&6" + ( index.teamIndex + 1 ) + "&2. Spawn #&6" + 
+                ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString( loc ));
+        return true;
     }
 
-    private static boolean changeType(CommandSender sender, Arena arena, BattleArenaController ac, String value) {
+    private static boolean changeType( CommandSender sender, Arena arena, BattleArenaController ac, String value ) {
         ArenaType t = ArenaType.fromString(value);
         if (t == null){
-            MessageUtil.sendMessage(sender,"&ctype &6"+ value + "&c not found. valid types=&6"+ArenaType.getValidList());
+            MessageUtil.sendMessage(sender,"&ctype &6"+ value + "&c not found. valid types=&6" + ArenaType.getValidList() );
             return false;
         }
         arena.getParams().setType(t);
         ac.updateArena(arena);
-        return MessageUtil.sendMessage(sender,"&2Altered arena type to &6" + value);
+        MessageUtil.sendMessage( sender, "&2Altered arena type to &6" + value );
+        return true;
     }
 
     public static boolean restoreDefaultArenaOptions(Arena arena, boolean save) {

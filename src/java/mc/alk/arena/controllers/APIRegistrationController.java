@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.command.Command;
@@ -18,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
+import mc.alk.arena.Defaults;
 import mc.alk.arena.executors.BAExecutor;
 import mc.alk.arena.executors.CustomCommandExecutor;
 import mc.alk.arena.executors.DuelExecutor;
@@ -70,29 +70,6 @@ public class APIRegistrationController {
 //        return true;
 //    }
 
-    private static void setCommandToExecutor( JavaPlugin plugin, String wantedCommand, CommandExecutor executor ) {
-        
-        if ( !setCommandToExecutor( plugin, wantedCommand, executor, false ) ) {
-            Log.info( "[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap." );
-            List<String> aliases = new ArrayList<>();
-            ArenaBukkitCommand arenaCommand = 
-                    new ArenaBukkitCommand( wantedCommand, "", "", aliases, BattleArena.getSelf(), executor );
-            CommandController.registerCommand( arenaCommand );
-        }
-    }
-
-    private static boolean setCommandToExecutor( JavaPlugin plugin, String command, CommandExecutor executor, boolean displayError ) {
-        try {
-            plugin.getCommand( command ).setExecutor( executor );
-            return true;
-        } catch ( Exception e ) {
-            if ( displayError ) {
-                Log.err( plugin.getName() + " command " + command + " was not found in plugin.yml." );
-            }
-            return false;
-        }
-    }
-
     public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena ) {
         return registerCompetition( plugin, name, cmd, arena, null );
     }
@@ -100,9 +77,9 @@ public class APIRegistrationController {
     public static boolean registerCompetition( JavaPlugin plugin, String name, String cmd, Class<? extends Arena> arena, 
                                                CustomCommandExecutor executor ) {
         File dir = plugin.getDataFolder();
-        File configFile = new File( dir.getAbsoluteFile() + "/" + name + "Config.yml" );
-        File msgFile = new File( dir.getAbsoluteFile() + "/" + name + "Messages.yml" );
-        File defaultArenaFile = new File( dir.getAbsoluteFile() + "/arenas.yml" );
+        File configFile = new File( dir.getAbsolutePath() + "/" + name + "Config.yml" );
+        File msgFile = new File( dir.getAbsolutePath() + "/" + name + "Messages.yml" );
+        File defaultArenaFile = new File( dir.getAbsolutePath() + "/arenas.yml" );
         
         return registerCompetition( plugin, name, cmd, arena, executor, configFile, msgFile, defaultArenaFile );
     }
@@ -136,7 +113,7 @@ public class APIRegistrationController {
         
         FileUtil.makeIfNotExists( plugin.getDataFolder() );
 
-        /// Set a delayed init on this plugin and folder to load custom types
+        /// Set a delayed init on this plugin to load custom types
         if ( !delayedInits.contains( plugin.getName() ) ) {
             delayedInits.add( plugin.getName() );
             Scheduler.scheduleSynchronousTask( new DelayedRegistrationHandler( plugin, defaultArenaFile ) );
@@ -157,25 +134,13 @@ public class APIRegistrationController {
         /// What is our game type ? spleef, ctf, etc
         ArenaType gameType = ConfigSerializer.getArenaGameType( config.getConfigurationSection( name ) );
         
-//        if ( factory == null ) {
-//            if ( gameType != null ) {
-//                factory = ArenaType.getArenaFactory( gameType );
-//            } else {
-//                Class<? extends Arena> ac = ConfigSerializer.getArenaClass( config.getConfigurationSection( name ) );
-//                factory = ArenaType.createArenaFactory( ac );
-//            }
-//            if ( factory == null ) {
-//                factory = ArenaType.createArenaFactory( Arena.class );
-//            }
-//        }
-
         ArenaType at = ArenaType.register( name, arenaClass, plugin );
 
         MatchParams mp = config.loadMatchParams();
 
         MessageSerializer ms = null;
 
-        if ( FileUtil.load( plugin.getClass(), messageFile.getPath(), messageFile.getPath() ) == null ) {
+        if ( FileUtil.load( plugin.getClass(), messageFile.getPath(), messageFile.getPath() ) != null ) {
             ms = new MessageSerializer( name, mp );
         } 
         else if ( gameType != null ) {
@@ -215,20 +180,37 @@ public class APIRegistrationController {
     private static void createExecutor(JavaPlugin plugin, String cmd, CustomCommandExecutor executor, MatchParams mp) {
         CustomCommandExecutor exe;
 
-        if (mp.isDuelOnly()) {
-            exe = new DuelExecutor();
-        } else {
-            exe = new BAExecutor();
-        }
+        if ( mp.isDuelOnly() ) exe = new DuelExecutor();
+        else exe = new BAExecutor();
+        
+        if ( executor != null ) 
+            exe.addMethods( executor, executor.getClass().getMethods() );
 
-        if (executor != null) {
-            exe.addMethods(executor, executor.getClass().getMethods());
+        setCommandToExecutor( plugin, cmd.toLowerCase(), exe );
+        
+        if ( !mp.getCommand().equalsIgnoreCase( cmd ) )
+            setCommandToExecutor( plugin, mp.getCommand().toLowerCase(), exe );
+    }
+    
+    private static void setCommandToExecutor( JavaPlugin plugin, String wantedCommand, CommandExecutor executor ) {
+        
+        if ( !setCommandToExecutor( plugin, wantedCommand, executor, Defaults.DEBUG_COMMANDS ) ) {
+            Log.info( "[BattleArena] Now registering command " + wantedCommand + " dynamically with Bukkit commandMap." );
+            
+            CommandController.registerCommand( 
+                    new ArenaBukkitCommand( wantedCommand, "", "", BattleArena.getSelf(), executor ) );
         }
+    }
 
-        /// Set command to the executor
-        setCommandToExecutor(plugin, cmd.toLowerCase(), exe);
-        if (!mp.getCommand().equalsIgnoreCase(cmd)) {
-            setCommandToExecutor(plugin, mp.getCommand().toLowerCase(), exe);
+    private static boolean setCommandToExecutor( JavaPlugin plugin, String command, CommandExecutor executor, boolean displayError ) {
+        try {
+            plugin.getCommand( command ).setExecutor( executor );
+            return true;
+        } catch ( NullPointerException e ) {
+            if ( displayError ) {
+                Log.err( plugin.getName() + " command " + command + " was not found in plugin.yml." );
+            }
+            return false;
         }
     }
 
@@ -237,16 +219,16 @@ public class APIRegistrationController {
         final CommandExecutor executor;
         @Getter final Plugin plugin;
 
-        public ArenaBukkitCommand( String name, String _description, String _usageMessage, List<String> aliases, 
-                                                Plugin _plugin, CommandExecutor _executor) {
-            super( name, _description, _usageMessage, aliases );
+        public ArenaBukkitCommand( String name, String _description, String _usageMessage, 
+                                                Plugin _plugin, CommandExecutor _executor ) {
+            super( name, _description, _usageMessage, new ArrayList<>() );
             plugin = _plugin;
             executor = _executor;
         }
 
         @Override
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            return executor.onCommand(sender, this, commandLabel, args);
+        public boolean execute( CommandSender sender, String commandLabel, String[] args ) {
+            return executor.onCommand( sender, this, commandLabel, args );
         }
     }
 

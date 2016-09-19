@@ -330,7 +330,6 @@ public class ConfigSerializer extends BaseConfig {
         }
     }
 
-
     private static List<String> loadModules(ConfigurationSection cs, MatchParams mp) {
         List<String> modules = new ArrayList<>();
 
@@ -476,7 +475,10 @@ public class ConfigSerializer extends BaseConfig {
             
             if ( at == null )
                 at = ArenaType.fromString( cs.getName() );
-        }
+       
+            if ( Defaults.DEBUG )
+                Log.info( "[ConfigSerializer] ArenaType:" + at.getName() + " loaded from ConfigSection:" + cs.getName() );
+        }    
         return at;
     }
     

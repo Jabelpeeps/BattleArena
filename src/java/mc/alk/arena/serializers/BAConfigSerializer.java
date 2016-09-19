@@ -1,12 +1,9 @@
 package mc.alk.arena.serializers;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -96,30 +93,18 @@ public class BAConfigSerializer extends BaseConfig {
             config.load(file);
         } catch (Exception e) {
             Log.printStackTrace(e);
-        }
-        Set<String> defaultMatchTypes = new HashSet<>();
-        Collections.addAll( defaultMatchTypes, "Arena", "Skirmish", "Colosseum", "Battleground", "Duel" );
-        
-        Set<String> defaultEventTypes = new HashSet<>();
-        Collections.addAll( defaultEventTypes, "FreeForAll", "DeathMatch" );
- 
-        Set<String> allTypes = new HashSet<>(defaultMatchTypes);
-        allTypes.addAll(defaultEventTypes);
-        
+        }     
         JavaPlugin plugin = BattleArena.getSelf();
-
         File dir = plugin.getDataFolder();
         File compDir = new File(dir.getPath() + "/competitions");
 
-        /// Load all default types
-        for ( String comp : allTypes ) {
+        for ( String comp : new String[]{"Arena", "Skirmish", "Colosseum", "Battleground", "Duel", "FreeForAll", "DeathMatch"} ) {
             
-            String capComp = StringUtils.capitalize( comp );
-            CustomCommandExecutor executor = comp.equalsIgnoreCase( "duel" ) ? new DuelExecutor() : null;
-            APIRegistrationController.registerCompetition( plugin, capComp, capComp, Arena.class, executor,
-                                                           new File( compDir + "/" + capComp + "Config.yml" ),
-                                                           new File( compDir + "/" + capComp + "Messages.yml" ),
-                                                           new File( "/default_files/competitions/" + capComp + "Config.yml" ),
+            CustomCommandExecutor executor = comp.equals( "Duel" ) ? new DuelExecutor() : null;
+            APIRegistrationController.registerCompetition( plugin, comp, comp, Arena.class, executor,
+                                                           new File( compDir + "/" + comp + "Config.yml" ),
+                                                           new File( compDir + "/" + comp + "Messages.yml" ),
+                                                           new File( "/default_files/competitions/" + comp + "Config.yml" ),
                                                            new File( dir.getPath() + "/saves/arenas.yml" ) );
         }
 

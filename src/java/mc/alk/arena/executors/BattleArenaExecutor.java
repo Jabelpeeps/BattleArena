@@ -33,28 +33,31 @@ import mc.alk.arena.util.MessageUtil;
 public class BattleArenaExecutor extends CustomCommandExecutor {
 
     @MCCommand( cmds = {"listInv"}, admin = true )
-    public boolean listSaves(CommandSender sender, OfflinePlayer p) {
+    public void listSaves(CommandSender sender, OfflinePlayer p) {
         Collection<String> dates = InventorySerializer.getDates(p);
 
         if (dates == null) {
-            return MessageUtil.sendMessage(sender, "There are no inventory saves for this player");
+            MessageUtil.sendMessage(sender, "There are no inventory saves for this player");
+            return;
         }
         int i = 0;
         MessageUtil.sendMessage(sender, "Most recent inventory saves");
         for (String date : dates) {
             MessageUtil.sendMessage(sender, ++i + " : " + date);
         }
-        return true;
     }
 
     @MCCommand( cmds = {"listInv"}, admin = true )
-    public boolean listSave(CommandSender sender, OfflinePlayer p, Integer index) {
+    public void listSave(CommandSender sender, OfflinePlayer p, Integer index) {
         if (index < 0 || index > Defaults.NUM_INV_SAVES) {
-            return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
+            MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
+            return;
         }
         PInv pinv = InventorySerializer.getInventory(p, index - 1);
-        if (pinv == null)
-            return MessageUtil.sendMessage(sender, "&cThis index doesn't have an inventory!");
+        if (pinv == null) {
+            MessageUtil.sendMessage(sender, "&cThis index doesn't have an inventory!");
+            return;
+        }
         MessageUtil.sendMessage(sender, "&6" + p.getName() + " inventory at save " + index);
         boolean has = false;
         for (ItemStack is : pinv.armor) {
@@ -70,34 +73,30 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
         if (!has) {
             MessageUtil.sendMessage(sender, "&cThis index doesn't have any items");
         }
-        return true;
     }
 
     @MCCommand( cmds = {"giveInv"}, admin = true )
-    public boolean restoreInv(CommandSender sender, ArenaPlayer p, Integer index, Player other) {
-        if (index < 0 || index > Defaults.NUM_INV_SAVES) {
-            return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
-        }
-        if (InventorySerializer.giveInventory(p, index - 1, other)) {
-            return MessageUtil.sendMessage(sender, "&2Player inventory given to " + other.getDisplayName());
-        }
-        return MessageUtil.sendMessage(sender, "&cPlayer inventory could not be given to " + other.getDisplayName());
+    public void restoreInv(CommandSender sender, ArenaPlayer p, Integer index, Player other) {
+        if (index < 0 || index > Defaults.NUM_INV_SAVES) 
+            MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
+        else if (InventorySerializer.giveInventory(p, index - 1, other)) 
+            MessageUtil.sendMessage(sender, "&2Player inventory given to " + other.getDisplayName());
+        else 
+            MessageUtil.sendMessage(sender, "&cPlayer inventory could not be given to " + other.getDisplayName());
     }
 
     @MCCommand( cmds = {"restoreInv"}, admin = true )
-    public boolean restoreInv(CommandSender sender, ArenaPlayer p, Integer index) {
-        if (index < 0 || index > Defaults.NUM_INV_SAVES) {
-            return MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
-        }
-        if (InventorySerializer.giveInventory(p, index - 1, p.getPlayer())) {
-            return MessageUtil.sendMessage(sender, "&2Player inventory restored");
-        }
-        return MessageUtil.sendMessage(sender, "&cPlayer inventory could not be restored");
+    public void restoreInv(CommandSender sender, ArenaPlayer p, Integer index) {
+        if (index < 0 || index > Defaults.NUM_INV_SAVES)
+            MessageUtil.sendMessage(sender, "&c index must be between 1-" + Defaults.NUM_INV_SAVES);
+        else if (InventorySerializer.giveInventory(p, index - 1, p.getPlayer()))
+            MessageUtil.sendMessage(sender, "&2Player inventory restored");
+        else 
+            MessageUtil.sendMessage(sender, "&cPlayer inventory could not be restored");
     }
 
-
     @MCCommand( cmds = {"version"}, admin = true )
-    public boolean showVersion(CommandSender sender, String[] args) {
+    public void showVersion(CommandSender sender, String[] args) {
         
         MessageUtil.sendMessage( sender, "&6" + BattleArena.getNameAndVersion() );
         
@@ -120,30 +119,28 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
             }
         } 
         else MessageUtil.sendMessage(sender, "&2For all game type versions, type &6/ba version all");
-        return true;
     }
 
     @MCCommand( cmds = {"reload"}, admin = true, perm = "arena.reload" )
-    public boolean arenaReload(CommandSender sender) {
+    public void arenaReload(CommandSender sender) {
         BAEventController baec = BattleArena.getBAEventController();
         if (arenaController.hasRunningMatches() || !arenaController.isQueueEmpty() || baec.hasOpenEvent()) {
             MessageUtil.sendMessage(sender, "&cYou can't reload the config while matches are running or people are waiting in the queue");
-            return MessageUtil.sendMessage(sender, "&cYou can use &6/arena cancel all&c to cancel all matches and clear queues");
+            MessageUtil.sendMessage(sender, "&cYou can use &6/arena cancel all&c to cancel all matches and clear queues");
+            return;
         }
-
         arenaController.stop();
-        /// Get rid of any current players
-        PlayerController.clearArenaPlayers();
 
+        PlayerController.clearArenaPlayers();
         BattleArena.getSelf().reloadConfig();
         CompetitionController.reloadCompetitions();
 
         arenaController.resume();
-        return MessageUtil.sendMessage(sender, "&6BattleArena&e configuration reloaded");
+        MessageUtil.sendMessage(sender, "&6BattleArena&e configuration reloaded");
     }
 
     @MCCommand( cmds = {"listClasses"}, admin = true )
-    public boolean listArenaClasses(CommandSender sender) {
+    public void listArenaClasses(CommandSender sender) {
         Set<ArenaClass> classes = ArenaClassController.getClasses();
         MessageUtil.sendMessage(sender, "&2Registered classes");
         for (ArenaClass ac : classes) {
@@ -151,29 +148,16 @@ public class BattleArenaExecutor extends CustomCommandExecutor {
                 continue;
             MessageUtil.sendMessage(sender, "&6" + ac.getName() + "&2 : " + ac.getDisplayName());
         }
-        return true;
     }
 
     @MCCommand( cmds = {"kick"}, admin = true, perm = "arena.kick" )
-    public boolean arenaKick(CommandSender sender, ArenaPlayer player) {
+    public void arenaKick(CommandSender sender, ArenaPlayer player) {
         ArenaPlayerLeaveEvent event = new ArenaPlayerLeaveEvent(player, player.getTeam(),
                 ArenaPlayerLeaveEvent.QuitReason.KICKED);
         event.callEvent();
         if (event.getMessages() != null && !event.getMessages().isEmpty()) {
             MessageUtil.sendMessage(event.getPlayer(), event.getMessages());
         }
-        return MessageUtil.sendMessage(sender, "&2You have kicked &6" + player.getName());
+        MessageUtil.sendMessage(sender, "&2You have kicked &6" + player.getName());
     }
-
-//    @MCCommand(cmds = {"stats"}, admin = true, perm = "arena.stats")
-//    public boolean stats(CommandSender sender) {
-//        return MessageUtil.sendMessage(sender, "&cNot implemented");
-//    }
-//
-//    @MCCommand(cmds = {"setAPIKey"}, admin = true, perm = "arena.api")
-//    public boolean setAPIKey(CommandSender sender, String key) {
-//        // BattleArena.getSelf().getBattlePluginsAPI().setAPIKey(key);
-//        // return sendMessage(sender, "&2Api-Key set to: &e" + key);
-//        return MessageUtil.sendMessage(sender, "&2command not yet implemented");
-//    }
 }

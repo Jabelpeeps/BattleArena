@@ -26,8 +26,8 @@ public class TrackerExecutor extends CustomCommandExecutor {
 		ti = _ti;
 	}
 
-	@MCCommand( cmds={"top"}, usage = "top [x] [team size]" )
-	public boolean showTopXOther(CommandSender sender, String[] args){
+	@MCCommand( cmds = {"top"}, usage = "top [x] [team size]" )
+	public void showTopXOther(CommandSender sender, String[] args){
 		int x = 5;
 		StatType st = null;
 		if (args.length > 1){
@@ -37,16 +37,20 @@ public class TrackerExecutor extends CustomCommandExecutor {
 				xIndex = 2;
 			}
 			if (args.length > xIndex)
-				try {x = Integer.valueOf(args[xIndex]);}catch (Exception e){}
+				try { x = Integer.valueOf( args[xIndex] ); }catch (Exception e){}
 		}
 
-		if (x<=0 || x > 100){
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("xBetween", MAX_RECORDS));}
+		if (x<=0 || x > 100) {
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("xBetween", MAX_RECORDS));
+			return;
+		}
 		List<Stat> stats = st == null ? ti.getTopXRating(x) : ti.getTopX(st, x);
 		String stname = st == null ? "Rating" : st.getName();
 		int min = Math.min(x, stats.size());
-		if (min==0){
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("noRecordsInTable", ti.getInterfaceName()));}
+		if (min==0) {
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("noRecordsInTable", ti.getInterfaceName()));
+            return;
+        }
 		MessageUtil.sendMessage(sender,"&4=============== &6"+ti.getInterfaceName()+" "+stname+"&4===============");
 
 		Stat stat;
@@ -55,30 +59,33 @@ public class TrackerExecutor extends CustomCommandExecutor {
 			MessageUtil.sendMessage(sender,"&6"+(i+1)+"&e: &c" + stat.getName()+"&6["+stat.getRating()+"] &eWins(&6"+stat.getWins()+
 					"&e),Losses(&8"+stat.getLosses()+"&e),Streak(&b"+stat.getStreak()+"&e) W/L(&c"+String.format("%.2f", stat.getKDRatio())+"&e)");
 		}
-		return true;
 	}
 
 	@MCCommand( cmds = {"versus", "vs"}, usage = "vs <player>" )
-	public boolean versus(Player player1, String player2){
-		return versus(player1, player1.getName(), player2, 5);
+	public void versus(Player player1, String player2){
+		versus(player1, player1.getName(), player2, 5);
 	}
 
 	@MCCommand( cmds = {"versus", "vs"}, usage = "vs <player> <# records>" )
-	public boolean versus(Player player1, String player2, Integer nRecords){
-		return versus(player1, player1.getName(), player2, nRecords);
+	public void versus(Player player1, String player2, Integer nRecords){
+		versus(player1, player1.getName(), player2, nRecords);
 	}
 
-	private boolean versus(CommandSender sender, String player1, String player2, Integer x) {
-		if (x<=0 || x > 100){
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("xBetween", MAX_RECORDS));}
-
+	private void versus(CommandSender sender, String player1, String player2, Integer x) {
+		if (x<=0 || x > 100) {
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("xBetween", MAX_RECORDS));
+            return;
+        }
 		Stat stat1 = findStat(player1);
-		if (stat1 == null){
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", player1));}
+		if (stat1 == null) {
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", player1));
+            return;
+        }
 		Stat stat2 = findStat(player2);
-		if (stat2 == null){
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", player2));}
-
+		if (stat2 == null) {
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", player2));
+            return;
+        }
 		ti.save(stat1,stat2);
 
 		VersusRecord or = stat1.getRecordVersus(stat2);
@@ -93,7 +100,6 @@ public class TrackerExecutor extends CustomCommandExecutor {
 			final String color = wlt.wlt == WLT.WIN ? "&2" : "&8";
 			MessageUtil.sendMessage(sender,color+wlt.wlt +"&e : &6" + TimeUtil.convertLongToDate(wlt.date));
 		}
-		return true;
 	}
 
 	@MCCommand( cmds = {"addKill"}, op = true, usage = "addkill <player1> <player2>: this is a debugging method" )
@@ -115,9 +121,9 @@ public class TrackerExecutor extends CustomCommandExecutor {
 		return true;
 	}
 
-	protected boolean addKill(CommandSender sender, Player p1, Player p2) {
+	protected void addKill(CommandSender sender, Player p1, Player p2) {
 		ti.addPlayerRecord(p1.getName(), p2.getName(), WLT.WIN);
-		return MessageUtil.sendMessage(sender, "Added kill " + p1.getDisplayName() + " wins over " + p2.getDisplayName());
+		MessageUtil.sendMessage(sender, "Added kill " + p1.getDisplayName() + " wins over " + p2.getDisplayName());
 	}
 
 	protected String getFullStatMsg(Stat stat) {
@@ -136,43 +142,43 @@ public class TrackerExecutor extends CustomCommandExecutor {
 	}
 
 	@MCCommand()
-	public boolean showStatsSelf(Player p) {
+	public void showStatsSelf(Player p) {
 		Stat stat = ti.loadRecord(p);
 		String msg = getFullStatMsg(stat);
-		return MessageUtil.sendMessage(p, msg);
+		MessageUtil.sendMessage(p, msg);
 	}
 
 	@MCCommand
-	public boolean showStatsOther(CommandSender sender, OfflinePlayer p) {
-		/// Try to find the stat from what they typed
+	public void showStatsOther(CommandSender sender, OfflinePlayer p) {
 		Stat stat = findStat(p.getName());
-		if (stat == null){ /// Find a player matching that name, hopefully
-			return MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", p.getName()));}
+		if ( stat == null ) { 
+			MessageUtil.sendMessage(sender,TrackerMessageController.getMsg("recordNotFound", p.getName()));
+            return;
+        }
 		String msg=null;
 		if (sender instanceof Player){
 		    
 			Stat selfStat = ti.loadRecord((Player)sender);
-			if (selfStat == null){ ///
+			if (selfStat == null){ 
 			    MessageUtil.sendMessage(sender, "&cYou have no records, Showing record for &6"+stat.getName());
 				msg = getFullStatMsg(stat);
 			} 
-			else {
+			else 
 				msg = getStatMsg(selfStat,stat);
-			}
 		} 
 		else {
 		    MessageUtil.sendMessage(sender, "&2Showing record for &6" + stat.getName());
 			msg = getFullStatMsg(stat);
 		}
-		return MessageUtil.sendMessage(sender, msg);
+		MessageUtil.sendMessage(sender, msg);
 	}
 
 	public Stat findStat(String name){
 		Stat stat = ti.getRecord(name);
-		if (stat == null){ /// Find a player matching that name, hopefully
+		if ( stat == null ) { 
 			OfflinePlayer op = ServerUtil.findOfflinePlayer(name);
-			if (op == null){
-				return null;}
+			if ( op == null ) return null;
+			
 			stat = ti.loadRecord(op);
 		}
 		return stat;

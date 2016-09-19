@@ -1,5 +1,14 @@
 package mc.alk.arena.controllers;
 
+import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.AbstractComp;
@@ -21,45 +30,34 @@ import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TimeUtil;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class EventScheduler implements Runnable, ArenaListener{
 
 	int curEvent = 0;
 	boolean continuous= false;
-	boolean running = false;
+	@Getter boolean running = false;
 	boolean stop = false;
 	Integer currentTimer = null;
 
-	final CopyOnWriteArrayList<EventPair> events = new CopyOnWriteArrayList<EventPair>();
+	@Getter final CopyOnWriteArrayList<EventPair> events = new CopyOnWriteArrayList<>();
 
 	@Override
 	public void run() {
-		if (events.isEmpty() || stop)
-			return;
+		if ( events.isEmpty() || stop ) return;
+		
 		running = true;
 		int index = curEvent % events.size();
 		curEvent++;
-		currentTimer = Bukkit.getScheduler().scheduleSyncDelayedTask(BattleArena.getSelf(), new RunEvent(this, events.get(index)));
+		currentTimer = Scheduler.scheduleSynchronousTask( new RunEvent( this, events.get( index ) ) );
 	}
 
-	public class RunEvent implements Runnable{
+	@AllArgsConstructor
+	public class RunEvent implements Runnable {
+        final EventScheduler scheduler;
 		final EventPair eventPair;
-		final EventScheduler scheduler;
-		public RunEvent(EventScheduler scheduler, EventPair eventPair) {
-			this.eventPair = eventPair;
-			this.scheduler = scheduler;
-		}
+		
 		@Override
 		public void run() {
-			if (stop)
-				return;
+			if ( stop ) return;
 
 			CommandSender sender = Bukkit.getConsoleSender();
 			MatchParams params = eventPair.getEventParams();
@@ -70,30 +68,28 @@ public class EventScheduler implements Runnable, ArenaListener{
 				if (ee != null && ee instanceof TournamentExecutor){
 					TournamentExecutor exe = (TournamentExecutor) ee;
 					AbstractComp event = exe.openIt(sender, (EventParams)params, args);
-					if (event != null){
+					if ( event != null ) {
 						event.addArenaListener(scheduler);
 						success = true;
 					}
 					if (Defaults.DEBUG_SCHEDULER) Log.info("[BattleArena debugging] Running event ee=" + ee  +
                             "  event" + event +"  args=" + Arrays.toString(args));
-				} else { /// normal match
+				} 
+				else { /// normal match
 					EventOpenOptions eoo = EventOpenOptions.parseOptions(args, null, params);
 					Arena arena = eoo.getArena(params);
-                    if (arena != null){
+                    if ( arena != null ) {
                         Match m = BattleArena.getBAController().createAndAutoMatch(arena, eoo);
                         m.addArenaListener(scheduler);
                         success = true;
-                    } else {
-                        Log.warn("[BattleArena] scheduled command args="+Arrays.toString(args) +
+                    } 
+                    else 
+                        Log.warn("[BattleArena] scheduled command args=" + Arrays.toString(args) +
                                 " can't be started. Arena is not there or in use");
-                    }
 				}
-            } catch (InvalidOptionException e){
+            } 
+			catch (InvalidOptionException | InvalidEventException e) {
                 Log.warn(e.getMessage());
-            } catch (InvalidEventException e) {
-                Log.warn(e.getMessage());
-			} catch (Exception e){
-				Log.printStackTrace(e);
 			}
 
 			if (!success && BattleArena.getSelf().isEnabled()){ /// wait then start up the scheduler again in x seconds
@@ -108,43 +104,36 @@ public class EventScheduler implements Runnable, ArenaListener{
 	public void onEventFinished(EventFinishedEvent event){
 		AbstractComp e = event.getEvent();
 		e.removeArenaListener(this);
-		if (continuous){
-			if (Defaults.DEBUG_SCHEDULER) Log.info("[BattleArena debugging] finished event "+ e+
-                    "  scheduling next event in "+ 20L*Defaults.TIME_BETWEEN_SCHEDULED_EVENTS + " ticks");
+		if ( continuous ) {
+			if (Defaults.DEBUG_SCHEDULER) Log.info( "[BattleArena debugging] finished event "+ e +
+                    "  scheduling next event in "+ 20L * Defaults.TIME_BETWEEN_SCHEDULED_EVENTS + " ticks");
 
-			/// Wait x sec then start the next event
-            if (BattleArena.getSelf().isEnabled())
-			    Scheduler.scheduleAsynchronousTask(this, 20L*Defaults.TIME_BETWEEN_SCHEDULED_EVENTS);
-			if (Defaults.SCHEDULER_ANNOUNCE_TIMETILLNEXT){
-                MessageUtil.broadcastMessage(
+            if ( BattleArena.getSelf().isEnabled() )
+			    Scheduler.scheduleAsynchronousTask( this, 20L * Defaults.TIME_BETWEEN_SCHEDULED_EVENTS );
+			if ( Defaults.SCHEDULER_ANNOUNCE_TIMETILLNEXT )
+                Bukkit.broadcastMessage(
 						MessageUtil.colorChat(
-								ChatColor.YELLOW+"Next event will start in "+
-										TimeUtil.convertSecondsToString(Defaults.TIME_BETWEEN_SCHEDULED_EVENTS)));}
-		} else {
-			running = false;
-		}
+								ChatColor.YELLOW + "Next event will start in " +
+										TimeUtil.convertSecondsToString( Defaults.TIME_BETWEEN_SCHEDULED_EVENTS ) ) );
+		} 
+		else running = false;
 	}
 
 	@ArenaEventHandler
 	public void onMatchFinished(MatchFinishedEvent event){
-		if (continuous){
-			if (Defaults.DEBUG_SCHEDULER) Log.info("[BattleArena debugging] finished event "+ event.getEventName()+"  scheduling next event in "+ 20L*Defaults.TIME_BETWEEN_SCHEDULED_EVENTS + " ticks");
+		if ( continuous ) {
+			if ( Defaults.DEBUG_SCHEDULER ) 
+			    Log.info( "[BattleArena debugging] finished event " + event.getEventName() + 
+			            "  scheduling next event in " + 20L * Defaults.TIME_BETWEEN_SCHEDULED_EVENTS + " ticks" );
 
-			/// Wait x sec then start the next event
-            if (BattleArena.getSelf().isEnabled())
-                Scheduler.scheduleAsynchronousTask(this, 20L*Defaults.TIME_BETWEEN_SCHEDULED_EVENTS);
-			if (Defaults.SCHEDULER_ANNOUNCE_TIMETILLNEXT){
-                MessageUtil.broadcastMessage(
+            if ( BattleArena.getSelf().isEnabled() )
+                Scheduler.scheduleAsynchronousTask( this, 20L * Defaults.TIME_BETWEEN_SCHEDULED_EVENTS );
+			if ( Defaults.SCHEDULER_ANNOUNCE_TIMETILLNEXT )
+                Bukkit.broadcastMessage(
 						MessageUtil.colorChat(
-								ChatColor.YELLOW+"Next event will start in "+
-										TimeUtil.convertSecondsToString(Defaults.TIME_BETWEEN_SCHEDULED_EVENTS)));}
-		} else {
-			running = false;
-		}
-	}
-
-	public boolean isRunning() {
-		return running;
+								ChatColor.YELLOW + "Next event will start in " +
+										TimeUtil.convertSecondsToString( Defaults.TIME_BETWEEN_SCHEDULED_EVENTS ) ) );
+		} else running = false;
 	}
 
 	public void stop() {
@@ -153,32 +142,22 @@ public class EventScheduler implements Runnable, ArenaListener{
 		continuous = false;
 	}
 
-	public List<EventPair> getEvents() {
-		return events;
-	}
-
 	public void start() {
 		continuous = true;
 		stop = false;
-		new Thread(this).start();
+		new Thread( this ).start();
 	}
 
 	public void startNext() {
 		continuous = false;
-		if (currentTimer != null)
-			Bukkit.getScheduler().cancelTask(currentTimer);
+		if ( currentTimer != null )
+			Bukkit.getScheduler().cancelTask( currentTimer );
 		stop = false;
-		new Thread(this).start();
+		new Thread( this ).start();
 	}
 
-
-	public boolean scheduleEvent(MatchParams eventParams, String[] args) {
-		events.add(new EventPair(eventParams,args));
-		return true;
+	public boolean scheduleEvent( MatchParams eventParams, String[] args ) {
+		return events.add( new EventPair( eventParams, args ) );
 	}
-
-	public EventPair deleteEvent(int i) {
-		return events.remove(i);
-	}
-
+	public EventPair deleteEvent(int i) { return events.remove(i); }
 }

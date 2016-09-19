@@ -80,7 +80,7 @@ public class BattleArena extends JavaPlugin {
     @Getter private final static ArenaEditor arenaEditor = new ArenaEditor();
     @Getter private final static DuelController duelController = new DuelController();
     @Getter private static BAExecutor bAExecutor;
-    @Getter private ArenaEditorExecutor arenaEditorExecutor;
+    @Getter private static ArenaEditorExecutor arenaEditorExecutor;
     private final BAPlayerListener playerListener = new BAPlayerListener(bAController);
     private final BAPluginListener pluginListener = new BAPluginListener();
     private final BASignListener signListener = new BASignListener(signUpdateListener);

@@ -14,6 +14,7 @@ import mc.alk.arena.modules.Grenades;
 import mc.alk.arena.modules.Paintballs;
 import mc.alk.arena.objects.modules.ArenaModule;
 import mc.alk.arena.util.Log;
+import mc.alk.arena.util.MessageUtil;
 
 public class ModuleLoader {
 
@@ -47,7 +48,7 @@ public class ModuleLoader {
                 Log.printStackTrace(ex);
             }
         }
-        Log.info( Log.colorChat( "[BattleArena] Modules (" + loadedModules.size() + ") [&a" + 
+        Log.info(  MessageUtil.colorChat( "[BattleArena] Modules (" + loadedModules.size() + ") [&a" + 
                                     StringUtils.join( loadedModules, "&f, &a" ) + "&f]" ) );
 
     }

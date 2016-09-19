@@ -32,6 +32,9 @@ public class MessageSerializer extends BaseConfig {
     protected AnnouncementOptions bos;
 
 	public MessageSerializer( String _name, MatchParams params ) {
+	    if ( Defaults.DEBUG ) 
+	        Log.info( "[MessageSerializer] loading messages for: " + _name + " MatchParams=" + params.getName() );
+	    
 		matchParams = params;
 		
 		if (_name == null ) return;		
