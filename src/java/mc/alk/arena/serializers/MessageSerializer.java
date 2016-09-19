@@ -33,7 +33,8 @@ public class MessageSerializer extends BaseConfig {
 
 	public MessageSerializer( String _name, MatchParams params ) {
 	    if ( Defaults.DEBUG ) 
-	        Log.info( "[MessageSerializer] loading messages for: " + _name + " MatchParams=" + params.getName() );
+	        Log.info( "[MessageSerializer] loading messages for: " + _name + " MatchParams=" + 
+	                            ( params == null ? "null" : params.getName() ) );
 	    
 		matchParams = params;
 		
