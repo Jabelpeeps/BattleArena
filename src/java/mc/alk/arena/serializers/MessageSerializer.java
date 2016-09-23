@@ -99,36 +99,27 @@ public class MessageSerializer extends BaseConfig {
 	}
 
 	public Message getNodeMessage( String path ) {
-		if ( config != null && config.contains( path ) ) {
+		if ( config != null && config.contains( path ) ) 
 			return new Message( config.getString( path ), msgOptions.get( path ));
-		}
-		if ( this != defaultMessages ) {
+		
+		if ( this != defaultMessages ) 
 			return defaultMessages.getNodeMessage( path );
-		}
         return null;
 	}
 
 	public String getNodeText(String path) {
-		if (config != null && config.contains(path)){
-			return config.getString(path);
-		}
-		if (this != defaultMessages){
-			return defaultMessages.getNodeText(path);
-		}
+		if ( config != null && config.contains(path) ) return config.getString(path);
+		if ( this != defaultMessages ) return defaultMessages.getNodeText(path);
         return null;
 	}
 
-	private boolean contains(String path) {
-		return config.contains(path);
-	}
+	private boolean contains( String path ) { return config.contains(path); }
 
-	public static boolean hasMessage(String prefix, String node) {
+	public static boolean hasMessage( String prefix, String node ) {
 		return defaultMessages != null && defaultMessages.contains( prefix + "." + node );
 	}
 
-	public static void loadDefaults() {
-		if ( defaultMessages != null ) defaultMessages.reloadFile();
-	}
+	public static void loadDefaults() { if ( defaultMessages != null ) defaultMessages.reloadFile(); }
 
 	protected static String getStringPathFromSize(int size) {
 		if (size == 1) return "oneTeam";
@@ -158,7 +149,6 @@ public class MessageSerializer extends BaseConfig {
 		if ( serverChannel != Channels.NullChannel && serverMessage != null ) {
 			ops.addAll( serverMessage.getOptions() );
 		}
-
 		MessageFormatter msgf = new MessageFormatter( this, matchParams, size, losermessage, ops );
         List<ArenaTeam> teams;
         
@@ -167,9 +157,7 @@ public class MessageSerializer extends BaseConfig {
         else 
             teams = new ArrayList<>();
 
-        if ( victors != null ) {
-			teams.addAll( victors );
-		}
+        if ( victors != null ) teams.addAll( victors );
 
 		msgf.formatCommonOptions( teams, matchParams.getSecondsToLoot() );
 		ArenaTeam vic = ( victors != null && !victors.isEmpty() ) ? victors.iterator().next() : null;
@@ -185,7 +173,6 @@ public class MessageSerializer extends BaseConfig {
                 t.sendMessage( msgf.getFormattedMessage( losermessage ) );
             }
         }
-
 		if ( victors != null ) {
 			for ( ArenaTeam victor : victors ) {
 				msgf = new MessageFormatter( this, matchParams, size, winnermessage, ops );
@@ -200,7 +187,6 @@ public class MessageSerializer extends BaseConfig {
 				victor.sendMessage( msgf.getFormattedMessage( winnermessage ) );
 			}
 		}
-
 		if ( serverChannel != Channels.NullChannel && serverMessage != null ) {
             String msg = msgf.getFormattedMessage( serverMessage );
 			serverChannel.broadcast( msg );

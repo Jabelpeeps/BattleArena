@@ -65,7 +65,7 @@
     </repositories>
     
     <dependencies>
-        <dependency>
+<!--         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>${craftbukkit.version}</version>
@@ -80,7 +80,7 @@
 	                <artifactId>bungeecord-chat</artifactId>
             	</exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
         
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -142,6 +142,14 @@
             		<groupId>org.bukkit</groupId>
             		<artifactId>bukkit</artifactId>
             	</exclusion>
+            	<exclusion>
+                    <groupId>com.sk89q</groupId>
+                    <artifactId>commandbook</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sk89q.spigot</groupId>
+                    <artifactId>bukkit-classloader-check</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         
@@ -158,6 +166,22 @@
             	<exclusion>
             		<groupId>junit</groupId>
             		<artifactId>junit</artifactId>
+            	</exclusion>
+            	<exclusion>
+                    <groupId>com.sk89q</groupId>
+                    <artifactId>dummypermscompat</artifactId>
+            	</exclusion>
+            	<exclusion>
+            	    <groupId>com.sk89q</groupId>
+                    <artifactId>commandbook</artifactId>
+            	</exclusion>
+            	<exclusion>
+            	    <groupId>com.sk89q.lib</groupId>
+                    <artifactId>jlibnoise</artifactId>
+            	</exclusion>
+            	<exclusion>
+            	    <groupId>com.sk89q</groupId>
+                    <artifactId>jchronic</artifactId>
             	</exclusion>
             </exclusions>
         </dependency>
@@ -347,7 +371,11 @@
                 <exclusion>
                     <groupId>net.milkbowl.vault</groupId>
                     <artifactId>VaultAPI</artifactId>
-                </exclusion>                
+                </exclusion>   
+                <exclusion>
+                    <groupId>me.desht</groupId>
+                    <artifactId>scrollingmenusign</artifactId>
+                </exclusion>             
             </exclusions>
         </dependency>
         
