@@ -260,7 +260,7 @@ public class BTEntityListener implements Listener {
 		}
 	}
 
-	public String getPvPDeathMessage(String killer, String target, boolean isMeleeDeath,
+	private String getPvPDeathMessage(String killer, String target, boolean isMeleeDeath,
 			                                        TrackerInterface ti, ItemStack killingWeapon) {
 
 		try {
@@ -286,7 +286,7 @@ public class BTEntityListener implements Listener {
         return TrackerMessageController.getPvPMessage(isMeleeDeath,killer, target, killingWeapon);
 	}
 
-	public String getPvEDeathMessage(String p1, String p2, boolean isMeleeDeath, String killingWeapon){
+	private String getPvEDeathMessage(String p1, String p2, boolean isMeleeDeath, String killingWeapon){
 		return TrackerMessageController.getPvEMessage(isMeleeDeath, p1, p2,killingWeapon);
 	}
 

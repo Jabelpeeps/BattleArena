@@ -69,63 +69,61 @@ public class TrackerMessageController {
 	}
 
 	public static String getPvEMessage(boolean melee, String killer, String target, String weapon){
-		String node=null;
+		String node = null;
 		List<String> messages = null;
-		if (killer != null){
+		if ( killer != null ) {
 			node = "pve." + killer.toLowerCase();
 			messages = config.getStringList(node);
 		}
-		if (messages == null || messages.isEmpty()){
+		if ( messages == null || messages.isEmpty() ) {
 			node = melee ? "pve.meleeDeaths" : "pve.rangeDeaths";
 			messages = config.getStringList(node);
 		}
-		if (messages == null || messages.isEmpty()){
-		    Log.err( "[Tracker] getPvEMessage, message node="+node +"  args="+ killer +":" +target+":"+weapon);
+		if ( messages == null || messages.isEmpty() ) {
+		    Log.err( "[Tracker] getPvEMessage, message node=" + node + "  args=" + killer + ":" + target + ":" + weapon );
 			return null;
 		}
-		String msg = messages.get(r.nextInt(messages.size()));
-		return formatMessage(PVE_PREFIX, msg,killer,target, weapon, null);
+		return formatMessage( PVE_PREFIX, messages.get( r.nextInt( messages.size() ) ), killer, target, weapon, null );
 	}
 
 	public static String getPvPMessage(boolean melee, String killer, String target, ItemStack weapon){
-		String node=null;
+		String node = null;
 		List<String> messages = null;
 		String wpnName = null;
-                List<String> wpnLore = null;
-		if (weapon != null){
-			node = "pvp."+ weapon.getType().name().toLowerCase();
-			wpnName = InventoryUtil.getCommonName(weapon);
-                        wpnLore = weapon.getItemMeta().getLore();
-			messages = config.getStringList(node);
+        List<String> wpnLore = null;
+		if ( weapon != null ) {
+			node = "pvp." + weapon.getType().name().toLowerCase();
+			wpnName = InventoryUtil.getCommonName( weapon );
+            wpnLore = weapon.getItemMeta().getLore();
+			messages = config.getStringList( node );
 		}
-		if (messages == null || messages.isEmpty()){
+		if ( messages == null || messages.isEmpty() ) {
 			node = melee ? "pvp.meleeDeaths" : "pvp.rangeDeaths";
-			messages = config.getStringList(node);
+			messages = config.getStringList( node );
 		}
-		if (messages == null || messages.isEmpty()){
-		    Log.err( "[Tracker] getPvPMessage, message node="+node +"  args="+ killer +":" +target+":"+weapon);
+		if ( messages == null || messages.isEmpty() ) {
+		    Log.err( "[Tracker] getPvPMessage, message node=" + node + "  args=" + killer + ":" + target + ":" + weapon );
 			return null;
 		}
-
-		String msg = messages.get(r.nextInt(messages.size()));
-		return formatMessage(PVP_PREFIX, msg,killer,target, wpnName, null, wpnLore);
+		return formatMessage( PVP_PREFIX, messages.get( r.nextInt( messages.size() ) ),
+		                        killer, target, wpnName, null, wpnLore );
 	}
 
-	public static String getSpecialMessage(TrackerMessageController.SpecialType type, int nKills, String killer, String target, ItemStack weapon){
+	public static String getSpecialMessage( SpecialType type, int nKills, String killer, String target, ItemStack weapon){
 		String node = null;
 		switch (type){
     		case STREAK: node = "special.streak." + nKills; break;
     		case RAMPAGE: node = "special.rampage." + nKills; break;
 		}
 		String message = config.getString(node);
-		if (message == null || message.isEmpty()){
-			switch (type){
-			case STREAK: node = "special.streak.default"; break;
-			case RAMPAGE: node = "special.rampage.default"; break;
+		if ( message == null || message.isEmpty() ) {
+			switch (type) {
+    			case STREAK: node = "special.streak.default"; break;
+    			case RAMPAGE: node = "special.rampage.default"; break;
 			}
 			message = config.getString(node);
 		}
-		return formatMessage(PVP_PREFIX, message,killer,target, null, nKills+"");
+		return formatMessage(PVP_PREFIX, message, killer, target, null, nKills + "");
 	}
 
     private static String formatMessage( String prefix, String msg, String killer, String target, String item, String times ) {

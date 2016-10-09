@@ -23,7 +23,7 @@ public final class PlayerController {
 	 * @param player Bukkit player
 	 * @return ArenaPlayer
 	 */
-	public static ArenaPlayer toArenaPlayer(Player player){
+	public static ArenaPlayer toArenaPlayer( Player player ) {
 		ArenaPlayer ap = players.get( player.getUniqueId() );
 		
 		if ( ap == null ) {
@@ -56,40 +56,40 @@ public final class PlayerController {
 	 * @param player Bukkit player
 	 * @return player if found, null otherwise
 	 */
-	public static ArenaPlayer getArenaPlayer(Player player){
+	public static ArenaPlayer getArenaPlayer( Player player ) {
 		return players.get( player.getUniqueId() );
 	}
 
-	public static boolean hasArenaPlayer(Player player){
+	public static boolean hasArenaPlayer( Player player ) {
 		return players.containsKey( player.getUniqueId() );
 	}
 
-	public static List<ArenaPlayer> toArenaPlayerList(Collection<Player> players){
-		List<ArenaPlayer> aplayers = new ArrayList<>(players.size());
-		for (Player p: players)
-			aplayers.add(toArenaPlayer(p));
+	public static List<ArenaPlayer> toArenaPlayerList( Collection<Player> _players ) {
+		List<ArenaPlayer> aplayers = new ArrayList<>( _players.size() );
+		for ( Player p : _players )
+			aplayers.add( toArenaPlayer(p) );
 		return aplayers;
 	}
 
-	public static Set<ArenaPlayer> toArenaPlayerSet(Collection<Player> players){
-		Set<ArenaPlayer> aplayers = new HashSet<>(players.size());
-		for (Player p: players)
+	public static Set<ArenaPlayer> toArenaPlayerSet(Collection<Player> _players){
+		Set<ArenaPlayer> aplayers = new HashSet<>(_players.size());
+		for (Player p: _players)
 			aplayers.add(toArenaPlayer(p));
 		return aplayers;
 	}
 
 	public static Set<Player> toPlayerSet(Collection<ArenaPlayer> arenaPlayers) {
-		Set<Player> players = new HashSet<>(arenaPlayers.size());
+		Set<Player> _players = new HashSet<>(arenaPlayers.size());
 		for (ArenaPlayer ap: arenaPlayers)
-			players.add(ap.getPlayer());
-		return players;
+			_players.add(ap.getPlayer());
+		return _players;
 	}
 
 	public static List<Player> toPlayerList(Collection<ArenaPlayer> arenaPlayers) {
-		List<Player> players = new ArrayList<>(arenaPlayers.size());
+		List<Player> _players = new ArrayList<>(arenaPlayers.size());
 		for (ArenaPlayer ap: arenaPlayers)
-			players.add(ap.getPlayer());
-		return players;
+			_players.add(ap.getPlayer());
+		return _players;
 	}
 
     public static List<Player> UUIDToPlayerList(Collection<UUID> uuids) {

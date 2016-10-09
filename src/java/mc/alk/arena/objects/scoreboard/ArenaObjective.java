@@ -126,7 +126,7 @@ public class ArenaObjective implements ScoreTracker {
 
 	public int addPoints(ArenaTeam team, int points) {
 		int oldPoints = teamPoints.getPoints(team);
-		setPoints( team,points + oldPoints );
+		setPoints( team, points + oldPoints );
 		return points + oldPoints;
 	}
 	public int addPoints(ArenaPlayer ap, int points) {
@@ -456,21 +456,18 @@ public class ArenaObjective implements ScoreTracker {
         return getPoints(l);
     }
 
-    public boolean setPoints( String _id, int points ) {
-        if (scoreboard == null) return false;
+    private void setPoints( String _id, int points ) {
+        if (scoreboard == null) return;
         
         SEntry l = scoreboard.getEntry(_id);
         
-        if ( l == null ) return false;
+        if ( l == null ) return;
         
         setPoints( l, points );
-        return true;
     }
 
-    public boolean setPoints( SEntry entry, int points ) {
-        boolean has = entries.containsKey(entry);
+    public void setPoints( SEntry entry, int points ) {
         getOrCreateSAPIScore( entry, points );
-        return has;
     }
 
     protected final ArenaScore getOrCreateSAPIScore( SEntry e, int points ) {
@@ -501,8 +498,8 @@ public class ArenaObjective implements ScoreTracker {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("&6 --- ").append(this.id).append(" : ").append(this.getDisplayName()).
-                append("&4 : ").append(this.getPriority()).append("\n");
+        sb.append("&6 --- ").append( id ).append(" : ").append( combinedDisplayName ).
+                append("&4 : ").append( priority ).append("\n");
         if (scoreboard == null){
             sb.append("&4 Bukkit scoreboard still not set!!");
             return sb.toString();
@@ -514,8 +511,8 @@ public class ArenaObjective implements ScoreTracker {
         }
         List<SEntry> zeroes = new ArrayList<>();
         List<SEntry> skipped = new ArrayList<>();
-        for (SEntry e: es){
-            if (! contains(e) ) {
+        for ( SEntry e : es ) {
+            if ( !contains(e) ) {
                 skipped.add(e);
                 continue;
             }
