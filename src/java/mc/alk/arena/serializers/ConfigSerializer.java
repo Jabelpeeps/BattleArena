@@ -207,7 +207,6 @@ public class ConfigSerializer extends BaseConfig {
         return vt;
     }
 
-
     private static StateGraph loadTransitionOptions(ConfigurationSection cs, MatchParams mp)
             throws InvalidOptionException {
         if ( Defaults.DEBUG_TRACE ) Log.info( "Loading TransistionOptions from:-" + cs.getName() );

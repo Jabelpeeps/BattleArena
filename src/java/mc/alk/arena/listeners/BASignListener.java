@@ -70,7 +70,7 @@ public class BASignListener implements Listener{
 
     @EventHandler
     public void onSignChange(SignChangeEvent event){
-        if (Defaults.DEBUG_TRACE) System.out.println("onSignChange Event");
+        if (Defaults.DEBUG_EVENTS) System.out.println("onSignChange Event");
         final Block block = event.getBlock();
         final Material type = block.getType();
 

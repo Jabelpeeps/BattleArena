@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.ArenaMatch;
 import mc.alk.arena.events.players.ArenaPlayerTeleportEvent;
@@ -24,23 +25,21 @@ import mc.alk.arena.util.Util;
 
 public class AreaContainer extends AbstractAreaContainer {
     Map<UUID, Integer> respawnTimer = null;
-    LocationType type;
+    @Getter LocationType locationType;
 
-    public AreaContainer(String _name, LocationType _type){
+    public AreaContainer(String _name, LocationType type){
         super(_name);
-        type = _type;
+        locationType = type;
     }
-    public AreaContainer(String _name, MatchParams _params, LocationType _type){
+    public AreaContainer(String _name, MatchParams _params, LocationType type){
         super(_name);
         setParams(_params);
-        type = _type;
+        locationType = type;
     }
     
     public void cancel() { players.clear(); }
     public Collection<UUID> getInsidePlayers() { return players; }
     public boolean hasSpawns() { return !spawns.isEmpty(); }
-    @Override
-    public LocationType getLocationType() { return type; }
     @Override
     public ArenaTeam getTeam(ArenaPlayer player) { return player.getTeam(); }
 
@@ -62,12 +61,11 @@ public class AreaContainer extends AbstractAreaContainer {
     }
 
     private boolean addPlayer(ArenaPlayer player) {
-        boolean added = false;
+        boolean added;
         synchronized (this) {
-            if ( players.add( player.getUniqueId() ) )
-                added = true;
+            added = players.add( player.getUniqueId() );
         }
-        if (Defaults.DEBUG_TRACE) Log.trace(1111, getName()+"  "+player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(1111, getName()+"  "+player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
         if (added){
             updateBukkitEvents(MatchState.ONENTER, player);
         }
@@ -75,14 +73,12 @@ public class AreaContainer extends AbstractAreaContainer {
     }
 
     private boolean removePlayer(ArenaPlayer player) {
-        boolean removed = false;
+        boolean removed;
 
         synchronized (this) {
-            if (players.remove(player.getUniqueId())){
-                removed = true;
-            }
+            removed = players.remove(player.getUniqueId());
         }
-        if (Defaults.DEBUG_TRACE) Log.trace(1111, getName()+"  "+ player.getName() + "   !!!&4removed  " + removed + " t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(1111, getName()+"  "+ player.getName() + "   !!!&4removed  " + removed + " t=" + player.getTeam());
         
         if (removed) updateBukkitEvents(MatchState.ONLEAVE, player);
 

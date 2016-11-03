@@ -49,7 +49,6 @@ import mc.alk.arena.events.players.ArenaPlayerJoinEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.events.players.ArenaPlayerLeaveEvent.QuitReason;
 import mc.alk.arena.listeners.PlayerHolder;
-import mc.alk.arena.listeners.competition.InArenaListener;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaLocation;
 import mc.alk.arena.objects.ArenaPlayer;
@@ -1364,7 +1363,7 @@ public class BAExecutor extends CustomCommandExecutor {
             }
             return false;
         }
-        if (InArenaListener.inQueue(player.getUniqueId())) {
+        if (BattleArena.getBAController().getArenaMatchQueue().isInQue(player.getUniqueId())) {
             MessageUtil.sendMessage(player, "&eYou are in the queue.");
             if (showMessages) {
                 MessageUtil.sendMessage(player, "&eType &6/arena leave");

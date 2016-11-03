@@ -34,7 +34,7 @@ import mc.alk.arena.util.PlayerUtil;
 public class GameManager extends PlayerHolder {
 	static final HashMap<ArenaType, GameManager> map = new HashMap<>();
 
-	final Set<ArenaPlayer> handled = new HashSet<>(); 
+	final Set<ArenaPlayer> players = new HashSet<>(); 
 	public static GameManager getGameManager(MatchParams mp) {
 	    
 		if (map.containsKey(mp.getType()))
@@ -55,7 +55,7 @@ public class GameManager extends PlayerHolder {
 
 	@ArenaEventHandler( priority = ArenaEventPriority.HIGHEST )
 	public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
-		if (handled.contains(event.getPlayer()) && !event.isHandledQuit()){
+		if (players.contains(event.getPlayer()) && !event.isHandledQuit()){
 			ArenaPlayer player = event.getPlayer();
 			ArenaTeam t = getTeam(player);
 			TransitionController.transition(this, MatchState.ONCANCEL, player, t, false);
@@ -63,7 +63,7 @@ public class GameManager extends PlayerHolder {
 	}
 
 	private void quitting(ArenaPlayer player){
-		if (handled.remove(player)){
+		if (players.remove(player)){
 			TransitionController.transition(this, MatchState.ONLEAVE, player, null, false);
 			updateBukkitEvents(MatchState.ONLEAVE, player);
 			player.reset(); /// reset their isReady status, chosen class, etc.
@@ -71,7 +71,7 @@ public class GameManager extends PlayerHolder {
 	}
 
 	private void cancel() {
-		List<ArenaPlayer> col = new ArrayList<>(handled);
+		List<ArenaPlayer> col = new ArrayList<>(players);
 		for (ArenaPlayer player: col){
 			ArenaTeam t = getTeam(player);
 			TransitionController.transition(this, MatchState.ONCANCEL, player, t, false);
@@ -81,7 +81,7 @@ public class GameManager extends PlayerHolder {
 	@Override
 	public CompetitionState getState() { return MatchState.NONE; }
 	@Override
-	public boolean isHandled(ArenaPlayer player) { return handled.contains(player); }
+	public boolean isHandled(ArenaPlayer player) { return players.contains(player); }
 	@Override
 	public LocationType getLocationType() { return null; }
 	@Override
@@ -89,8 +89,8 @@ public class GameManager extends PlayerHolder {
 
 	@Override
 	public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-		if (handled.add(player)){
-            if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&2onPreJoin  t=" + player.getTeam());
+		if (players.add(player)){
+            if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&2onPreJoin  t=" + player.getTeam());
             PlayerStoreController.INSTANCE.storeScoreboard(player);
 			TransitionController.transition(this, MatchState.ONENTER, player, null, false);
 			updateBukkitEvents(MatchState.ONENTER, player);
@@ -107,13 +107,13 @@ public class GameManager extends PlayerHolder {
 
 	@Override
 	public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&2onPostJoin  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&2onPostJoin  t=" + player.getTeam());
 		player.getMetaData().setJoining(false);
     }
 
 	@Override
 	public void onPreQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPreQuit  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPreQuit  t=" + player.getTeam());
 	}
 
 	@Override
@@ -126,21 +126,21 @@ public class GameManager extends PlayerHolder {
 		
         PlayerStoreController.INSTANCE.restoreScoreboard(player);
         
-        if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPostQuit  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&4onPostQuit  t=" + player.getTeam());
 	}
 
 	@Override
 	public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&fonPostEnter  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&fonPostEnter  t=" + player.getTeam());
 	}
 
 	@Override
 	public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace(-1, player.getName() + "   &5GM !!!!&8onPostLeave  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace(-1, player.getName() + "   &5GM !!!!&8onPostLeave  t=" + player.getTeam());
 	}
 
     public boolean hasPlayer(ArenaPlayer player) {
-		return handled.contains(player);
+		return players.contains(player);
 	}
 
 	public static void cancelAll() {

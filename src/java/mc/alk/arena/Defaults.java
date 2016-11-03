@@ -85,9 +85,9 @@ public class Defaults {
 
     /// DEBUG OPTIONS
     public static boolean DEBUG = true;
-    public static final boolean DEBUG_TRACE = true;
+    public static final boolean DEBUG_TRACE = false;
     public static final boolean DEBUG_PERMS = false;
-    public static final boolean DEBUG_EVENTS = false;
+    public static final boolean DEBUG_EVENTS = true;
     public static final boolean DEBUG_SCHEDULER = false;
     public static final boolean DEBUG_SPAWNS = true;
     public static final boolean TESTSERVER_DEBUG = false;
@@ -99,10 +99,10 @@ public class Defaults {
     public static boolean DEBUG_COMMANDS = false;
     public static boolean DEBUG_TIMINGS = false;
     public static boolean DEBUG_VIRTUAL = false;
-    public static boolean DEBUG_TRANSITIONS = false;
-    public static boolean DEBUG_STORAGE = true;
+    public static boolean DEBUG_TRANSITIONS = true;
+    public static boolean DEBUG_STORAGE = false;
     public static boolean DEBUG_TRACKING = true;
-    public static boolean DEBUG_MATCH_TEAMS = false;
+    public static boolean DEBUG_MATCH_TEAMS = true;
 
     public static int TIME_BETWEEN_CLASS_CHANGE = 3;
     public static final int MAX_SPAWNS = 100;

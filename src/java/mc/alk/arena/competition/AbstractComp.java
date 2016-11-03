@@ -159,7 +159,7 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
         
         transitionTo(EventState.CLOSED);
         
-        if (Defaults.DEBUG_TRACE) Log.info("BAEvent::endEvent");
+        if (Defaults.DEBUG_EVENTS) Log.info("BAEvent::endEvent");
         stopTimer();
 
         removeAllTeams();

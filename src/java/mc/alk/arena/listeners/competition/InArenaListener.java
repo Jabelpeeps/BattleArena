@@ -32,7 +32,7 @@ public enum InArenaListener implements Listener {
 
     @EventHandler
     public void onArenaPlayerEnterEvent(ArenaPlayerEnterMatchEvent event){
-        if (Defaults.DEBUG_TRACE)Log.info( "  - onArenaPlayerEnterEvent " + event.getPlayer().getName());
+        if (Defaults.DEBUG_EVENTS)Log.info( "  - onArenaPlayerEnterEvent " + event.getPlayer().getName());
         inArena.add(event.getPlayer().getUniqueId());
         
         if ( listening.getAndSet( true ) ) return;
@@ -50,7 +50,7 @@ public enum InArenaListener implements Listener {
 
     @EventHandler
     public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveMatchEvent event){
-        if (Defaults.DEBUG_TRACE)Log.info( "  - onArenaPlayerLeaveEvent " + event.getPlayer().getName());
+        if (Defaults.DEBUG_EVENTS)Log.info( "  - onArenaPlayerLeaveEvent " + event.getPlayer().getName());
 
         if (inArena.remove(event.getPlayer().getUniqueId()) && inArena.isEmpty()){
             listening.set( false );
@@ -72,6 +72,6 @@ public enum InArenaListener implements Listener {
     public boolean isPlayerInArena( UUID id ) { return inArena.contains(id); }
     public static boolean inArena( UUID id ) { return INSTANCE.inArena.contains(id); }
     public static boolean inArena( Player player ) { return INSTANCE.inArena.contains( player.getUniqueId() ); }
-    public static boolean inQueue( UUID id ) { return BattleArena.getBAController().getArenaMatchQueue().isInQue(id); }
+//    public static boolean inQueue( UUID id ) { return BattleArena.getBAController().getArenaMatchQueue().isInQue(id); }
     public static void addListener( Listener listener ) { INSTANCE.listeners.add( listener ); }
 }

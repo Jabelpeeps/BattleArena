@@ -862,7 +862,7 @@ public abstract class Match extends Competition implements Runnable {
                 added = true;
             }
         }
-        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + "   !!!!&2playerEntering  "+added+" t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id, player.getName() + "   !!!!&2playerEntering  "+added+" t=" + player.getTeam());
         if (added){
             updateBukkitEvents(MatchState.ONENTER,player);
             arena.publicOnEnter(player, player.getTeam());
@@ -878,7 +878,7 @@ public abstract class Match extends Competition implements Runnable {
                 removed = true;
             }
         }
-        if ( Defaults.DEBUG_TRACE ) 
+        if ( Defaults.DEBUG_EVENTS ) 
             Log.trace( id, player.getName() + "   !!!!&4playerLeaving  " + removed + " t=" + player.getTeam() );
         if ( removed ) {
             player.despawnMobs();
@@ -999,7 +999,7 @@ public abstract class Match extends Competition implements Runnable {
     public boolean leave(ArenaPlayer p) { return joinHandler != null && joinHandler.leave(p); }
 
     protected void checkAndHandleIfTeamDead(ArenaTeam team){
-        if (Defaults.DEBUG_TRACE) Log.info("   -Team " + team+ " dead=" + team.isDead());
+        if (Defaults.DEBUG_EVENTS) Log.info("   -Team " + team+ " dead=" + team.isDead());
         
         if (team.isDead() && deadTeams.add(team)){
             if (this.getState().ordinal() < MatchState.ONVICTORY.ordinal()){
@@ -1017,7 +1017,7 @@ public abstract class Match extends Competition implements Runnable {
     public void onPreJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { preFirstJoin(player); }
 
     private void preFirstJoin(ArenaPlayer player){
-        if (Defaults.DEBUG_TRACE) Log.info(player.getName() + " -preFirstJoin  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.info(player.getName() + " -preFirstJoin  t=" + player.getTeam());
         ArenaTeam team = getTeam(player);
         leftPlayers.remove(player.getUniqueId()); /// remove players from the list as they are now joining again
         inGamePlayers.add(player);
@@ -1034,7 +1034,7 @@ public abstract class Match extends Competition implements Runnable {
     public void onPostJoin(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { postFirstJoin(player); }
 
     private void postFirstJoin(ArenaPlayer player){
-        if (Defaults.DEBUG_TRACE) Log.info(player.getName() + " -preFirstJoin  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.info(player.getName() + " -preFirstJoin  t=" + player.getTeam());
         ArenaTeam team = getTeam(player);
         arena.publicOnJoin(player,team);
         if (state == MatchState.ONOPEN && joinHandler != null && joinHandler.isFull()){
@@ -1065,7 +1065,7 @@ public abstract class Match extends Competition implements Runnable {
      */
     @EventHandler
     public void onArenaPlayerLeaveEventGlobal(ArenaPlayerLeaveEvent event){
-        if (Defaults.DEBUG_TRACE) 
+        if (Defaults.DEBUG_EVENTS) 
             MessageUtil.sendMessage(event.getPlayer(), " -onArenaPlayerLeaveEventGlobal  t=" + event.getPlayer().getTeam());
 
         if (    leftPlayers.contains( event.getPlayer().getUniqueId() ) 
@@ -1079,7 +1079,7 @@ public abstract class Match extends Competition implements Runnable {
     @ArenaEventHandler
     public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
         ArenaPlayer player = event.getPlayer();
-        if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage( player, " -onArenaPlayerLeaveEvent  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) MessageUtil.sendMessage( player, " -onArenaPlayerLeaveEvent  t=" + player.getTeam());
         if (!isHandled(player))
             return;
         privateQuitting(event);
@@ -1099,7 +1099,7 @@ public abstract class Match extends Competition implements Runnable {
 
     @Override
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -onPostQuit  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id, player.getName() + " -onPostQuit  t=" + player.getTeam());
         ArenaTeam t = player.getTeam();
         TransitionController.transition( this, MatchState.ONLEAVEARENA, player, t, false);
         if (WorldGuardController.hasWorldGuard() && arena.hasRegion())
@@ -1145,7 +1145,7 @@ public abstract class Match extends Competition implements Runnable {
 
     @Override
     public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace( id,player.getName() + " -&fonPreEnter  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id,player.getName() + " -&fonPreEnter  t=" + player.getTeam());
         if (!inGamePlayers.contains(player)){
             preFirstJoin(player);
             player.getMetaData().setJoining(true);
@@ -1155,7 +1155,7 @@ public abstract class Match extends Competition implements Runnable {
 
     @Override
     public void onPostEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&fonPostEnter  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id, player.getName() + " -&fonPostEnter  t=" + player.getTeam());
         if (player.getMetaData().isJoining()){
             player.getMetaData().setJoining(false);
             postFirstJoin(player);
@@ -1164,13 +1164,13 @@ public abstract class Match extends Competition implements Runnable {
 
     @Override
     public void onPreLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&8onPreLeave  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id, player.getName() + " -&8onPreLeave  t=" + player.getTeam());
         removeInMatch(player);
     }
 
     @Override
     public void onPostLeave(ArenaPlayer player, ArenaPlayerTeleportEvent apte) {
-        if (Defaults.DEBUG_TRACE) Log.trace( id, player.getName() + " -&8onPostLeave  t=" + player.getTeam());
+        if (Defaults.DEBUG_EVENTS) Log.trace( id, player.getName() + " -&8onPostLeave  t=" + player.getTeam());
     }
 
     private synchronized void addVictoryConditions(){

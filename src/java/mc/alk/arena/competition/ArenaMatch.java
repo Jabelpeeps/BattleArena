@@ -70,7 +70,7 @@ public class ArenaMatch extends Match {
     public void onPlayerDeath(PlayerDeathEvent event) {
         ArenaPlayer target = PlayerController.toArenaPlayer(event.getEntity());
         
-        if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
+        if (Defaults.DEBUG_EVENTS) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
         
         if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) {
             return;
@@ -95,8 +95,8 @@ public class ArenaMatch extends Match {
     @ArenaEventHandler( bukkitPriority = EventPriority.MONITOR )
     public void onPlayerDeath(ArenaPlayerDeathEvent event){
         final ArenaPlayer target = event.getPlayer();
-        if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE){
-            return;}
+        if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE)
+            return;
         final ArenaTeam t = event.getTeam();
 
         Integer nDeaths = t.addDeath(target);
@@ -167,8 +167,6 @@ public class ArenaMatch extends Match {
         }
     }
 
-
-
     //	@MatchEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.HIGHER)
     //	public void onCheckEmulateDeath(EntityDamageEvent event) {
     //		//		Log.debug("############## checking emulate   " + event.getEntity() +"    " + event.isCancelled() +"    " + event.getDamage());
@@ -223,7 +221,7 @@ public class ArenaMatch extends Match {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         ArenaPlayer p = PlayerController.toArenaPlayer(event.getPlayer());
         
-        if (Defaults.DEBUG_TRACE) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
+        if (Defaults.DEBUG_EVENTS) MessageUtil.sendMessage(p, " -onPlayerRespawn  t=" + p.getTeam());
 
         if (isWon()) return;
         

@@ -3,6 +3,7 @@ package mc.alk.arena.listeners.custom;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -115,34 +116,30 @@ public class MethodController {
         }
     }
 
-    public void updateEvents(MatchState matchState, ArenaPlayer player){
-        List<UUID> players = new ArrayList<>();
-        players.add(player.getUniqueId());
-        updateEvents(null, matchState,players);
+    public void updateEvents(MatchState matchState, ArenaPlayer player) {
+        updateEvents( null, matchState, Arrays.asList( player.getUniqueId() ) ) ;
     }
 
     public void updateEvents(MatchState matchState, Collection<ArenaPlayer> players){
-        List<UUID> strplayers = new ArrayList<>();
-        for (ArenaPlayer ap: players){
-            strplayers.add(ap.getUniqueId());}
-        updateEvents(null, matchState,strplayers);
+        updateEvents( null, matchState, players );
     }
 
     public void updateEvents(ArenaListener listener, MatchState matchState, Collection<ArenaPlayer> players){
         List<UUID> strplayers = new ArrayList<>();
-        for (ArenaPlayer ap: players){
-            strplayers.add(ap.getUniqueId());}
-        updateEvents(listener, matchState,strplayers);
+        for ( ArenaPlayer ap: players )
+            strplayers.add( ap.getUniqueId() );
+        
+        updateEvents( listener, matchState, strplayers );
     }
 
-    public void updateEventsRange(ArenaListener listener, MatchState beginState, MatchState endState, List<UUID> players) {
-        for ( MatchState ms : MatchState.values() ) {
-            
-            if ( ms.ordinal() < beginState.ordinal() ) continue;
-            if ( ms.ordinal() > endState.ordinal() ) break;
-            updateEvents( listener, ms, players );
-        }
-    }
+//    public void updateEventsRange(ArenaListener listener, MatchState beginState, MatchState endState, List<UUID> players) {
+//        for ( MatchState ms : MatchState.values() ) {
+//            
+//            if ( ms.ordinal() < beginState.ordinal() ) continue;
+//            if ( ms.ordinal() > endState.ordinal() ) break;
+//            updateEvents( listener, ms, players );
+//        }
+//    }
 
     public void updateEvents(ArenaListener listener, MatchState matchState, List<UUID> players) {
         
@@ -156,9 +153,10 @@ public class MethodController {
     private void updateEvent( ArenaListener listener, MatchState matchState,
                               Collection<UUID> players, Class<? extends Event> event) {
         List<RListener> rls = bukkitMethods.get(event);
-        if (rls == null || rls.isEmpty()){
-            return;}
-        if (Defaults.DEBUG_EVENTS) System.out.println("updateEventListener "+  event.getSimpleName() +"    " + matchState);
+        if (rls == null || rls.isEmpty()) return;
+        
+        if (Defaults.DEBUG_EVENTS) 
+            System.out.println("updateEventListener "+  event.getSimpleName() +"    " + matchState);
 
         for (RListener rl : rls){
             if (listener != null && !rl.getListener().equals(listener))
