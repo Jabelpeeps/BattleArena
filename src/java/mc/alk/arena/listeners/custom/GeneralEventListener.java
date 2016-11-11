@@ -5,18 +5,19 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
 import lombok.Getter;
 import mc.alk.arena.Defaults;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
+import mc.alk.arena.util.Log;
 
 
 abstract class GeneralEventListener extends BaseEventListener  {
 
-    @Getter final public EnumMap<ArenaEventPriority, Map<RListener, Integer>> listeners = new EnumMap<>(ArenaEventPriority.class);
+    @Getter final public EnumMap<ArenaEventPriority, Map<RListener, Integer>> listeners = 
+                                                                    new EnumMap<>(ArenaEventPriority.class);
     protected volatile RListener[] handlers = null;
 
     public GeneralEventListener(Class<? extends Event> _bukkitEvent, EventPriority _bukkitPriority) {
@@ -55,7 +56,7 @@ abstract class GeneralEventListener extends BaseEventListener  {
 
     public RListener[] getRegisteredListeners() {
         RListener[] handlersArray;
-        while (( handlersArray = handlers ) == null) bake(); // This prevents fringe cases of returning null
+        while (( handlersArray = handlers ) == null ) bake(); // This prevents fringe cases of returning null
         return handlersArray;
     }
 }

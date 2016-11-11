@@ -46,7 +46,7 @@ public class MessageUtil {
 		if ( message == null || message.isEmpty() ) {
 		    if ( Defaults.DEBUG ) { 
 		        Log.err( "Attempting to send empty or null string to " + sender.getName() );
-		        Util.printStackTrace();
+		        Log.debugStackTrace();
 		    }
 		    return;
 		}	

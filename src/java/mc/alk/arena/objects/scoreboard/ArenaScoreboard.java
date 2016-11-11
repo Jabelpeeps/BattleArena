@@ -56,7 +56,7 @@ public class ArenaScoreboard {
     public ArenaScoreboard(String scoreboardName, MatchParams params) {
         this( scoreboardName );
         colorPlayerNames = Defaults.USE_COLORNAMES &&
-                (!params.getStateGraph().hasAnyOption(TransitionOption.NOTEAMNAMECOLOR));
+                (!params.getStateGraph().hasOption(TransitionOption.NOTEAMNAMECOLOR));
     }
 
     public ArenaObjective createObjective(String id, String criteria, String displayName) {

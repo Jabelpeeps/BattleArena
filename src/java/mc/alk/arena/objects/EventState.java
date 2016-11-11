@@ -4,15 +4,11 @@ package mc.alk.arena.objects;
 import mc.alk.arena.controllers.StateController;
 
 public enum EventState implements CompetitionState {
-	CLOSED,OPEN,RUNNING, FINISHED;
+	CLOSED, OPEN, RUNNING, FINISHED;
     int globalOrdinal;
 
-    EventState() {
-        globalOrdinal = StateController.register(this.getClass());
-    }
+    EventState() { globalOrdinal = StateController.register( this.getClass() ); }
 
     @Override
-    public int globalOrdinal() {
-        return globalOrdinal;
-    }
+    public int globalOrdinal() { return globalOrdinal; }
 }

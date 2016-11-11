@@ -20,7 +20,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -175,10 +174,6 @@ public class InventoryUtil {
 		return getItemAmount(p.getInventory().getContents(), new ItemStack(Material.ARROW,1));
 	}
 
-    public static boolean isEnderChest(InventoryType type) {
-        return type == InventoryType.ENDER_CHEST;
-    }
-
 	public static int getItemAmountFromInventory(Inventory inv, ItemStack is) {
 		return getItemAmount(inv.getContents(), is);
 	}
@@ -247,8 +242,8 @@ public class InventoryUtil {
 
 		String split[] = itemStr.split(":");
 		short dataValue = 0;
-		if (split.length > 1){
-			if (isInt(split[1])){
+		if ( split.length > 1 ) {
+			if ( Util.isInt( split[1] ) ) {
 				int i = Integer.valueOf(split[1]);
 				dataValue = (short) i;
 				itemStr = split[0];
@@ -275,31 +270,6 @@ public class InventoryUtil {
 		}
 		return null;
 	}
-
-    public static boolean isInt(String i) {try {Integer.parseInt(i);return true;} catch (Exception e) {return false;}}
-
-	public static boolean isFloat(String i){try{Float.parseFloat(i);return true;} catch (Exception e){return false;}}
-
-//	/// This allows for abbreviations to work, useful for sign etc
-//	public static int getMaterialID(String name) {
-//		name = name.toUpperCase();
-//		/// First try just getting it from the Material Name
-//		Material mat = Material.getMaterial(name);
-//		if (mat != null)
-//			return mat.getId();
-//		/// Might be an abbreviation, or a more complicated
-//		int temp = Integer.MAX_VALUE;
-//		name = name.replaceAll("\\s+", "").replaceAll("_", "");
-//		for (Material m : Material.values()) {
-//			if (m.name().replaceAll("_", "").startsWith(name)) {
-//				if (m.name().length() < temp) {
-//					mat = m;
-//					temp = m.name().length();
-//				}
-//			}
-//		}
-//		return mat != null ? mat.getId() : -1;
-//	}
 
 	public static boolean hasItem(Player p, ItemStack item) {
 		PlayerInventory inv = p.getInventory();
@@ -353,7 +323,10 @@ public class InventoryUtil {
 		for (ItemStack is : items){
 			InventoryUtil.addItemToInventory(p, is.clone(), is.getAmount(), false, ignoreCustomHelmet, color);
 		}
-		try { p.updateInventory(); } catch (Exception e){
+		try { 
+		    p.updateInventory(); 
+		} 
+		catch (Exception e){
             if (!Defaults.DEBUG_VIRTUAL)
                 Log.printStackTrace(e);
         }
@@ -365,16 +338,18 @@ public class InventoryUtil {
 	}
 
 	public static void addItemToInventory(Player player, ItemStack itemStack, int stockAmount,
-			boolean update, boolean ignoreCustomHelmet, Color color) {
+			                                           boolean update, boolean ignoreCustomHelmet, Color color) {
 		PlayerInventory inv = player.getInventory();
-		Material itemType =itemStack.getType();
-		if (armors.containsKey(itemType)){
+		
+		if ( armors.containsKey( itemStack.getType() ) )
 			addArmorToInventory(inv,itemStack,stockAmount,ignoreCustomHelmet, color);
-		} else {
+		else 
 			addItemToInventory(inv, itemStack,stockAmount);
-		}
-		if (update)
-			try { player.updateInventory(); } catch (Exception e){
+		
+		if ( update )
+			try { 
+			    player.updateInventory(); 
+			} catch (Exception e){
                 if (!Defaults.DEBUG_VIRTUAL)
                     Log.printStackTrace(e);
             }

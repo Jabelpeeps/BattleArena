@@ -8,11 +8,11 @@ import java.util.Set;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
-import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.events.matches.MatchIntervalMessageEvent;
 import mc.alk.arena.events.matches.MatchMessageEvent;
 import mc.alk.arena.events.matches.MatchTimeExpiredMessageEvent;
 import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -24,17 +24,19 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 
 
-public class MatchMessenger extends MessageSerializer {
+public class MatchMessenger {
     final Match match;
-    final String typeName;
     final String typedot = "match.";
 	@Setter boolean silent = false;
+    protected AnnouncementOptions bos;
+    private MatchParams params;
+    private MessageSerializer messages;
 
-	public MatchMessenger( Match m ){
-	    super(ParamController.getMatchParams(m.getParams()).getName(), m.getParams());
+	public MatchMessenger( Match m ) {
 		bos = m.getParams().getAnnouncementOptions();     
 		match = m;
-        typeName = matchParams.getName();
+		params = m.getParams();
+        messages = MessageSerializer.getMessageSerializer( params.getName() );
 	}
 
 	private Channel getChannel(MatchState state) {
@@ -48,7 +50,7 @@ public class MatchMessenger extends MessageSerializer {
     }
     
     public void sendOnPreStartMsg( Collection<ArenaTeam> teams, Channel serverChannel ) {
-        sendMessageToTeams( serverChannel, teams, "prestart", "server_prestart", matchParams.getSecondsTillMatch() );
+        sendMessageToTeams( serverChannel, teams, "prestart", "server_prestart", params.getSecondsTillMatch() );
     }
     
     public void sendOnStartMsg( List<ArenaTeam> teams ) {
@@ -58,9 +60,9 @@ public class MatchMessenger extends MessageSerializer {
     private void sendMessageToTeams( Channel serverChannel, Collection<ArenaTeam> teams, 
                                         String path, String serverpath, Integer seconds ) {
         
-        String nTeamPath = getStringPathFromSize(teams.size());
-        Message message = getNodeMessage( typedot + nTeamPath + "." + path );
-        Message serverMessage = getNodeMessage( typedot + nTeamPath + "." + serverpath );
+        String nTeamPath = messages.getStringPathFromSize(teams.size());
+        Message message = messages.getNodeMessage( typedot + nTeamPath + "." + path );
+        Message serverMessage = messages.getNodeMessage( typedot + nTeamPath + "." + serverpath );
         
         if ( Defaults.DEBUG ) 
             Log.info( "sendMessageToTeams():-  path=" + path + "  serverpath=" + serverpath + "  nTeamPath='" + nTeamPath + 
@@ -71,7 +73,7 @@ public class MatchMessenger extends MessageSerializer {
         if ( serverChannel != Channels.NullChannel ) {
             ops.addAll( serverMessage.getOptions() );
         }
-        MessageFormatter msgf = new MessageFormatter( this, match.getParams(), teams.size(), message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, teams.size(), message, ops );
 
         msgf.formatCommonOptions(teams,seconds);
         for (ArenaTeam t: teams){
@@ -91,7 +93,7 @@ public class MatchMessenger extends MessageSerializer {
     public void sendOnVictoryMsg(Collection<ArenaTeam> victors, Collection<ArenaTeam> losers) {
         
         int size = (victors != null ? victors.size() : 0) + (losers != null ? losers.size() : 0);
-        final String nTeamPath = getStringPathFromSize(size);
+        String nTeamPath = messages.getStringPathFromSize(size);
         
         for ( VictoryCondition vc : match.getVictoryConditions() ) {
             
@@ -117,11 +119,12 @@ public class MatchMessenger extends MessageSerializer {
                 break;
             }
         }
-        sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers,
-                     typedot + nTeamPath + ".victory", 
-                     typedot + nTeamPath + ".loss",
-                     typedot + nTeamPath + ".server_victory" );
-    }
+        messages.sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers,
+                              typedot + nTeamPath + ".victory", 
+                              typedot + nTeamPath + ".loss",
+                              typedot + nTeamPath + ".server_victory",
+                              params );
+    } 
     
     public void sendOnDrawMessage(Collection<ArenaTeam> drawers, Collection<ArenaTeam> losers) {
 
@@ -129,36 +132,37 @@ public class MatchMessenger extends MessageSerializer {
                                      : 0 ) + 
                    ( losers != null ? losers.size() 
                                     : 0 );
-        String nTeamPath = getStringPathFromSize(size);
+        String nTeamPath = messages.getStringPathFromSize(size);
         
-        sendVictory( getChannel( MatchState.ONVICTORY ), null, drawers,
-                     typedot + nTeamPath + ".draw", 
-                     typedot + nTeamPath + ".draw",
-                     typedot + nTeamPath + ".server_draw" );
-    }
+        messages.sendVictory( getChannel( MatchState.ONVICTORY ), null, drawers,
+                              typedot + nTeamPath + ".draw", 
+                              typedot + nTeamPath + ".draw",
+                              typedot + nTeamPath + ".server_draw",
+                              params );
+    } 
 
     public void sendYourTeamNotReadyMsg(ArenaTeam t1) {
-        Message message = getNodeMessage("match"+typeName+".your_team_not_ready");
+        Message message = messages.getNodeMessage( "match" + params.getName() + ".your_team_not_ready" );
         Set<MessageOption> ops = message.getOptions();
 
-        MessageFormatter msgf = new MessageFormatter(this, match.getParams(), 1, message, ops);
+        MessageFormatter msgf = new MessageFormatter( messages, params, 1, message, ops);
         msgf.formatTeamOptions(t1, false);
         t1.sendMessage(msgf.getFormattedMessage(message));
     }
 
     public void sendOtherTeamNotReadyMsg(ArenaTeam t1) {
-        Message message = getNodeMessage(typedot+typeName+".other_team_not_ready");
+        Message message = messages.getNodeMessage( typedot + params.getName() + ".other_team_not_ready" );
         Set<MessageOption> ops = message.getOptions();
 
-        MessageFormatter msgf = new MessageFormatter(this, match.getParams(), 1, message, ops);
+        MessageFormatter msgf = new MessageFormatter( messages, params, 1, message, ops);
         msgf.formatTeamOptions(t1, false);
         t1.sendMessage(msgf.getFormattedMessage(message));
     }
 
     public void sendAddedToTeam(ArenaTeam team, ArenaPlayer player) {
-        Message message = getNodeMessage( "common.added_to_team" );
+        Message message = messages.getNodeMessage( "common.added_to_team" );
         Set<MessageOption> ops = message.getOptions();
-        MessageFormatter msgf = new MessageFormatter( this, match.getParams(), 1, message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, 1, message, ops );
         msgf.formatTeamOptions( team, false );
         msgf.formatPlayerOptions( player );
         team.sendToOtherMembers( player, msgf.getFormattedMessage( message ) );
@@ -166,9 +170,9 @@ public class MatchMessenger extends MessageSerializer {
 
     public void sendOnIntervalMsg( int remaining, Collection<ArenaTeam> currentLeaders ) {
 
-        Message message = getNodeMessage("match.interval_update");
+        Message message = messages.getNodeMessage("match.interval_update");
         Set<MessageOption> ops = message.getOptions();
-        MessageFormatter msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message, ops);
+        MessageFormatter msgf = new MessageFormatter( messages, params, currentLeaders.size(), message, ops);
         msgf.formatCommonOptions(currentLeaders, remaining);
         String msg = msgf.getFormattedMessage(message);
         
@@ -177,9 +181,9 @@ public class MatchMessenger extends MessageSerializer {
         } 
         else if (currentLeaders.size() == 1){
             ArenaTeam currentLeader = currentLeaders.iterator().next();
-            Message message2 = getNodeMessage("match.interval_update_winning");
+            Message message2 = messages.getNodeMessage("match.interval_update_winning");
             ops = message2.getOptions();
-            msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
+            msgf = new MessageFormatter( messages, params, currentLeaders.size(), message2, ops);
             msgf.formatCommonOptions(currentLeaders, remaining);
             msgf.formatTeamOptions(currentLeader, true);
             msg += msgf.getFormattedMessage(message2);
@@ -192,8 +196,8 @@ public class MatchMessenger extends MessageSerializer {
         } 
         else {
             String teamStr = MessageUtil.joinTeams(currentLeaders,"&e and ");
-            Message message2 = getNodeMessage("match.interval_update_tied");
-            msgf = new MessageFormatter(this, match.getParams(),currentLeaders.size(), message2, ops);
+            Message message2 = messages.getNodeMessage("match.interval_update_tied");
+            msgf = new MessageFormatter( messages, params, currentLeaders.size(), message2, ops);
             msgf.formatCommonOptions(currentLeaders, remaining);
             msg += msgf.getFormattedMessage(message2);
             if (msg.contains("{teams}"))
@@ -229,28 +233,28 @@ public class MatchMessenger extends MessageSerializer {
         return getMessage( node, null );
     }
 
-    public String getMessage(String node, Map<String, String> params) {
-        String text = getNodeText(node);
-        return text == null ? null : format(text,params);
+    public String getMessage(String node, Map<String, String> map) {
+        String text = messages.getNodeText(node);
+        return text == null ? null : format(text,map);
     }
 
     public void sendMessage(String node) {
         sendMessage(node,null);
     }
 
-    public void sendMessage(String node, Map<String, String> params) {
-        String msg = getMessage(node,params);
+    public void sendMessage(String node, Map<String, String> map) {
+        String msg = getMessage(node,map);
         if (msg != null && !msg.isEmpty())
             match.sendMessage(msg);
     }
 
-    public String format(String text, Map<String, String> params) {
-        if ( params == null || params.isEmpty())
+    public String format(String text, Map<String, String> map) {
+        if ( map == null || map.isEmpty())
             return text;
-        String[] searchList =new String[params.size()];
-        String[] replaceList =new String[params.size()];
+        String[] searchList =new String[map.size()];
+        String[] replaceList =new String[map.size()];
         int i = 0;
-        for(Map.Entry<String,String> entry : params.entrySet()){
+        for(Map.Entry<String,String> entry : map.entrySet()){
             searchList[i] = entry.getKey();
             replaceList[i] = entry.getValue();
             i++;
@@ -261,14 +265,14 @@ public class MatchMessenger extends MessageSerializer {
     public void sendCountdownTillPrestart( int remaining ) {
         
         Channel channel = getChannel( MatchState.ONCOUNTDOWNTOEVENT );
-        Message message = getNodeMessage("event.countdownTillEvent");
-        Message serverMessage = getNodeMessage("event.server_countdownTillEvent");
+        Message message = messages.getNodeMessage("event.countdownTillEvent");
+        Message serverMessage = messages.getNodeMessage("event.server_countdownTillEvent");
         Set<MessageOption> ops = message.getOptions();
         
         if ( channel != Channels.NullChannel ) {
             ops.addAll( serverMessage.getOptions() );
         }
-        MessageFormatter msgf = new MessageFormatter( this, match.getParams(), 0, message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, 0, message, ops );
         msgf.formatCommonOptions( null, remaining );
         
         if ( channel != Channels.NullChannel ) 

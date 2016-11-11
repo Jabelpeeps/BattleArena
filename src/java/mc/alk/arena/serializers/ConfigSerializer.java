@@ -65,15 +65,15 @@ public class ConfigSerializer extends BaseConfig {
     }
 
     public MatchParams loadMatchParams() throws ConfigException, InvalidOptionException {
-        return ConfigSerializer.loadMatchParams( this, name );
+        return loadMatchParams( this, name );
     }
 
     public static MatchParams loadMatchParams( BaseConfig config, String name )
                                                             throws ConfigException, InvalidOptionException {      
         ConfigurationSection cs = config.getConfig();
         
-        if (config.getConfigurationSection(name) != null) 
-            cs = config.getConfigurationSection(name);
+        if (cs.getConfigurationSection( name ) != null ) 
+            cs = cs.getConfigurationSection( name );
 
         ArenaType at = ArenaType.fromString( cs.getName() );
         
@@ -168,16 +168,16 @@ public class ConfigSerializer extends BaseConfig {
         StateGraph tops = loadTransitionOptions(cs, mp); 
         mp.setStateGraph(tops);
 
-        mp.setParent(ParamController.getDefaultConfig());
+        mp.setParent( ParamController.getDefaultConfig() );
         
-        if (!isNonBaseConfig){
+        if ( !isNonBaseConfig ) {
             ParamController.removeMatchType(mp);
             ParamController.addMatchParams(mp);
         }
 
         try {
             PlayerContainerSerializer pcs = new PlayerContainerSerializer();
-            pcs.setConfig(BattleArena.getSelf().getDataFolder()+"/saves/containers.yml");
+            pcs.setConfig( BattleArena.getSelf().getDataFolder() + "/saves/containers.yml" );
             pcs.load(mp);
         } 
         catch (Exception e){
@@ -185,50 +185,49 @@ public class ConfigSerializer extends BaseConfig {
         }
 
         if ( !isNonBaseConfig && Defaults.DEBUG ) {
-            String mods = modules.isEmpty() ? "" : " mods=" + StringUtils.join(modules,", ");
+            String mods = modules.isEmpty() ? "" : " mods=" + StringUtils.join( modules,", " );
             Log.info("[" + plugin.getName() + "] Loaded " + mp.getName() + " params" + mods);
         }
-
         return mp;
     }
 
-    public static VictoryType loadVictoryType(ConfigurationSection cs) throws ConfigException {
+    public static VictoryType loadVictoryType( ConfigurationSection cs ) throws ConfigException {
         
         VictoryType vt;
-        if (cs.contains("victoryCondition"))
-            vt = VictoryType.fromString(cs.getString("victoryCondition"));
+        if ( cs.contains( "victoryCondition" ) )
+            vt = VictoryType.fromString( cs.getString( "victoryCondition" ) );
         else
-            vt = VictoryType.getType(OneTeamLeft.class);
+            vt = VictoryType.getType( OneTeamLeft.class );
 
         // TODO make unknown types with a valid plugin name be deferred until after the other plugin is loaded
-        if (vt == null)
-            throw new ConfigException("Could not add the victoryCondition " +cs.getString("victoryCondition") +"\n"
-                    +"valid types are " + VictoryType.getValidList());
+        if ( vt == null )
+            throw new ConfigException( "Could not add the victoryCondition " + cs.getString( "victoryCondition" ) 
+                                        + "\n" + "valid types are " + VictoryType.getValidList() );
         return vt;
     }
 
     private static StateGraph loadTransitionOptions(ConfigurationSection cs, MatchParams mp)
-            throws InvalidOptionException {
+                                                                    throws InvalidOptionException {
         if ( Defaults.DEBUG_TRACE ) Log.info( "Loading TransistionOptions from:-" + cs.getName() );
         
         StateGraph allTops = new StateGraph();
         boolean found = false;
         
         /// Set all Transition Options
-        for (CompetitionState cstate : StateController.values()){
+        for ( CompetitionState cstate : StateController.values() ) {
             
             /// OnCancel gets taken from onComplete and modified
-            if (cstate == MatchState.ONCANCEL) continue;
+            if ( cstate == MatchState.ONCANCEL ) continue;
             
             StateOptions tops;
             try {
-                tops = getTransitionOptions(cs.getConfigurationSection(cstate.toString()));
+                tops = getTransitionOptions( cs.getConfigurationSection( cstate.toString() ) );
                 /// check for the most common alternate spelling of onPrestart
                 /// also check for the old version of winners (winner)
-                if (tops == null && cstate == MatchState.ONPRESTART){
-                    tops = getTransitionOptions(cs.getConfigurationSection("onPrestart"));}
-                else if (tops == null && cstate == MatchState.WINNERS){
-                    tops = getTransitionOptions(cs.getConfigurationSection("winner"));}
+                if ( tops == null && cstate == MatchState.ONPRESTART )
+                    tops = getTransitionOptions( cs.getConfigurationSection( "onPrestart" ) );
+                else if ( tops == null && cstate == MatchState.WINNERS )
+                    tops = getTransitionOptions( cs.getConfigurationSection( "winner" ) );
                 /// Merge any previous options
                 StateOptions prevOptions = allTops.getOptions(cstate);
                 if (prevOptions != null) {
@@ -245,44 +244,44 @@ public class ConfigSerializer extends BaseConfig {
                 Log.printStackTrace(e);
                 continue;
             }
-            if (tops == null){
+            if ( tops == null ) {
                 allTops.removeStateOptions(cstate);
                 continue;}
             found = true;
             if ( Defaults.DEBUG_TRACE ) Log.info( "[ARENA] transition= " + cstate + " " + tops );
 
-            if (cstate == MatchState.ONCOMPLETE){
-                if (allTops.hasOptionAt(MatchState.ONLEAVE, TransitionOption.CLEARINVENTORY)){
-                    tops.addOption(TransitionOption.CLEARINVENTORY);
+            if ( cstate == MatchState.ONCOMPLETE ) {
+                if ( allTops.hasOptionAt( MatchState.ONLEAVE, TransitionOption.CLEARINVENTORY ) ) {
+                    tops.addOption( TransitionOption.CLEARINVENTORY );
                 }
-                StateOptions cancelOps = new StateOptions(tops);
-                allTops.addStateOptions(MatchState.ONCANCEL, cancelOps);
+                StateOptions cancelOps = new StateOptions( tops );
+                allTops.addStateOptions( MatchState.ONCANCEL, cancelOps );
                 if ( Defaults.DEBUG_TRACE ) Log.info("[ARENA] transition= " + MatchState.ONCANCEL + " " + cancelOps );
             } 
-            else if (cstate == MatchState.ONLEAVE){
-                if (tops.hasOption(TransitionOption.TELEPORTOUT)){
-                    tops.removeOption(TransitionOption.TELEPORTOUT);
+            else if ( cstate == MatchState.ONLEAVE ) {
+                if ( tops.hasOption( TransitionOption.TELEPORTOUT ) ) {
+                    tops.removeOption( TransitionOption.TELEPORTOUT );
                     Log.warn("You should never use the option teleportOut inside of onLeave!");
                 }
             } 
-            else if (cstate == MatchState.DEFAULTS){
-                if (cs.getBoolean("duelOnly", false)){ /// for backwards compatibility
-                    tops.addOption(TransitionOption.DUELONLY);}
+            else if ( cstate == MatchState.DEFAULTS ) {
+                if ( cs.getBoolean( "duelOnly", false ) ) /// for backwards compatibility
+                    tops.addOption( TransitionOption.DUELONLY );
             }
-            splitOptions(allTops, cstate, tops);
-            allTops.addStateOptions(cstate, tops);
+            splitOptions( allTops, cstate, tops );
+            allTops.addStateOptions( cstate, tops );
         }
-        if (allTops.hasOptionAt(MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN))
-            allTops.addStateOption(MatchState.ONJOIN, TransitionOption.ALWAYSJOIN);
+        if ( allTops.hasOptionAt( MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN ) )
+            allTops.addStateOption( MatchState.ONJOIN, TransitionOption.ALWAYSJOIN );
         
         /// By Default if they respawn in the arena.. people must want infinite lives
-        if (mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.RESPAWN) && !cs.contains("nLives")) {
-            mp.setNLives(Integer.MAX_VALUE);
+        if ( mp.hasOptionAt( MatchState.ONSPAWN, TransitionOption.RESPAWN ) && !cs.contains( "nLives" ) ) {
+            mp.setNLives( Integer.MAX_VALUE );
         }
         /// start auto setting this option, as really thats what they want
-        if ( mp.getNLives() > 1 ){
-            allTops.addStateOption(MatchState.ONDEATH, TransitionOption.RESPAWN);}
-        if (!found && allTops.getAllOptions().isEmpty())
+        if ( mp.getNLives() > 1 ) 
+            allTops.addStateOption( MatchState.ONDEATH, TransitionOption.RESPAWN );
+        if ( !found && allTops.getAllOptions().isEmpty() )
             return null;
         return allTops;
     }
@@ -317,7 +316,6 @@ public class ConfigSerializer extends BaseConfig {
             }
             allTops.addStateOptions(other, newTops);
         }
-
     }
 
     private static void loadAnnouncementsOptions(ConfigurationSection cs, MatchParams mp) {
@@ -432,18 +430,6 @@ public class ConfigSerializer extends BaseConfig {
         int s = ArenaSize.toInt(value, defValue);
         return s < 0 ? defValue : s;
     }
-//    public static int toSize(String value, int defValue) {
-//        return ArenaSize.toInt(value, defValue);
-//    }
-//    /**
-//     * Get and create the ArenaType for this plugin given the Configuration section
-//     * @param cs section containing the "type"
-//     * @return The ArenaType
-//     * @throws ConfigException
-//     */
-//    public static ArenaType getArenaType(ConfigurationSection cs) throws ConfigException {
-//        return ArenaType.fromString(cs.getName()); 
-//    }
 //    /**
 //     * Get the ArenaClass for this plugin given the Configuration section
 //     * @param cs section containing the "type"

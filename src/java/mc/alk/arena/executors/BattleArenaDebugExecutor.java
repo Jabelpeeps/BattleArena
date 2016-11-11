@@ -453,7 +453,7 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         if ( params == null ) {
             MessageUtil.sendMessage(sender, "&5Lobbies");
             for (RoomContainer c : RoomController.getLobbies()){
-                MessageUtil.sendMessage(sender," &2" + c.getName() +" : &6" + c.getContainerState().getState());
+                MessageUtil.sendMessage( sender," &2" + c.getName() +" : &6" + c.getContainerState() );
             }
         }
         MessageUtil.sendMessage(sender, "&5Arenas");
@@ -461,9 +461,10 @@ public class BattleArenaDebugExecutor extends CustomCommandExecutor{
         for (Arena a: BattleArenaController.getAllArenas().values()){
             if (params != null && a.getArenaType() != params.getType())
                 continue;
-            MessageUtil.sendMessage(sender," &2" + a.getName() +" - &6" + a.getContainerState().getState());
+            MessageUtil.sendMessage( sender," &2" + a.getName() +" - &6" + a.getContainerState() );
             if (a.getWaitroom() != null)
-                MessageUtil.sendMessage(sender,"   &2   - &6" + a.getWaitroom().getName() +" : &6"+a.getWaitroom().getContainerState().getState());
+                MessageUtil.sendMessage( sender, "   &2   - &6" + a.getWaitroom().getName() + " : &6" + 
+                                                        a.getWaitroom().getContainerState() );
         }
     }
 

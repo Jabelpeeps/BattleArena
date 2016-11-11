@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
-
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.CompetitionState;
+import mc.alk.arena.util.Log;
 
 /**
  * @author alkarin
@@ -26,7 +25,7 @@ public class StateController {
         }
         CompetitionState[] states = new CompetitionState[size];
         for (Class<? extends Enum<? extends CompetitionState>> enumClass : enums){
-            for (Enum<?> e : enumClass.getEnumConstants()) {
+            for ( Enum<?> e : enumClass.getEnumConstants() ) {
                 states[i++] = (CompetitionState) e;
             }
         }

@@ -42,7 +42,7 @@ public class SignSerializer extends BaseConfig {
 	}
 
 	public void saveAll(SignUpdateListener sc){
-		MapOfTreeSet<String, ArenaCommandSign> statusSigns = sc.getStatusSigns();
+		MapOfTreeSet<String, ArenaCommandSign> statusSigns = sc.getArenaSigns();
 		for (String matches: statusSigns.keySet()){
 			Set<ArenaCommandSign> set = statusSigns.get(matches);
 			if (set == null)
@@ -54,6 +54,5 @@ public class SignSerializer extends BaseConfig {
 			config.createSection(matches, map);
 		}
 		save();
-
 	}
 }

@@ -6,7 +6,7 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.util.TeamUtil;
 
-public class TeamFactory {
+public abstract class TeamFactory {
 
 	public static ArenaTeam createCompositeTeam(int index, MatchParams params, ArenaPlayer p) {
         CompositeTeam ct = (CompositeTeam) createCompositeTeam(index, params);

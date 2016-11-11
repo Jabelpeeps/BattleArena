@@ -24,7 +24,6 @@ import mc.alk.arena.util.InventoryUtil.PInv;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.PlayerUtil;
-import mc.alk.arena.util.Util;
 
 
 public class PlayerRestoreController {
@@ -195,7 +194,7 @@ public class PlayerRestoreController {
                         if (pl != null) 
                             TeleportController.teleport(pl, loc);
                         else 
-                            Util.printStackTrace();
+                            Log.debugStackTrace();
                 });
             } 
             else {
@@ -213,7 +212,7 @@ public class PlayerRestoreController {
                                     TeleportController.teleport(p, loc);
                                 }
                             }
-                            else Util.printStackTrace();
+                            else Log.debugStackTrace();
                     },2L);
                 }
             }

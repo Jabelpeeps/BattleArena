@@ -39,8 +39,8 @@ public class ParamAlterController {
                     TransitionOption.TELEPORTLOBBY, TransitionOption.TELEPORTMAINLOBBY, 
                     TransitionOption.TELEPORTMAINWAITROOM, TransitionOption.TELEPORTSPECTATE );
     
-    public ParamAlterController(MatchParams _params){
-        params = ParamController.getMatchParams(_params.getType());
+    public ParamAlterController( MatchParams _params ) {
+        params = ParamController.getMatchParams( _params.getType().getName() );
     }
 
     private static MatchParams getOrCreateTeamParams(Integer teamIndex, MatchParams params){

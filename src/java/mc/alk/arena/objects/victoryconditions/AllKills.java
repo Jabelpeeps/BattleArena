@@ -10,7 +10,7 @@ import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.events.players.ArenaPlayerKillEvent;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
@@ -37,7 +37,7 @@ public class AllKills extends VictoryCondition implements ScoreTracker {
         sc = (isRated && soloRating) ? Tracker.getInterface( _match.getParams() ) : null;
     }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.LOW)
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
     public void playerKillEvent(ArenaPlayerKillEvent event) {
         int points = section.getInt("points.player", 1);
         kills.addPoints(event.getPlayer(), points);
@@ -46,7 +46,7 @@ public class AllKills extends VictoryCondition implements ScoreTracker {
             sc.addPlayerRecord(event.getPlayer().getName(),event.getTarget().getName(), WLT.WIN);
     }
 
-    @ArenaEventHandler(priority = ArenaEventPriority.LOW)
+    @ArenaEventHandler( priority = ArenaEventPriority.LOW )
     public void onFindCurrentLeader(MatchFindCurrentLeaderEvent event) {
         event.setResult(kills.getMatchResult(match));
     }

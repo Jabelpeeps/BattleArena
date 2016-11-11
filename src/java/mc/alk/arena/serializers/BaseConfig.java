@@ -2,9 +2,7 @@ package mc.alk.arena.serializers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -13,16 +11,11 @@ import mc.alk.arena.util.Log;
 
 public class BaseConfig { 
 	@Getter protected FileConfiguration config;
-	@Getter File file;
- 
-	public int getInt(String node,int defaultValue) { return config.getInt(node, defaultValue); }
-	public boolean getBoolean(String node, boolean defaultValue) { return config.getBoolean(node, false); }
-	public double getDouble(String node, double defaultValue) { return config.getDouble(node, defaultValue); }
-	public String getString(String node,String defaultValue) { return config.getString(node, defaultValue); }
-	public ConfigurationSection getConfigurationSection(String node) { return config.getConfigurationSection(node); }
+	@Getter protected File file;
+
 	public BaseConfig setConfig( String _file ) { return setConfig( new File(_file) ); }
 
-	public BaseConfig setConfig(File _file) {
+	public BaseConfig setConfig( File _file ) {
 		if (!_file.exists()){
 			try {
 				if (!_file.createNewFile()){
@@ -63,11 +56,6 @@ public class BaseConfig {
 			Log.printStackTrace(e);
 		}
 	}
-
-	public List<String> getStringList(String node) {
-		return config.getStringList(node);
-	}
-
 	public void load(File _file) {
 		file = _file;
 		reloadFile();

@@ -9,6 +9,8 @@ import mc.alk.arena.objects.MatchState;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ArenaEventHandler {
+    public enum ArenaEventPriority { LOWEST,LOWER,LOW,NORMAL,HIGH,HIGHER,HIGHEST }
+    
 	MatchState begin() default MatchState.NONE;
 	MatchState end() default MatchState.NONE;
 	ArenaEventPriority priority() default ArenaEventPriority.NORMAL;

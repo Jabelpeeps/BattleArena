@@ -16,20 +16,20 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TeamUtil;
 import mc.alk.arena.util.TeamUtil.TeamHead;
 
-public class TeamHeadSerializer extends BaseConfig{
+public class TeamConfigLoader extends BaseConfig {
 
 	public void loadAll(){
 		try {
 		    config.load(file); 
 		} 
-		catch (IOException | InvalidConfigurationException e){ Log.printStackTrace(e); }
+		catch (IOException | InvalidConfigurationException e) { Log.printStackTrace(e); }
 		
 		loadTeams(config);
 	}
 
 	public static void loadTeams(ConfigurationSection cs) {
 		if (cs == null) {
-			Log.info(BattleArena.getNameAndVersion() +" has no teamColors");
+			Log.info(BattleArena.getNameAndVersion() + " has no teamColors");
 			return;
 		}
 		List<String> keys = cs.getStringList("teams");

@@ -41,7 +41,7 @@ public class ArenaClassController {
     final static Map<UUID, Long> userClassSwitchTime = new ConcurrentHashMap<>();
 
     static {
-        classes.put(ArenaClass.CHOSEN_CLASS.getName().toUpperCase(), ArenaClass.CHOSEN_CLASS);
+        classes.put( ArenaClass.CHOSEN_CLASS.getName().toUpperCase(), ArenaClass.CHOSEN_CLASS );
     }
 
     public static void addClass(ArenaClass ac){
@@ -54,95 +54,94 @@ public class ArenaClassController {
         return classes.get( name.toUpperCase() );
     }
 
-    public static void giveClass(ArenaPlayer player, ArenaClass ac) {
+    public static void giveClass( ArenaPlayer player, ArenaClass ac ) {
         giveClass( player, ac, null );
     }
 
     public static void giveClass(ArenaPlayer player, ArenaClass ac, Color color) {
-        ArenaClass oldClass = player.getCurrentClass();
-        if (oldClass != null){
+        if ( player.getCurrentClass() != null ) 
             player.despawnMobs();
-        }
-        if (HeroesController.enabled())
-            ac = giveHeroClass(player,ac);
-        try{if (ac.getItems() != null)
-            InventoryUtil.addItemsToInventory(player.getPlayer(), ac.getItems(),true, color);}
-        catch (Exception e){/* do nothing, error would be reported inside InventoryUtil */}
+        
+        if ( HeroesController.enabled() )
+            ac = giveHeroClass( player, ac );
+        
+        if ( ac.getItems() != null )
+            InventoryUtil.addItemsToInventory( player.getPlayer(), ac.getItems(), true, color );
+
         giveClassEnchants(player.getPlayer(),ac);
         
-        if (ac.getDisguiseName()!=null && DisguiseController.enabled())
-            DisguiseController.disguisePlayer(player.getPlayer(), ac.getDisguiseName());
+        if ( ac.getDisguiseName() != null && DisguiseController.enabled() )
+            DisguiseController.disguisePlayer( player.getPlayer(), ac.getDisguiseName() );
         
-        if (ac.getMobs() != null){
+        if ( ac.getMobs() != null ) {
             try {
                 List<SpawnInstance> mobs = ac.getMobsClone();
                 player.setMobs(mobs);
                 player.spawnMobs();
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.printStackTrace(e);
             }
         }
-        if (ac.getDoCommands() != null){
-            PlayerUtil.doCommands(player.getPlayer(),ac.getDoCommands());
-        }
-        if (player.getPreferredClass() == null){
-            player.setPreferredClass(ac);}
-        player.setCurrentClass(ac);
+        if ( ac.getDoCommands() != null )
+            PlayerUtil.doCommands( player.getPlayer(), ac.getDoCommands() );
+        
+        if ( player.getPreferredClass() == null )
+            player.setPreferredClass( ac );
+        
+        player.setCurrentClass( ac );
     }
 
-    private static ArenaClass giveHeroClass(ArenaPlayer player, ArenaClass ac){
-        if (ac == ArenaClass.CHOSEN_CLASS){
-            String className = HeroesController.getHeroClassName(player.getPlayer());
-            if (className != null){
-                ArenaClass ac2 = ArenaClassController.getClass(className);
-                if (ac2 != null)
+    private static ArenaClass giveHeroClass( ArenaPlayer player, ArenaClass ac ) {
+        if ( ac == ArenaClass.CHOSEN_CLASS ) {
+            String className = HeroesController.getHeroClassName( player.getPlayer() );
+            if ( className != null ) {
+                ArenaClass ac2 = ArenaClassController.getClass( className );
+                if ( ac2 != null )
                     return ac2;
             }
         }
         /// Set them to the appropriate heroes class if one exists with this name
-        if (HeroesController.hasHeroClass(ac.getName())){
-            HeroesController.setHeroClass(player.getPlayer(), ac.getName());
+        if ( HeroesController.hasHeroClass( ac.getName() ) ) {
+            HeroesController.setHeroClass( player.getPlayer(), ac.getName() );
         }
         return ac;
     }
 
-    public static void giveClassEnchants(Player player, ArenaClass ac) {
-        try {
-            if (ac.getEffects() != null) 
-                EffectUtil.enchantPlayer(player, ac.getEffects());
-        }
-        catch (Exception e){/* do nothing */}
+    public static void giveClassEnchants( Player player, ArenaClass ac ) {
+        if ( ac.getEffects() != null ) 
+                EffectUtil.enchantPlayer( player, ac.getEffects() );
     }
 
     public static Set<ArenaClass> getClasses() {
-        return new HashSet<>(classes.values());
+        return new HashSet<>( classes.values() );
     }
 
-
-    public static boolean changeClass(Player p, PlayerHolder am, final ArenaClass ac) {
-        if (ac == null || !ac.isValid()) /// Not a valid class
-            return false;
-        if (!p.hasPermission("arena.class.use."+ac.getName().toLowerCase())){
-            MessageUtil.sendSystemMessage(p, "class_no_perms", ac.getDisplayName());
+    public static boolean changeClass( Player p, PlayerHolder am, ArenaClass ac ) {
+        if ( ac == null || !ac.isValid() ) return false;
+        
+        if ( !p.hasPermission( "arena.class.use." + ac.getName().toLowerCase() ) ) {
+            MessageUtil.sendSystemMessage( p, "class_no_perms", ac.getDisplayName() );
             return false;
         }
 
-        final ArenaPlayer ap = PlayerController.toArenaPlayer(p);
+        ArenaPlayer ap = PlayerController.toArenaPlayer(p);
         ArenaClass chosen = ap.getCurrentClass();
-        if (chosen != null && chosen.getName().equals(ac.getName())){
-            MessageUtil.sendSystemMessage(p, "class_you_are_already", ac.getDisplayName());
+        if ( chosen != null && chosen.getName().equals( ac.getName() ) ) {
+            MessageUtil.sendSystemMessage( p, "class_you_are_already", ac.getDisplayName() );
             return false;
         }
-        if(userClassSwitchTime.containsKey(ap.getUniqueId())) {
-            long t = (Defaults.TIME_BETWEEN_CLASS_CHANGE * 1000) - (System.currentTimeMillis() - userClassSwitchTime.get(ap.getUniqueId()));
-            if (t > 0){
-                MessageUtil.sendSystemMessage(p, "class_wait_time", TimeUtil.convertMillisToString(t));
+        
+        if ( userClassSwitchTime.containsKey( ap.getUniqueId() ) ) {
+            long t = ( Defaults.TIME_BETWEEN_CLASS_CHANGE * 1000 ) 
+                            - ( System.currentTimeMillis() - userClassSwitchTime.get( ap.getUniqueId() ) );
+            if ( t > 0 ) {
+                MessageUtil.sendSystemMessage( p, "class_wait_time", TimeUtil.convertMillisToString(t) );
                 return false;
             }
         }
         MatchParams mp = am != null ? am.getParams() : null;
 
-        userClassSwitchTime.put(ap.getUniqueId(), System.currentTimeMillis());
+        userClassSwitchTime.put( ap.getUniqueId(), System.currentTimeMillis() );
         /// check to see if they have a team head
         ArenaTeam at = ap.getTeam();
         boolean woolTeams = at != null 
@@ -153,22 +152,24 @@ public class ArenaClassController {
 //        boolean woolTeams = mp.hasAnyOption(TransitionOption.WOOLTEAMS);
         /// Have They have already selected a class this match, have they changed their inventory since then?
         /// If so, make sure they can't just select a class, drop the items, then choose another
-        if (chosen != null){
+        if ( chosen != null ) {
             List<ItemStack> items = new ArrayList<>();
-            if (chosen.getItems()!=null)
-                items.addAll(chosen.getItems());
-            if (mp != null && mp.hasOptionAt(MatchState.ONSPAWN, TransitionOption.GIVEITEMS) 
-                    && mp.getGiveItems(MatchState.ONSPAWN) != null) {
-                items.addAll(mp.getGiveItems(MatchState.ONSPAWN));
+            if ( chosen.getItems() != null )
+                items.addAll( chosen.getItems() );
+            if (    mp != null 
+                    && mp.hasOptionAt( MatchState.ONSPAWN, TransitionOption.GIVEITEMS ) 
+                    && mp.getGiveItems( MatchState.ONSPAWN) != null ) {
+                items.addAll( mp.getGiveItems( MatchState.ONSPAWN ) );
             }
-            if (Defaults.NEED_SAME_ITEMS_TO_CHANGE_CLASS && !InventoryUtil.sameItems(items, p.getInventory(), woolTeams)){
-                MessageUtil.sendSystemMessage(p, "class_cant_switch_after_items");
+            if (    Defaults.NEED_SAME_ITEMS_TO_CHANGE_CLASS 
+                    && !InventoryUtil.sameItems( items, p.getInventory(), woolTeams ) ) {
+                MessageUtil.sendSystemMessage( p, "class_cant_switch_after_items" );
                 return false;
             }
         }
 
-        if (am != null)
-            am.callEvent(new ArenaPlayerClassSelectedEvent( ap, ac ) );
+        if ( am != null )
+            am.callEvent( new ArenaPlayerClassSelectedEvent( ap, ac ) );
         else
             new ArenaPlayerClassSelectedEvent( ap, ac ).callEvent();
 
@@ -177,38 +178,38 @@ public class ArenaClassController {
         /// Also debuff them
         EffectUtil.deEnchantAll(p);
 
-        boolean armorTeams = mp != null && mp.hasAnyOption(TransitionOption.ARMORTEAMS);
+        boolean armorTeams = mp != null && mp.hasAnyOption( TransitionOption.ARMORTEAMS );
         ap.despawnMobs();
         /// Regive class/items
-        ArenaClassController.giveClass(ap, ac);
-        ap.setPreferredClass(ac);
-        if (mp != null && am != null){
+        ArenaClassController.giveClass( ap, ac );
+        ap.setPreferredClass( ac );
+        if ( mp != null && am != null ) {
             CompetitionState state = am.getState();
             ArenaTeam team = am.getTeam(ap);
             int teamIndex = team == null ? -1 : team.getIndex();
-            Color color = armorTeams && teamIndex != -1 ? TeamUtil.getTeamColor(teamIndex) : null;
-            List<ItemStack> items = mp.getGiveItems(state);
+            Color color = armorTeams && teamIndex != -1 ? TeamUtil.getTeamColor( teamIndex ) : null;
+            List<ItemStack> items = mp.getGiveItems( state );
             
-            if (items != null)
-                InventoryUtil.addItemsToInventory(p, items, true,color);
+            if ( items != null )
+                InventoryUtil.addItemsToInventory( p, items, true, color );
             
-            items =mp.getGiveItems(MatchState.ONSPAWN);
+            items = mp.getGiveItems( MatchState.ONSPAWN );
             
-            if (items!=null)
-                InventoryUtil.addItemsToInventory(p, items, true,color);
+            if ( items != null )
+                InventoryUtil.addItemsToInventory( p, items, true, color );
 
             /// Deal with effects/buffs
 
-            List<PotionEffect> effects = mp.getEffects(state);
-            if (effects!=null)
-                EffectUtil.enchantPlayer(p, effects);
+            List<PotionEffect> effects = mp.getEffects( state );
+            if ( effects != null )
+                EffectUtil.enchantPlayer( p, effects );
                 
-            effects = mp.getEffects(MatchState.ONSPAWN);
-            if (effects!=null)
-                EffectUtil.enchantPlayer(p, effects);
+            effects = mp.getEffects( MatchState.ONSPAWN );
+            if ( effects != null )
+                EffectUtil.enchantPlayer( p, effects );
         }
 
-        MessageUtil.sendSystemMessage(p, "class_chosen", ac.getDisplayName());
+        MessageUtil.sendSystemMessage( p, "class_chosen", ac.getDisplayName() );
         return true;
     }
 }

@@ -18,7 +18,7 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.SerializerUtil;
 import mc.alk.arena.util.SignUtil;
 
-public abstract class ArenaCommandSign implements ConfigurationSerializable{
+public abstract class ArenaCommandSign implements ConfigurationSerializable {
 
     @Getter final Location location;
 	@Getter final MatchParams matchParams;

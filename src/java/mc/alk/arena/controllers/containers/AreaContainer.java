@@ -27,13 +27,13 @@ public class AreaContainer extends AbstractAreaContainer {
     Map<UUID, Integer> respawnTimer = null;
     @Getter LocationType locationType;
 
-    public AreaContainer(String _name, LocationType type){
-        super(_name);
+    public AreaContainer( String _name, LocationType type ) {
+        super( _name );
         locationType = type;
     }
-    public AreaContainer(String _name, MatchParams _params, LocationType type){
-        super(_name);
-        setParams(_params);
+    public AreaContainer( String _name, MatchParams _params, LocationType type ) {
+        super( _name );
+        setParams( _params );
         locationType = type;
     }
     
@@ -41,10 +41,10 @@ public class AreaContainer extends AbstractAreaContainer {
     public Collection<UUID> getInsidePlayers() { return players; }
     public boolean hasSpawns() { return !spawns.isEmpty(); }
     @Override
-    public ArenaTeam getTeam(ArenaPlayer player) { return player.getTeam(); }
+    public ArenaTeam getTeam( ArenaPlayer player ) { return player.getTeam(); }
 
     @ArenaEventHandler
-    public void onPlayerInteract(PlayerInteractEvent event){
+    public void onPlayerInteract( PlayerInteractEvent event ) {
         if ( event.isCancelled() || event.getClickedBlock() == null ) return;
 
         if (    event.getClickedBlock().getType().equals( Material.SIGN_POST )
@@ -65,22 +65,23 @@ public class AreaContainer extends AbstractAreaContainer {
         synchronized (this) {
             added = players.add( player.getUniqueId() );
         }
-        if (Defaults.DEBUG_EVENTS) Log.trace(1111, getName()+"  "+player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
-        if (added){
-            updateBukkitEvents(MatchState.ONENTER, player);
-        }
+        if ( Defaults.DEBUG_EVENTS ) 
+            Log.trace( 1111, getName() + "  " + player.getName() + "   !!!&2add  " + added + " t=" + player.getTeam());
+        
+        if ( added ) updateBukkitEvents(MatchState.ONENTER, player);
+        
         return added;
     }
 
     private boolean removePlayer(ArenaPlayer player) {
         boolean removed;
-
         synchronized (this) {
             removed = players.remove(player.getUniqueId());
         }
-        if (Defaults.DEBUG_EVENTS) Log.trace(1111, getName()+"  "+ player.getName() + "   !!!&4removed  " + removed + " t=" + player.getTeam());
+        if ( Defaults.DEBUG_EVENTS ) 
+            Log.trace( 1111, getName() + "  " + player.getName() + "   !!!&4removed  " + removed + " t=" + player.getTeam() );
         
-        if (removed) updateBukkitEvents(MatchState.ONLEAVE, player);
+        if ( removed ) updateBukkitEvents(MatchState.ONLEAVE, player);
 
         return removed;
     }
@@ -97,13 +98,14 @@ public class AreaContainer extends AbstractAreaContainer {
      * Return a string of appended spawn locations
      * @return String
      */
-    public String getSpawnLocationString(){
+    public String getSpawnLocationString() {
         StringBuilder sb = new StringBuilder();
         List<List<SpawnLocation>> locs = getSpawns();
-        for (int i=0;i<locs.size(); i++ ){
-            if (locs.get(i) != null){
-                for (SpawnLocation loc : locs.get(i)){
-                    sb.append("[").append(i + 1).append(":").append( Util.getLocString(loc) ).append("] ");
+        for ( int i = 0; i < locs.size(); i++ ) {
+            if ( locs.get(i) != null ) {
+                for ( SpawnLocation loc : locs.get(i) ) {
+                    sb.append("[").append(i + 1).append(":")
+                      .append( Util.getLocString( loc.getLocation() ) ).append("] ");
                 }
             }
         }

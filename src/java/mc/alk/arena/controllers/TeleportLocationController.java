@@ -21,7 +21,6 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.spawns.SpawnLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.Util;
 
 public class TeleportLocationController {
     
@@ -155,7 +154,7 @@ public class TeleportLocationController {
         }
         if (teamIndex == -1) {
             Log.err("Team index for " + am + " team=" + team + " " + teamIndex + " was -1");
-            Util.printStackTrace();
+            Log.debugStackTrace();
             teamIndex = 0;
         }
         if (tops.hasAnyOption(TransitionOption.TELEPORTWAITROOM, TransitionOption.TELEPORTMAINWAITROOM)) {

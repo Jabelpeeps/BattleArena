@@ -6,7 +6,7 @@ import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;

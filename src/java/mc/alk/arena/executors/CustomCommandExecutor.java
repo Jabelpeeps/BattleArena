@@ -8,6 +8,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.controllers.ArenaAlterController;
 import mc.alk.arena.controllers.ArenaAlterController.ArenaOptionPair;
@@ -30,7 +32,6 @@ import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.pairs.ParamAlterOptionPair;
 import mc.alk.arena.objects.pairs.TransitionOptionTuple;
 import mc.alk.arena.objects.spawns.SpawnIndex;
-import mc.alk.arena.objects.teams.TeamIndex;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TeamUtil;
 
@@ -39,6 +40,11 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     protected final BattleArenaController arenaController;
     protected final EventController eventController;
     protected final ArenaEditor arenaEditor;
+
+    @AllArgsConstructor 
+    public static class TeamIndex {
+        @Getter private final Integer index;
+    }
 
     protected CustomCommandExecutor(){
         super();
@@ -267,7 +273,7 @@ public abstract class CustomCommandExecutor extends BaseExecutor{
     private ArenaPlayer verifyArenaPlayer(String name) throws IllegalArgumentException {
         Player p = ServerUtil.findPlayer(name);
         if (p == null || !p.isOnline())
-            throw new IllegalArgumentException(name+" is not online ");
+            throw new IllegalArgumentException(name + " is not online ");
         return PlayerController.toArenaPlayer(p);
     }
 

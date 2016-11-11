@@ -11,7 +11,6 @@ import java.util.Set;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.messaging.AnnouncementOptions;
 import mc.alk.arena.objects.messaging.Channel;
 import mc.alk.arena.objects.messaging.Channels;
 import mc.alk.arena.objects.messaging.Message;
@@ -27,16 +26,16 @@ public class MessageSerializer extends BaseConfig {
 	@Setter private static MessageSerializer defaultMessages;
 	private HashMap<String, MessageOptions> msgOptions = new HashMap<>();
     final private static HashMap<String, MessageSerializer> files = new HashMap<>();
-    final protected MatchParams matchParams;
+//    final protected MatchParams matchParams;
     protected String name;
-    protected AnnouncementOptions bos;
-
-	public MessageSerializer( String _name, MatchParams params ) {
+    
+    public MessageSerializer( String _name ) {
 	    if ( Defaults.DEBUG ) 
-	        Log.info( "[MessageSerializer] loading messages for: " + _name + " MatchParams=" + 
-	                            ( params == null ? "null" : params.getName() ) );
+	        Log.info( "[MessageSerializer] loading messages for: " + _name );
+//	                + " MatchParams=" + 
+//	                            ( params == null ? "null" : params.getName() ) );
 	    
-		matchParams = params;
+//		matchParams = params;
 		
 		if (_name == null ) return;		
 		name = _name;		
@@ -58,15 +57,16 @@ public class MessageSerializer extends BaseConfig {
         return null;	    
 	}
 	
-	public static void addMessageSerializer(String name, MessageSerializer ms){
-		files.put( name.toUpperCase(), ms );
+//	public static void addMessageSerializer(String name, MessageSerializer ms){
+//		files.put( name.toUpperCase(), ms );
+//	}
+
+	public static MessageSerializer getMessageSerializer( String name ) {
+		MessageSerializer found = files.get( name.toUpperCase() );
+		return found == null ? defaultMessages : found;
 	}
 
-	public static MessageSerializer getMessageSerializer( String name ){
-		return files.get(name.toUpperCase());
-	}
-
-	public static void reloadConfig(String params) {
+	public static void reloadConfig( String params ) {
 		MessageSerializer ms = files.get( params.toUpperCase() );
 		if ( ms != null ) {
 			ms.reloadFile();
@@ -74,7 +74,7 @@ public class MessageSerializer extends BaseConfig {
 		}
 	}
 
-	public void initMessageOptions(){
+	public void initMessageOptions() {
 		if ( config == null ) {
 		    Log.info( "MessageSerialiser.initMessageOptions() called when config still null!" );
 		    return;
@@ -121,18 +121,19 @@ public class MessageSerializer extends BaseConfig {
 
 	public static void loadDefaults() { if ( defaultMessages != null ) defaultMessages.reloadFile(); }
 
-	protected static String getStringPathFromSize(int size) {
+	public String getStringPathFromSize(int size) {
 		if (size == 1) return "oneTeam";
 		else if (size == 2) return "twoTeams";
 		else  return "multipleTeams";	
 	}
 
-	protected void sendVictory( Channel serverChannel, 
+	public void sendVictory( Channel serverChannel, 
 	                            Collection<ArenaTeam> victors, 
 	                            Collection<ArenaTeam> losers, 
 	                            String winnerpath,
 	                            String loserpath, 
-	                            String serverPath ) {
+	                            String serverPath,
+	                            MatchParams matchParams ) {
 		
 	    int size = victors != null ? victors.size() : 0;
 		size += losers != null ? losers.size() : 0;

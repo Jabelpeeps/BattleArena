@@ -25,7 +25,6 @@ import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.CompetitionTransition;
-import mc.alk.arena.objects.ContainerState;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchResult;
 import mc.alk.arena.objects.MatchState;
@@ -512,11 +511,11 @@ public class Arena extends AreaContainer {
             return reasons;
 
         if (jp.getArena() != null ) {
-            reasons.addAll(this.getInvalidMatchReasons(jp.getArena()));
+            reasons.addAll( getInvalidMatchReasons(jp.getArena()));
         }
 
         if (matchParams.hasOptionAt(MatchState.PREREQS,TransitionOption.WITHINDISTANCE)){
-            if (!jp.nearby(this,matchParams.getDoubleOption(MatchState.PREREQS,TransitionOption.WITHINDISTANCE))){
+            if (!jp.nearby( this, matchParams.getDoubleOption(MatchState.PREREQS,TransitionOption.WITHINDISTANCE))){
                 reasons.add("You aren't within " +
                         matchParams.getDoubleOption(MatchState.PREREQS,TransitionOption.WITHINDISTANCE) +" blocks");}
         }
@@ -570,7 +569,7 @@ public class Arena extends AreaContainer {
         sb.append( "&2 #spawns:&f" + spawns.size() + "&2 1stSpawn:&f" );
         if (!spawns.isEmpty()){
             SpawnLocation l = spawns.get(0).get(0);
-            sb.append("["+ Util.getLocString(l)+"] ");
+            sb.append("["+ Util.getLocString( l.getLocation() )+"] ");
         }
         if (timedSpawns != null && !timedSpawns.isEmpty())
             sb.append("&2#item/mob Spawns:&f" +timedSpawns.size());
@@ -609,10 +608,8 @@ public class Arena extends AreaContainer {
             return "&cArena is not open!";
         else if ( mp.needsWaitroom() && waitroom == null )
             return "&cYou need to create a waitroom!";
-        else if ( mp.needsWaitroom() && !waitroom.isOpen() )
-            return waitroom.getContainerMessage()!= null ?
-                    waitroom.getContainerMessage() :
-                    "&cWaitroom is not open!";
+        else if ( mp.needsWaitroom() && waitroom.isClosed() )
+            return waitroom.getContainerMessage();
         else if ( mp.needsWaitroom() && waitroom.getSpawns().isEmpty() )
             return "&cYou need to set a spawn point for the waitroom!";
         else if ( mp.needsSpectate() && spectatorRoom == null )
@@ -683,5 +680,20 @@ public class Arena extends AreaContainer {
      */
     protected void performTransition(CompetitionTransition transition, ArenaTeam team) {
         TransitionController.transition((match != null ? match : this), transition, team, false);
+    }
+
+    public SpawnLocation getTeamSpawn(ArenaTeam team, boolean random){
+        return random ? getSpawn( -1, true )
+                      : getSpawn( team.getIndex(), false );
+    }
+
+    public SpawnLocation getWaitRoomSpawn(ArenaTeam team, boolean random){
+        return random ? getRandomWaitRoomSpawnLoc()
+                      : getWaitRoomSpawnLoc( team.getIndex() );
+    }
+
+    public SpawnLocation getWaitRoomSpawn(int index, boolean random){
+        return random ? getRandomWaitRoomSpawnLoc()
+                      : getWaitRoomSpawnLoc( index );
     }
 }

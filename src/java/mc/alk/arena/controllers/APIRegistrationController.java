@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -126,13 +127,14 @@ public class APIRegistrationController {
         }
 
         ConfigSerializer config = new ConfigSerializer( plugin, configFile, name );
+        ConfigurationSection cs = config.getConfig();
         
-        if ( config.getConfigurationSection( name ) == null ) {
+        if ( cs.getConfigurationSection( name ) == null ) {
             Log.err( plugin.getName() + " " + configFile.getName() + " config file could not be loaded!" );
             return false;
         }
         /// What is our game type ? spleef, ctf, etc
-        ArenaType gameType = ConfigSerializer.getArenaGameType( config.getConfigurationSection( name ) );
+        ArenaType gameType = ConfigSerializer.getArenaGameType( cs.getConfigurationSection( name ) );
         
         ArenaType at = ArenaType.register( name, arenaClass, plugin );
 
@@ -141,7 +143,7 @@ public class APIRegistrationController {
         MessageSerializer ms = null;
 
         if ( FileUtil.load( plugin.getClass(), messageFile.getPath(), messageFile.getPath() ) != null ) {
-            ms = new MessageSerializer( name, mp );
+            ms = new MessageSerializer( name );
         } 
         else if ( gameType != null ) {
             RegisteredCompetition regComp = CompetitionController.getCompetition( plugin, gameType.getName() );
@@ -152,7 +154,7 @@ public class APIRegistrationController {
         if ( ms != null ) {
             ms.setConfig( messageFile );
             ms.initMessageOptions();
-            MessageSerializer.addMessageSerializer( name, ms );
+//            MessageSerializer.addMessageSerializer( name, ms );
         }
         /// Everything nearly successful, register our competition
         RegisteredCompetition rc = new RegisteredCompetition( plugin, name );

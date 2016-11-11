@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Setter;
 import mc.alk.arena.competition.AbstractComp;
 import mc.alk.arena.objects.ArenaPlayer;
+import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
@@ -15,14 +16,18 @@ import mc.alk.arena.serializers.MessageSerializer;
 import mc.alk.arena.util.MessageUtil;
 
 
-public class EventMessenger extends MessageSerializer {
+public class EventMessenger {
 	@Setter boolean silent = false;
     final AbstractComp event;
+    protected AnnouncementOptions bos;
+    private MatchParams params;
+    private MessageSerializer messages;
 
 	public EventMessenger( AbstractComp e ) {
-        super( e.getParams().getName(), e.getParams() );
+        params = e.getParams();
         event = e;
-		bos = event.getParams().getAnnouncementOptions();
+		bos = params.getAnnouncementOptions();
+		messages = MessageSerializer.getMessageSerializer( params.getName() );
 	}
 
 	protected Channel getChannel( MatchState state ) {
@@ -33,8 +38,8 @@ public class EventMessenger extends MessageSerializer {
 
     public void sendTeamJoinedEvent( ArenaTeam team ) {
         Channel serverChannel = getChannel( MatchState.ONJOIN );
-        Message message = getNodeMessage("common.onjoin");
-        Message serverMessage = getNodeMessage("common.onjoin_server");
+        Message message = messages.getNodeMessage("common.onjoin");
+        Message serverMessage = messages.getNodeMessage("common.onjoin_server");
         
         Set<MessageOption> ops = message.getOptions();
         if ( serverChannel != Channels.NullChannel ) {
@@ -43,7 +48,7 @@ public class EventMessenger extends MessageSerializer {
 
         List<ArenaTeam> teams = new ArrayList<>();
         teams.add(team);
-        MessageFormatter msgf = new MessageFormatter( this, matchParams, teams.size(), message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, teams.size(), message, ops );
         msgf.formatCommonOptions( teams );
         
         for ( ArenaTeam t : teams ) {
@@ -62,14 +67,14 @@ public class EventMessenger extends MessageSerializer {
     public void sendCountdownTillEvent(int seconds) {
         
         Channel serverChannel = getChannel(MatchState.ONCOUNTDOWNTOEVENT);
-        Message message = getNodeMessage("event.countdownTillEvent");
-        Message serverMessage = getNodeMessage("event.server_countdownTillEvent");
+        Message message = messages.getNodeMessage("event.countdownTillEvent");
+        Message serverMessage = messages.getNodeMessage("event.server_countdownTillEvent");
         Set<MessageOption> ops = message.getOptions();
         
         if ( serverChannel != Channels.NullChannel ) {
             ops.addAll( serverMessage.getOptions() );
         }
-        MessageFormatter msgf = new MessageFormatter( this, event.getParams(), 0, message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, 0, message, ops );
         msgf.formatCommonOptions( null, seconds );
 
         if ( serverChannel != Channels.NullChannel ) {
@@ -79,20 +84,21 @@ public class EventMessenger extends MessageSerializer {
     }
 
     public void sendEventStarting( Collection<ArenaTeam> teams ) {
-        String nTeamPath = getStringPathFromSize( teams.size() );
+        String nTeamPath = messages.getStringPathFromSize( teams.size() );
         
         formatAndSend( getChannel( MatchState.ONSTART ), 
                        teams, 
-                       getNodeMessage( "event." + nTeamPath + ".start" ), 
-                       getNodeMessage( "event." + nTeamPath + ".server_start" ) );
+                       messages.getNodeMessage( "event." + nTeamPath + ".start" ), 
+                       messages.getNodeMessage( "event." + nTeamPath + ".server_start" ) );
     }
 
     public void sendEventVictory( Collection<ArenaTeam> victors, Collection<ArenaTeam> losers ) {
-        String nTeamPath = getStringPathFromSize( losers.size() + 1 );
-        sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers,
-                     "event." + nTeamPath + ".victory", 
-                     "event." + nTeamPath + ".loss",
-                     "event." + nTeamPath + ".server_victory" );
+        String nTeamPath = messages.getStringPathFromSize( losers.size() + 1 );
+        messages.sendVictory( getChannel( MatchState.ONVICTORY ), victors, losers,
+                              "event." + nTeamPath + ".victory", 
+                              "event." + nTeamPath + ".loss",
+                              "event." + nTeamPath + ".server_victory",
+                              params );
     }
 
     public void sendEventOpenMsg() {
@@ -100,16 +106,16 @@ public class EventMessenger extends MessageSerializer {
         
         if ( serverChannel == Channels.NullChannel ) return;
         
-        String nTeamPath = getStringPathFromSize( matchParams.getMinTeams() );
+        String nTeamPath = messages.getStringPathFromSize( params.getMinTeams() );
         Message serverMessage;
         
-        if ( matchParams.getMinTeamSize() > 1 )
-            serverMessage = getNodeMessage( "event." + nTeamPath + ".server_open_teamSizeGreaterThanOne" );
+        if ( params.getMinTeamSize() > 1 )
+            serverMessage = messages.getNodeMessage( "event." + nTeamPath + ".server_open_teamSizeGreaterThanOne" );
         else
-            serverMessage = getNodeMessage( "event." + nTeamPath + ".server_open" );
+            serverMessage = messages.getNodeMessage( "event." + nTeamPath + ".server_open" );
         
         Set<MessageOption> ops = serverMessage.getOptions();
-        MessageFormatter msgf = new MessageFormatter( this, event.getParams(), 0, serverMessage, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, 0, serverMessage, ops );
         msgf.formatCommonOptions( null );
         String msg = msgf.getFormattedMessage( serverMessage );
         serverChannel.broadcast( msg );
@@ -117,14 +123,14 @@ public class EventMessenger extends MessageSerializer {
 
     public void sendEventCancelledDueToLackOfPlayers( Set<ArenaPlayer> competingPlayers ) {
         MessageUtil.sendMessage( competingPlayers, 
-                            matchParams.getPrefix() + "&e The Event has been cancelled b/c there weren't enough players" );
+                            params.getPrefix() + "&e The Event has been cancelled b/c there weren't enough players" );
     }
 
     public void sendEventCancelled( Collection<ArenaTeam> teams ) {
         formatAndSend( getChannel( MatchState.ONCANCEL ), 
                        teams, 
-                       getNodeMessage( "event.team_cancelled" ), 
-                       getNodeMessage( "event.server_cancelled" ) );
+                       messages.getNodeMessage( "event.team_cancelled" ), 
+                       messages.getNodeMessage( "event.server_cancelled" ) );
     }
 
     private void formatAndSend(Channel serverChannel, Collection<ArenaTeam> teams, Message message, Message serverMessage) {
@@ -133,7 +139,7 @@ public class EventMessenger extends MessageSerializer {
             ops.addAll( serverMessage.getOptions() );
         }
 
-        MessageFormatter msgf = new MessageFormatter( this, matchParams, teams.size(), message, ops );
+        MessageFormatter msgf = new MessageFormatter( messages, params, teams.size(), message, ops );
         msgf.formatCommonOptions( teams );
         for ( ArenaTeam t : teams ) {
             msgf.formatTeamOptions( t, false );
@@ -159,10 +165,11 @@ public class EventMessenger extends MessageSerializer {
     }
 
     public void sendEventDraw( Collection<ArenaTeam> participants, Collection<ArenaTeam> losers ) {
-        String nTeamPath = getStringPathFromSize( participants.size() );
-        sendVictory( getChannel( MatchState.ONVICTORY ), null, participants,
-                        "event." + nTeamPath + ".draw", 
-                        "event." + nTeamPath + ".draw",
-                        "event." + nTeamPath + ".server_draw" );
+        String nTeamPath = messages.getStringPathFromSize( participants.size() );
+        messages.sendVictory( getChannel( MatchState.ONVICTORY ), null, participants,
+                             "event." + nTeamPath + ".draw", 
+                             "event." + nTeamPath + ".draw",
+                             "event." + nTeamPath + ".server_draw",
+                             params );
     }
 }

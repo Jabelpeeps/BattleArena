@@ -60,7 +60,10 @@ public class TransitionController {
         }
     }
 
-    public static boolean transition( PlayerHolder am, CompetitionState transition, ArenaTeam team, boolean onlyInMatch ) {
+    public static boolean transition( PlayerHolder am, 
+                                      CompetitionState transition, 
+                                      ArenaTeam team, 
+                                      boolean onlyInMatch ) {
         return transition( am, transition, team, onlyInMatch, true );
     }
 
@@ -165,8 +168,8 @@ public class TransitionController {
 
         boolean storeAll = mo.hasOption(TransitionOption.STOREALL);
         PlayerStoreController psc = PlayerStoreController.INSTANCE;
-        boolean armorTeams = tops.hasAnyOption(TransitionOption.ARMORTEAMS);
-        boolean woolTeams = tops.hasAnyOption(TransitionOption.WOOLTEAMS);
+        boolean armorTeams = tops.hasOption(TransitionOption.ARMORTEAMS);
+        boolean woolTeams = tops.hasOption(TransitionOption.WOOLTEAMS);
 
         /// Only do if player is online options
         if (playerReady && !dead) {

@@ -13,7 +13,7 @@ import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.CompetitionSize;
+import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.joining.JoinHandler;
 import mc.alk.arena.objects.joining.TeamJoinObject;
@@ -240,7 +240,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public boolean isFull() {
-        if ( maxTeams == CompetitionSize.MAX ) return false;
+        if ( maxTeams == ArenaSize.MAX ) return false;
         if ( maxTeams > teams.size() ) return false;
 
         for ( ArenaTeam t : teams ) {

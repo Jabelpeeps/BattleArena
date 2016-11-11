@@ -11,7 +11,7 @@ import mc.alk.arena.competition.Match;
 import mc.alk.arena.events.matches.MatchFindCurrentLeaderEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.scoreboard.ArenaScoreboard;
 import mc.alk.arena.objects.scoreboard.SAPIDisplaySlot;
@@ -58,7 +58,7 @@ public class MobKills extends VictoryCondition implements ScoreTracker{
 		mkills.addPoints(killer, 1);
 	}
 
-	@ArenaEventHandler(priority = ArenaEventPriority.LOW)
+	@ArenaEventHandler( priority = ArenaEventPriority.LOW )
 	public void onFindCurrentLeader(MatchFindCurrentLeaderEvent event) {
         event.setResult(mkills.getMatchResult(match));
 	}

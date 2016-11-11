@@ -352,7 +352,7 @@ public class ArenaSerializer extends BaseConfig {
         StateGraph trans = mp.getArenaStateGraph();
         if (trans == null)
             return;
-        WorldGuardController.setFlag(arena.getWorldGuardRegion(), "entry", !trans.hasAnyOption(TransitionOption.WGNOENTER));
+        WorldGuardController.setFlag(arena.getWorldGuardRegion(), "entry", !trans.hasOption(TransitionOption.WGNOENTER));
         try {
             WorldGuardController.trackRegion(arena.getWorldGuardRegion());
         } catch (RegionNotFound e) {

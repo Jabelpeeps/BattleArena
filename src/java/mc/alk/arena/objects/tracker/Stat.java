@@ -15,7 +15,6 @@ import mc.alk.arena.tracker.EloCalculator;
 import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.util.Cache.CacheObject;
 import mc.alk.arena.util.Log;
-import mc.alk.arena.util.Util;
 
 
 public abstract class Stat extends CacheObject<String, Stat> implements ArenaStat {
@@ -34,7 +33,7 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 	@Override
 	public String getKey() {
 		if ( strID.length() > 32 )
-			Util.printStackTrace();
+			Log.debugStackTrace();
 
 		return strID;
 	}
@@ -45,7 +44,7 @@ public abstract class Stat extends CacheObject<String, Stat> implements ArenaSta
 		
 		if ( strID != null && strID.length() > 32 ) {
 			Log.err("NAME = " + _name + "    strid=" + strID );
-			Util.printStackTrace();
+			Log.debugStackTrace();
 		}
 	}
 	public void setWins(int i) {   wins = i;   setDirty(); }

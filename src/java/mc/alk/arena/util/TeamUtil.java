@@ -1,7 +1,6 @@
 package mc.alk.arena.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -23,7 +22,7 @@ import mc.alk.arena.objects.teams.ArenaTeam;
 public class TeamUtil {
 	static final int NTEAMS = 35;
 	static final List<TeamHead> teamHeads = new ArrayList<>();
-	static final HashMap<String,Integer> map = new HashMap<>();
+//	static final HashMap<String, Integer> map = new HashMap<>();
 
 	public static void removeTeamHead(final int color, Player p) {
 		ItemStack item = getTeamHead(color);
@@ -69,20 +68,20 @@ public class TeamUtil {
 		}
 	}
 
-	public static Integer getTeamIndex(String op) {
-		if (map.containsKey(op.toUpperCase()))
-			return map.get(op.toUpperCase());
-		try {
-			return Integer.valueOf(op);
-		} 
-		catch( NumberFormatException e ){
-			return null;
-		}
-	}
+//	public static Integer getTeamIndex(String op) {
+//		if (map.containsKey(op.toUpperCase()))
+//			return map.get(op.toUpperCase());
+//		try {
+//			return Integer.valueOf(op);
+//		} 
+//		catch( NumberFormatException e ){
+//			return null;
+//		}
+//	}
 
     public static Integer getFromHumanTeamIndex(String op) {
-        if (map.containsKey(op.toUpperCase()))
-            return map.get(op.toUpperCase());
+//        if (map.containsKey(op.toUpperCase()))
+//            return map.get(op.toUpperCase());
         try {
             return Integer.valueOf(op) -1;
         } 
@@ -93,7 +92,7 @@ public class TeamUtil {
 
     public static void addTeamHead(String name, TeamHead th) {
 		teamHeads.add(th);
-		map.put(name.toUpperCase(), teamHeads.size()-1);
+//		map.put( name.toUpperCase(), teamHeads.size() - 1 );
 	}
 
 	public static String formatName(ArenaTeam t){
@@ -128,11 +127,11 @@ public class TeamUtil {
             StateGraph tops = teamParams.getStateGraph();
             team.setTeamChatColor( getTeamChatColor(index));
             if (tops != null){
-                if (tops.hasAnyOption(TransitionOption.WOOLTEAMS) && teamParams.getMaxTeamSize() > 1 ||
-                        tops.hasAnyOption(TransitionOption.ALWAYSWOOLTEAMS)){
+                if (tops.hasOption(TransitionOption.WOOLTEAMS) && teamParams.getMaxTeamSize() > 1 ||
+                        tops.hasOption(TransitionOption.ALWAYSWOOLTEAMS)){
                     team.setHeadItem( getTeamHead(index));
                 }
-                alwaysTeamNames = tops.hasAnyOption(TransitionOption.ALWAYSTEAMNAMES);
+                alwaysTeamNames = tops.hasOption(TransitionOption.ALWAYSTEAMNAMES);
             }
 
             String name;

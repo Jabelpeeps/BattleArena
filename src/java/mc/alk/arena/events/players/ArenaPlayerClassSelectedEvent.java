@@ -9,7 +9,7 @@ import lombok.Setter;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
 
-public class ArenaPlayerClassSelectedEvent extends ArenaPlayerEvent{
+public class ArenaPlayerClassSelectedEvent extends ArenaPlayerEvent {
 	@Getter @Setter ArenaClass arenaClass;
 	@Getter @Setter List<ItemStack> items = null;
 	

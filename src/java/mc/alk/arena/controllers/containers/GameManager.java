@@ -25,7 +25,7 @@ import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.plugins.EssentialsUtil;
 import mc.alk.arena.util.Log;
@@ -35,26 +35,29 @@ public class GameManager extends PlayerHolder {
 	static final HashMap<ArenaType, GameManager> map = new HashMap<>();
 
 	final Set<ArenaPlayer> players = new HashSet<>(); 
-	public static GameManager getGameManager(MatchParams mp) {
+	public static GameManager getGameManager( MatchParams mp ) {
 	    
-		if (map.containsKey(mp.getType()))
-			return map.get(mp.getType());
+		if ( map.containsKey( mp.getType() ) )
+			return map.get( mp.getType() );
 		
-		GameManager gm = new GameManager(mp);
-		map.put(mp.getType(), gm);
+		GameManager gm = new GameManager( mp );
+		map.put( mp.getType(), gm );
 		return gm;
 	}
 
-	private GameManager(MatchParams _params){
+	private GameManager( MatchParams _params ) {
 		params = _params;
 		methodController.addAllEvents(this);
 		
-		if (Defaults.TESTSERVER) {Log.info("GameManager Testing"); return;}
-		Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
+		if (Defaults.TESTSERVER) {
+		    Log.info("GameManager Testing"); 
+		    return;
+	    }	
+		Bukkit.getPluginManager().registerEvents( this, BattleArena.getSelf() );
 	}
 
 	@ArenaEventHandler( priority = ArenaEventPriority.HIGHEST )
-	public void onArenaPlayerLeaveEvent(ArenaPlayerLeaveEvent event){
+	public void onArenaPlayerLeaveEvent( ArenaPlayerLeaveEvent event ) {
 		if (players.contains(event.getPlayer()) && !event.isHandledQuit()){
 			ArenaPlayer player = event.getPlayer();
 			ArenaTeam t = getTeam(player);
@@ -63,10 +66,10 @@ public class GameManager extends PlayerHolder {
 	}
 
 	private void quitting(ArenaPlayer player){
-		if (players.remove(player)){
-			TransitionController.transition(this, MatchState.ONLEAVE, player, null, false);
-			updateBukkitEvents(MatchState.ONLEAVE, player);
-			player.reset(); /// reset their isReady status, chosen class, etc.
+		if ( players.remove( player ) ) {
+			TransitionController.transition( this, MatchState.ONLEAVE, player, null, false );
+			updateBukkitEvents( MatchState.ONLEAVE, player );
+			player.reset(); 
 		}
 	}
 

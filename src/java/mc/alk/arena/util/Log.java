@@ -74,4 +74,10 @@ public class Log {
         info(msg);
 //        NotifierUtil.notify(id, colorChat(msg));
     }
+
+    static public void debugStackTrace() {
+    	if ( Defaults.DEBUG )
+    		for ( StackTraceElement ste : Thread.currentThread().getStackTrace() )
+    			System.out.println( ste );
+    }
 }

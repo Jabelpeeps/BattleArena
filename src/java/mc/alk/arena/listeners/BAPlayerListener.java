@@ -51,7 +51,7 @@ public class BAPlayerListener implements Listener  {
 	 * but the other plugin force spawns them at spawn... so they now have creative in an area they shouldnt
 	 * @param event PlayerRespawnEvent
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler( priority = EventPriority.HIGHEST )
 	public void onPlayerRespawn(PlayerRespawnEvent event){
         UUID id = event.getPlayer().getUniqueId();
         if (restore.containsKey(id)){
@@ -65,7 +65,7 @@ public class BAPlayerListener implements Listener  {
 	 * This method is just used to handle essentials and the /back command
 	 * @param event PlayerDeathEvent
 	 */
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler( priority = EventPriority.MONITOR )
 	public void onPlayerDeath(PlayerDeathEvent event){
 		if (!EssentialsUtil.isEnabled() || !PlayerController.hasArenaPlayer(event.getEntity()))
 			return;
@@ -80,7 +80,7 @@ public class BAPlayerListener implements Listener  {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler( priority = EventPriority.LOWEST )
 	public void onPlayerQuit(PlayerQuitEvent event){
 		if (!PlayerController.hasArenaPlayer(event.getPlayer()))
 			return;
@@ -91,25 +91,24 @@ public class BAPlayerListener implements Listener  {
 	}
 
 	private static PlayerRestoreController getOrCreateRestorer(ArenaPlayer player) {
-        final UUID id = player.getUniqueId();
-        if (restore.containsKey(id)) {
-            return restore.get(id);
+        UUID id = player.getUniqueId();
+        if ( !restore.containsKey( id ) ) {
+            restore.put( id, new PlayerRestoreController( player ) );
         }
-        PlayerRestoreController prc = new PlayerRestoreController(player);
-        restore.put(id, prc);
-        return prc;
+        return restore.get( id );
     }
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler( priority = EventPriority.HIGHEST )
 	public void onPlayerTeleport(PlayerTeleportEvent event){
-		if (event.isCancelled() || !WorldGuardController.hasWorldGuard() ||
-				WorldGuardController.regionCount() == 0 ||
-				event.getPlayer().hasPermission(Permissions.TELEPORT_BYPASS_PERM))
+		if (   event.isCancelled() 
+		       || !WorldGuardController.hasWorldGuard() 
+		       || WorldGuardController.regionCount() == 0 
+		       || event.getPlayer().hasPermission( Permissions.TELEPORT_BYPASS_PERM ) )
 			return;
-		WorldGuardRegion region = WorldGuardController.getContainingRegion(event.getTo());
-		if (region != null && !WorldGuardController.hasPlayer(event.getPlayer().getName(), region)){
-			MessageUtil.sendMessage(event.getPlayer(), "&cYou can't enter the arena through teleports");
-			event.setCancelled(true);
+		WorldGuardRegion region = WorldGuardController.getContainingRegion( event.getTo() );
+		if ( region != null && !WorldGuardController.hasPlayer( event.getPlayer().getName(), region ) ) {
+			MessageUtil.sendMessage( event.getPlayer(), "&cYou can't enter the arena through teleports" );
+			event.setCancelled( true );
 		}
 	}
 

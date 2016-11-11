@@ -4,8 +4,6 @@ import java.io.File;
 
 import org.bukkit.Material;
 
-import mc.alk.arena.objects.CompetitionSize;
-
 public class Defaults {
 
     public static String MONEY_STR = "Gold";
@@ -22,7 +20,7 @@ public class Defaults {
     /// MATCH OPTIONS
     public static int SECONDS_TILL_MATCH = 15;
     public static int SECONDS_TO_LOOT = 15;
-    public static int MATCH_TIME = CompetitionSize.MAX; /// matchEndTime
+    public static int MATCH_TIME = 3000; /// matchEndTime
     public static int MATCH_UPDATE_INTERVAL = 30;
     public static int JOIN_CUTOFF_TIME = 15;
 
@@ -91,7 +89,7 @@ public class Defaults {
     public static final boolean DEBUG_SCHEDULER = false;
     public static final boolean DEBUG_SPAWNS = true;
     public static final boolean TESTSERVER_DEBUG = false;
-    public static final String  DEFAULT_CONFIG_NAME = "Default";
+    public static final String  DEFAULT_CONFIG_NAME = "default";
     
     public static boolean TESTSERVER = false;
     public static boolean DEBUG_STRESS = false;

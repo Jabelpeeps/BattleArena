@@ -1,11 +1,9 @@
 package mc.alk.arena.util;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -65,40 +63,25 @@ public class PlayerUtil {
             p.setGameMode( gameMode );
         }
     }
-    public static void doCommands(Player p, List<CommandLineString> doCommands) {
-        String name = p.getName();
+    public static void doCommands(Player player, List<CommandLineString> doCommands) {
+        String name = player.getName();
         for ( CommandLineString cls : doCommands ){
-            try{
-                CommandSender cs = cls.isConsoleSender() ? Bukkit.getConsoleSender() : p;
-                if (Defaults.DEBUG_TRANSITIONS) 
-                    Log.info( "BattleArena doing command '" + cls.getCommand(name) + "' as " + cs.getName() );
+            try {
+                CommandSender cs = cls.isConsoleSender() ? Bukkit.getConsoleSender() : player;
+                String command = cls.getCommand( name );
+                if ( Defaults.DEBUG_TRANSITIONS ) 
+                    Log.info( "BattleArena doing command '" + command + "' as " + cs.getName() );
                 
-                Bukkit.dispatchCommand( cs, cls.getCommand(name) );
+                Bukkit.dispatchCommand( cs, command );
             } 
             catch (Exception e){
                 Log.err("[BattleArena] Error executing command as console or player");
                 Log.printStackTrace(e);
             }
-
         }
     }
-    public static void setFlight(Player player, boolean enable) {
-        player.setAllowFlight(enable);
-        player.setFlying(enable);
+    public static void setFlight( Player player, boolean enable ) {
+        player.setAllowFlight( enable );
+        player.setFlying( enable );
     }
-
-    public static OfflinePlayer getOfflinePlayer(String name) {
-        OfflinePlayer op = PlayerUtil.map.get(name);
-        
-        if ( op == null ) {
-            op = Bukkit.getPlayerExact( name );
-            
-            if ( op == null ) return null;
-        }
-        PlayerUtil.map.put(name, op);
-        
-        return op;
-    }
-
-    public static HashMap<String, OfflinePlayer> map = new HashMap<>();
 }

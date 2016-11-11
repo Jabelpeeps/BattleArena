@@ -54,9 +54,6 @@ public class PlayerSave {
     public PlayerSave(ArenaPlayer _player) {
         player = _player;
     }
-    public String getName() {
-        return player.getName();
-    }
     public UUID getUUID() {
         return player.getUniqueId();
     }
@@ -86,7 +83,7 @@ public class PlayerSave {
     }
 
     public void storeHealth() {
-        if (health!=null) return;
+        if ( health != null ) return;
         health = player.getHealth();
         if (Defaults.DEBUG_STORAGE) Log.info("storing health=" + health + " for player=" + player.getName());
     }
@@ -105,8 +102,8 @@ public class PlayerSave {
     }
 
     public void storeHunger() {
-        if (hunger !=null) return;
-        hunger = player.getFoodLevel();
+        if ( hunger == null )
+            hunger = player.getFoodLevel();
     }
 
     public void restoreHunger() {
@@ -121,8 +118,8 @@ public class PlayerSave {
     }
 
     public void storeEffects() {
-        if (effects !=null) return;
-        effects = new ArrayList<>(player.getPlayer().getActivePotionEffects());
+        if (effects == null ) 
+            effects = new ArrayList<>(player.getPlayer().getActivePotionEffects());
     }
 
     public void restoreEffects() {
@@ -138,8 +135,8 @@ public class PlayerSave {
     }
 
     public void storeMagic() {
-        if (!HeroesController.enabled() || magic != null) return;
-        magic = HeroesController.getMagicLevel(player.getPlayer());
+        if ( HeroesController.enabled() && magic == null ) 
+            magic = HeroesController.getMagicLevel(player.getPlayer());
     }
 
     public void restoreMagic() {
@@ -155,15 +152,16 @@ public class PlayerSave {
     }
 
     public void storeItems() {
-        if (items != null) return;
-        player.getPlayer().closeInventory();
-        items = new PInv(player.getInventory());
-        InventorySerializer.saveInventory(player.getUniqueId(), items);
+        if ( items == null ) {
+            player.getPlayer().closeInventory();
+            items = new PInv(player.getInventory());
+            InventorySerializer.saveInventory(player.getUniqueId(), items);
+        }
     }
 
     public void restoreItems() {
         if (items == null) return;
-        InventoryUtil.addToInventory(player.getPlayer(), items);
+        InventoryUtil.addToInventory( player.getPlayer(), items );
         items = null;
     }
 
@@ -173,16 +171,16 @@ public class PlayerSave {
         return ret;
     }
 
-    public void storeMatchItems() {
-        UUID id = player.getUniqueId();
+    public PlayerSave storeMatchItems() {
         player.getPlayer().closeInventory();
-        PInv pinv = new PInv(player.getInventory());
+        PInv pinv = new PInv( player.getInventory() );
         
-        if (matchItems == null) {
-            InventorySerializer.saveInventory(id, pinv);
+        if ( matchItems == null ) {
+            InventorySerializer.saveInventory( player.getUniqueId(), pinv);
         }
         matchItems = pinv;
-        BAPlayerListener.restoreMatchItemsOnReenter(player, pinv);
+        BAPlayerListener.restoreMatchItemsOnReenter( player, pinv );
+        return this;
     }
 
     public void restoreMatchItems() {

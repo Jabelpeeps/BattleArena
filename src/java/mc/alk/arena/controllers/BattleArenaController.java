@@ -23,15 +23,14 @@ import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
+import mc.alk.arena.controllers.containers.AbstractAreaContainer.ContainerState;
 import mc.alk.arena.controllers.containers.GameManager;
 import mc.alk.arena.controllers.containers.RoomContainer;
 import mc.alk.arena.controllers.joining.AbstractJoinHandler;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.events.matches.MatchOpenEvent;
-import mc.alk.arena.listeners.SignUpdateListener;
 import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.ContainerState;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.Arena;
@@ -61,7 +60,6 @@ public class BattleArenaController implements ArenaListener, Listener {
     @Getter static private Map<String, Arena> allArenas = new ConcurrentHashMap<>();
     final private Map<ArenaType,OldLobbyState> oldLobbyState = new HashMap<>();
     final ArenaMatchQueue amq = new ArenaMatchQueue();
-    final SignUpdateListener signUpdateListener;
 
     final private Map<ArenaType, Arena> fixedArenas = new HashMap<>();
 
@@ -73,10 +71,8 @@ public class BattleArenaController implements ArenaListener, Listener {
         public boolean remove(Match am) { return running.remove(am); }
     }
 
-    public BattleArenaController( SignUpdateListener _signUpdateListener ){
-        MethodController methodController = new MethodController();
-        methodController.addAllEvents(this);
-        signUpdateListener = _signUpdateListener;
+    public BattleArenaController() {
+        new MethodController().addAllEvents(this);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -121,7 +117,7 @@ public class BattleArenaController implements ArenaListener, Listener {
         Match m = amq.createMatch(arena, eoo);
         m.setOldArenaParams(oldArenaParams);
         saveStates(m,arena);
-        arena.setAllContainerState(ContainerState.OPEN);
+        arena.setAllContainerState(ContainerState.isOPEN);
         m.setTimedStart(eoo.getSecTillStart(), eoo.getInterval());
         amq.incNumberOpenMatches(mp.getType());
 
@@ -165,7 +161,7 @@ public class BattleArenaController implements ArenaListener, Listener {
 
     @ArenaEventHandler
     public void matchFinished(MatchFinishedEvent event){
-        if (Defaults.DEBUG ) Log.info("BattleArenaController::matchFinished=" + this + ":" );
+        if ( Defaults.DEBUG ) Log.info("BattleArenaController::matchFinished=" + this + ":" );
         Match am = event.getMatch();
         removeMatch(am); 
 
@@ -179,18 +175,13 @@ public class BattleArenaController implements ArenaListener, Listener {
             MatchParams mp = am.getParams();
             List<ArenaPlayer> players = am.getNonLeftPlayers();
             String[] args = {};
-            for (ArenaPlayer ap: players){
+            for ( ArenaPlayer ap : players) {
                 BattleArena.getBAExecutor().join(ap, mp, args);
             }
         }
         /// isEnabled to check to see if we are shutting down
         if ( BattleArena.getSelf().isEnabled() ) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask( BattleArena.getSelf(), new Runnable(){
-                @Override
-                public void run() {
-                    amq.add(arena); /// add it back into the queue
-                }
-            }, am.getParams().getArenaCooldown() * 20L );
+            Scheduler.scheduleSynchronousTask( () -> amq.add( arena ), am.getParams().getArenaCooldown() * 20L );
         }
     }
 
@@ -245,8 +236,8 @@ public class BattleArenaController implements ArenaListener, Listener {
   
         if ( tqo.getJoinOptions().hasArena() && jr.status != JoinStatus.STARTED_NEW_GAME ) {
             Arena a = tqo.getJoinOptions().getArena();
-            if (    !( a.getParams().hasOptionAt( MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN ) 
-                    || a.getParams().hasOptionAt( MatchState.ONJOIN, TransitionOption.ALWAYSJOIN ) ) 
+            if (    !(  a.getParams().hasOptionAt( MatchState.DEFAULTS, TransitionOption.ALWAYSOPEN ) 
+                        || a.getParams().hasOptionAt( MatchState.ONJOIN, TransitionOption.ALWAYSJOIN ) ) 
                 && mp.hasOptionAt( MatchState.ONJOIN, TransitionOption.TELEPORTIN ) 
                 && BattleArena.getBAController().getMatch(a) != null ) {
                 throw new IllegalStateException("&cThe arena " + a.getDisplayName() + "&c is currently in use");
@@ -347,9 +338,9 @@ public class BattleArenaController implements ArenaListener, Listener {
     }
 
     public void arenaChanged(Arena arena){
-        try{
-            if (removeArena(arena) != null){
-                addArena(arena);}
+        try {
+            if (removeArena(arena) != null)
+                addArena(arena);
         } catch (Exception e){
             Log.printStackTrace(e);
         }
@@ -700,7 +691,7 @@ public class BattleArenaController implements ArenaListener, Listener {
 
     public void openAll(MatchParams mp) {
         for (Arena arena : getArenas(mp)) {
-            arena.setAllContainerState(ContainerState.OPEN);
+            arena.setAllContainerState(ContainerState.isOPEN);
         }
     }
 }

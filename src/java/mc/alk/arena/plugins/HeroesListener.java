@@ -50,20 +50,20 @@ public enum HeroesListener implements Listener {
 	}
 
 	@EventHandler( priority = EventPriority.HIGHEST, ignoreCancelled = true )
-	public void skillDisabled(SkillUseEvent event){
-		if (event.getPlayer() == null){
-			return;}
-		if (!InArenaListener.inArena(event.getPlayer())){
-			return;}
-		if (event.getSkill().getName().equals("Revive")){
-			Player p = event.getArgs().length > 0 ? ServerUtil.findPlayer(event.getArgs()[0]) : null;
-			if (p != null && !InArenaListener.inArena(p)){
-				MessageUtil.sendMessage(event.getPlayer(), "&cYou can't revive a player who is not in the arena!");
+	public void skillDisabled(SkillUseEvent event) {
+	    Player player = event.getPlayer();
+		if ( player == null || !InArenaListener.inArena( player ) ) return;
+		
+		if ( event.getSkill().getName().equals("Revive") ) {
+			Player patient = event.getArgs().length > 0 ? ServerUtil.findPlayer(event.getArgs()[0]) : null;
+			if ( patient != null && !InArenaListener.inArena( patient ) ) {
+				MessageUtil.sendMessage( player, "&cYou can't revive a player who is not in the arena!" );
 				event.setCancelled(true);
+				return;
 			}
 		}
-		if (!containsHeroesSkill(event.getSkill().getName()))
-			return;
+		if ( !containsHeroesSkill( event.getSkill().getName() ) ) return;
+		
 		event.setCancelled(true);
 	}
 

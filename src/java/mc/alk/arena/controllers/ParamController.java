@@ -13,7 +13,6 @@ import mc.alk.arena.objects.EventParams;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.StateGraph;
 import mc.alk.arena.objects.arenas.Arena;
-import mc.alk.arena.objects.arenas.ArenaType;
 import mc.alk.arena.util.CaseInsensitiveMap;
 
 
@@ -54,58 +53,31 @@ public class ParamController {
     }
 
     public static void removeMatchType(MatchParams matchParams) {
-        if (matchParams.getType()!=null)
-            types.remove(matchParams.getType().getName());
-        types.remove(matchParams.getCommand());
+        if ( matchParams.getType() != null )
+            types.remove( matchParams.getType().getName() );
+        types.remove( matchParams.getCommand() );
     }
 
-    public static Collection<MatchParams> getAllParams(){
+    public static Collection<MatchParams> getAllParams() {
         return types.values();
     }
 
     /**
      * Returns the found matchparams
      * If you want to change you should make a copy
-     * @param type ArenaType
-     * @return MatchParams
-     */
-    public static MatchParams getMatchParams(ArenaType type){
-        return types.get(type.getName());
-    }
-    /**
-     * Returns the found matchparams
-     * If you want to change you should make a copy
      * @param type the ArenaType
      * @return MatchParams
      */
-    public static MatchParams getMatchParams(String type){
+    public static MatchParams getMatchParams( String type ) {
         return types.get(type);
     }
 
     /**
-     * Returns the found matchparams
-     * If you want to change you should make a copy
-     * @param params the Params
-     * @return MatchParams
-     */
-    public static MatchParams getMatchParams(MatchParams params) {
-        return types.get(params.getType().getName());
-    }
-
-    /**
      * Return a copy of the found matchparams
      * @param type ArenaType
      * @return MatchParams
      */
-    public static MatchParams getMatchParamCopy(ArenaType type){
-        return getMatchParamCopy(type.getName());
-    }
-    /**
-     * Return a copy of the found matchparams
-     * @param type ArenaType
-     * @return MatchParams
-     */
-    public static MatchParams getMatchParamCopy(String type){
+    public static MatchParams getMatchParamCopy( String type  ){
         MatchParams mp = types.get(type);
         if ( mp == null ) return null;
         return mp instanceof EventParams ? new EventParams(mp) : new MatchParams(mp);

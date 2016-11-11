@@ -21,8 +21,8 @@ import mc.alk.arena.util.Log;
 
 public class PlayerStoreController {
     public static final PlayerStoreController INSTANCE = new PlayerStoreController();
-
-    final static HashMap<UUID, PlayerSave> saves = new HashMap<>();
+    private final static HashMap<UUID, PlayerSave> saves = new HashMap<>();
+    
     private PlayerStoreController(){}
 
     public static PlayerStoreController save( PlayerSave save ) {
@@ -37,24 +37,6 @@ public class PlayerStoreController {
         save = new PlayerSave(player);
         saves.put( player.getUniqueId(), save );
         return save;
-    }
-
-    /**
-     * Warning, money is not stored here.. but will be restored with restoreAll if set separately
-     * @param player ArenaPlayer
-     */
-    public void storeAll( ArenaPlayer player ) {
-        storeEffects(player);
-        storeExperience(player);
-        storeFlight(player);
-        storeGamemode(player);
-        storeHealth(player);
-        storeHeroClass(player);
-        storeHunger(player);
-        storeItems(player);
-        storeMagic(player);
-        storeMatchItems(player);
-        storeScoreboard(player);
     }
 
     public void restoreAll( ArenaPlayer player ) {

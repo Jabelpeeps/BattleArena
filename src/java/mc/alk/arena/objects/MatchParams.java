@@ -141,7 +141,7 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
     @Override
     public boolean valid() {
         return  super.valid() 
-                && (    !getStateGraph().hasAnyOption(TransitionOption.TELEPORTLOBBY) 
+                && (    !getStateGraph().hasOption(TransitionOption.TELEPORTLOBBY) 
                         || RoomController.hasLobby( getType() ) );
     }
 
@@ -149,7 +149,7 @@ public class MatchParams extends ArenaParams implements Comparable<MatchParams>{
     public Collection<String> getInvalidReasons() {
         List<String> reasons = new ArrayList<>();
         
-        if (getStateGraph().hasAnyOption(TransitionOption.TELEPORTLOBBY) && !RoomController.hasLobby(getType()))
+        if (getStateGraph().hasOption(TransitionOption.TELEPORTLOBBY) && !RoomController.hasLobby(getType()))
             reasons.add("Needs a Lobby");
         reasons.addAll(super.getInvalidReasons());
         return reasons;

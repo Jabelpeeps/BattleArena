@@ -26,13 +26,6 @@ public class YamlFileUpdater {
     private File configFile = null;
     private File backupDir;
 
-    public YamlFileUpdater(File backupDir){
-        this.backupDir = backupDir;
-        if (!backupDir.exists()){
-            try{backupDir.mkdirs();}catch(Exception e){}
-        }
-    }
-
     public YamlFileUpdater(Plugin plugin){
         backupDir = new File(plugin.getDataFolder() +"/saves/backups");
         if (!backupDir.exists()){
@@ -47,10 +40,10 @@ public class YamlFileUpdater {
         Version version = new Version(fc.getString("version","0"));
         File dir = BattleArena.getSelf().getDataFolder();
         if (version.compareTo("1.5.1") < 0){
-            messageTo1Point51(ms.getConfig(), version, new Version("1.5.1"));
+            messageTo1Point51( fc, version, new Version("1.5.1"));
             ms.setConfig(new File(dir+"/messages.yml"));
         } else if (version.compareTo("1.5.2") < 0){
-            messageTo1Point52(ms.getConfig(), version, new Version("1.5.2"));
+            messageTo1Point52( fc, version, new Version("1.5.2"));
             ms.setConfig(new File(dir+"/messages.yml"));
         }
         version = new Version(fc.getString("version","0"));
@@ -416,7 +409,6 @@ public class YamlFileUpdater {
         }
         return file;
     }
-
 
     public File getBackupDir() {
         return backupDir;

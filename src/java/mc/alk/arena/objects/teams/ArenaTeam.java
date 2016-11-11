@@ -10,7 +10,6 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,6 +23,7 @@ import mc.alk.arena.objects.messaging.MessageHandler;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.tracker.Tracker;
+import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 
 public abstract class ArenaTeam {

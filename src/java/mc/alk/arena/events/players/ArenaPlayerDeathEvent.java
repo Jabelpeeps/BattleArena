@@ -7,16 +7,14 @@ import lombok.Setter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.teams.ArenaTeam;
 
-public class ArenaPlayerDeathEvent extends ArenaPlayerEvent{
+public class ArenaPlayerDeathEvent extends ArenaPlayerEvent {
     @Getter final ArenaTeam team;
-    @Getter @Setter PlayerDeathEvent playerDeathEvent;
+    @Getter PlayerDeathEvent playerDeathEvent;
 	@Getter @Setter boolean exiting = false;
 
-	public ArenaPlayerDeathEvent(ArenaPlayer arenaPlayer, ArenaTeam _team) {
-		super(arenaPlayer);
+	public ArenaPlayerDeathEvent(ArenaPlayer arenaPlayer, ArenaTeam _team, PlayerDeathEvent event) {
+		super( arenaPlayer );
 		team = _team;
-	}
-	public boolean isTrueDeath() {
-		return playerDeathEvent != null;
+		playerDeathEvent = event;
 	}
 }

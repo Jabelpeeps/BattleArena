@@ -3,8 +3,8 @@ package mc.alk.arena.listeners.custom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.objects.arenas.ArenaListener;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.arena.objects.events.ArenaEventPriority;
 
 @AllArgsConstructor
 class RListener implements Comparable<RListener> {
@@ -16,7 +16,7 @@ class RListener implements Comparable<RListener> {
 	public ArenaEventPriority getPriority() { return method.getPriority(); }
 
 	@Override
-	public String toString(){
+	public String toString() {
 		return "[" + listener.getClass().getSimpleName() + " : " + method + "]";
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.arena.util.PlayerUtil;
+import mc.alk.arena.util.ServerUtil;
 
 public class CutoffScoreboard extends AbstractWaitingScoreBoard {
     
@@ -68,7 +68,7 @@ public class CutoffScoreboard extends AbstractWaitingScoreBoard {
         }
 
         r.addLast(entry);
-        t.addPlayer( PlayerUtil.getOfflinePlayer( entry.getBaseDisplayName() ) );
+        t.addPlayer( ServerUtil.getOfflinePlayer( entry.getBaseDisplayName() ) );
     }
 
     @Override

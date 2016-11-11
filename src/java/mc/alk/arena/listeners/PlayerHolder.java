@@ -48,14 +48,14 @@ public abstract class PlayerHolder implements Listener, ArenaListener {
     public void onPostQuit(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     public void onPreEnter(ArenaPlayer player, ArenaPlayerTeleportEvent apte) { }
     
-    public void addArenaListener( ArenaListener arenaListener ) { methodController.addListener( arenaListener ); }
-    public boolean removeArenaListener( ArenaListener al ) { return methodController.removeListener( al ); }
-    protected void updateBukkitEvents( MatchState ms, ArenaPlayer ap ) { methodController.updateEvents( ms, ap ); }
+    public final void addArenaListener( ArenaListener arenaListener ) { methodController.addListener( arenaListener ); }
+    public final boolean removeArenaListener( ArenaListener al ) { return methodController.removeListener( al ); }
+    protected final void updateBukkitEvents( MatchState ms, ArenaPlayer ap ) { methodController.updateEvents( ms, ap ); }
     
     public void callEvent( BAEvent event ) { methodController.callEvent( event ); }
-    public boolean hasOption( TransitionOption option ) { return params.hasOptionAt(getState(), option ); }
+    public boolean hasOption( TransitionOption option ) { return params.hasOptionAt( getState(), option ); }
     
-    public void respawnClick( PlayerInteractEvent event, Map<UUID,Integer> respawnTimer ) {
+    public final void respawnClick( PlayerInteractEvent event, Map<UUID,Integer> respawnTimer ) {
         ArenaPlayer ap = PlayerController.toArenaPlayer( event.getPlayer() );
     
         Bukkit.getScheduler().cancelTask( respawnTimer.remove( ap.getUniqueId() ) );

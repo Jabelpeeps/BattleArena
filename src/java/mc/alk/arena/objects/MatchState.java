@@ -1,8 +1,5 @@
 package mc.alk.arena.objects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mc.alk.arena.controllers.StateController;
 import mc.alk.arena.objects.options.TransitionOption;
 
@@ -61,63 +58,28 @@ public enum MatchState implements CompetitionTransition {
         name = _name;
         globalOrdinal = StateController.register( this.getClass() );
     }
-
     @Override
-    public String toString() {
-        return name;
-    }
-
+    public String toString() { return name; }
     @Override
-    public int globalOrdinal() {
-        return globalOrdinal;
-    }
+    public int globalOrdinal() { return globalOrdinal; }
 
     public static MatchState fromString(String str) {
         str = str.toUpperCase();
         try {
             return MatchState.valueOf(str);
-        } catch (Exception e) {
-            if (str.equals("ONCOUNTDOWNTOEVENT")) {
-                return ONCOUNTDOWNTOEVENT;
-            } 
-            else if (str.equals("WINNER")) {
-                return WINNERS;
-            } 
-            else if (str.equals("INSTART")) {
-                return INGAME;
-            }
+        } 
+        catch (Exception e) {
+            if ( str.equals( "ONCOUNTDOWNTOEVENT" ) )  return ONCOUNTDOWNTOEVENT;
+            else if ( str.equals( "WINNER" ) ) return WINNERS;
+            else if ( str.equals( "INSTART" ) ) return INGAME;
             return null;
         }
     }
 
-    public boolean isRunning() {
-        return this == MatchState.ONSTART;
-    }
-
-    public static List<MatchState> getStates(MatchState beginState, MatchState endState) {
-        List<MatchState> list = new ArrayList<>();
-        boolean start = false;
-        for (MatchState state : MatchState.values()) {
-            if (state == endState) {
-                break;
-            }
-            if (state == beginState) {
-                start = true;
-            }
-            if (start) {
-                list.add(state);
-            }
-        }
-        return list;
-    }
-
-    public MatchState getCorrectState(TransitionOption option) {
-        if ( option == null ) {
-            return this;
-        }
-
-        switch (this) {
+    public MatchState getCorrectState( TransitionOption option ) {
+        if ( option == null ) return this;
             
+        switch ( this ) {          
             case ONJOIN:
             case ONOPEN:
                 if (option.isState()) return INOPEN;
@@ -148,5 +110,4 @@ public enum MatchState implements CompetitionTransition {
         }
         return this;
     }
-
 }

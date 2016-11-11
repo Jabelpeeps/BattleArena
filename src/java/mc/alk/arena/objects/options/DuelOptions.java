@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.bukkit.entity.Player;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
@@ -24,69 +27,62 @@ import mc.alk.arena.util.ServerUtil;
 
 public class DuelOptions {
 
+    @AllArgsConstructor
     public static enum DuelOption {
 
-        ARENA("<arena>", false), RATED("<rated>", false), UNRATED("<unrated>", false),
-        MONEY("<money>", true), RAKE("<rake>", true);
-        final public boolean needsValue;
-        final String name;
+        ARENA("<arena>", false), 
+        RATED("<rated>", false), 
+        UNRATED("<unrated>", false),
+        MONEY("<money>", true), 
+        RAKE("<rake>", true);
 
-        DuelOption(String name, boolean needsValue) {
-            this.needsValue = needsValue;
-            this.name = name;
-        }
+        final String name;
+        final public boolean needsValue;
 
         public String getName() {
-            if (this == DuelOption.MONEY) {
+            if ( this == DuelOption.MONEY )
                 return Defaults.MONEY_STR;
-            }
             return name;
         }
 
-        public static DuelOption fromName(String str) {
+        public static DuelOption fromName( String str ) {
             str = str.toUpperCase();
             try {
                 return DuelOption.valueOf(str);
-            } catch (Exception e) {/* do nothing */
-
-            }
-            if (str.equals("BET") || str.equals("WAGER") || str.equals(Defaults.MONEY_STR)) {
+            } catch (Exception e) { }
+            
+            if ( str.equals("BET") || str.equals("WAGER") || str.equals(Defaults.MONEY_STR)) {
                 return DuelOption.MONEY;
             }
             throw new IllegalArgumentException();
         }
 
         public static String getValidList() {
-            StringBuilder sb = new StringBuilder();
-            boolean first = true;
-            for (DuelOption r : DuelOption.values()) {
-                if (!first) {
-                    sb.append(", ");
-                }
-                first = false;
-                String val = "";
-                switch (r) {
+            StringJoiner joiner = new StringJoiner( ", " );
+            
+            for ( DuelOption option : DuelOption.values() ) {               
+                switch ( option ) {
                     case MONEY:
-                        val = " <amount>";
+                        joiner.add( option.getName() + " <amount>" );
                         break;
                     default:
-                        break;
+                        joiner.add( option.getName() );
                 }
-                sb.append(r.getName()).append(val);
             }
-            return sb.toString();
+            return joiner.toString();
         }
     }
 
-    final List<ArenaPlayer> challengedPlayers = new ArrayList<>();
+    @Getter final List<ArenaPlayer> challengedPlayers = new ArrayList<>();
     final Map<DuelOption, Object> options = new EnumMap<>(DuelOption.class);
     static DuelOptions defaultOptions = new DuelOptions();
 
     public static DuelOptions parseOptions(String[] args) throws InvalidOptionException {
-        return parseOptions(null, null, args);
+        return parseOptions( null, null, args );
     }
 
-    public static DuelOptions parseOptions(final MatchParams params, ArenaPlayer challenger, String[] args) throws InvalidOptionException {
+    public static DuelOptions parseOptions( MatchParams params, ArenaPlayer challenger, String[] args) 
+                                                                                throws InvalidOptionException {
         DuelOptions dop = new DuelOptions();
         dop.options.putAll(defaultOptions.options);
         Map<DuelOption, Object> ops = dop.options;
@@ -199,12 +195,8 @@ public class DuelOptions {
         return sb.toString();
     }
 
-    public List<ArenaPlayer> getChallengedPlayers() {
-        return challengedPlayers;
-    }
-
     public String getChallengedTeamString() {
-        return MessageUtil.joinPlayers(getChallengedPlayers(), ", ");
+        return MessageUtil.joinPlayers( challengedPlayers, ", " );
     }
 
     public String getOtherChallengedString(ArenaPlayer ap) {
@@ -245,5 +237,4 @@ public class DuelOptions {
         }
         return true;
     }
-
 }

@@ -63,27 +63,27 @@ class BukkitEventListener extends GeneralEventListener {
      * @return whether listener was found and removed
      */
     @Override
-    protected boolean removeMatchListener(RListener listener) {
+    protected boolean removeMatchListener( RListener listener ) {
         final Map<RListener,Integer> map = listeners.get(listener.getPriority());
-        if (map==null)
+        if ( map == null )
             return false;
-        Integer count = map.get(listener);
+        Integer rCount = map.get( listener );
         boolean removed;
-        if (count == null || count == 1){
-            map.remove(listener);
+        if ( rCount == null || rCount == 1 ) {
+            map.remove( listener );
             handlers = null;
             removed = true;
         } else {
-            map.put(listener, count-1);
+            map.put( listener, rCount - 1 );
             removed = false;
         }
-        if (removed && !hasListeners() && isListening()){
-            stopListening();}
+        if ( removed && !hasListeners() && isListening() )
+            stopListening();
         return removed;
     }
 
 	@Override
-	public void invokeEvent( final Event _event ) {
+	public void invokeEvent( Event _event ) {
 
 		for ( RListener rl : getRegisteredListeners() ) {
 			try {

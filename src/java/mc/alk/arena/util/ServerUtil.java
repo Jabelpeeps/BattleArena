@@ -3,6 +3,7 @@ package mc.alk.arena.util;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,8 +16,10 @@ import mc.alk.arena.Defaults;
 import mc.alk.virtualplayers.VirtualPlayers;
 
 
-public class ServerUtil {
+public abstract class ServerUtil {
 
+    public static HashMap<String, OfflinePlayer> playerMap = new HashMap<>();
+    
     public static Player findPlayer( UUID id ) {
         
         if ( id != null ) {
@@ -62,10 +65,10 @@ public class ServerUtil {
 	}
 
 	private static Collection<? extends Player> getOnlinePlayers() {
-		if (Defaults.DEBUG_VIRTUAL){
+		if ( Defaults.DEBUG_VIRTUAL ) {
 			return Arrays.asList( VirtualPlayers.getOnlinePlayers() );
 		}
-        return Bukkit.getOnlinePlayers(); //.toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+        return Bukkit.getOnlinePlayers();
 	}
 
 	public static void findOnlinePlayers(Set<String> names, Set<Player> foundplayers, Set<String> unfoundplayers) {
@@ -96,4 +99,17 @@ public class ServerUtil {
 				unfoundplayers.add( name );
 		}
 	}
+
+    public static OfflinePlayer getOfflinePlayer(String name) {
+        OfflinePlayer op = playerMap.get(name);
+        
+        if ( op == null ) {
+            op = Bukkit.getPlayerExact( name );
+            
+            if ( op == null ) return null;
+        }
+        playerMap.put(name, op);
+        
+        return op;
+    }
 }

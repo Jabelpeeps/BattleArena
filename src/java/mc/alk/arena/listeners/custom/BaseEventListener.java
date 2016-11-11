@@ -40,7 +40,6 @@ public abstract class BaseEventListener implements Listener  {
         bukkitPriority = _bukkitPriority;
     }
 
-
     public void stopListening(){
         listening.set(false);
 
@@ -113,10 +112,7 @@ public abstract class BaseEventListener implements Listener  {
             Bukkit.getPluginManager().registerEvent(event, this, bukkitPriority, executor,BattleArena.getSelf());
         }
     }
-
     public abstract void invokeEvent(Event _event);
-
     public abstract boolean hasListeners();
-
     public abstract void removeAllListeners(RListener rl);
 }

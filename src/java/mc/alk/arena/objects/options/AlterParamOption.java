@@ -45,20 +45,20 @@ public enum AlterParamOption {
     public static AlterParamOption fromString(String str){
         str = str.toUpperCase();
         try {
-            return AlterParamOption.valueOf(str);
+            return valueOf(str);
         } catch (IllegalArgumentException e){
             
             if (str.equalsIgnoreCase("secondsTillMatch") || str.equalsIgnoreCase("secondsUntilMatch"))
-                return AlterParamOption.PRESTARTTIME;
+                return PRESTARTTIME;
             
-            if (str.equalsIgnoreCase("gameTime")) return AlterParamOption.MATCHTIME;
-            if (str.equalsIgnoreCase("numTeams")) return AlterParamOption.NTEAMS;
-            if (str.equalsIgnoreCase("secondsToLoot")) return AlterParamOption.VICTORYTIME;
-            if (str.equalsIgnoreCase("victoryTime")) return AlterParamOption.VICTORYTIME;
-            if (str.equalsIgnoreCase("items")) return AlterParamOption.GIVEITEMS;
-            if (str.equalsIgnoreCase("db") || str.equalsIgnoreCase("dbTableName")) return AlterParamOption.DATABASE;
-            if (str.equalsIgnoreCase("waitroomClosedWhileRunning")) return AlterParamOption.CLOSEWAITROOMWHILERUNNING;
-            if (str.equalsIgnoreCase("nConcurrentCompetitions")) return AlterParamOption.NCUMONCURRENTCOMPETITIONS;
+            if (str.equalsIgnoreCase("gameTime")) return MATCHTIME;
+            if (str.equalsIgnoreCase("numTeams")) return NTEAMS;
+            if (str.equalsIgnoreCase("secondsToLoot")) return VICTORYTIME;
+            if (str.equalsIgnoreCase("victoryTime")) return VICTORYTIME;
+            if (str.equalsIgnoreCase("items")) return GIVEITEMS;
+            if (str.equalsIgnoreCase("db") || str.equalsIgnoreCase("dbTableName")) return DATABASE;
+            if (str.equalsIgnoreCase("waitroomClosedWhileRunning")) return CLOSEWAITROOMWHILERUNNING;
+            if (str.equalsIgnoreCase("nConcurrentCompetitions")) return NCUMONCURRENTCOMPETITIONS;
             return null;
         }
     }

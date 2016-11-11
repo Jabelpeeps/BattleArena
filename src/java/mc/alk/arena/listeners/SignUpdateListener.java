@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import lombok.Getter;
 import mc.alk.arena.events.matches.MatchFinishedEvent;
 import mc.alk.arena.events.matches.MatchStartEvent;
 import mc.alk.arena.events.players.ArenaPlayerEnterQueueEvent;
@@ -18,7 +19,7 @@ import mc.alk.arena.util.MessageUtil;
 
 public class SignUpdateListener implements Listener {
     
-    MapOfTreeSet<String,ArenaCommandSign> arenaSigns =
+    @Getter MapOfTreeSet<String,ArenaCommandSign> arenaSigns =
             new MapOfTreeSet<>( ArenaCommandSign.class, ( o1, o2 ) -> o1.hashCode() - o2.hashCode() );
 
 
@@ -75,47 +76,39 @@ public class SignUpdateListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onMatchStartEvent(MatchStartEvent event){
-        setMatchState(event.getMatch().getArena(), "Active");
+    @EventHandler( priority = EventPriority.MONITOR )
+    public void onMatchStartEvent( MatchStartEvent event ) {
+        setMatchState( event.getMatch().getArena(), "Active" );
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onMatchFinishedEvent(MatchFinishedEvent event){
-        setMatchState(event.getMatch().getArena(), "Open");
+    @EventHandler( priority = EventPriority.MONITOR )
+    public void onMatchFinishedEvent( MatchFinishedEvent event ) {
+        setMatchState( event.getMatch().getArena(), "Open" );
     }
 
     @EventHandler
-    public void onArenaPlayerEnterQueueEvent(ArenaPlayerEnterQueueEvent event){
-        if (event.getArena() == null) return;
-        int size = event.getQueueResult().playersInQueue;
-        setPeopleInQueue(event.getArena(), size,
-                event.getQueueResult().params.getMinPlayers(),
-                event.getQueueResult().maxPlayers);
+    public void onArenaPlayerEnterQueueEvent( ArenaPlayerEnterQueueEvent event ) {
+        if ( event.getArena() == null ) return;
+        setPeopleInQueue( event.getArena(), 
+                          event.getQueueResult().playersInQueue,
+                          event.getQueueResult().params.getMinPlayers(),
+                          event.getQueueResult().maxPlayers );
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onArenaPlayerLeaveQueueEvent(ArenaPlayerLeaveQueueEvent event){
-        if (event.getArena() == null) return;
-        int size = ArenaMatchQueue.getPlayersInArenaQueue( event.getArena() );
-        setPeopleInQueue(event.getArena(), size,
-                event.getParams().getMinPlayers(),
-                event.getParams().getMaxPlayers());
+    @EventHandler( priority = EventPriority.MONITOR )
+    public void onArenaPlayerLeaveQueueEvent( ArenaPlayerLeaveQueueEvent event ) {
+        if ( event.getArena() == null ) return;
+        setPeopleInQueue( event.getArena(), 
+                          ArenaMatchQueue.getPlayersInArenaQueue( event.getArena() ),
+                          event.getParams().getMinPlayers(),
+                          event.getParams().getMaxPlayers());
     }
 
-    public void addSign(ArenaCommandSign acs) {
-        if (acs.getSign() == null || acs.getOptions1() == null){
-            return;}
+    public void addSign( ArenaCommandSign acs ) {
+        if ( acs.getSign() == null || acs.getOptions1() == null ) return;
         Arena a = acs.getArena();
-        if (a == null)
-            return;
-        arenaSigns.add(a.getName(), acs);
+        if ( a == null ) return;
+        
+        arenaSigns.add( a.getName(), acs );
     }
-
-//    public void updateAllSigns() { }
-
-    public MapOfTreeSet<String, ArenaCommandSign> getStatusSigns() {
-        return arenaSigns;
-    }
-
 }

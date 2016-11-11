@@ -52,48 +52,48 @@ public class BAClassesSerializer extends BaseConfig {
                 Log.printStackTrace(e);
             }
         }
-        if (first) {
+        if (first)
             Log.info(BattleArena.getNameAndVersion() + " no predefined classes found. inside of " + cs.getCurrentPath());
-        } else {
+        else
             Log.info(BattleArena.getNameAndVersion() + " registering classes: " + sb.toString());
-        }
     }
 
-    public ArenaClass parseArenaClass(ConfigurationSection cs) {
+    public ArenaClass parseArenaClass( ConfigurationSection cs ) {
         List<ItemStack> items = null;
         List<PotionEffect> effects = null;
         List<SpawnInstance> mobs = null;
         List<CommandLineString> commands = null;
         List<String> permissions = null;
 
-        if (cs.contains("items")) {
-            items = InventoryUtil.getItemList(cs, "items");
-        }
-        if (cs.contains("enchants")) {
-            effects = ConfigSerializer.getEffectList(cs, "enchants");
-        }
-        if (cs.contains("mobs")) {
-            mobs = SpawnSerializer.getSpawnList(cs.getConfigurationSection("mobs"));
-        }
-        if (cs.contains("permissions")) {
-            permissions = cs.getStringList("permissions");
-        }
-        if (cs.contains("doCommands")) {
-            commands = ConfigSerializer.getDoCommands(cs.getStringList("doCommands"));
-        }
-        String displayName = cs.getString("displayName", null);
-        displayName = displayName == null || displayName.isEmpty() ? cs.getName() : displayName;
-        ArenaClass ac = new ArenaClass(cs.getName(), displayName, items, effects, permissions);
-        if (mobs != null && !mobs.isEmpty()) {
-            ac.setMobs(mobs);
-        }
-        if (cs.contains("disguise")) {
-            ac.setDisguiseName(cs.getString("disguise"));
-        }
-        if (commands != null && !commands.isEmpty()) {
-            ac.setDoCommands(commands);
-        }
+        if ( cs.contains("items") )
+            items = InventoryUtil.getItemList( cs, "items" );
+        
+        if ( cs.contains("enchants") )
+            effects = ConfigSerializer.getEffectList( cs, "enchants" );
+        
+        if ( cs.contains("mobs") ) 
+            mobs = SpawnSerializer.getSpawnList( cs.getConfigurationSection( "mobs" ) );
+        
+        if ( cs.contains("permissions") ) 
+            permissions = cs.getStringList( "permissions" );
+        
+        if ( cs.contains("doCommands") )
+            commands = ConfigSerializer.getDoCommands( cs.getStringList( "doCommands" ) );
+        
+        String displayName = cs.getString( "displayName", null );
+        displayName = displayName == null || displayName.isEmpty() ? cs.getName() 
+                                                                   : displayName;
+        ArenaClass ac = new ArenaClass( cs.getName(), displayName, items, effects, permissions );
+        
+        if ( mobs != null && !mobs.isEmpty() )
+            ac.setMobs( mobs );
+        
+        if ( cs.contains( "disguise" ) ) 
+            ac.setDisguiseName( cs.getString( "disguise" ) );
+        
+        if ( commands != null && !commands.isEmpty() ) 
+            ac.setDoCommands( commands );
+        
         return ac;
     }
-
 }

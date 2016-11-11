@@ -42,7 +42,7 @@ import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.events.ArenaEventPriority;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.objects.scoreboard.SEntry;
@@ -72,22 +72,18 @@ public class ArenaMatch extends Match {
         
         if (Defaults.DEBUG_EVENTS) MessageUtil.sendMessage(target, " -onPlayerDeath  t=" + target.getTeam());
         
-        if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) {
-            return;
-        }
-        final ArenaTeam t = getTeam(target);
-        if (t == null)
-            return;
+        if (state == MatchState.ONCANCEL || state == MatchState.ONCOMPLETE) return;
+        
+        ArenaTeam t = getTeam(target);
+        if ( t == null ) return;
 
-        ArenaPlayerDeathEvent apde = new ArenaPlayerDeathEvent(target, t);
-        apde.setPlayerDeathEvent(event);
-        callEvent(apde);
+        callEvent( new ArenaPlayerDeathEvent( target, t, event ) );
         ArenaPlayer killer = DmgDeathUtil.getPlayerCause(event);
         if (killer != null) {
-            ArenaTeam killT = getTeam(killer);
-            if (killT != null) { /// they must be in the same match for this to count
-                killT.addKill(killer);
-                callEvent(new ArenaPlayerKillEvent(killer, killT, target));
+            ArenaTeam killT = getTeam( killer );
+            if ( killT != null ) { /// they must be in the same match for this to count
+                killT.addKill( killer );
+                callEvent( new ArenaPlayerKillEvent( killer, killT, target ) );
             }
         }
     }
@@ -167,55 +163,6 @@ public class ArenaMatch extends Match {
         }
     }
 
-    //	@MatchEventHandler(suppressCastWarnings=true,priority=ArenaEventPriority.HIGHER)
-    //	public void onCheckEmulateDeath(EntityDamageEvent event) {
-    //		//		Log.debug("############## checking emulate   " + event.getEntity() +"    " + event.isCancelled() +"    " + event.getDamage());
-    //		if (event.isCancelled() || event.getDamage() <= 0 || !(event.getEntity() instanceof Player))
-    //			return;
-    //		Player target = ((Player) event.getEntity());
-    //		//		Log.debug("############## checking health   " + event.getDamage() +"    " + target.getHealth());
-    //		if (event.getDamage() < target.getHealth()){
-    //			return;}
-    //
-    //		PlayerInventory pinv = target.getInventory();
-    //		ArenaPlayer ap = BattleArena.toArenaPlayer(target);
-    //		ArenaTeam targetTeam = getTeam(ap);
-    //		if (clearsInventoryOnDeath){
-    //			pinv.clear();
-    //			if (woolTeams){
-    //				if (targetTeam != null && targetTeam.getHeadItem() != null){
-    //					TeamUtil.setTeamHead(targetTeam.getHeadItem(), target);
-    //				}
-    //			}
-    //		}
-    //
-    //		Integer nDeaths = targetTeam.getNDeaths(ap);
-    //		boolean exiting = !respawns || (nDeaths != null && nDeaths +1 >= nLivesPerPlayer);
-    //
-    //		ArenaPlayerDeathEvent apde = new ArenaPlayerDeathEvent(ap,targetTeam);
-    //		callEvent(apde);
-    //		ArenaPlayer killer = DmgDeathUtil.getPlayerCause(event);
-    //		if (killer != null){
-    //			ArenaTeam killT = getTeam(killer);
-    //			if (killT != null){ /// they must be in the same match for this to count
-    //				killT.addKill(killer);
-    //				callEvent(new ArenaPlayerKillEvent(killer,killT,ap));
-    //			}
-    //		}
-    //		TransitionController.transition(this, MatchState.ONDEATH, ap, targetTeam , false);
-    //		TransitionController.transition(this, MatchState.ONDEATH, ap, targetTeam , false);
-    //
-    //		EffectUtil.deEnchantAll(target);
-    //		target.closeInventory();
-    //		target.setFireTicks(0);
-    //		target.setHealth(target.getMaxHealth());
-    //		if (!exiting){
-    //			final int teamIndex = indexOf(targetTeam);
-    //			final Location l = TransitionController.jitter(getTeamSpawn(teamIndex,false),rand.nextInt(targetTeam.size()));
-    //			TeleportController.teleportPlayer(target, l, false, true);
-    //		}
-    //	}
-
     @SuppressWarnings( "unused" )
     @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -249,10 +196,10 @@ public class ArenaMatch extends Match {
                     loc = RoomController.getLobbySpawn(Defaults.MAIN_SPAWN, getParams().getType(), randomRespawn);
                 } 
                 else if (mo.hasOption(TransitionOption.TELEPORTMAINWAITROOM)) {
-                    loc = this.getWaitRoomSpawn(Defaults.MAIN_SPAWN, randomRespawn);
+                    loc = arena.getWaitRoomSpawn(Defaults.MAIN_SPAWN, randomRespawn);
                 } 
                 else {
-                    loc = this.getWaitRoomSpawn(index, randomRespawn);
+                    loc = arena.getWaitRoomSpawn(index, randomRespawn);
                 }
                 /// Should we respawn the player to the team spawn after a certain amount of time
                 Integer respawnTime = mo.getInt(TransitionOption.RESPAWNTIME);
@@ -281,21 +228,20 @@ public class ArenaMatch extends Match {
                                             }
                                         }
                                         return true; 
-                                        });
+                                    });
                 }
 
                 int taskid = Scheduler.scheduleSynchronousTask( 
                         () -> {
-                            Integer id = respawnTimer.remove(p.getUniqueId());
-                            Bukkit.getScheduler().cancelTask(id);
-                            SpawnLocation spawn = getSpawn( index, 
+                            Bukkit.getScheduler().cancelTask( respawnTimer.remove( p.getUniqueId() ) );
+                            SpawnLocation spawn = arena.getSpawn( index, 
                                             tops.hasOptionAt( MatchState.ONSPAWN, TransitionOption.RANDOMRESPAWN ) );
-                            TeleportController.teleport(p.getPlayer(), spawn.getLocation());
+                            TeleportController.teleport( p.getPlayer(), spawn.getLocation() );
                         }, respawnTime * 20 );
                 
-                respawnTimer.put(p.getUniqueId(), taskid);
+                respawnTimer.put( p.getUniqueId(), taskid );
             } 
-            else loc = getTeamSpawn(getTeam(p), randomRespawn);
+            else loc = arena.getTeamSpawn(getTeam(p), randomRespawn);
 
             event.setRespawnLocation(loc.getLocation());
             
@@ -321,9 +267,10 @@ public class ArenaMatch extends Match {
                     });
         } 
         else { /// This player is now out of the system now that we have given the ondeath effects
-            Location l = tops.hasOptionAt(MatchState.ONLEAVE, TransitionOption.TELEPORTTO) ?
-                    tops.getOptions(MatchState.ONLEAVE).getTeleportToLoc() : p.getOldLocation().getLocation();
-            if (l != null)
+            Location l = tops.hasOptionAt( MatchState.ONLEAVE, TransitionOption.TELEPORTTO ) 
+                                                    ? tops.getOptions(MatchState.ONLEAVE).getTeleportToLoc() 
+                                                    : p.getOldLocation().getLocation();
+            if ( l != null )
                 event.setRespawnLocation(l);
         }
     }
@@ -355,12 +302,9 @@ public class ArenaMatch extends Match {
         }
     }
 
-    @ArenaEventHandler(priority=ArenaEventPriority.HIGH)
-    public void onPlayerInteract(PlayerInteractEvent event){
-        playerInteract(event);
-    }
+    @ArenaEventHandler( priority = ArenaEventPriority.HIGH )
+    public void onPlayerInteract( PlayerInteractEvent event ) {
 
-    private void playerInteract(PlayerInteractEvent event){
         if (event.getClickedBlock() == null ||
                 !(event.getClickedBlock().getType().equals(Material.SIGN) ||
                         event.getClickedBlock().getType().equals(Material.WALL_SIGN) ||

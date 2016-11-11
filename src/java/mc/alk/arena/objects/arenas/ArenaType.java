@@ -182,7 +182,7 @@ public class ArenaType implements Comparable<ArenaType> {
             arenaParams.setName( arenaName );
             arenaParams.setType( arenaType );
             arena.setName( arenaName );
-            arenaParams.setParent( ParamController.getMatchParams( arenaParams ) );
+            arenaParams.setParent( ParamController.getMatchParams( arenaParams.getType().getName() ) );
             arena.setParams( arenaParams );
             if ( init ) {
                 arena.publicInit();

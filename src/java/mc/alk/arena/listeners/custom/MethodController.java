@@ -35,8 +35,8 @@ import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.arenas.ArenaListener;
 import mc.alk.arena.objects.events.ArenaEventHandler;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 import mc.alk.arena.objects.events.ArenaEventMethod;
-import mc.alk.arena.objects.events.ArenaEventPriority;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MapOfTreeSet;
@@ -44,7 +44,6 @@ import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.ServerUtil;
 import mc.alk.arena.util.TimingUtil;
 import mc.alk.arena.util.TimingUtil.TimingStat;
-import mc.alk.arena.util.Util;
 
 
 public class MethodController {
@@ -603,8 +602,7 @@ public class MethodController {
                         Collection<RListener> rls = lists2.get(id);
                         for (RListener rl : rls) {
                             MessageUtil.sendMessage(sender, "!! " + rl.getPriority() + "  " + p +
-                                    "  Listener  " + rl.getListener().getClass().getSimpleName() +
-                                    " hash=" + Util.toString(rl.getListener()));
+                                    "  Listener:  " + rl.getListener() );
                         }
                     }
                 }
@@ -626,9 +624,8 @@ public class MethodController {
                             continue;
                         Collection<RListener> rls = lists2.get(id);
                         for (RListener rl : rls){
-                            MessageUtil.sendMessage(sender, "!!! " + rl.getPriority() + "  " + p +
-                                    "  Listener  " + rl.getListener().getClass().getSimpleName() +
-                                    " hash=" + Util.toString(rl.getListener()));
+                            MessageUtil.sendMessage( sender, "!!! " + rl.getPriority() + "  " + p +
+                                                     "  Listener:" + rl.getListener() );
                         }
                     }
                 }

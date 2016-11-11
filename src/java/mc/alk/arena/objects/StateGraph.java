@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -80,7 +79,7 @@ public class StateGraph {
 			allops.addAll(top.getOptions().keySet());
 	}
 
-	public boolean hasAnyOption(TransitionOption wgnoenter) {
+	public boolean hasOption(TransitionOption wgnoenter) {
         if ( allops.isEmpty() ) calculateAllOptions();
         
 		return allops.contains(wgnoenter);
@@ -108,11 +107,9 @@ public class StateGraph {
 	}
 
 	public boolean hasAllOptions(TransitionOption... options) {
-		Set<TransitionOption> opts = EnumSet.copyOf( Arrays.asList( options ) );
-		
         if ( allops.isEmpty() ) calculateAllOptions();
         
-        return allops.containsAll(opts);
+        return allops.containsAll( EnumSet.copyOf( Arrays.asList( options ) ) );
 	}
 
 	public boolean hasInArenaOrOptionAt(CompetitionState state, TransitionOption option) {

@@ -241,7 +241,7 @@ public class FileUpdater {
             }
             for (int i=0;i<max;i++){
                 int c=0;
-                if (isInt(p1[i]) && isInt(p2[i])){
+                if ( Util.isInt(p1[i]) && Util.isInt(p2[i])){
                     Integer i1 = Integer.valueOf(p1[i]);
                     Integer i2 = Integer.valueOf(p2[i]);
                     c = i1.compareTo(i2);
@@ -252,15 +252,6 @@ public class FileUpdater {
                 return c;
             }
             return 0;
-        }
-
-        public static boolean isInt(String str){
-            try{
-                Integer.valueOf(str);
-                return true;
-            } catch(Exception e){
-                return false;
-            }
         }
     }
 }

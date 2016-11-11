@@ -16,12 +16,12 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericKeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
+import mc.alk.arena.util.Log;
 
 public class SQLSerializer {
     public static final String version = "1.5";
@@ -127,14 +127,14 @@ public class SQLSerializer {
 	                    if (DEBUG) Log.info( "Update Table with stmt=" + sql_update );
 	                } 
 	                catch (SQLException e) {
-	                    Log.error( "Failed in updating Table " + sql_update + " result=" + result);
+	                    Log.err( "Failed in updating Table " + sql_update + " result=" + result);
 	                    e.printStackTrace();
 	                    return false;
 	                }
 	            }
 	        }
 		} catch (SQLException e) {
-		    Log.error( "Failed in creating Table " + sql_create_table + " result=" + result);
+		    Log.err( "Failed in creating Table " + sql_create_table + " result=" + result);
 			e.printStackTrace();
 			return false;
 		}
@@ -369,7 +369,7 @@ public class SQLSerializer {
             if (DEBUG) Log.info( "Got Driver " + type.getDriver());
         } 
         catch (ClassNotFoundException e1) {
-            Log.error( "Failed getting driver " + type.getDriver());
+            Log.err( "Failed getting driver " + type.getDriver());
             e1.printStackTrace();
             return;
         }
@@ -404,7 +404,7 @@ public class SQLSerializer {
                 if (DEBUG) Log.info( "Creating db" );
             } 
             catch (SQLException e) {
-                Log.error( "Failed creating db: " + create_database );
+                Log.err( "Failed creating db: " + create_database );
                 e.printStackTrace();
             } 
         }

@@ -13,7 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
@@ -23,7 +25,6 @@ import mc.alk.arena.events.players.ArenaPlayerLeaveLobbyEvent;
 import mc.alk.arena.listeners.PlayerHolder;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.CompetitionState;
-import mc.alk.arena.objects.ContainerState;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.events.ArenaEventHandler;
 import mc.alk.arena.objects.messaging.MessageHandler;
@@ -44,7 +45,7 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
 
     @Getter @Setter protected String name;
     @Setter protected String displayName;
-    @Getter @Setter ContainerState containerState = ContainerState.OPEN;
+    @Getter @Setter ContainerState containerState = ContainerState.isOPEN;
 
     boolean disabledAllCommands;
     Set<String> disabledCommands;
@@ -122,7 +123,7 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
     public boolean checkReady( ArenaPlayer player, ArenaTeam team, StateOptions mo ) {
         return params.getStateGraph().playerReady( player, null );
     }
-
+    
     @Override
     public SpawnLocation getSpawn( int index, boolean random ) {
         if ( index == Defaults.MAIN_SPAWN )
@@ -192,7 +193,15 @@ public abstract class AbstractAreaContainer extends PlayerHolder implements Team
     
     public boolean validIndex(int index){ return spawns.size() < index; }
     public String getDisplayName() { return displayName == null ? name : displayName; }
-    public boolean isOpen() { return containerState.isOpen(); }
-    public boolean isClosed() { return containerState.isClosed(); }
-    public String getContainerMessage() { return containerState.getMsg(); }
+    public boolean isOpen() { return containerState == ContainerState.isOPEN; }
+    public boolean isClosed() { return containerState != ContainerState.isOPEN; }
+    public String getContainerMessage() { return containerState.msg; }
+    
+    @AllArgsConstructor @NoArgsConstructor
+    public static enum ContainerState {
+        isOPEN(),
+        isCLOSED( "&cWaitroom is not open." ),
+        inUSE( "&cA match is already in progress in this arena." );
+        protected String msg;
+    }
 }

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.TeamFactory;
-import mc.alk.arena.util.PlayerUtil;
+import mc.alk.arena.util.ServerUtil;
 
 public class FullScoreboard extends AbstractWaitingScoreBoard {
 
@@ -47,7 +47,7 @@ public class FullScoreboard extends AbstractWaitingScoreBoard {
                 te.r.addLast(e);
                 es.add(e);
                 points.add(te.points);
-                st.addPlayer( PlayerUtil.getOfflinePlayer(te.name), Integer.MIN_VALUE );
+                st.addPlayer( ServerUtil.getOfflinePlayer(te.name), Integer.MIN_VALUE );
             }
         }
         objective.initPoints( es, points );
@@ -97,7 +97,7 @@ public class FullScoreboard extends AbstractWaitingScoreBoard {
             objective.setPoints(e, te.points);
         }
         te.r.addLast(e);
-        t.addPlayer( PlayerUtil.getOfflinePlayer(te.name) );
+        t.addPlayer( ServerUtil.getOfflinePlayer(te.name) );
     }
 
     @Override

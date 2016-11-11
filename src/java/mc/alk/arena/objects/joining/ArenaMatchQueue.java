@@ -49,7 +49,6 @@ import mc.alk.arena.listeners.custom.MethodController;
 import mc.alk.arena.objects.ArenaParams;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
-import mc.alk.arena.objects.CompetitionSize;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
 import mc.alk.arena.objects.PlayerSave;
@@ -164,7 +163,7 @@ public class ArenaMatchQueue implements ArenaListener, Listener {
     }
 
     private void addReadyMatch( FoundMatch match ) {
-        if ( match.params.getNConcurrentCompetitions() != CompetitionSize.MAX ) {
+        if ( match.params.getNConcurrentCompetitions() != ArenaSize.MAX ) {
             synchronized (delayedReadyMatches) {
                 LinkedList<FoundMatch> l = delayedReadyMatches.get(match.params.getType());
                 if (l == null) {

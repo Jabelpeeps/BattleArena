@@ -24,7 +24,7 @@ public enum RoomController {
         LobbyContainer lobby = lobbies.get(type);
         if (lobby == null) {
             MatchParams mp = new MatchParams(type);
-            mp.setParent(ParamController.getMatchParams(type));
+            mp.setParent( ParamController.getMatchParams( type.getName() ) );
             lobby = new LobbyContainer("lb_" + type.getName(),
                     mp, LocationType.LOBBY);
             lobbies.put(type, lobby);

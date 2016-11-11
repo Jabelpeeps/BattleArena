@@ -14,7 +14,6 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
@@ -29,6 +28,7 @@ import mc.alk.arena.objects.tracker.WLTRecord;
 import mc.alk.arena.objects.tracker.WLTRecord.WLT;
 import mc.alk.arena.util.Cache;
 import mc.alk.arena.util.Cache.CacheSerializer;
+import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 
 public class TrackerInterface implements CacheSerializer<String, Stat>{

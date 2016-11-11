@@ -65,7 +65,7 @@
     </repositories>
     
     <dependencies>
-<!--         <dependency>
+         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>${craftbukkit.version}</version>
@@ -80,9 +80,9 @@
 	                <artifactId>bungeecord-chat</artifactId>
             	</exclusion>
             </exclusions>
-        </dependency> -->
+        </dependency>
         
-        <dependency>
+<!--         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>${craftbukkit.version}</version>
@@ -97,7 +97,7 @@
                     <artifactId>bungeecord-chat</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
         
         <dependency>
             <groupId>org.kitteh</groupId>

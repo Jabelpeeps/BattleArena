@@ -451,7 +451,7 @@ public class ArenaParams {
     }
 
     public boolean hasAnyOption(TransitionOption option) {
-        return getStateGraph().hasAnyOption(option);
+        return getStateGraph().hasOption(option);
     }
 
     public List<ItemStack> getWinnerItems() {
@@ -477,7 +477,7 @@ public class ArenaParams {
     }
 
     public boolean needsSpectate() {
-        return getStateGraph().hasAnyOption(TransitionOption.TELEPORTSPECTATE);
+        return getStateGraph().hasOption(TransitionOption.TELEPORTSPECTATE);
     }
 
     public boolean needsLobby() {

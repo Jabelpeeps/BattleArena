@@ -245,11 +245,11 @@ public class ArenaAlterController {
             arena.setWorldGuardRegion(region);
             WorldGuardController.saveSchematic(sender, id);
             MatchParams mp = ParamController.getMatchParams(arena.getArenaType().getName());
-            if (mp != null && mp.getArenaStateGraph().hasAnyOption(TransitionOption.WGNOENTER)){
+            if (mp != null && mp.getArenaStateGraph().hasOption(TransitionOption.WGNOENTER)){
                 WorldGuardController.trackRegion(w.getName(), id);
                 WorldGuardController.setFlag(region, "entry", false);
             }
-            if (mp != null && mp.getArenaStateGraph().hasAnyOption(TransitionOption.WGNOLEAVE)){
+            if (mp != null && mp.getArenaStateGraph().hasOption(TransitionOption.WGNOLEAVE)){
                 WorldGuardController.trackRegion(w.getName(), id);
                 WorldGuardController.setFlag(region, "exit", false);
             }
@@ -289,7 +289,7 @@ public class ArenaAlterController {
         Location loc = sender.getLocation();
         RoomController.addLobby(params.getType(), index.teamIndex, index.spawnIndex, new FixedLocation(loc));
         PlayerContainerSerializer pcs = new PlayerContainerSerializer();
-        pcs.setConfig(BattleArena.getSelf().getDataFolder().getPath()+"/watchers/containers.yml");
+        pcs.setConfig( BattleArena.getSelf().getDataFolder().getPath() + "/watchers/containers.yml" );
         pcs.save();
         MessageUtil.sendMessage( sender, "&2Lobby for the " + getSpawnName( index.teamIndex ) + " &2team. Spawn #&6" +
                 ( index.spawnIndex + 1 ) + "&2 set to location=&6" + Util.getLocString( loc ) );
@@ -341,7 +341,7 @@ public class ArenaAlterController {
     public static boolean restoreDefaultArenaOptions(Arena arena, boolean save) {
         MatchParams ap = arena.getParams();
         MatchParams p = new MatchParams(ap.getType());
-        MatchParams parent = ParamController.getMatchParams(ap.getType());
+        MatchParams parent = ParamController.getMatchParams( ap.getType().getName() );
         p.setRated(ap.isRated());
         p.setParent(parent);
         arena.setParams(p);

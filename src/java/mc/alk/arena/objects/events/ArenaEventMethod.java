@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import lombok.Getter;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchState;
+import mc.alk.arena.objects.events.ArenaEventHandler.ArenaEventPriority;
 
 public class ArenaEventMethod {
 	@Getter final Method callMethod;
