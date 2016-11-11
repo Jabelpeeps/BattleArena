@@ -41,6 +41,7 @@ import mc.alk.arena.util.FileUtil;
 import mc.alk.arena.util.KeyValue;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.Util;
 
 public class BAConfigSerializer extends BaseConfig {
 
@@ -218,7 +219,7 @@ public class BAConfigSerializer extends BaseConfig {
         defaults.setArenaCooldown(cs.getInt("arenaCooldown", 1));
         defaults.setAllowedTeamSizeDifference(cs.getInt("allowedTeamSizeDifference", 1));
 
-        defaults.setNumConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions", "MAX")));
+        defaults.setNumConcurrentCompetitions( Util.toInt(cs.getString("nConcurrentCompetitions", "infinite")));
 
         List<String> list = cs.getStringList("defaultDuelOptions");
         if (list != null && !list.isEmpty()) {

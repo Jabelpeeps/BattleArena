@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.Util;
 
 public class ArenaSize { 
     public static final int MAX = Integer.MAX_VALUE;
@@ -91,24 +92,10 @@ public class ArenaSize {
 		maxTeamSize = size;
 		return true;
 	}
-	public static String toString( int size ) {
-		return size == ArenaSize.MAX ? "MAX" : String.valueOf( size );
-	}
-    public static int toInt( String size ) {
-        return size.equalsIgnoreCase( "MAX" ) ? MAX : Integer.parseInt( size );
-    }
-    public static int toInt( String size, int defValue ) {
-        if ( size == null || size.isEmpty() ) return defValue;
-        return toInt( size );
-    }
+
     @Override
 	public String toString(){
-		return "[" + rangeString( minTeamSize, maxTeamSize ) + " <-> " + rangeString( minTeams, maxTeams ) + "]";
-	}
-	public static String rangeString( int min, int max ) {
-		if ( max == MAX ) return min + "+"; /// Example: 2+
-		if ( min == max ) return min + ""; /// Example: 2
-		return min + "-" + max; //Example 2-4
+		return "[" + Util.rangeString( minTeamSize, maxTeamSize ) + " <-> " + Util.rangeString( minTeams, maxTeams ) + "]";
 	}
 	public boolean valid() {
 		return minTeamSize <= maxTeamSize && minTeams <= maxTeams;

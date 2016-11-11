@@ -45,10 +45,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import lombok.Getter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaPlayer;
-import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.CommandLineString;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.MatchState;
@@ -60,10 +60,11 @@ import mc.alk.arena.util.EffectUtil;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.InventoryUtil.ArmorLevel;
 import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.Util;
 
 public class StateOptions {
 
-    EnumMap<TransitionOption,Object> options = new EnumMap<>(TransitionOption.class);
+    @Getter EnumMap<TransitionOption,Object> options = new EnumMap<>(TransitionOption.class);
 
     public StateOptions() {}
     public StateOptions( StateOptions o ) {
@@ -386,11 +387,7 @@ public class StateOptions {
         return options.containsKey(RANDOMRESPAWN) ||
                 options.containsKey(RANDOMSPAWN);
     }
-
-    public Map<TransitionOption, Object> getOptions() {
-        return options;
-    }
-
+    
     public void addOption(TransitionOption option) throws InvalidOptionException {
         if (option.hasValue()) 
             throw new InvalidOptionException("TransitionOption:" + option.getName() + " needs a value!");
@@ -438,7 +435,7 @@ public class StateOptions {
         String onspawn = sg.getGiveString(MatchState.ONSPAWN);
         String prizes = sg.getGiveString(MatchState.WINNERS);
         boolean rated = mp.isRated();
-        String teamSizes = ArenaSize.rangeString(mp.getMinTeamSize(), mp.getMaxTeamSize());
+        String teamSizes = Util.rangeString(mp.getMinTeamSize(), mp.getMaxTeamSize());
         sb.append("&eThis is ").append(rated ? "a &4Rated" : "an &aUnrated").
                 append("&e ").append(name).append(". ");
         sb.append("&eTeam size=&6").append(teamSizes);

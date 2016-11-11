@@ -20,6 +20,7 @@ import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.StateOptions;
 import mc.alk.arena.objects.options.TransitionOption;
 import mc.alk.arena.util.MinMax;
+import mc.alk.arena.util.Util;
 
 
 public class ArenaParams {
@@ -188,7 +189,7 @@ public class ArenaParams {
     }
 
     public String getPlayerRange() {
-        return ArenaSize.rangeString(getMinPlayers(),getMaxPlayers());
+        return Util.rangeString(getMinPlayers(),getMaxPlayers());
     }
 
     public boolean intersect(ArenaParams params) {

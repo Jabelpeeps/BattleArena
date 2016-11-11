@@ -25,7 +25,6 @@ import mc.alk.arena.controllers.ParamController;
 import mc.alk.arena.controllers.StateController;
 import mc.alk.arena.objects.ArenaClass;
 import mc.alk.arena.objects.ArenaParams;
-import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.CommandLineString;
 import mc.alk.arena.objects.CompetitionState;
 import mc.alk.arena.objects.JoinType;
@@ -48,6 +47,7 @@ import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.SerializerUtil;
+import mc.alk.arena.util.Util;
 
 /**
  *
@@ -122,7 +122,7 @@ public class ConfigSerializer extends BaseConfig {
         loadBTOptions( cs, mp, isNonBaseConfig ); 
 
         if (cs.contains("nConcurrentCompetitions"))
-            mp.setNumConcurrentCompetitions(ArenaSize.toInt(cs.getString("nConcurrentCompetitions","infinite")));
+            mp.setNumConcurrentCompetitions( Util.toInt(cs.getString("nConcurrentCompetitions","infinite")));
         
         if (cs.contains("waitroomClosedWhileRunning"))
             mp.setCloseWaitroomWhileRunning(cs.getBoolean("waitroomClosedWhileRunning",true));
@@ -423,11 +423,11 @@ public class ConfigSerializer extends BaseConfig {
     }
     
     public static int toPositiveSize(String value, int defValue) {
-        int s = ArenaSize.toInt(value, defValue);
+        int s = Util.toInt(value, defValue);
         return s <= 0 ? defValue : s;
     }
     public static int toNonNegativeSize(String value, int defValue) {
-        int s = ArenaSize.toInt(value, defValue);
+        int s = Util.toInt(value, defValue);
         return s < 0 ? defValue : s;
     }
 //    /**
@@ -747,7 +747,7 @@ public class ConfigSerializer extends BaseConfig {
             if ( params.getNTeams() != null ) cs.set("nTeams", params.getNTeams().toString());
             if ( params.getTeamSize() != null ) cs.set("teamSize", params.getTeamSize().toString());
         }
-        maincs.set( "nLives", ArenaSize.toString( params.getNLives() ) );
+        maincs.set( "nLives", Util.intToString( params.getNLives() ) );
         
         if ( params.getVictoryType()!= null ) maincs.set("victoryCondition", params.getVictoryType().getName());
 
@@ -759,7 +759,7 @@ public class ConfigSerializer extends BaseConfig {
             ConfigurationSection cs = maincs.createSection("times");
             
             if ( params.getSecondsTillMatch() != null ) cs.set( "secondsTillMatch", params.getSecondsTillMatch() );
-            if ( params.getMatchTime() != null ) cs.set("matchTime", ArenaSize.toString(params.getMatchTime()));
+            if ( params.getMatchTime() != null ) cs.set("matchTime", Util.intToString(params.getMatchTime()));
             if ( params.getSecondsToLoot() != null ) cs.set("secondsToLoot", params.getSecondsToLoot());
             if ( params.getTimeBetweenRounds() != null ) cs.set("timeBetweenRounds", params.getTimeBetweenRounds());
             if ( params.getIntervalTime() != null ) cs.set("matchUpdateInterval", params.getIntervalTime());
@@ -789,7 +789,7 @@ public class ConfigSerializer extends BaseConfig {
         }
 
         if (params.getNConcurrentCompetitions() != null)  
-            maincs.set("nConcurrentCompetitions", ArenaSize.toString(params.getNConcurrentCompetitions()));
+            maincs.set("nConcurrentCompetitions", Util.intToString(params.getNConcurrentCompetitions()));
 
         if (params.isWaitroomClosedWhenRunning() != null)  
             maincs.set("waitroomClosedWhileRunning", params.isWaitroomClosedWhenRunning());

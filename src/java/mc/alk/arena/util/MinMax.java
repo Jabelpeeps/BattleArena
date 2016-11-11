@@ -39,5 +39,5 @@ public class MinMax {
         return new MinMax( i, i );
     }
     @Override
-    public String toString() { return ArenaSize.rangeString( min, max ); } 
+    public String toString() { return Util.rangeString( min, max ); } 
 }
