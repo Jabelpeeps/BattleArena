@@ -40,7 +40,7 @@ public class Log {
 
 	public static void err(String msg){
 		if (msg == null) return;
-        try{
+        try {
             MessageUtil.sendMessage( Bukkit.getConsoleSender(), msg );
         } catch (Exception e){
             if (log != null)

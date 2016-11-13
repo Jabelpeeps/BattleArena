@@ -322,7 +322,7 @@ public class BAConfigSerializer extends BaseConfig {
                 for ( String  str : list ) {
                     String[] kv = str.split( "=" );
                     if ( kv.length != 2 ) {
-                        Log.err( "" );
+                        Log.err( "[BAConfigSerializer.AnnouncementOptions()] failed to parse:-" + str + " (into 2 pieces)");
                         continue;
                     }
                     AnnouncementOption bo = AnnouncementOption.fromName( kv[0] );
