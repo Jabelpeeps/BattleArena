@@ -31,10 +31,10 @@ public class CompositeTeam extends ArenaTeam {
 		pickupTeam = true;
 	}
 
-	protected CompositeTeam( ArenaTeam team ) {
-		this();
-		addTeam( team );
-	}
+//	protected CompositeTeam( ArenaTeam team ) {
+//		this();
+//		addTeam( team );
+//	}
 
 	public void addTeam( ArenaTeam t ) {
 		if ( t instanceof CompositeTeam ) {

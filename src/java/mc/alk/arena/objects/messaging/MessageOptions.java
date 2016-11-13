@@ -11,7 +11,7 @@ import lombok.Getter;
 public class MessageOptions {
     
     @AllArgsConstructor
-	public static enum MessageOption{
+	public static enum MessageOption {
 		PLAYERNAME("{playername}"), 
 		NPLAYERS("{nplayers}"),
 		TEAM("{team}"), 
@@ -58,13 +58,11 @@ public class MessageOptions {
 	    
         @Getter final private String replaceString;
 	}
-
 	@Getter final Set<MessageOption> options = new HashSet<>();
 
-	public MessageOptions( String msg ) {
-	    
+	public MessageOptions( String msg ) {	    
 		for ( MessageOption mop : MessageOption.values() ) {
-			if ( StringUtils.indexOf( msg, mop.getReplaceString() ) != -1 ) {
+			if ( StringUtils.contains( msg, mop.getReplaceString() ) ) {
 				options.add( mop );
 			}
 		}

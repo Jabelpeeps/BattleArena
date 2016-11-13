@@ -26,7 +26,7 @@ public final class TeamController {
 
     private TeamController() {}
     
-	static final boolean DEBUG = false;
+	static final boolean DEBUG = true;
 
 	/** Teams that are created through players wanting to be teams up, or an admin command */
 	static final Map<UUID, ArenaTeam> selfFormedTeams = Collections.synchronizedMap(new HashMap<UUID, ArenaTeam>());

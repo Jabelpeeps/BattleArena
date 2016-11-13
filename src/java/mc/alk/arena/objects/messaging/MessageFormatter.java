@@ -3,6 +3,9 @@ package mc.alk.arena.objects.messaging;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.StringJoiner;
+
+import org.apache.commons.lang.StringUtils;
 
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
@@ -10,8 +13,6 @@ import mc.alk.arena.objects.messaging.MessageOptions.MessageOption;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.serializers.MessageSerializer;
-import mc.alk.arena.tracker.Tracker;
-import mc.alk.arena.tracker.TrackerInterface;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MessageUtil;
 import mc.alk.arena.util.TimeUtil;
@@ -23,137 +24,128 @@ import mc.alk.arena.util.TimeUtil;
  * at the moment I hate this class and how it works, but it works at the moment.
  * need to revisit this later
  */
-public class MessageFormatter{
+public class MessageFormatter {
 	final String[] searchList;
 	final String[] replaceList;
-	final TrackerInterface sc;
 
-	final Set<MessageOption> ops;
+	final Set<MessageOption> options;
 	final Message msg;
 	final HashMap<Integer,TeamNames> tns;
 	final MatchParams params;
-	final String typeName;
-	final MessageSerializer impl;
+	final MessageSerializer messages;
 	int commonIndex = 0, teamIndex = 0, curIndex = 0;
-
-	public MessageFormatter(MessageSerializer _impl, MatchParams mp, int nTeams, Message message, Set<MessageOption> _ops){
-		final int size = _ops.size();
+	
+    public class TeamNames {
+        public String longName, shortName, name;
+    }
+    
+	public MessageFormatter( MessageSerializer impl, MatchParams mp, int nTeams, Message message, Set<MessageOption> ops ) {
+		final int size = ops.size();
 		searchList = new String[size];
 		replaceList = new String[size];
 		msg = message;
-		ops = _ops;
+		options = ops;
 		tns = new HashMap<>(nTeams);
 		params = mp;
-		typeName = mp.getType().getName();
-		sc = Tracker.getInterface( mp );
-		impl = _impl;
+		messages = impl;
 	}
 
-	public void formatCommonOptions(Collection<ArenaTeam> teams){
-		formatCommonOptions(teams,null);
-	}
-
-	public void formatCommonOptions(Collection<ArenaTeam> teams, Integer seconds){
+	public void formatCommonOptions( Collection<ArenaTeam> teams, Integer seconds ) {
 		int i = 0;
-		ArenaTeam t1 =null,t2 = null;
-		if (teams != null){
-			int j=0;
-			for (ArenaTeam t: teams){
-				if (j == 0)
+		ArenaTeam t1 = null, t2 = null;
+		if ( teams != null ) {
+			int j = 0;
+			for ( ArenaTeam t : teams ) {
+				if ( j == 0 )
 					t1 = t;
-				else if (j==1)
+				else if ( j == 1 )
 					t2 = t;
 				else
 					break;
 				j++;
 			}
 		}
-
-		for (MessageOption mop : ops){
-			if (mop == null)
-				continue;
-			try{
-				switch(mop){
-				case CMD: replaceList[i] = params.getCommand(); break;
-				case PREFIX:
-				case MATCHPREFIX:
-				case EVENTPREFIX: replaceList[i] = params.getPrefix();
-					break;
-				case COMPNAME:
-				case EVENTNAME:
-				case MATCHNAME: replaceList[i] = params.getName();
-					break;
-				case SECONDS: replaceList[i] = seconds != null ? seconds.toString(): null; break;
-				case TIME: replaceList[i] = seconds != null ? TimeUtil.convertSecondsToString(seconds): null; break;
-				case TEAM1:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.team"),t1);
-					break;
-				case TEAM2:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.team"),t2);
-					break;
-				case TEAMSHORT1:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.teamshort"),t1);
-					break;
-				case TEAMSHORT2:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.teamshort"),t2);
-					break;
-				case TEAMLONG1:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.teamlong"),t1);
-					break;
-				case TEAMLONG2:
-					replaceList[i] = formatTeamName(impl.getNodeMessage("common.teamlong"),t2);
-					break;
-				case NTEAMS: replaceList[i] = teams != null ? teams.size()+"" : "0"; break;
-				case PLAYERORTEAM: replaceList[i] = teams!=null? MessageUtil.getTeamsOrPlayers(params.getMaxTeamSize()) : "teams"; break;
-				case PARTICIPANTS:{
-                    if (teams != null){
-                        StringBuilder sb = new StringBuilder();
-                        boolean first = true;
-                        for (ArenaTeam t: teams){
-                            if (!first) sb.append(", ");
-                            TeamNames tn = getTeamNames(t);
-                            if (tn == null){
-                                sb.append( t.getDisplayName() );
-                            } else if (tn.longName != null){
-                                sb.append(tn.longName);
-                            } else if (tn.shortName != null){
-                                sb.append(tn.shortName);
-                            } else if (tn.name != null){
-                                sb.append(tn.name);
-                            } else {
-                                sb.append( t.getDisplayName() );
-                            }
-                            first = false;
-                        }
-                        replaceList[i] = sb.toString();
-                    }
-				}
+		for ( MessageOption mop : options ) {
+			if ( mop == null ) continue;
+			switch( mop ) {
+			case CMD: replaceList[i] = params.getCommand(); break;
+			case PREFIX:
+			case MATCHPREFIX:
+			case EVENTPREFIX: replaceList[i] = params.getPrefix();
 				break;
+			case COMPNAME:
+			case EVENTNAME:
+			case MATCHNAME: replaceList[i] = params.getName();
+				break;
+			case SECONDS: replaceList[i] = seconds != null ? seconds.toString()
+			                                               : null; 
+			    break;
+			case TIME: replaceList[i] = seconds != null ? TimeUtil.convertSecondsToString(seconds)
+			                                            : null; 
+			    break;
+			case TEAM1:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.team"),t1);
+				break;
+			case TEAM2:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.team"),t2);
+				break;
+			case TEAMSHORT1:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.teamshort"),t1);
+				break;
+			case TEAMSHORT2:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.teamshort"),t2);
+				break;
+			case TEAMLONG1:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.teamlong"),t1);
+				break;
+			case TEAMLONG2:
+				replaceList[i] = formatTeamName(messages.getNodeMessage("common.teamlong"),t2);
+				break;
+			case NTEAMS: replaceList[i] = teams != null ? teams.size() + "" 
+			                                            : "0"; 
+			    break;
+			case PLAYERORTEAM: replaceList[i] = teams != null ? MessageUtil.getTeamsOrPlayers( params.getMaxTeamSize() ) 
+			                                                  : "teams"; 
+			    break;
+			case PARTICIPANTS:
+                if ( teams != null ) {
+                    StringJoiner joiner = new StringJoiner( ", " );
+                    
+                    for ( ArenaTeam at: teams ) {
+                        TeamNames tn = getTeamNames( at );
+                        if ( tn == null )
+                            joiner.add( at.getDisplayName() );
+                        else if ( tn.longName != null )
+                            joiner.add( tn.longName );
+                        else if ( tn.shortName != null )
+                            joiner.add( tn.shortName );
+                        else if ( tn.name != null )
+                            joiner.add( tn.name );
+                        else 
+                            joiner.add( at.getDisplayName() );
+                    }
+                    replaceList[i] = joiner.toString();
+                }
+                break;
 
-				default:
-					continue;
-				}
-			} catch (Exception e){
-				Log.printStackTrace(e);
+			default:
+				continue;
 			}
-			searchList[i] = mop.getReplaceString();
-			i++;
+			searchList[i++] = mop.getReplaceString();
 		}
 		commonIndex = i;
 	}
 
 	public void formatPlayerOptions(ArenaPlayer player){
 		int i = commonIndex;
-		for (MessageOption mop : ops){
-			if (mop == null)
-				continue;
-			switch(mop){
+		for ( MessageOption mop : options ) {
+			if ( mop == null ) continue;
+			switch( mop ) {
 			case PLAYERNAME: replaceList[i] = player.getDisplayName(); break;
 			default:
 				continue;
 			}
-			searchList[i] = mop.getReplaceString();
-			i++;
+			searchList[i++] = mop.getReplaceString();
 		}
 		teamIndex = i;
 		curIndex = i;
@@ -163,25 +155,24 @@ public class MessageFormatter{
 
 		int i = commonIndex;
 		TeamNames tn = getTeamNames(team);
-		for (MessageOption mop : ops){
-			if (mop == null)
-				continue;
-			switch(mop){
+		for ( MessageOption mop : options ) {
+			if ( mop == null ) continue;
+			
+			switch( mop ) {
 			case WINNER: replaceList[i] = isWinner ? team.getDisplayName() : ""; break;
 			case LOSER: replaceList[i] = !isWinner ? team.getDisplayName() : ""; break;
 			case NAME: replaceList[i] = team.getDisplayName(); break;
-			case TEAM: replaceList[i] = tn.name;break;
-			case TEAMSHORT: replaceList[i] = tn.shortName;break;
-			case TEAMLONG: replaceList[i] = tn.longName;break;
-			case WINS: replaceList[i] = team.getStat().getWins()+""; break;
-			case LOSSES: replaceList[i] = team.getStat().getLosses()+""; break;
-			case RANKING: replaceList[i] = team.getStat().getRanking()+"" ; break;
-			case RATING: replaceList[i] = team.getStat().getRating()+"" ; break;
+			case TEAM: replaceList[i] = tn.name; break;
+			case TEAMSHORT: replaceList[i] = tn.shortName; break;
+			case TEAMLONG: replaceList[i] = tn.longName; break;
+			case WINS: replaceList[i] = team.getStat().getWins() + ""; break;
+			case LOSSES: replaceList[i] = team.getStat().getLosses() + ""; break;
+			case RANKING: replaceList[i] = team.getStat().getRanking() + ""; break;
+			case RATING: replaceList[i] = team.getStat().getRating() + ""; break;
 			default:
 				continue;
 			}
-			searchList[i] = mop.getReplaceString();
-			i++;
+			searchList[i++] = mop.getReplaceString();
 		}
 		teamIndex = i;
 		curIndex = i;
@@ -191,394 +182,189 @@ public class MessageFormatter{
 		ArenaTeam oteam;
 		ArenaStat st1 = t.getStat();
 		int i = teamIndex;
-		for ( MessageOption mop : ops ) {
-			if (mop == null)
-				continue;
+		for ( MessageOption mop : options ) {
+			if ( mop == null ) continue;
+			
 			String repl = null;
 			switch( mop ) {
     			case OTHERTEAM:
-    				oteam = getOtherTeam(t,teams);
-    				if (oteam != null)
+    				oteam = getOtherTeam( t, teams );
+    				if ( oteam != null )
     					repl = oteam.getDisplayName();
     				break;
     				
     			case WINSAGAINST:
-    				try{
-    					oteam = getOtherTeam(t,teams);
-    					if (oteam != null){
-    						ArenaStat st2 = oteam.getStat();
-    						repl = st1.getWinsVersus(st2)+"";
-    					} else {
-    						repl = "0";
-    					}
-    				} catch(Exception e){
-    					Log.printStackTrace(e);
-    				}
+					oteam = getOtherTeam( t, teams );
+					if ( oteam != null ) {
+						ArenaStat st2 = oteam.getStat();
+						repl = st1.getWinsVersus(st2) + "";
+					} 
+					else repl = "0";
     				break;
     				
     			case LOSSESAGAINST:
-    				try{
-    					oteam = getOtherTeam(t,teams);
-    					if (oteam != null){
-    						ArenaStat st2 = oteam.getStat();
-    						repl = st1.getLossesVersus(st2) +"";
-    					} else {
-    						repl = "0";
-    					}
-    				} catch(Exception e){
-    					Log.printStackTrace(e);
-    				}
+					oteam = getOtherTeam( t, teams );
+					if ( oteam != null ) {
+						ArenaStat st2 = oteam.getStat();
+						repl = st1.getLossesVersus(st2) + "";
+					} 
+					else repl = "0";
     				break;
     				
     			default:
     				continue;
 			}
-
 			searchList[i] = mop.getReplaceString();
-			replaceList[i] = repl;
-			i++;
+			replaceList[i++] = repl;
 		}
 		curIndex = i;
 	}
 
 	public void formatTeams(Collection<ArenaTeam> teams){
-		if (ops.contains(MessageOption.TEAMS)){
-			StringBuilder sb = new StringBuilder();
-			boolean first = true;
-			for (ArenaTeam team: teams){
-				if (!first) sb.append(", ");
-				else first = false;
-				sb.append(team.getDisplayName());
+		if ( options.contains( MessageOption.TEAMS ) ) {
+		    StringJoiner joiner = new StringJoiner( ", " );
+		    
+			for ( ArenaTeam team : teams ) {
+				joiner.add( team.getDisplayName() );
 			}
-			replaceList[curIndex] = sb.toString();
+			replaceList[curIndex] = joiner.toString();
 			searchList[curIndex] = MessageOption.TEAMS.getReplaceString();
 			curIndex++;
 		}
 	}
 
-	public void formatWinnerOptions(ArenaTeam team, boolean isWinner){
+	public void formatWinnerOptions( ArenaTeam team, boolean isWinner ) {
 		int i = curIndex;
-		TeamNames tn = getTeamNames(team);
-		for (MessageOption mop : ops){
-			if (mop == null)
-				continue;
-			switch(mop) {
+		TeamNames tn = getTeamNames( team );
+		for ( MessageOption mop : options ) {
+			if ( mop == null ) continue;
+			
+			switch( mop ) {
     			case WINNER:
-    				if (!isWinner)
-    					continue;
+    				if ( !isWinner ) continue;
     				replaceList[i] = tn.name;
     				break;
     				
     			case WINNERSHORT:
-    				if (!isWinner)
-    					continue;
+    				if ( !isWinner ) continue;
     				replaceList[i] = tn.shortName;
     				break;
     				
     			case WINNERLONG:
-    				if (!isWinner)
-    					continue;
+    				if ( !isWinner ) continue;
     				replaceList[i] = tn.longName;
     				break;
     				
     			case LOSER:
-    				if (isWinner)
-    					continue;
+    				if ( isWinner ) continue;
     				replaceList[i] = tn.name;
     				break;
     				
     			case LOSERSHORT:
-    				if (isWinner)
-    					continue;
+    				if ( isWinner ) continue;
     				replaceList[i] = tn.shortName;
     				break;
     				
     			case LOSERLONG:
-    				if (isWinner)
-    					continue;
+    				if ( isWinner ) continue;
     				replaceList[i] = tn.longName;
     				break;
     				
     			case LIFELEFT:
-    				if (!isWinner) continue;
+    				if ( !isWinner ) continue;
     				
-					StringBuilder sb = new StringBuilder();
-					boolean first = true;
+    				StringJoiner joiner = new StringJoiner( ", " );
 
-					for (ArenaPlayer ap: team.getLivingPlayers()){
-						if (!first) sb.append(", ");
-						sb.append("&6").append(ap.getDisplayName()).append("&e(&4").append(ap.getHealth()).append("&e)");
-						first = false;
+					for ( ArenaPlayer ap : team.getLivingPlayers() ) {
+						joiner.add( String.join( "", "&6", ap.getDisplayName(), 
+						                             "&e(&4", String.valueOf( ap.getHealth() ), "&e)" ) );
 					}
-					for (ArenaPlayer ap: team.getDeadPlayers()){
-						if (!first) sb.append(", ");
-						sb.append("&6").append(ap.getDisplayName()).append("&e(&8Dead&e)");
-						first = false;
+					for ( ArenaPlayer ap : team.getDeadPlayers() ) {
+						joiner.add( String.join( "", "&6", ap.getDisplayName(), "&e(&8Dead&e)" ) );
 					}
-					replaceList[i] = sb.toString();
+					replaceList[i] = joiner.toString();
 					break;
 				
     			default:
     				continue;
 			}
-			searchList[i] = mop.getReplaceString();
-			i++;
+			searchList[i++] = mop.getReplaceString();
 		}
 		curIndex = i;
 	}
 
-
-	public class TeamNames{
-		public String longName, shortName, name;
-	}
-
-
-	private TeamNames getTeamNames(ArenaTeam t) {
-		if (tns.containsKey(t.getId()))
-			return tns.get(t.getId());
+	private TeamNames getTeamNames( ArenaTeam t ) {
+		if ( tns.containsKey( t.getId() ) )
+			return tns.get( t.getId() );
+		
 		TeamNames tn = new TeamNames();
-		formatTeamNames(ops,t,tn);
-
-		tns.put(t.getId(), tn);
+		formatTeamNames( options, t, tn );
+		tns.put( t.getId(), tn );
 		return tn;
 	}
 
 	private ArenaTeam getOtherTeam(ArenaTeam t, Collection<ArenaTeam> teams) {
-		for (ArenaTeam oteam: teams){
-			if (oteam.getId() != t.getId()){
+		for ( ArenaTeam oteam : teams ) {
+			if ( oteam.getId() != t.getId() ) 
 				return oteam;
-			}
 		}
 		return null;
 	}
 
-	private String formatTeamName(Message message, ArenaTeam t) {
-		if (t== null)
-			return null;
-		Set<MessageOption> options = message.getOptions();
-		String[] searches = new String[options.size()];
-		String[] replaces = new String[options.size()];
+    public void formatTeamNames( Set<MessageOption> opts, ArenaTeam team, TeamNames tn ) {
+        if    ( opts.contains( MessageOption.TEAM ) 
+                || opts.contains( MessageOption.WINNER ) 
+                || opts.contains ( MessageOption.LOSER ) ) {
+            tn.name = formatTeamName( messages.getNodeMessage( "common.team" ), team );
+        }
+        if    ( opts.contains( MessageOption.TEAMSHORT ) 
+                || opts.contains( MessageOption.WINNERSHORT ) 
+                || opts.contains( MessageOption.LOSERSHORT ) ) {
+            tn.shortName = formatTeamName( messages.getNodeMessage( "common.teamshort" ), team );
+        }
+        if    ( opts.contains( MessageOption.TEAMLONG ) 
+                || opts.contains( MessageOption.WINNERLONG ) 
+                || opts.contains( MessageOption.LOSERLONG ) ) {
+            tn.longName = formatTeamName( messages.getNodeMessage( "common.teamlong" ), team );
+        }
+    }
 
-		int i=0;
+	private String formatTeamName( Message message, ArenaTeam t ) {
+		if ( t == null ) return null;
+		
+		Set<MessageOption> opts = message.getOptions();
+		String[] searches = new String[opts.size()];
+		String[] replaces = new String[opts.size()];
 
-		for (MessageOption mop : options){
-			if (mop == null)
-				continue;
+		int i = 0;
+
+		for ( MessageOption mop : opts ) {
+			if ( mop == null ) continue;
 
 			String repl;
-			switch(mop){
+			switch( mop ) {
 			case NAME: repl = t.getDisplayName(); break;
-			case WINS: repl = t.getStat().getWins()+""; break;
-			case LOSSES: repl = t.getStat().getLosses()+"" ; break;
-			case RANKING: repl = t.getStat().getRanking()+""; break;
-			case RATING: repl = t.getStat().getRating()+""; break;
+			case WINS: repl = t.getStat().getWins() + ""; break;
+			case LOSSES: repl = t.getStat().getLosses() + "" ; break;
+			case RANKING: repl = t.getStat().getRanking() + ""; break;
+			case RATING: repl = t.getStat().getRating() + ""; break;
 			default:
 				continue;
 			}
 			searches[i] = mop.getReplaceString();
-			replaces[i] = repl;
-			i++;
+			replaces[i++] = repl;
 		}
-
-		return replaceEach(message.getMessage(), searches, replaces);
+		return StringUtils.replaceEachRepeatedly( message.getMessage(), searches, replaces );
 	}
-
-	public static String replaceEach(String text, String[] searchList, String[] replacementList) {
-		return replaceEach(text, searchList, replacementList, false, 0);
-	}
-
-	public void formatTeamNames(Set<MessageOption> ops, ArenaTeam team, TeamNames tn){
-		if (ops.contains(MessageOption.TEAM) || ops.contains(MessageOption.WINNER) || ops.contains(MessageOption.LOSER)){
-			tn.name = formatTeamName(impl.getNodeMessage("common.team"),team);
-		}
-		if (ops.contains(MessageOption.TEAMSHORT) || ops.contains(MessageOption.WINNERSHORT) || ops.contains(MessageOption.LOSERSHORT)){
-			tn.shortName = formatTeamName(impl.getNodeMessage("common.teamshort"),team);
-		}
-		if (ops.contains(MessageOption.TEAMLONG) || ops.contains(MessageOption.WINNERLONG) || ops.contains(MessageOption.LOSERLONG)){
-			tn.longName = formatTeamName(impl.getNodeMessage("common.teamlong"),team);
-		}
-	}
-
-	public String getFormattedMessage(Message message) {
-		return replaceEach(message.getMessage(), searchList, replaceList);
-	}
-
-	/**
-     * This code is from StringUtils version 3 from Apache.  Bukkit is using the older version of this code
-     * which does not include this one function
-	 * <p>
-	 * Replaces all occurrences of Strings within another String.
-	 * </p>
-	 *
-	 * <p>
-	 * A <code>null</code> reference passed to this method is a no-op, or if
-	 * any "search string" or "string to replace" is null, that replace will be
-	 * ignored.
-	 * </p>
-	 *
-	 * <pre>
-	 *  StringUtils.replaceEach(null, *, *, *) = null
-	 *  StringUtils.replaceEach("", *, *, *) = ""
-	 *  StringUtils.replaceEach("aba", null, null, *) = "aba"
-	 *  StringUtils.replaceEach("aba", new String[0], null, *) = "aba"
-	 *  StringUtils.replaceEach("aba", null, new String[0], *) = "aba"
-	 *  StringUtils.replaceEach("aba", new String[]{"a"}, null, *) = "aba"
-	 *  StringUtils.replaceEach("aba", new String[]{"a"}, new String[]{""}, *) = "b"
-	 *  StringUtils.replaceEach("aba", new String[]{null}, new String[]{"a"}, *) = "aba"
-	 *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"w", "t"}, *) = "wcte"
-	 *  (example of how it repeats)
-	 *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}, false) = "dcte"
-	 *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}, true) = "tcte"
-	 *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "ab"}, *) = IllegalArgumentException
-	 * </pre>
-	 *
-	 * @param text
-	 *            text to search and replace in, no-op if null
-	 * @param searchList
-	 *            the Strings to search for, no-op if null
-	 * @param replacementList
-	 *            the Strings to replace them with, no-op if null
-	 * @param repeat if true, then replace repeatedly
-	 *       until there are no more possible replacements or timeToLive < 0
-	 * @param timeToLive
-	 *            if less than 0 then there is a circular reference and endless
-	 *            loop
-	 * @return the text with any replacements processed, <code>null</code> if
-	 *         null String input
-	 * @throws IllegalArgumentException
-	 *             if the search is repeating and there is an endless loop due
-	 *             to outputs of one being inputs to another
-	 * @throws IndexOutOfBoundsException
-	 *             if the lengths of the arrays are not the same (null is ok,
-	 *             and/or size 0)
-	 * @since 2.4
-	 */
-	private static String replaceEach(String text, String[] searchList, String[] replacementList,
-			boolean repeat, int timeToLive) {
-
-		if (text == null || text.length() == 0 || searchList == null ||
-				searchList.length == 0 || replacementList == null || replacementList.length == 0) {
-			return text;
-		}
-
-		// if recursing, this shouldnt be less than 0
-		if (timeToLive < 0) {
-			throw new IllegalStateException("TimeToLive of " + timeToLive + " is less than 0: " + text);
-		}
-
-		int searchLength = searchList.length;
-		int replacementLength = replacementList.length;
-
-		// make sure lengths are ok, these need to be equal
-		if (searchLength != replacementLength) {
-			throw new IllegalArgumentException("Search and Replace array lengths don't match: "
-					+ searchLength
-					+ " vs "
-					+ replacementLength);
-		}
-
-		// keep track of which still have matches
-		boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
-
-		// index on index that the match was found
-		int textIndex = -1;
-		int replaceIndex = -1;
-		int tempIndex;
-
-		// index of replace array that will replace the search string found
-		// NOTE: logic duplicated below START
-		for (int i = 0; i < searchLength; i++) {
-			if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-					searchList[i].length() == 0 || replacementList[i] == null) {
-				continue;
-			}
-			tempIndex = text.indexOf(searchList[i]);
-
-			// see if we need to keep searching for this
-			if (tempIndex == -1) {
-				noMoreMatchesForReplIndex[i] = true;
-			} else {
-				if (textIndex == -1 || tempIndex < textIndex) {
-					textIndex = tempIndex;
-					replaceIndex = i;
-				}
-			}
-		}
-		// NOTE: logic mostly below END
-
-		// no search strings found, we are done
-		if (textIndex == -1) {
-			return text;
-		}
-
-		int start = 0;
-
-		// get a good guess on the size of the result buffer so it doesnt have to double if it goes over a bit
-		int increase = 0;
-
-		// count the replacement text elements that are larger than their corresponding text being replaced
-		for (int i = 0; i < searchList.length; i++) {
-			if (searchList[i] == null || replacementList[i] == null) {
-				continue;
-			}
-			int greater = replacementList[i].length() - searchList[i].length();
-			if (greater > 0) {
-				increase += 3 * greater; // assume 3 matches
-			}
-		}
-		// have upper-bound at 20% increase, then let Java take over
-		increase = Math.min(increase, text.length() / 5);
-
-		StringBuilder buf = new StringBuilder(text.length() + increase);
-
-		while (textIndex != -1) {
-
-			for (int i = start; i < textIndex; i++) {
-				buf.append(text.charAt(i));
-			}
-			buf.append(replacementList[replaceIndex]);
-
-			start = textIndex + searchList[replaceIndex].length();
-
-			textIndex = -1;
-			replaceIndex = -1;
-			// find the next earliest match
-			// NOTE: logic mostly duplicated above START
-			for (int i = 0; i < searchLength; i++) {
-				if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-						searchList[i].length() == 0 || replacementList[i] == null) {
-					continue;
-				}
-				tempIndex = text.indexOf(searchList[i], start);
-
-				// see if we need to keep searching for this
-				if (tempIndex == -1) {
-					noMoreMatchesForReplIndex[i] = true;
-				} 
-				else {
-					if (textIndex == -1 || tempIndex < textIndex) {
-						textIndex = tempIndex;
-						replaceIndex = i;
-					}
-				}
-			}
-			// NOTE: logic duplicated above END
-		}
-		int textLength = text.length();
-		for (int i = start; i < textLength; i++) {
-			buf.append(text.charAt(i));
-		}
-		String result = buf.toString();
-		if (!repeat) {
-			return result;
-		}
-		return replaceEach(result, searchList, replacementList, true, timeToLive - 1);
-	}
+	
+    public String getFormattedMessage( Message message ) {
+        return StringUtils.replaceEachRepeatedly( message.getMessage(), searchList, replaceList );
+    }
 
 	public void printMap(){
-		Log.info("!!!!!!!!!!!!!! " + commonIndex +"   " + teamIndex);
-		for (int i=0;i<searchList.length;i++){
-			Log.info(i +" : " + replaceList[i] +"  ^^^ " + searchList[i]);
+		Log.info( "!!!!!!!!!!!!!! " + commonIndex + "   " + teamIndex );
+		for ( int i = 0; i < searchList.length; i++ ) {
+			Log.info( i +" : " + replaceList[i] + "  ^^^ " + searchList[i] );
 		}
 	}
 }

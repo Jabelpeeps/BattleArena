@@ -256,15 +256,17 @@ public class MethodController {
 //    }
 
     private static Map<Class<? extends Event>, List<ArenaEventMethod>> getBukkitMethods(ArenaListener ael) {
-        if (Defaults.DEBUG_EVENTS) 
-            System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
-        return bukkitEventMethods.get(ael.getClass());
+        if ( Defaults.DEBUG_EVENTS ) 
+            System.out.println("[MethodController]getBukkitMethods:- " + ael.getClass().getSimpleName()
+                                    + " contains=" + bukkitEventMethods.containsKey( ael.getClass() ) );
+        return bukkitEventMethods.get( ael.getClass() );
     }
 
     private static Map<Class<? extends BAEvent>, List<ArenaEventMethod>> getMatchMethods(ArenaListener ael) {
-        if (Defaults.DEBUG_EVENTS) 
-            System.out.println("!!!! getEvent "+ael.getClass().getSimpleName()+" contains=" + bukkitEventMethods.containsKey(ael.getClass()));
-        return matchEventMethods.get(ael.getClass());
+        if ( Defaults.DEBUG_EVENTS ) 
+            System.out.println("[MetyhodController]getMatchMethods:- " + ael.getClass().getSimpleName()
+                                    + " contains=" + bukkitEventMethods.containsKey( ael.getClass() ) );
+        return matchEventMethods.get( ael.getClass() );
     }
 
 
@@ -523,8 +525,7 @@ public class MethodController {
     }
 
     private void addEventMethod( ArenaListener listener, 
-                                 Map<Class<? extends Event>, 
-                                 List<ArenaEventMethod>> map,
+                                 Map<Class<? extends Event>, List<ArenaEventMethod>> map,
                                  Class<? extends Event> clazz ) {
         
         List<ArenaEventMethod> list = map.get(clazz);
@@ -543,8 +544,7 @@ public class MethodController {
     }
 
     private void addBAEventMethod( ArenaListener listener, 
-                                   Map<Class<? extends BAEvent>, 
-                                   List<ArenaEventMethod>> map,
+                                   Map<Class<? extends BAEvent>, List<ArenaEventMethod>> map,
                                    Class<? extends BAEvent> clazz ) {
         
         List<ArenaEventMethod> list = map.get(clazz);

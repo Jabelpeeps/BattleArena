@@ -15,7 +15,7 @@ import net.milkbowl.vault.chat.Chat;
 
 public class AnnouncementOptions {
 
-	public enum AnnouncementOption{
+	public enum AnnouncementOption {
 		ANNOUNCE, DONTANNOUNCE, SERVER, CHANNEL, WORLD;
 
 		public static AnnouncementOption fromName(String str){
@@ -25,10 +25,10 @@ public class AnnouncementOptions {
 				ao = AnnouncementOption.valueOf(str);				
 			} catch (Exception e){ }
 			
-			if ( ao != null )
-				return ao;
-			if ( str.contains("HC") || str.contains("HEROCHAT") )
-				return AnnouncementOption.CHANNEL;
+			if ( ao != null ) return ao;
+			
+			if ( str.contains("HC") || str.contains("HEROCHAT") ) return AnnouncementOption.CHANNEL;
+			
 			return null;
 		}
 	}

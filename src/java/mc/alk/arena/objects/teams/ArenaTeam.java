@@ -19,7 +19,6 @@ import mc.alk.arena.Defaults;
 import mc.alk.arena.Permissions;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
-import mc.alk.arena.objects.messaging.MessageHandler;
 import mc.alk.arena.objects.scoreboard.ArenaObjective;
 import mc.alk.arena.objects.stats.ArenaStat;
 import mc.alk.arena.tracker.Tracker;
@@ -91,8 +90,7 @@ public abstract class ArenaTeam {
 		for ( ArenaPlayer p : leftPlayers )
 		    list.add( p.getName() );
 		
-		if ( list.size() > 1 )
-			Collections.sort( list );
+		if ( list.size() > 1 ) Collections.sort( list );
 		
 		StringJoiner joiner = new StringJoiner( ", " );
 		
@@ -229,10 +227,7 @@ public abstract class ArenaTeam {
 		}
 		return true;
 	}
-    
-    public void sendSystemMessage( String node, Object... args ) {
-        sendMessage( MessageHandler.getSystemMessage( node, args ) );
-    }    
+       
     public void sendMessage( String message ) {
 		for ( ArenaPlayer p : players )
 			MessageUtil.sendMessage( p, message );
@@ -243,9 +238,11 @@ public abstract class ArenaTeam {
 				MessageUtil.sendMessage( p, message );
 	}
 
-    public void setDisplayName(String teamName){
-        if ( Defaults.DEBUG ) Log.info( "[ArenaTeam] changing name from '" + name + "' to '" + teamName + "'" );
-        
+    public void setDisplayName( String teamName ) {
+        if ( Defaults.DEBUG ) {
+            Log.info( "[ArenaTeam.setDisplayName()] changing name from '" + name + "' to '" + teamName + "'" );
+            Log.debugStackTrace();
+        }       
         displayName = teamName;
         name = teamName;
         nameManuallySet = true; 
@@ -253,7 +250,7 @@ public abstract class ArenaTeam {
 
 	@Override
     public boolean equals( Object other ) {
-		if (this == other) return true;
+		if ( this == other ) return true;
 		if ( !(other instanceof ArenaTeam) ) return false;
 		return hashCode() == other.hashCode();
 	}
@@ -276,9 +273,9 @@ public abstract class ArenaTeam {
 
     public String getTeamInfo( Set<UUID> insideMatch ) {
 		StringBuilder sb = new StringBuilder( "&eTeam: " );
-		if ( displayName != null ) sb.append( displayName );
+		if ( displayName != null ) sb.append( displayName ).append( " " );
 		
-		sb.append( " " ).append( isDead() ? "&4dead" : "&aalive" ).append( "&e, " );
+		sb.append( isDead() ? "&4dead" : "&aalive" ).append( "&e, " );
 
 		for ( ArenaPlayer p : players ) {
 			sb.append( "&6" ).append( p.getName() ).append( "&e(&c" )
@@ -295,7 +292,7 @@ public abstract class ArenaTeam {
 	}
 
     public String getTeamSummary() {
-		StringBuilder sb = new StringBuilder( "&6"+getDisplayName() );
+		StringBuilder sb = new StringBuilder( "&6" + getDisplayName() );
 		for ( ArenaPlayer p : players ) {
 			sb.append( "&e(&c" )
 			  .append( getNKills( p ) ).append( "&e,&7" )

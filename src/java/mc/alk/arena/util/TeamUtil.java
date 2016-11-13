@@ -110,14 +110,14 @@ public class TeamUtil {
         int index = team.getIndex();
         MatchParams teamParams = null;
         boolean isTeamParam = false;
-        if (index != -1) {
+        
+        if ( index != -1 ) {
             teamParams = params.getTeamParams(index);
         }
-        if (teamParams == null) {
+        if ( teamParams == null )
             teamParams = params;
-        } else {
+        else 
             isTeamParam = true;
-        }
 
         team.setMinPlayers(teamParams.getMinTeamSize());
         team.setMaxPlayers(teamParams.getMaxTeamSize());

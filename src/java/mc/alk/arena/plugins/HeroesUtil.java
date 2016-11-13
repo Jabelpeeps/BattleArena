@@ -126,18 +126,17 @@ public abstract class HeroesUtil {
 	}
 
 	public static void addedToTeam(ArenaTeam team, Player player){
-		HeroParty party = parties.get(team);
-		if (party == null)
-			party = createTeam(team);
+		HeroParty party = parties.get( team );
+		if ( party == null )
+			party = createTeam( team );
 
-		Hero hero = getHero(player);
-		if (hero == null)
-			return;
+		Hero hero = getHero( player );
+		if ( hero == null ) return;
 
-		removeOldParty(hero, party);
+		removeOldParty( hero, party );
 
-		if (party == null) {
-			party = createParty(team,hero);}
+		if ( party == null ) 
+			party = createParty( team, hero );
 
 		/// Add the hero to the party,
 		/// and the tell the hero which party they are in
@@ -147,56 +146,54 @@ public abstract class HeroesUtil {
 
 	public static void removedFromTeam(ArenaTeam team, Player player){
 		HeroParty party = parties.get(team);
-		if (party == null) {
-			return;}
-		Hero hero = getHero(player);
-		if (hero == null){
-			return;}
-		removeOldParty(hero,null);
+		if ( party == null ) return;
+		
+		Hero hero = getHero( player );
+		if ( hero == null ) return;
+		
+		removeOldParty( hero, null );
 	}
 
-	public static ArenaTeam getTeam(Player player) {
-		Hero hero = getHero(player);
-		if (hero == null)
-			return null;
+	public static ArenaTeam getTeam( Player player ) {
+		Hero hero = getHero( player );
+		if ( hero == null ) return null;
+		
 		HeroParty party = hero.getParty();
-		if (party == null)
-			return null;
+		if ( party == null ) return null;
+		
 		ArenaTeam t = new CompositeTeam();
 		Hero leader = party.getLeader();
-		if (leader != null)
-			t.addPlayer(PlayerController.toArenaPlayer(leader.getPlayer()));
+		if ( leader != null )
+			t.addPlayer( PlayerController.toArenaPlayer( leader.getPlayer() ) );
 
 		Set<Hero> members = party.getMembers();
-		if (members != null){
-			for (Hero h: members){
-				t.addPlayer(PlayerController.toArenaPlayer(h.getPlayer()));}
+		if ( members != null ) {
+			for ( Hero h : members ) 
+				t.addPlayer( PlayerController.toArenaPlayer( h.getPlayer() ) ); 
 		}
 		return t.size() > 0 ? t : null;
 	}
 
-	public static Integer getMagicLevel(Player player) {
-		Hero hero = getHero(player);
+	public static Integer getMagicLevel( Player player ) {
+		Hero hero = getHero( player );
 		return hero == null ? null : hero.getMana();
 	}
 
-	public static void setMagicLevel(Player player, Integer val) {
-		Hero hero = getHero(player);
-		if (hero == null)
-			return;
-		hero.setMana(val);
+	public static void setMagicLevel( Player player, Integer val ) {
+		Hero hero = getHero( player );
+		if ( hero == null ) return;
+		hero.setMana( val );
 	}
 
-	public static void setMagicLevelP(Player player, Integer magic) {
-		Hero hero = getHero(player);
-		if (hero == null)
-			return;
-		double val = (double)hero.getMaxMana() * magic/100.0;
-		hero.setMana((int)val);
+	public static void setMagicLevelP( Player player, Integer magic ) {
+		Hero hero = getHero( player );
+		if ( hero == null ) return;
+		double val = (double) hero.getMaxMana() * magic / 100.0;
+		hero.setMana( (int) val );
 	}
 
 	public static void setHealthP(Player player, double health) {
-	    double val = player.getMaxHealth() * health/100.0;
-        PlayerUtil.setHealth(player, val);
+	    double val = player.getMaxHealth() * health / 100.0;
+        PlayerUtil.setHealth( player, val );
 	}
 }

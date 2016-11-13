@@ -32,10 +32,10 @@ public abstract class TeamFactory {
 
     public static ArenaTeam createCompositeTeam(Integer index, MatchParams params) {
         ArenaTeam at = new CompositeTeam();
-        if (index != null && index != -1) {
-            at.setIndex(index);
+        if ( index != null && index != -1 ) {
+            at.setIndex( index );
         }
-        TeamUtil.initTeam(at, params);
+        TeamUtil.initTeam( at, params );
         return at;
     }
 }

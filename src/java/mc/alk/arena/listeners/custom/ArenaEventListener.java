@@ -26,7 +26,7 @@ class ArenaEventListener extends GeneralEventListener {
      */
     public ArenaEventListener( final Class<? extends Event> bukkitEvent, EventPriority _bukkitPriority ) {
         super( bukkitEvent, _bukkitPriority );
-        if ( Defaults.DEBUG_EVENTS) Log.info( "Registering GenericPlayerEventListener for type " +
+        if ( Defaults.DEBUG_EVENTS) Log.info( "Registering ArenaEventListener for type " +
                                                     bukkitEvent.getSimpleName() );
     }
 

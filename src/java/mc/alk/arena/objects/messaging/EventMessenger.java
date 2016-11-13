@@ -49,7 +49,7 @@ public class EventMessenger {
         List<ArenaTeam> teams = new ArrayList<>();
         teams.add(team);
         MessageFormatter msgf = new MessageFormatter( messages, params, teams.size(), message, ops );
-        msgf.formatCommonOptions( teams );
+        msgf.formatCommonOptions( teams, null );
         
         for ( ArenaTeam t : teams ) {
             msgf.formatTeamOptions( t, false );
@@ -116,7 +116,7 @@ public class EventMessenger {
         
         Set<MessageOption> ops = serverMessage.getOptions();
         MessageFormatter msgf = new MessageFormatter( messages, params, 0, serverMessage, ops );
-        msgf.formatCommonOptions( null );
+        msgf.formatCommonOptions( null, null );
         String msg = msgf.getFormattedMessage( serverMessage );
         serverChannel.broadcast( msg );
     }
@@ -140,7 +140,7 @@ public class EventMessenger {
         }
 
         MessageFormatter msgf = new MessageFormatter( messages, params, teams.size(), message, ops );
-        msgf.formatCommonOptions( teams );
+        msgf.formatCommonOptions( teams, null );
         for ( ArenaTeam t : teams ) {
             msgf.formatTeamOptions( t, false );
             msgf.formatTeams( teams );

@@ -28,7 +28,7 @@ class BukkitEventListener extends GeneralEventListener {
 	public BukkitEventListener(final Class<? extends Event> _bukkitEvent,
                                             EventPriority _bukkitPriority, Method getPlayerMethod) {
 		super( _bukkitEvent, _bukkitPriority );
-		if ( Defaults.DEBUG_EVENTS ) Log.info( "Registering GenericPlayerEventListener for type " +
+		if ( Defaults.DEBUG_EVENTS ) Log.info( "Registering BukkitEventListener for type " +
                 _bukkitEvent.getSimpleName() +" pm="+(getPlayerMethod == null ? "null" : getPlayerMethod.getName()));
 	}
 

@@ -179,6 +179,7 @@ public class StateOptions {
     }
 
     public Double getMoney(){return getDouble(MONEY);}
+    
     public boolean hasMoney(){
         Double d = getDouble(MONEY);
         return d != null && d > 0;

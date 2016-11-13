@@ -18,19 +18,28 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.Scheduler;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.util.InventoryUtil;
 import mc.alk.arena.util.InventoryUtil.PInv;
-import mc.alk.arena.util.KeyValue;
 import mc.alk.arena.util.Log;
 
 public class InventorySerializer {
 
     static DateFormat format = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG, Locale.getDefault() );
 	
+    @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    public static class KeyValue<KEY,VALUE> {
+        public KEY key;
+        public VALUE value;
+    }
+    
     public static List<String> getDates( OfflinePlayer player) {
 	    
         UUID id = player.getUniqueId();

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Match;
@@ -259,7 +261,7 @@ public class MatchMessenger {
             replaceList[i] = entry.getValue();
             i++;
         }
-        return MessageFormatter.replaceEach(text, searchList, replaceList);
+        return StringUtils.replaceEachRepeatedly( text, searchList, replaceList );
     }
     
     public void sendCountdownTillPrestart( int remaining ) {

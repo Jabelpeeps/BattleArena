@@ -26,18 +26,15 @@ public class MessageSerializer extends BaseConfig {
 	@Setter private static MessageSerializer defaultMessages;
 	private HashMap<String, MessageOptions> msgOptions = new HashMap<>();
     final private static HashMap<String, MessageSerializer> files = new HashMap<>();
-//    final protected MatchParams matchParams;
     protected String name;
     
-    public MessageSerializer( String _name ) {
-	    if ( Defaults.DEBUG ) 
-	        Log.info( "[MessageSerializer] loading messages for: " + _name );
-//	                + " MatchParams=" + 
-//	                            ( params == null ? "null" : params.getName() ) );
-	    
-//		matchParams = params;
+    public MessageSerializer( String _name ) {      
+        if (_name == null ) {
+            Log.printStackTrace( new IllegalArgumentException( "MessageSerializer needs a valid String for it's constructor." ) );
+            return;
+        }        
+	    if ( Defaults.DEBUG ) Log.info( "[MessageSerializer] loading messages for: " + _name );
 		
-		if (_name == null ) return;		
 		name = _name;		
 		MessageSerializer ms = files.get( _name.toUpperCase() );
 		
@@ -56,10 +53,6 @@ public class MessageSerializer extends BaseConfig {
 	    }
         return null;	    
 	}
-	
-//	public static void addMessageSerializer(String name, MessageSerializer ms){
-//		files.put( name.toUpperCase(), ms );
-//	}
 
 	public static MessageSerializer getMessageSerializer( String name ) {
 		MessageSerializer found = files.get( name.toUpperCase() );

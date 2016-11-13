@@ -38,7 +38,6 @@ import mc.alk.arena.objects.victoryconditions.VictoryType;
 import mc.alk.arena.plugins.HeroesController;
 import mc.alk.arena.plugins.McMMOController;
 import mc.alk.arena.util.FileUtil;
-import mc.alk.arena.util.KeyValue;
 import mc.alk.arena.util.Log;
 import mc.alk.arena.util.MinMax;
 import mc.alk.arena.util.Util;
@@ -303,30 +302,35 @@ public class BAConfigSerializer extends BaseConfig {
         }
     }
 
-    public static AnnouncementOptions parseAnnouncementOptions(AnnouncementOptions an, boolean match, ConfigurationSection cs, boolean warn) {
-        if (cs == null) {
-            if (warn) {
-                Log.err((match ? "match" : "event") + " announcements are null. cs= ");
-            }
+    public static AnnouncementOptions parseAnnouncementOptions( AnnouncementOptions an, 
+                                                                boolean match, 
+                                                                ConfigurationSection cs, 
+                                                                boolean warn) {
+        if ( cs == null ) {
+            if ( warn ) Log.err( ( match ? "match" : "event" ) + " announcements are null. (no config section)" );
             return null;
         }
-        Set<String> keys = cs.getKeys(false);
-        if (keys != null) {
-            for (String key : keys) {
-                MatchState ms = MatchState.fromString(key);
-                if (ms == null) {
-                    Log.err("Couldnt recognize matchstate " + key + " in the announcement options");
+        Set<String> keys = cs.getKeys( false );
+        if ( keys != null ) {
+            for ( String key : keys ) {
+                MatchState ms = MatchState.fromString( key );
+                if ( ms == null ) {
+                    Log.err( "Couldnt recognize matchstate " + key + " in the announcement options" );
                     continue;
                 }
-                List<String> list = cs.getStringList(key);
-                for (String s : list) {
-                    KeyValue<String, String> kv = KeyValue.split(s, "=");
-                    AnnouncementOption bo = AnnouncementOption.fromName(kv.key);
-                    if (bo == null) {
-                        Log.err("Couldnt recognize AnnouncementOption " + s);
+                List<String> list = cs.getStringList( key );
+                for ( String  str : list ) {
+                    String[] kv = str.split( "=" );
+                    if ( kv.length != 2 ) {
+                        Log.err( "" );
                         continue;
                     }
-                    an.setBroadcastOption(match, ms, bo, kv.value);
+                    AnnouncementOption bo = AnnouncementOption.fromName( kv[0] );
+                    if ( bo == null ) {
+                        Log.err( "Couldnt recognize AnnouncementOption " +  str );
+                        continue;
+                    }
+                    an.setBroadcastOption( match, ms, bo, kv[1] );
                 }
             }
         }

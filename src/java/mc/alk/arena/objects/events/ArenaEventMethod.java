@@ -48,7 +48,7 @@ public class ArenaEventMethod {
 	public String toString(){
 		return "[MEM " + callMethod.getName() + ", " + ( event != null ? event.getSimpleName() 
 		                                                               : "null" ) +
-				" p=" + bukkitPriority + " "  + beginState + ":" + endState + "   playerMethod=" + PlayerMethod + "]";
+				", p=" + bukkitPriority + ", " + beginState + ":" + endState + ", playerMethod=" + PlayerMethod.getName() + "]";
 	}
 
 }
