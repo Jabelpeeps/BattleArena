@@ -81,7 +81,6 @@ import mc.alk.arena.objects.pairs.TransitionOptionTuple;
 import mc.alk.arena.objects.spawns.FixedLocation;
 import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.objects.teams.FormingTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.tracker.StatType;
 import mc.alk.arena.plugins.CombatTagUtil;
 import mc.alk.arena.plugins.EssentialsUtil;
@@ -634,19 +633,19 @@ public class BAExecutor extends CustomCommandExecutor {
             EventOpenOptions eoo = EventOpenOptions.parseOptions(args, null, params);
 
             Arena arena = eoo.getArena(params);
-            if (arena == null) {
+            if ( arena == null ) {
                 MessageUtil.sendMessage(sender, "[BattleArena] auto args=" + Arrays.toString(args)
-                        + " can't be started. Arena  is not there or in use");
+                                                  + " can't be started. Arena is not there or in use");
                 return;
             }
-
             arenaController.createAndAutoMatch(arena, eoo);
             int max = arena.getParams().getMaxPlayers();
             String maxPlayers = max == ArenaSize.MAX ? "&6any&2 number of players"
                                                      : max + "&2 players";
             MessageUtil.sendMessage( sender, "&2You have " + args[0] + "ed a &6" + params.getName() + 
-                    "&2 inside &6" + arena.getName() + " &2TeamSize=&6" + arena.getParams().getTeamSize()
-                    + "&2 #Teams=&6" + arena.getParams().getNTeams() + "&2 supporting " + maxPlayers + "&2 at &5" + arena.getName());
+                    "&2 inside &6" + arena.getName() + " &2TeamSize=&6" + arena.getParams().getSize().getTeamSizeString()
+                    + "&2 #Teams=&6" + arena.getParams().getSize().getNumTeamsString() 
+                    + "&2 supporting " + maxPlayers + "&2 at &5" + arena.getName());
         } 
         catch ( InvalidOptionException | NeverWouldJoinException e ) {
             MessageUtil.sendMessage(sender, e.getMessage());
@@ -1168,7 +1167,7 @@ public class BAExecutor extends CustomCommandExecutor {
         }
         ArenaTeam t = TeamController.getTeam(player);
         if (t == null)
-            t = TeamFactory.createCompositeTeam(0, mp, player);
+            t = TeamController.createCompositeTeam( 0, mp ).addPlayer( player );
         else
             t.setIndex(0);
         

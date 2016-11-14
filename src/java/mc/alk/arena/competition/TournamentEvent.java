@@ -58,7 +58,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
     boolean preliminary_round = false;
     ArrayList<ArenaTeam> aliveTeams = new ArrayList<>();
     ArrayList<ArenaTeam> competingTeams = new ArrayList<>();
-    final EventParams singleGameParms; 
+    final EventParams singleGameParams; 
     Random rand = new Random();
     Integer curTimer = null;
     Map<Match, Matchup> matchups = Collections.synchronizedMap(new HashMap<Match,Matchup>());
@@ -67,20 +67,21 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
 
     public TournamentEvent(EventParams _params, EventOpenOptions eoo) throws NeverWouldJoinException {
         super(_params);
-        singleGameParms = new EventParams(eoo.getParams());
+        singleGameParams = new EventParams(eoo.getParams());
         Bukkit.getPluginManager().registerEvents(this, BattleArena.getSelf());
         timeBetweenRounds = _params.getTimeBetweenRounds();
-        ChatColor color = MessageUtil.getFirstColor(singleGameParms.getPrefix());
-        _params.setTeamSize(singleGameParms.getTeamSize());
+        ChatColor color = MessageUtil.getFirstColor(singleGameParams.getPrefix());
+        params.setMaxTeamSize( singleGameParams.getMaxTeamSize() );
+        params.setMinTeamSize( singleGameParams.getMinTeamSize() );
 
-        String str = color + "[" + singleGameParms.getName() + " " + _params.getName() + "]";
-        _params.setPrefix(str);
-        singleGameParms.setPrefix(str);
+        String str = color + "[" + singleGameParams.getName() + " " + params.getName() + "]";
+        params.setPrefix(str);
+        singleGameParams.setPrefix(str);
 
-        str = singleGameParms.getName() + " " + _params.getName();
-        _params.setName(str);
-        singleGameParms.setName(str);
-        setTeamJoinHandler(TeamJoinFactory.createTeamJoinHandler(_params, this));
+        str = singleGameParams.getName() + " " + _params.getName();
+        params.setName(str);
+        singleGameParams.setName(str);
+        setTeamJoinHandler(TeamJoinFactory.createTeamJoinHandler( params, this));
     }
 
     @Override
@@ -114,7 +115,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
         int roundteams = (int) Math.pow(minTeams, nrounds);
         
         server.broadcastMessage( 
-                MessageUtil.colorChat( params.getPrefix() + "&e The " + singleGameParms.getName() + " is starting!"));
+                MessageUtil.colorChat( params.getPrefix() + "&e The " + singleGameParams.getName() + " is starting!"));
 
         TreeMap<Double,ArenaTeam> sortTeams = new TreeMap<>(Collections.reverseOrder());
         TrackerInterface sc = Tracker.getInterface( params );
@@ -321,7 +322,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 loffset--;
                 hoffset++;
             }
-            EventParams sgp = ParamController.copyParams(singleGameParms);
+            EventParams sgp = ParamController.copyParams(singleGameParams);
             JoinOptions jo = new JoinOptions();
             jo.setMatchParams(sgp);
             m = createMatchup(sgp, newTeams, jo);
@@ -361,7 +362,7 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
                 newTeams.add( aliveTeams.get( size - 1 - index ) );
             }
             JoinOptions jo = new JoinOptions();
-            EventParams sgp = ParamController.copyParams(singleGameParms);
+            EventParams sgp = ParamController.copyParams(singleGameParams);
             jo.setMatchParams(sgp);
             m = createMatchup(sgp, newTeams, jo);
             tr.addMatchup(m);
@@ -542,8 +543,8 @@ public class TournamentEvent extends AbstractComp implements Listener, ArenaList
 
     @Override
     public String getInfo() {
-        StringBuilder sb = new StringBuilder().append( StateOptions.getInfo(singleGameParms, singleGameParms.getName()) );
-        StateGraph so = singleGameParms.getStateGraph();
+        StringBuilder sb = new StringBuilder().append( StateOptions.getInfo(singleGameParams, singleGameParams.getName()) );
+        StateGraph so = singleGameParams.getStateGraph();
         
         String firstPlacePrizes = so.getGiveString(TournamentTransition.FIRSTPLACE);
         String participantPrizes = so.getGiveString(TournamentTransition.PARTICIPANTS);

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
@@ -21,7 +22,6 @@ import mc.alk.arena.objects.scoreboard.CutoffScoreboard;
 import mc.alk.arena.objects.scoreboard.FullScoreboard;
 import mc.alk.arena.objects.scoreboard.WaitingScoreboard;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.objects.teams.TeamHandler;
 
 public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
@@ -66,7 +66,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
             
             int index = 0;
             while ( tems.size() < maxTeams )
-                tems.add( TeamFactory.createCompositeTeam( index++, matchParams ) );
+                tems.add( TeamController.createCompositeTeam( index++, matchParams ) );
             
             for ( ArenaTeam team : tems ) {
                 
@@ -109,7 +109,7 @@ public abstract class AbstractJoinHandler implements JoinHandler, TeamHandler {
     }
 
     public void joiningPlayer( ArenaPlayer player ) {
-        ArenaTeam ct = TeamFactory.createCompositeTeam( teams.size(), matchParams );
+        ArenaTeam ct = TeamController.createCompositeTeam( teams.size(), matchParams );
         addTeam( ct );
         addToTeam( ct, player );
     }

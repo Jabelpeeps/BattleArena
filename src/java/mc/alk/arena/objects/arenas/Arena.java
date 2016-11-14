@@ -537,8 +537,8 @@ public class Arena extends AreaContainer {
      */
     public String toDetailedString(){
         StringBuilder sb = new StringBuilder( "&6" + name + " &e" );
-        sb.append( "&eTeamSizes=&6" + params.getTeamSize() + " &eTypes=&6" + params.getType());
-        sb.append( "&e, #Teams:&6" + params.getNTeams() );
+        sb.append( " &eTypes=&6" + params.getType() );
+        sb.append( params.getSize().toString() );
         sb.append( "&e, #spawns:&6" + spawns.size() + "\n" );
         sb.append( "&eteamSpawnLocs=&b" + getSpawnLocationString() + "\n" );
         if (waitroom != null) 
@@ -558,46 +558,47 @@ public class Arena extends AreaContainer {
      * return arena summary string (includes bukkit coloring)
      * @return summary
      */
-    public String toSummaryString(){
-        StringBuilder sb = new StringBuilder("&4" + name);
-        if (params != null){
-//            sb.append("&2 type=&f").append(params.getType());
-            sb.append(" &2TeamSizes:" + getColor(params.getArenaTeamSize()) + params.getTeamSize() +
-                    "&2, nTeams:"+getColor(params.getArenaNTeams()) + params.getNTeams());
+    public String toSummaryString() {
+        StringBuilder sb = new StringBuilder( "&4" + name );
+        if ( params != null ) {
+            sb.append( "&2 type=&f" ).append( params.getType() )
+              .append( " &2Sizes:" ).append( getColor( params.getArenaSize() ) + params.getSize().toString() );
         }
-
         sb.append( "&2 #spawns:&f" + spawns.size() + "&2 1stSpawn:&f" );
-        if (!spawns.isEmpty()){
+        
+        if ( !spawns.isEmpty() ) {
             SpawnLocation l = spawns.get(0).get(0);
             sb.append("["+ Util.getLocString( l.getLocation() )+"] ");
         }
-        if (timedSpawns != null && !timedSpawns.isEmpty())
-            sb.append("&2#item/mob Spawns:&f" +timedSpawns.size());
+        if ( timedSpawns != null && !timedSpawns.isEmpty() )
+            sb.append( "&2#item/mob Spawns:&f" +timedSpawns.size() );
         return sb.toString();
     }
 
     public SpawnController getSpawnController() {
-        if (timedSpawns != null && !timedSpawns.isEmpty() && spawnController == null){
+        if ( timedSpawns != null && !timedSpawns.isEmpty() && spawnController == null ) {
             spawnController = new SpawnController(timedSpawns);
         }
         return spawnController;
     }
 
-    public RoomContainer getLobby() { return RoomController.getLobby( getArenaType() ); }
     @Override
     public LocationType getLocationType() { return LocationType.ARENA; }
-    public List<List<SpawnLocation>> getVisitorLocs() { return visitorRoom!=null ? visitorRoom.getSpawns() : null; }
+    public List<List<SpawnLocation>> getVisitorLocs() { return visitorRoom != null ? visitorRoom.getSpawns() : null; }
+    public RoomContainer getLobby() { return RoomController.getLobby( getArenaType() ); }
 
-    public boolean isJoinable(MatchParams mp) {
-        if (!isOpen())
+    public boolean isJoinable( MatchParams mp ) {
+        if ( !isOpen() )
             return false;
-        else if ( mp.needsWaitroom() && (waitroom == null || !waitroom.isOpen() || waitroom.getSpawns().isEmpty()) )
+        else if ( mp.needsWaitroom() 
+                && ( waitroom == null || !waitroom.isOpen() || waitroom.getSpawns().isEmpty() ) )
             return false;
-        else if ( mp.needsSpectate() && (spectatorRoom== null || !spectatorRoom.isOpen() || spectatorRoom.getSpawns().isEmpty()) )
+        else if ( mp.needsSpectate() 
+                && ( spectatorRoom== null || !spectatorRoom.isOpen() || spectatorRoom.getSpawns().isEmpty() ) )
             return false;
         else if ( mp.needsLobby()){
-            RoomContainer lobby = RoomController.getLobby(getArenaType());
-            if (lobby == null || !lobby.isOpen() || lobby.getSpawns().isEmpty())
+            RoomContainer lobby = RoomController.getLobby( params.getType() );
+            if ( lobby == null || !lobby.isOpen() || lobby.getSpawns().isEmpty() )
                 return false;
         }
         return true;

@@ -197,14 +197,12 @@ public class BAConfigSerializer extends BaseConfig {
         Material value = null;
         try {
             int x = Integer.parseInt( readyBlock );
-            value = Material.getMaterial(x);
+            value = Material.getMaterial( x );
         } 
         catch (NumberFormatException ex) {
             value = Material.matchMaterial( readyBlock );
         }
-        if (value != null) {
-            Defaults.READY_BLOCK = value;
-        }
+        if ( value != null ) Defaults.READY_BLOCK = value;
 
         defaults.setCloseWaitroomWhileRunning(true);
         defaults.setCancelIfNotEnoughPlayers(false);
@@ -221,9 +219,9 @@ public class BAConfigSerializer extends BaseConfig {
         defaults.setNumConcurrentCompetitions( Util.toInt(cs.getString("nConcurrentCompetitions", "infinite")));
 
         List<String> list = cs.getStringList("defaultDuelOptions");
-        if (list != null && !list.isEmpty()) {
+        if ( list != null && !list.isEmpty() ) {
             try {
-                DuelOptions dop = DuelOptions.parseOptions(list.toArray(new String[list.size()]));
+                DuelOptions dop = DuelOptions.parseOptions( list.toArray( new String[list.size()] ) );
                 DuelOptions.setDefaults(dop);
             } 
             catch (InvalidOptionException e) {
@@ -233,17 +231,13 @@ public class BAConfigSerializer extends BaseConfig {
     }
 
     private static void parseOnServerStartOptions(ConfigurationSection cs) {
-        if (cs == null || !cs.contains("onServerStart")) {
-            Log.warn(BattleArena.getNameAndVersion() + " No onServerStart options found");
+        if ( cs == null || !cs.contains( "onServerStart" ) ) {
+            Log.warn( BattleArena.getNameAndVersion() + " No onServerStart options found" );
             return;
         }
-        List<String> options = cs.getStringList("onServerStart");
-        for (String op : options) {
-            if (op.equalsIgnoreCase("startContinuous")) {
-                Defaults.START_CONTINUOUS = true;
-            } else if (op.equalsIgnoreCase("startNext")) {
-                Defaults.START_NEXT = true;
-            }
+        for ( String op : cs.getStringList( "onServerStart" ) ) {
+            if ( op.equalsIgnoreCase( "startContinuous" ) ) Defaults.START_CONTINUOUS = true;
+            else if ( op.equalsIgnoreCase( "startNext" ) ) Defaults.START_NEXT = true;
         }
     }
 
@@ -321,16 +315,14 @@ public class BAConfigSerializer extends BaseConfig {
                 List<String> list = cs.getStringList( key );
                 for ( String  str : list ) {
                     String[] kv = str.split( "=" );
-                    if ( kv.length != 2 ) {
-                        Log.err( "[BAConfigSerializer.AnnouncementOptions()] failed to parse:-" + str + " (into 2 pieces)");
-                        continue;
-                    }
+                    if ( kv.length != 2 || kv.length != 1 ) continue;
+
                     AnnouncementOption bo = AnnouncementOption.fromName( kv[0] );
                     if ( bo == null ) {
                         Log.err( "Couldnt recognize AnnouncementOption " +  str );
                         continue;
                     }
-                    an.setBroadcastOption( match, ms, bo, kv[1] );
+                    an.setBroadcastOption( match, ms, bo, kv.length == 2 ? kv[1] : null );
                 }
             }
         }

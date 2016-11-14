@@ -319,10 +319,11 @@ public abstract class ArenaTeam {
 		return priority;
 	}
 
-	public void addPlayer( ArenaPlayer player ) {
+	public ArenaTeam addPlayer( ArenaPlayer player ) {
 		players.add( player );
 		leftPlayers.remove( player );
 		nameChanged = true;
+		return this;
 	}
 
 	public boolean removePlayer( ArenaPlayer player ) {
@@ -344,10 +345,11 @@ public abstract class ArenaTeam {
 		leftPlayers.add( p );
 	}
 
-	public void addPlayers( Collection<ArenaPlayer> _players ) {
+	public ArenaTeam addPlayers( Collection<ArenaPlayer> _players ) {
 		players.addAll( _players );
         leftPlayers.removeAll( _players );
 		nameChanged = true;
+		return this;
 	}
 
 	public void removePlayers(Collection<ArenaPlayer> _players) {

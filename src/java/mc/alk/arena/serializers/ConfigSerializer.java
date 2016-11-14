@@ -740,12 +740,11 @@ public class ConfigSerializer extends BaseConfig {
         if ( params.getDisplayName() != null ) maincs.set("displayName", params.getDisplayName());
         if ( params.getSignDisplayName() != null ) maincs.set("signDisplayName", params.getSignDisplayName());
 
-        if (    params.getNTeams() != null 
-                || params.getTeamSize() != null ) {
+        if ( params.getSize() != null ) {
             ConfigurationSection cs = maincs.createSection("gameSize");
             
-            if ( params.getNTeams() != null ) cs.set("nTeams", params.getNTeams().toString());
-            if ( params.getTeamSize() != null ) cs.set("teamSize", params.getTeamSize().toString());
+            cs.set( "nTeams", params.getSize().getNumTeamsString() );
+            cs.set( "teamSize", params.getSize().getTeamSizeString() );
         }
         maincs.set( "nLives", Util.intToString( params.getNLives() ) );
         

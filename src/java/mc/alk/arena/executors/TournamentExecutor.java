@@ -88,8 +88,9 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
             }
             Arena arena = BattleArena.getBAController().getArenaByMatchParams(sgp);
             if (arena == null){
-                MessageUtil.sendMessage(sender, "&cThere is no arena that will fit these parameters. nTeams=" +
-                        sgp.getNTeams() + " teamSize=" + sgp.getTeamSize());
+                MessageUtil.sendMessage( sender, "&cThere is no arena that will fit these parameters. " + sgp.getSize().toString() );
+//                        + "nTeams=" +
+//                        sgp.getNTeams() + " teamSize=" + sgp.getTeamSize());
             }
             openEvent(event,eoo);
         } catch ( InvalidOptionException | NeverWouldJoinException e ) {
@@ -101,9 +102,11 @@ public class TournamentExecutor extends EventExecutor implements CommandExecutor
             return null;
         }
         int max = eventParams.getMaxPlayers();
-        String maxPlayers = max == ArenaSize.MAX ? "&6any&2 number of players" : max + "&2 players";
-        MessageUtil.sendMessage(sender,"&2You have " + eoo.getOpenCmd() + "ed a &6" + event.getDisplayName() +
-                " &2TeamSize=&6" + sgp.getTeamSize() + "&2 #Teams=&6" + sgp.getNTeams() + "&2 supporting " + maxPlayers );
+        String maxPlayers = max == ArenaSize.MAX ? "&6any&2 number of players" 
+                                                 : max + "&2 players";
+        MessageUtil.sendMessage( sender,"&2You have " + eoo.getOpenCmd() + "ed a &6" + event.getDisplayName()
+                                    + " &2TeamSize=&6" + sgp.getSize().getTeamSizeString() 
+                                    + "&2 #Teams=&6" + sgp.getSize().getNumTeamsString() + "&2 supporting " + maxPlayers );
         return event;
     }
 

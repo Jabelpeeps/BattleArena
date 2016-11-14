@@ -26,29 +26,26 @@ public class JoinOptions {
 
     @AllArgsConstructor
     public static enum JoinOption{
-        ARENA("<arena>",false), 
-        TEAM("<team>",false),
-        WANTEDTEAMSIZE("<teamSize>",false);
+        ARENA( "<arena>", false ), 
+        TEAM( "<team>", false ),
+        WANTEDTEAMSIZE( "<teamSize>", false );
 
         @Getter final String name;
         final public boolean needsValue;
  
-        public static JoinOption fromName(String str){
-            str = str.toUpperCase();
-            try {return JoinOption.valueOf(str);} catch (Exception e){/*do nothing*/}
-            throw new IllegalArgumentException();
+        public static JoinOption fromName(String str) {
+            try { 
+                return JoinOption.valueOf( str.toUpperCase() ); 
+            }
+            catch (Exception e) { throw new IllegalArgumentException(); }
         }
         public static String getValidList() {
             StringBuilder sb = new StringBuilder();
             boolean first = true;
-            for (JoinOption r: JoinOption.values()){
+            for ( JoinOption r : JoinOption.values() ) {
                 if (!first) sb.append(", ");
                 first = false;
-                String val = "";
-                switch (r){
-                    default: break;
-                }
-                sb.append(r.getName()).append(val);
+                sb.append( r.getName() );
             }
             return sb.toString();
         }
@@ -112,11 +109,10 @@ public class JoinOptions {
         String lastArg = args.length > 0 ? args[args.length-1] : "";
         int length = args.length;
 
-        for (int i=0;i<length;i++){
+        for ( int i = 0; i < length; i++ ) {
             String op = args[i];
-            if (op.isEmpty())
-                continue;
-            Object obj = null;
+            if ( op.isEmpty() ) continue;
+            
             op = MessageUtil.decolorChat(op);
             Arena a = BattleArenaController.getArena(op);
             if (a != null){
@@ -130,7 +126,7 @@ public class JoinOptions {
             }
             try {
                 Integer wantedSize = Integer.valueOf(op);
-                ops.put(JoinOption.WANTEDTEAMSIZE, wantedSize);
+                ops.put( JoinOption.WANTEDTEAMSIZE, wantedSize );
                 mp.setTeamSize(wantedSize);
                 continue;
             } catch (Exception e){
@@ -153,15 +149,12 @@ public class JoinOptions {
                 throw new InvalidOptionException("&cThe arena or option " + op+" does not exist, \n&cvalid options=&6"+
                         JoinOption.getValidList());
             }
-//            switch(jo){
-//                default:
-//                    break;
-//            }
-
-            if (!jo.needsValue){
-                ops.put(jo,null);
+            
+            if ( !jo.needsValue ) {
+                ops.put( jo, null );
                 continue;
             }
+            Object obj = null;
             String val = args[++i];
             switch(jo){
                 case ARENA:

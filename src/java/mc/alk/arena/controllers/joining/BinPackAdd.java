@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.List;
 
 import mc.alk.arena.competition.Competition;
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.joining.TeamJoinObject;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 
 /**
  * When there is an infinite number of teams
@@ -76,7 +76,7 @@ public class BinPackAdd extends AbstractJoinHandler {
                     return new TeamJoinResult( TeamJoinStatus.ADDED, t.getMinPlayers() - t.size() );
                 }
             }
-            ArenaTeam ct = TeamFactory.createCompositeTeam(teams.size(), matchParams);
+            ArenaTeam ct = TeamController.createCompositeTeam(teams.size(), matchParams);
             ct.addPlayers(team.getPlayers());
             team.setIndex(ct.getIndex());
             if (ct.size() <= ct.getMaxPlayers()){

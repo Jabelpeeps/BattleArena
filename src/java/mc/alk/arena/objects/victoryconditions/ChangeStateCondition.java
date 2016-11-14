@@ -5,6 +5,6 @@ import mc.alk.arena.competition.Match;
 import mc.alk.arena.objects.arenas.ArenaListener;
 
 @AllArgsConstructor
-public class ChangeStateCondition implements ArenaListener{
+public class ChangeStateCondition implements ArenaListener {
 	protected final Match match;
 }

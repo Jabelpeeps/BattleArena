@@ -6,6 +6,7 @@ import java.util.List;
 
 import mc.alk.arena.Defaults;
 import mc.alk.arena.competition.Competition;
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.ArenaSize;
 import mc.alk.arena.objects.MatchParams;
@@ -14,7 +15,6 @@ import mc.alk.arena.objects.joining.TeamJoinObject;
 import mc.alk.arena.objects.options.JoinOptions;
 import mc.alk.arena.objects.options.JoinOptions.JoinOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 
 public class AddToLeastFullTeam extends AbstractJoinHandler {
 
@@ -35,7 +35,7 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
             }
         }
         for ( int i = teams.size(); i < minTeams; i++ ) {
-            addTeam( TeamFactory.createCompositeTeam( i, params ) );
+            addTeam( TeamController.createCompositeTeam( i, params ) );
         }
     }
 
@@ -98,7 +98,7 @@ public class AddToLeastFullTeam extends AbstractJoinHandler {
         }
         /// Since this is nearly the same as BinPack add... can we merge somehow easily?
         if (!hasZero && teams.size() < maxTeams){
-            ArenaTeam ct = TeamFactory.createCompositeTeam(teams.size(), matchParams);
+            ArenaTeam ct = TeamController.createCompositeTeam(teams.size(), matchParams);
             ct.setCurrentParams(tqo.getMatchParams());
             ct.addPlayers(team.getPlayers());
             team.setIndex(ct.getIndex());

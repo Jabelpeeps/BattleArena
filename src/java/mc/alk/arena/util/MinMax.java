@@ -20,23 +20,17 @@ public class MinMax {
     public boolean valid() {
         return min <= max;
     }
-    public static MinMax valueOf( String s ) throws NumberFormatException{
-        if ( s == null ) throw new NumberFormatException("Number can not be null");
-        if ( s.indexOf( '+' ) != -1 ) {
+    public static MinMax valueOf( String s ) throws NumberFormatException {
+        if ( s == null ) throw new NumberFormatException( "Number can not be null" );
+        if ( s.indexOf( '+' ) != -1 )
             return new MinMax( Integer.parseInt( s.substring( 0, s.indexOf( '+' ) ) ), ArenaSize.MAX );
-        }
         if ( s.contains( "-" ) ) {
             String[] vals = s.split( "-" );
             return new MinMax( Integer.parseInt( vals[0] ), Integer.parseInt( vals[1] ) );
         }
-
-        int i;
-        if ( s.contains( "v" ) )
-            i = Integer.parseInt( s.split("v")[0] );
-        else
-            i = Integer.parseInt( s );
+        if ( s.contains( "v" ) ) return new MinMax( Integer.parseInt( s.split("v")[0] ) );
         
-        return new MinMax( i, i );
+        return new MinMax( Integer.parseInt( s ) );
     }
     @Override
     public String toString() { return Util.rangeString( min, max ); } 

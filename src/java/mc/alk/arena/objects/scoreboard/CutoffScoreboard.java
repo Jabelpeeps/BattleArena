@@ -3,9 +3,9 @@ package mc.alk.arena.objects.scoreboard;
 import java.util.LinkedList;
 import java.util.List;
 
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.util.ServerUtil;
 
 public class CutoffScoreboard extends AbstractWaitingScoreBoard {
@@ -22,7 +22,7 @@ public class CutoffScoreboard extends AbstractWaitingScoreBoard {
         for ( int i = 0; i < maxTeams && count < 15; i++ ) {
             
             ArenaTeam team = i < teams.size() ? teams.get(i) 
-                                              : TeamFactory.createCompositeTeam(i, params);
+                                              : TeamController.createCompositeTeam(i, params);
             team.setIDString(String.valueOf(team.getIndex()));
             STeam t = scoreboard.addTeam(team);
             for (int j = 0; j < team.getMaxPlayers() && count < 15 && j < ppteam; j++) {

@@ -276,17 +276,17 @@ public abstract class AbstractComp extends Competition implements CountdownCallb
     }
 
     protected Set<ArenaPlayer> getExcludedPlayers() {
-        return teamJoinHandler == null ? null :  teamJoinHandler.getExcludedPlayers();
+        return teamJoinHandler == null ? null : teamJoinHandler.getExcludedPlayers();
     }
 
     public String getStatus() {
         StringBuilder sb = new StringBuilder();
-        if (params != null){
-            boolean rated = params.isRated();
-            sb.append(rated ? "&4Rated" : "&aUnrated").append("&e ").append(name).append(". ");
-            sb.append("&e(&6").append(state).append("&e)");
-            sb.append("&eTeam size=").append(params.getTeamSize());
-            sb.append("&e Teams=&6 ").append(teams.size());
+        if ( params != null ) {
+            sb.append( params.isRated() ? "&4Rated" : "&aUnrated" )
+              .append( "&e " ).append( name ).append( ". " )
+              .append( "&e(&6" ).append( state ).append( "&e)" )
+              .append( "&eTeam size=" ).append( params.getSize().getTeamSizeString() )
+              .append( "&e Teams=&6 " ).append( teams.size() );
         }
         if (state == EventState.OPEN && teamJoinHandler != null){
             sb.append("\n&eJoiningTeams: ").append(MessageUtil.joinPlayers(teamJoinHandler.getExcludedPlayers(), ", "));

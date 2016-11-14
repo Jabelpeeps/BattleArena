@@ -17,9 +17,10 @@ import mc.alk.arena.events.players.ArenaPlayerLeaveEvent;
 import mc.alk.arena.objects.ArenaPlayer;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
+import mc.alk.arena.objects.teams.CompositeTeam;
 import mc.alk.arena.objects.teams.FormingTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.plugins.HeroesController;
+import mc.alk.arena.util.TeamUtil;
 
 
 public final class TeamController {
@@ -64,7 +65,7 @@ public final class TeamController {
 	
     public static ArenaTeam createTeam(MatchParams mp, ArenaPlayer p) {
         if (DEBUG) System.out.println("------- createTeam sans handler " + p.getName());
-        return TeamFactory.createCompositeTeam(-1, mp, p);
+        return createCompositeTeam( -1, mp ).addPlayer( p );
     }
     
     public static boolean inSelfFormedTeam( ArenaPlayer player ) {
@@ -109,4 +110,13 @@ public final class TeamController {
 
 	@Override
 	public String toString() { return "[TeamController]"; }
+
+    public static ArenaTeam createCompositeTeam(Integer index, MatchParams params) {
+        ArenaTeam at = new CompositeTeam();
+        if ( index != null && index != -1 ) {
+            at.setIndex( index );
+        }
+        TeamUtil.initTeam( at, params );
+        return at;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import lombok.Getter;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.Defaults;
 import mc.alk.arena.controllers.BattleArenaController;
@@ -19,13 +20,13 @@ import mc.alk.arena.objects.exceptions.InvalidOptionException;
 import mc.alk.arena.util.MinMax;
 
 public class EventOpenOptions {
-	public static enum EventOpenOption{
+	public static enum EventOpenOption {
 		TEAMSIZE, NTEAMS,
         MAXTEAMS,
 		SILENT,
-		RATED,UNRATED,
+		RATED, UNRATED,
 		FORCEJOIN,
-		OPEN,AUTO,
+		OPEN, AUTO,
 		TIME, INTERVAL,
 		ARENA,
         COPYPARAMS;
@@ -59,7 +60,7 @@ public class EventOpenOptions {
 	}
 
 	Map<EventOpenOption,Object> options = new EnumMap<>(EventOpenOption.class);
-	MatchParams params;
+	@Getter MatchParams params;
 
 	int announceInterval = 0, secTillStart = -1;
 
@@ -106,7 +107,7 @@ public class EventOpenOptions {
 			String val = split[1].trim();
 			switch(to){
 			case TEAMSIZE:{
-				try{
+				try {
 					obj = MinMax.valueOf(val);
                     eoo.getParams().setTeamSize((MinMax) obj);
 				}catch (Exception e){
@@ -143,14 +144,6 @@ public class EventOpenOptions {
 			if (obj != null)
 				ops.put(to, obj);
 		}
-//		if (!ops.containsKey(EventOpenOption.TEAMSIZE)){
-//			params.setTeamSize(new MinMax(1));
-//			ops.put(EventOpenOption.TEAMSIZE, new MinMax(1));
-//		}
-//		if (!ops.containsKey(EventOpenOption.NTEAMS)){
-//			params.setNTeams(new MinMax(2));
-//			ops.put(EventOpenOption.NTEAMS, new MinMax(2));
-//		}
 		eoo.updateParams(eoo.params);
 		return eoo;
 	}
@@ -168,26 +161,16 @@ public class EventOpenOptions {
 	}
 
 	public void updateParams(MatchParams mp){
-		/// Rated
 		if (hasOption(EventOpenOption.UNRATED))
 			mp.setRated(false);
-		/// By default lets make the teamSize the min team size if max # teams not specified as a finite range
 		if (mp.getMaxTeams() == ArenaSize.MAX){
 			mp.setMaxTeamSize(mp.getMinTeamSize());
 		}
-
-		/// Number of Teams
 		if (hasOption(EventOpenOption.NTEAMS)){
 			mp.setNTeams((MinMax)getOption(EventOpenOption.NTEAMS));
 		}
-
-		/// Team size
 		if (hasOption(EventOpenOption.TEAMSIZE)){
 			mp.setTeamSize((MinMax) getOption(EventOpenOption.TEAMSIZE));}
-	}
-
-	public MatchParams getParams() {
-		return params;
 	}
 
 	public Arena getArena(MatchParams mp) throws InvalidOptionException{
@@ -253,6 +236,4 @@ public class EventOpenOptions {
 		}
         return EventOpenOption.OPEN.toString().toLowerCase();
 	}
-
-
 }

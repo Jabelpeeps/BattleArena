@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.NoArgsConstructor;
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.MatchParams;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 import mc.alk.arena.util.ServerUtil;
 
 public class FullScoreboard extends AbstractWaitingScoreBoard {
@@ -21,7 +21,7 @@ public class FullScoreboard extends AbstractWaitingScoreBoard {
         List<STeam> steams = new ArrayList<>();
         
         for (int i = 0; i < maxTeams; i++) {
-            ArenaTeam team = i < teams.size() ? teams.get(i) : TeamFactory.createCompositeTeam(i, params);
+            ArenaTeam team = i < teams.size() ? teams.get(i) : TeamController.createCompositeTeam(i, params);
 
             team.setIDString(String.valueOf(team.getIndex()));
             STeam t = scoreboard.addTeam(team);

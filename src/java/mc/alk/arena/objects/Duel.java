@@ -7,10 +7,10 @@ import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
+import mc.alk.arena.controllers.TeamController;
 import mc.alk.arena.objects.options.DuelOptions;
 import mc.alk.arena.objects.options.DuelOptions.DuelOption;
 import mc.alk.arena.objects.teams.ArenaTeam;
-import mc.alk.arena.objects.teams.TeamFactory;
 
 public class Duel {
 
@@ -51,7 +51,7 @@ public class Duel {
     }
 
     public ArenaTeam makeChallengedTeam() {
-        return TeamFactory.createCompositeTeam(1, matchParams, challengedPlayers.keySet());
+        return TeamController.createCompositeTeam( 1, matchParams ).addPlayers( challengedPlayers.keySet() );
     }
 
     public Collection<ArenaPlayer> getChallengedPlayers() {
